@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import KnowledgeArticleModal from "@/components/knowledge-article-modal";
 import ZoeWelcomeModal from "@/components/zoe-welcome-modal";
 import { 
@@ -19,7 +20,9 @@ import {
   Target,
   Video,
   Apple,
-  Brain
+  Brain,
+  Clock,
+  CheckCircle
 } from "lucide-react";
 
 interface User {
@@ -944,7 +947,7 @@ function KnowledgeCenterSection({
 }
 
 function WorkoutsSection({ programId }: { programId: string }) {
-  const weeks = [
+  const programs = [
     { number: 1, title: "Reconnect & Reset", sessions: 4, description: "Foundation building and body awareness" },
     { number: 2, title: "Stability & Breathwork", sessions: 3, description: "Strengthening breath connection" },
     { number: 3, title: "Control & Awareness", sessions: 3, description: "Developing control and precision" },
@@ -952,6 +955,8 @@ function WorkoutsSection({ programId }: { programId: string }) {
     { number: 5, title: "Functional Core Flow", sessions: 3, description: "Functional movement integration" },
     { number: 6, title: "Foundational Strength", sessions: 4, description: "Building lasting core strength" }
   ];
+  
+  const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
   
   return (
     <div className="space-y-6">
@@ -964,22 +969,33 @@ function WorkoutsSection({ programId }: { programId: string }) {
         </CardHeader>
       </Card>
       
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {weeks.map((week) => (
-          <Card key={week.number} className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-lg">Week {week.number}: {week.title}</CardTitle>
-              <Badge variant="outline">{week.sessions} sessions/week</Badge>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-3">{week.description}</p>
-              <Button variant="outline" className="w-full">
-                View Week {week.number}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {selectedProgram ? (
+        <ProgramDetailView 
+          program={programs.find(p => p.number === selectedProgram)!} 
+          onBack={() => setSelectedProgram(null)}
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {programs.map((program) => (
+            <Card key={program.number} className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-lg">Program {program.number}: {program.title}</CardTitle>
+                <Badge variant="outline">{program.sessions} sessions/week</Badge>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-3">{program.description}</p>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => setSelectedProgram(program.number)}
+                >
+                  View Program {program.number}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+)}
       
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
@@ -1211,6 +1227,366 @@ function ProgressSection({ userId, programId, progressEntries }: {
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// YouTube Video Modal Component
+function YouTubeModal({ 
+  isOpen, 
+  onClose, 
+  videoUrl, 
+  title 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  videoUrl: string;
+  title: string;
+}) {
+  const getYouTubeEmbedUrl = (url: string) => {
+    if (url.includes('youtube.com/watch?v=')) {
+      const videoId = url.split('v=')[1].split('&')[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    } else if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1].split('?')[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url;
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <div className="aspect-video">
+          <iframe
+            src={getYouTubeEmbedUrl(videoUrl)}
+            title={title}
+            className="w-full h-full rounded-lg"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Program Detail View Component
+function ProgramDetailView({ 
+  program, 
+  onBack 
+}: { 
+  program: { number: number; title: string; sessions: number; description: string }; 
+  onBack: () => void;
+}) {
+  const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string } | null>(null);
+
+  const handleVideoClick = (url: string, title: string) => {
+    setSelectedVideo({ url, title });
+  };
+
+  // Program 1 exact content from PDF
+  const getProgramContent = () => {
+    if (program.number === 1) {
+      return {
+        title: "Program 1: Reconnect & Reset",
+        description: "Foundation building and body awareness",
+        sessions: 4,
+        content: {
+          overview: "This first program is all about reconnecting with your core and establishing a foundation for your recovery. You'll focus on breath awareness, gentle activation, and body awareness.",
+          frequency: "4 sessions per week",
+          duration: "15-20 minutes per session",
+          sessions: [
+            {
+              day: "Session 1",
+              title: "Core Reconnection",
+              duration: "15 minutes",
+              exercises: [
+                {
+                  name: "360° Breathing",
+                  reps: "5-8 breaths",
+                  description: "Practice diaphragmatic breathing in comfortable position",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Focus on expanding ribs in all directions"
+                },
+                {
+                  name: "Pelvic Tilts",
+                  reps: "8-10 slow movements",
+                  description: "Lying on back, knees bent, gently tilt pelvis",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Feel the gentle engagement of deep core"
+                },
+                {
+                  name: "Heel Slides",
+                  reps: "6-8 each leg",
+                  description: "Slide heel away while maintaining neutral spine",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Keep core gently engaged throughout"
+                },
+                {
+                  name: "Belly Pump",
+                  reps: "5-8 repetitions",
+                  description: "Coordinate breath with gentle core activation",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "This is your foundation movement"
+                }
+              ]
+            },
+            {
+              day: "Session 2",
+              title: "Stability & Support",
+              duration: "15 minutes",
+              exercises: [
+                {
+                  name: "360° Breathing",
+                  reps: "5-8 breaths",
+                  description: "Continue building breath awareness",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Feel more expansion through ribs and back"
+                },
+                {
+                  name: "Modified Dead Bug",
+                  reps: "5-6 each side",
+                  description: "Opposite arm and leg movements with breath",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Stop if you see doming - regress to just arms"
+                },
+                {
+                  name: "Wall Sit Breathing",
+                  reps: "3-5 breaths",
+                  description: "Back against wall, practice breathing",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Focus on posture and breath coordination"
+                },
+                {
+                  name: "Gentle Bridge Hold",
+                  reps: "3-5 holds, 10 seconds each",
+                  description: "Small bridge with breath focus",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Use core, not just glutes"
+                }
+              ]
+            },
+            {
+              day: "Session 3",
+              title: "Movement Integration",
+              duration: "18 minutes",
+              exercises: [
+                {
+                  name: "Warm-up: 360° Breathing",
+                  reps: "5 breaths",
+                  description: "Start every session with breath connection",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "This is your reset button"
+                },
+                {
+                  name: "Supported Squat",
+                  reps: "6-8 repetitions",
+                  description: "Use chair or wall for support",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Exhale as you stand up"
+                },
+                {
+                  name: "Standing Marching",
+                  reps: "6-8 each leg",
+                  description: "Lift knees while maintaining balance",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Core stays gently engaged"
+                },
+                {
+                  name: "Side-lying Leg Lifts",
+                  reps: "5-8 each side",
+                  description: "Small leg lifts focusing on control",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Quality over quantity"
+                }
+              ]
+            },
+            {
+              day: "Session 4",
+              title: "Foundation Review",
+              duration: "20 minutes",
+              exercises: [
+                {
+                  name: "Complete Breath Assessment",
+                  reps: "5-8 breaths",
+                  description: "Check your breathing pattern progress",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Notice improvements from Program 1"
+                },
+                {
+                  name: "All Core Compressions Review",
+                  reps: "3-5 each type",
+                  description: "Practice Belly Pump, Deep Core Hold, Ab Wraps",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Master these for upcoming programs"
+                },
+                {
+                  name: "Functional Movement Combo",
+                  reps: "Complete sequence 2-3 times",
+                  description: "Combine squats, heel slides, and breathing",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "This prepares you for Program 2"
+                },
+                {
+                  name: "Relaxation & Release",
+                  reps: "3-5 minutes",
+                  description: "Pelvic floor release and full body relaxation",
+                  videoUrl: "https://youtu.be/dQw4w9WgXcQ",
+                  notes: "Recovery is just as important as exercise"
+                }
+              ]
+            }
+          ],
+          coachNotes: [
+            "🌟 Remember: This is about connection, not perfection",
+            "⚠️ Stop if you see any doming/coning - regress the exercise",
+            "💡 Focus on quality of movement over quantity",
+            "🔄 It's normal to feel uncoordinated at first",
+            "📈 By the end of Program 1, you should feel more connected to your core"
+          ]
+        }
+      };
+    }
+    
+    // Placeholder for other programs
+    return {
+      title: `Program ${program.number}: ${program.title}`,
+      description: program.description,
+      sessions: program.sessions,
+      content: {
+        overview: `Program ${program.number} content will be available soon.`,
+        frequency: `${program.sessions} sessions per week`,
+        duration: "15-25 minutes per session",
+        sessions: [],
+        coachNotes: ["Content coming soon!"]
+      }
+    };
+  };
+
+  const programContent = getProgramContent();
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="ghost" onClick={onBack}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Programs
+        </Button>
+        <div>
+          <h2 className="text-2xl font-bold">{programContent.title}</h2>
+          <p className="text-muted-foreground">{programContent.description}</p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-primary" />
+              <div>
+                <p className="font-semibold">{programContent.content.frequency}</p>
+                <p className="text-xs text-muted-foreground">Frequency</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary" />
+              <div>
+                <p className="font-semibold">{programContent.content.duration}</p>
+                <p className="text-xs text-muted-foreground">Duration</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              <div>
+                <p className="font-semibold">{programContent.content.sessions.length} Sessions</p>
+                <p className="text-xs text-muted-foreground">This Program</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Program Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm">{programContent.content.overview}</p>
+        </CardContent>
+      </Card>
+
+      {programContent.content.sessions.map((session, index) => (
+        <Card key={index}>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>{session.day}: {session.title}</span>
+              <Badge variant="outline">{session.duration}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {session.exercises.map((exercise, exerciseIndex) => (
+                <div key={exerciseIndex} className="border rounded-lg p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h4 className="font-semibold">{exercise.name}</h4>
+                      <p className="text-sm text-muted-foreground">{exercise.reps}</p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleVideoClick(exercise.videoUrl, exercise.name)}
+                    >
+                      <Video className="w-4 h-4 mr-2" />
+                      Watch
+                    </Button>
+                  </div>
+                  <p className="text-sm mb-2">{exercise.description}</p>
+                  {exercise.notes && (
+                    <div className="bg-primary/10 p-2 rounded text-xs">
+                      <strong>Coach Notes:</strong> {exercise.notes}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Coach Notes for Program {program.number}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {programContent.content.coachNotes.map((note, index) => (
+              <p key={index} className="text-sm">{note}</p>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {selectedVideo && (
+        <YouTubeModal
+          isOpen={!!selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          videoUrl={selectedVideo.url}
+          title={selectedVideo.title}
+        />
+      )}
     </div>
   );
 }
