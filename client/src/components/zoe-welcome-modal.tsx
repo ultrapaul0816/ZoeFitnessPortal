@@ -34,7 +34,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
 
         {/* Zoe's photo - smaller size */}
         <div className="px-6 pb-4 flex justify-center">
-          <div className="relative w-80 h-48 rounded-lg overflow-hidden mb-4">
+          <div className="relative w-96 h-56 rounded-lg overflow-hidden mb-4">
             <img 
               src="/assets/zoe-photo.png"
               alt="Zoe with her children"
