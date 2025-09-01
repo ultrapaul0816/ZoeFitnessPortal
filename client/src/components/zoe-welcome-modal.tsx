@@ -1,47 +1,44 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Heart, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Heart } from "lucide-react";
 
 interface ZoeWelcomeModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (dontShowAgain: boolean) => void;
 }
 
 export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProps) {
+  const [dontShowAgain, setDontShowAgain] = useState(true);
+
+  const handleClose = () => {
+    onClose(dontShowAgain);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={() => {}}>  {/* Disable default close behavior */}
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0">
         <DialogHeader className="sr-only">
           <DialogTitle>Welcome to Heal Your Core</DialogTitle>
           <DialogDescription>A personal message from Zoe</DialogDescription>
         </DialogHeader>
         
-        {/* Header with close button */}
-        <div className="relative p-6 pb-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4 h-6 w-6"
-            onClick={onClose}
-            data-testid="button-close-welcome"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-          
+        {/* Header without close button */}
+        <div className="p-6 pb-4">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-foreground mb-2">Welcome to Heal Your Core</h2>
             <p className="text-muted-foreground">A personal message from Zoe</p>
           </div>
         </div>
 
-        {/* Zoe's photo */}
-        <div className="px-6 pb-4">
-          <div className="relative w-full h-64 rounded-lg overflow-hidden mb-4">
+        {/* Zoe's photo - smaller size */}
+        <div className="px-6 pb-4 flex justify-center">
+          <div className="relative w-80 h-48 rounded-lg overflow-hidden mb-4">
             <img 
               src="/assets/zoe-photo.png"
               alt="Zoe with her children"
-              className="w-full h-full object-cover grayscale"
+              className="w-full h-full object-contain grayscale"
             />
           </div>
         </div>
@@ -120,10 +117,24 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
           </div>
         </div>
 
-        {/* Action button */}
-        <div className="px-6 pb-6">
+        {/* Don't show again option and action button */}
+        <div className="px-6 pb-6 space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="dont-show-again"
+              checked={dontShowAgain}
+              onCheckedChange={(checked) => setDontShowAgain(!!checked)}
+              data-testid="checkbox-dont-show-again"
+            />
+            <label 
+              htmlFor="dont-show-again" 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Don't show this message again
+            </label>
+          </div>
           <Button 
-            onClick={onClose}
+            onClick={handleClose}
             className="w-full"
             data-testid="button-start-journey"
           >

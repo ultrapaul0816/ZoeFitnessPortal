@@ -85,8 +85,8 @@ export default function HealYourCorePage() {
     }
   }, [user, accessData]);
 
-  const handleWelcomeClose = () => {
-    if (user) {
+  const handleWelcomeClose = (dontShowAgain: boolean) => {
+    if (user && dontShowAgain) {
       localStorage.setItem(`heal-your-core-welcome-${user.id}`, 'true');
     }
     setShowWelcomeModal(false);
