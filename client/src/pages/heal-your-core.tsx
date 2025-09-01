@@ -321,12 +321,21 @@ function GuidelinesSection() {
                 <CardTitle className="text-lg">Welcome from Zoe</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-3">
-                  A permanent link to the welcome message
-                </p>
-                <Button variant="outline" className="w-full">
-                  View Welcome Message
-                </Button>
+                <div className="space-y-4 text-sm">
+                  <p className="font-medium">Dear Mama, Welcome to Heal Your Core.</p>
+                  <p>I created this program after my own struggle with diastasis recti. I spent the first two years postpartum with a painful gap in my abdominal wall and no guidance—just conflicting advice and exercises that made me feel worse.</p>
+                  <p>Through research, consistency, and patience, I learned that healing isn't about "bouncing back" or doing endless crunches. It's about rebuilding your deep core connection from the ground up.</p>
+                  <p className="font-medium text-primary">What makes "The Zoe Difference"?</p>
+                  <ul className="space-y-1 ml-4 list-disc">
+                    <li>✅ I've walked this path myself</li>
+                    <li>✅ Evidence-based approach to healing</li>
+                    <li>✅ It worked for my own postpartum journey</li>
+                    <li>✅ Focus on breath & deep core connection over perfection</li>
+                    <li>✅ Gentle, progressive, and realistic for busy mothers</li>
+                  </ul>
+                  <p className="italic">This program isn't just about your core—it's about reclaiming your confidence and feeling strong in your body again. It's never too late to start healing. Your body is capable of amazing things. Let's begin.</p>
+                  <p className="font-medium">With love & support, Zoe x</p>
+                </div>
               </CardContent>
             </Card>
             
@@ -334,36 +343,48 @@ function GuidelinesSection() {
               <CardHeader>
                 <CardTitle className="text-lg">When to Start</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-2">
-                <p><strong>Vaginal Birth:</strong> 6+ weeks postpartum with healthcare provider clearance</p>
-                <p><strong>C-Section:</strong> 8+ weeks postpartum with healthcare provider clearance</p>
-                <p className="text-muted-foreground">Always get clearance before beginning any exercise program</p>
+              <CardContent className="text-sm space-y-3">
+                <div>
+                  <p className="font-semibold mb-2">General Timeline:</p>
+                  <p><strong>Vaginal Delivery:</strong> 6 weeks postpartum minimum (with healthcare provider clearance)</p>
+                  <p><strong>C-Section Delivery:</strong> 8+ weeks postpartum minimum (with healthcare provider clearance)</p>
+                </div>
+                <div className="bg-muted/50 p-3 rounded">
+                  <p className="font-semibold text-sm">IMPORTANT:</p>
+                  <p className="text-xs">Always get medical clearance from your healthcare provider before beginning any postpartum exercise program. Every body and birth experience is different.</p>
+                </div>
+                <p className="text-muted-foreground text-xs">This program can be started at any time postpartum - even years later. It's never too late to heal.</p>
               </CardContent>
             </Card>
           </div>
           
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Safety First</CardTitle>
+              <CardTitle className="text-lg">Safety & Mindset Shifts</CardTitle>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
               <div>
-                <h4 className="font-semibold mb-2">Key Safety Warnings</h4>
+                <h4 className="font-semibold mb-2 text-red-600">⚠️ When to Stop & Consult Your Provider</h4>
                 <ul className="space-y-1 text-sm">
-                  <li>• Stop if you experience pain or doming</li>
-                  <li>• Always consult healthcare provider first</li>
-                  <li>• Listen to your body and modify as needed</li>
-                  <li>• Focus on proper form over intensity</li>
+                  <li>• Persistent pelvic, back, or joint pain</li>
+                  <li>• Leaking urine during or after exercise</li>
+                  <li>• Pelvic heaviness or pressure</li>
+                  <li>• Abdominal doming/coning that doesn't improve</li>
+                  <li>• Any pain or discomfort around C-section scar</li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">Mindset Shifts</h4>
+                <h4 className="font-semibold mb-2">💭 Mindset Matters</h4>
                 <ul className="space-y-1 text-sm">
-                  <li>• This is healing, not "snapping back"</li>
-                  <li>• Recovery is a journey, not a destination</li>
-                  <li>• Celebrate small progress</li>
-                  <li>• Be patient and kind to yourself</li>
+                  <li>• This is healing, not "bouncing back"</li>
+                  <li>• Progress isn't always linear</li>
+                  <li>• Small changes compound over time</li>
+                  <li>• Rest is part of recovery</li>
+                  <li>• Your body has been through something incredible</li>
                 </ul>
+                <div className="mt-3 p-2 bg-muted/50 rounded text-xs">
+                  <p><strong>Bulging/Doming:</strong> When your abdominal wall pushes outward during movement, creating a ridge down the center. If you see this, pause and regress to easier exercises.</p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -371,28 +392,93 @@ function GuidelinesSection() {
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">How to Use This Program</CardTitle>
+                <CardTitle className="text-lg">Special Considerations</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-2">
-                <p><strong>Week 1 & 6:</strong> 4 workout sessions per week</p>
-                <p><strong>Weeks 2-5:</strong> 3 workout sessions per week</p>
-                <p><strong>Duration:</strong> 15-25 minutes per session</p>
-                <p className="text-muted-foreground">Rest days are crucial for recovery</p>
+              <CardContent className="text-sm space-y-3">
+                <div>
+                  <p className="font-semibold">Vaginal Delivery Considerations:</p>
+                  <ul className="ml-4 list-disc space-y-1 text-xs">
+                    <li>Pelvic floor may need more gentle release work initially</li>
+                    <li>Focus on breath coordination before adding resistance</li>
+                    <li>Pay attention to any feelings of heaviness or pressure</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold">C-Section Delivery Considerations:</p>
+                  <ul className="ml-4 list-disc space-y-1 text-xs">
+                    <li>Scar tissue affects deep core connection</li>
+                    <li>May experience tightness or pulling around incision</li>
+                    <li>Gentle scar massage can help tissue mobility</li>
+                    <li>Take extra time with breath work and gentle movements</li>
+                  </ul>
+                </div>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Equipment Needed</CardTitle>
+                <CardTitle className="text-lg">How to Use This Guide</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-1">
-                <p>• Yoga mat</p>
-                <p>• Light resistance band</p>
-                <p>• Small stability ball (optional)</p>
-                <p>• Light dumbbells (optional)</p>
+              <CardContent className="text-sm space-y-3">
+                <div>
+                  <p className="font-semibold">Video Access:</p>
+                  <p className="text-xs">All blue underlined text is clickable and will open exercise videos. Practice each movement slowly and with control.</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Scheduling:</p>
+                  <ul className="ml-4 list-disc space-y-1 text-xs">
+                    <li>Week 1 & 6: 4 sessions per week</li>
+                    <li>Weeks 2-5: 3 sessions per week</li>
+                    <li>Sessions: 15-25 minutes each</li>
+                    <li>Feel free to shuffle days based on your energy</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold">Final Tips:</p>
+                  <ul className="ml-4 list-disc space-y-1 text-xs">
+                    <li>Quality over quantity - slow and controlled wins</li>
+                    <li>If interrupted, finish where you left off later</li>
+                    <li>Don't skip more than 2 days without movement</li>
+                    <li>Always warm up (3-5 mins) and cool down</li>
+                  </ul>
+                </div>
               </CardContent>
             </Card>
           </div>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Equipment Needed</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm">
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <p className="font-semibold">Essential:</p>
+                  <ul className="space-y-1 text-xs">
+                    <li>• Yoga mat</li>
+                    <li>• Mini resistance bands</li>
+                    <li>• Small Pilates ball</li>
+                  </ul>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold">Optional:</p>
+                  <ul className="space-y-1 text-xs">
+                    <li>• Yoga blocks</li>
+                    <li>• Light dumbbells</li>
+                    <li>• Swiss ball</li>
+                  </ul>
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold">Alternatives:</p>
+                  <ul className="space-y-1 text-xs">
+                    <li>• Towels for blocks</li>
+                    <li>• Water bottles for weights</li>
+                    <li>• Firm pillow for ball</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
     </div>
@@ -406,6 +492,8 @@ function KnowledgeCenterSection({
   articles: any[]; 
   onArticleClick: (article: any) => void;
 }) {
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -417,88 +505,403 @@ function KnowledgeCenterSection({
         </CardHeader>
       </Card>
       
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
+      <div className="space-y-6">
+        {/* Breathing & Core Activation */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Understanding Your Core</CardTitle>
-            <Badge variant="outline">Core Anatomy</Badge>
+            <CardTitle className="text-lg">Breathing & Core Activation</CardTitle>
+            <Badge variant="outline" className="mb-2">Fundamentals</Badge>
           </CardHeader>
-          <CardContent className="text-sm">
-            <p className="text-muted-foreground mb-3">
-              Learn about the "Core Canister" - your diaphragm, pelvic floor, and deep stabilizing muscles
-            </p>
-            <div className="flex items-center gap-2 text-primary">
-              <Video className="w-4 h-4" />
-              <span>Includes video content</span>
+          <CardContent className="text-sm space-y-3">
+            <p className="font-semibold text-primary">Learning how to breathe properly is essential to activating your deep core muscles safely.</p>
+            <p>Breathwork becomes the foundation for every movement, helping reduce pressure on the abdominal wall and pelvic floor, preventing diastasis recti and pelvic floor dysfunction.</p>
+            
+            <div className="bg-muted/50 p-4 rounded">
+              <p className="font-semibold mb-2">Understanding the "Core Canister"</p>
+              <p className="mb-2">Think of your core as a canister:</p>
+              <ul className="ml-4 list-disc space-y-1">
+                <li>The top is your diaphragm (breathing muscle).</li>
+                <li>The bottom is your pelvic floor.</li>
+                <li>The sides and front are your deep abdominal muscles (transverse abdominis).</li>
+                <li>The back is your spine and deep back muscles.</li>
+              </ul>
+              <p className="text-xs text-muted-foreground mt-2">When you inhale and exhale properly, these parts work together to create pressure and stability. Mismanaged breathing (like shallow chest breathing or breath holding) can weaken this system.</p>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
+        {/* 360° Breathing */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Proper Breathing</CardTitle>
-            <Badge variant="outline">Fundamentals</Badge>
+            <CardTitle className="text-lg">How to Breathe Properly: 360° Breathing</CardTitle>
+            <Badge variant="outline" className="mb-2">Essential Skill</Badge>
           </CardHeader>
-          <CardContent className="text-sm">
-            <p className="text-muted-foreground mb-3">
-              Master 360° breathing technique - the foundation of all core recovery
-            </p>
-            <div className="flex items-center gap-2 text-primary">
-              <Video className="w-4 h-4" />
-              <span>Includes video content</span>
+          <CardContent className="text-sm space-y-3">
+            <p>360° breathing is a deep, diaphragmatic breathing technique that encourages expansion in all directions — front, sides, and back — rather than just the chest or belly.</p>
+            
+            <div className="bg-muted/50 p-4 rounded">
+              <p className="font-semibold mb-2">Steps to Practice 360° Breathing:</p>
+              <Button variant="outline" className="mb-3 w-full text-primary">
+                <Video className="w-4 h-4 mr-2" />
+                CLICK HERE: 360° BREATHING (any comfortable position)
+              </Button>
+              <ol className="ml-4 list-decimal space-y-2">
+                <li>Sit upright or stand tall with a neutral pelvis (not tucked or overly arched).</li>
+                <li>Place one hand on your ribs and the other on your belly.</li>
+                <li><strong>Inhale slowly through your nose:</strong>
+                  <ul className="ml-4 list-disc mt-1 space-y-1">
+                    <li>Feel your ribs expand outward and slightly back.</li>
+                    <li>The belly will naturally expand, but not only the belly — imagine your entire torso filling up with air.</li>
+                  </ul>
+                </li>
+                <li><strong>Exhale slowly through your mouth:</strong>
+                  <ul className="ml-4 list-disc mt-1 space-y-1">
+                    <li>Feel your ribs move back inward.</li>
+                    <li>Gently engage your deep core</li>
+                    <li>(your lower belly will naturally "hug in" slightly without forcefully sucking in).</li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+            
+            <div className="text-center p-3 bg-primary/10 rounded">
+              <p className="italic font-medium">Think "expand in all directions on inhale, gently recoil on exhale."</p>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
+        {/* Understanding Your Core & TVA Engagement */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg">TVA Engagement</CardTitle>
-            <Badge variant="outline">Deep Core</Badge>
+            <CardTitle className="text-lg">Understanding Your Core & TVA Engagement</CardTitle>
+            <Badge variant="outline" className="mb-2">Deep Core</Badge>
           </CardHeader>
-          <CardContent className="text-sm">
-            <p className="text-muted-foreground mb-3">
-              How to find and activate your transverse abdominis - your deepest core muscle
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-lg">Diastasis Recti (DR)</CardTitle>
-            <Badge variant="outline">Assessment</Badge>
-          </CardHeader>
-          <CardContent className="text-sm">
-            <p className="text-muted-foreground mb-3">
-              What is DR and how to check for diastasis recti separation
-            </p>
-            <div className="flex items-center gap-2 text-primary">
-              <Video className="w-4 h-4" />
-              <span>Includes video content</span>
+          <CardContent className="text-sm space-y-3">
+            <p>Why "pull your belly in" isn't enough — and what to do instead. Before you can rebuild strength, you need to find your deep stabilizing muscles and learn how to activate them with proper breathing.</p>
+            
+            <div className="bg-muted/50 p-4 rounded">
+              <p className="font-semibold mb-2">Steps to Activate Core:</p>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-semibold">1. INHALE (Prepare):</p>
+                  <p>Expand ribs, belly, and back — no engagement yet.</p>
+                </div>
+                <div>
+                  <p className="font-semibold">2. EXHALE (Activate): As you exhale:</p>
+                  <ul className="ml-4 list-disc space-y-1">
+                    <li>Gently lift the pelvic floor (imagine picking up a blueberry with your vagina or stopping gas).</li>
+                    <li>At the same time, lightly draw your lower belly (below your belly button) toward your spine.</li>
+                    <li>Keep ribs down (not flaring) and spine neutral.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold">3. HOLD GENTLE ENGAGEMENT (During the movement):</p>
+                  <p>You should still be able to breathe and talk — this is a light, supportive activation, not a hard brace.</p>
+                </div>
+                <div>
+                  <p className="font-semibold">4. RELAX Completely after the movement.</p>
+                  <p>Full relaxation is just as important to prevent over-tightening.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-center p-3 bg-primary/10 rounded">
+              <p className="italic text-xs">The Purposeful Exhale. As you exhale you should feel an automatic tensioning of your abdominals, the muscles of your back and pelvic floor both tightening and lifting.</p>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
+        {/* Foundational Core Compressions */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Core Concepts</CardTitle>
-            <Badge variant="outline">Techniques</Badge>
+            <CardTitle className="text-lg">Foundational Core Compressions</CardTitle>
+            <Badge variant="outline" className="mb-2">Essential Tools</Badge>
           </CardHeader>
-          <CardContent className="text-sm">
-            <p className="text-muted-foreground mb-3">
-              Foundational movements: Belly Pump, Deep Core Hold, Ab Wraps
-            </p>
+          <CardContent className="text-sm space-y-4">
+            <p>These are the 3 essential tools you'll use throughout your journey to connect to your deep core, support your spine, and move with intention.</p>
+            <p className="font-semibold">Learn & Practice these!</p>
+            
+            <Button variant="outline" className="w-full text-primary mb-4">
+              <Video className="w-4 h-4 mr-2" />
+              CLICK HERE: CORE COMPRESSIONS - BELLY PUMP / DEEP CORE HOLD / AB WRAPS
+            </Button>
+            
+            <div className="space-y-4">
+              {/* Belly Pump */}
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">1. Belly Pump</p>
+                <p className="text-xs mb-2"><strong>What it is:</strong> A coordinated breath and core activation technique used to gently engage your deep core muscles on the exhale. It helps retrain the body to stabilize before movement, without excessive pressure or strain.</p>
+                <p className="text-xs mb-1"><strong>How to do it:</strong></p>
+                <ul className="ml-4 list-disc text-xs space-y-1">
+                  <li>Start in a neutral posture (seated, standing, or lying on your back with knees bent).</li>
+                  <li>Inhale through your nose, letting your ribs expand 360° — belly, back, and sides.</li>
+                  <li>Exhale through pursed lips or a gentle "shhh" or "sss" sound.</li>
+                  <li>As you exhale, gently draw your pelvic floor upward and your deep lower belly (below the navel) inward — as if lifting a tissue and tightening a low corset.</li>
+                  <li>Pause. Inhale and let go completely. Repeat.</li>
+                </ul>
+                <p className="text-xs mt-2"><strong>Used during:</strong> Most core-focused exercises, strength movements, transitions (getting up/down), and posture resets.</p>
+              </div>
+              
+              {/* Deep Core Hold */}
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">2. Deep Core Hold</p>
+                <p className="text-xs mb-2"><strong>What it is:</strong> A gentle, sustained engagement of the deep core system (pelvic floor + transverse abdominis) held during movement or specific exercises for stability and control.</p>
+                <p className="text-xs mb-1"><strong>How to do it:</strong></p>
+                <ul className="ml-4 list-disc text-xs space-y-1">
+                  <li>Begin with a belly pump.</li>
+                  <li>Once you've exhaled and activated your core, maintain that gentle engagement for the duration of the movement.</li>
+                  <li>Keep breathing! You're not holding your breath — just keeping the core switched on while moving mindfully.</li>
+                </ul>
+                <p className="text-xs mt-2"><strong>Used during:</strong> Functional movements like squats, pushing a stroller, lifting a baby, lunges, or resistance training.</p>
+              </div>
+              
+              {/* Ab Wraps */}
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">3. Ab Wraps</p>
+                <p className="text-xs mb-2"><strong>What it is:</strong> A visual and tactile cue that helps pregnant or postpartum women re-engage and re-align their abdominal wall. It's a technique that mimics the wrapping in of the abdominals from the sides to the center, often used in breathing or movement patterns.</p>
+                <p className="text-xs mb-1"><strong>How to do it:</strong></p>
+                <ul className="ml-4 list-disc text-xs space-y-1">
+                  <li>Place your hands on your sides, just above the hip bones.</li>
+                  <li>As you exhale and perform a belly pump, imagine drawing the sides of your waist inward and wrapping them toward your midline — like zipping up a jacket from both sides toward the center.</li>
+                  <li>You may feel a gentle tightening and lift in your deep core as this happens.</li>
+                </ul>
+                <p className="text-xs mt-2"><strong>Used during:</strong> Core exercises, posture work, and any movement requiring better core coordination and control (especially when there's doming or coning present).</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
         
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
+        {/* Understanding Kegels & Pelvic Floor Release */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Pelvic Floor Health</CardTitle>
-            <Badge variant="outline">Education</Badge>
+            <CardTitle className="text-lg">Understanding Kegels & Pelvic Floor Release</CardTitle>
+            <Badge variant="outline" className="mb-2">Balance</Badge>
           </CardHeader>
-          <CardContent className="text-sm">
-            <p className="text-muted-foreground mb-3">
-              Understanding Kegels vs. Pelvic Floor Release and why crunches won't work
-            </p>
+          <CardContent className="text-sm space-y-4">
+            <p><strong>Why this matters?</strong> Your pelvic floor is a key part of your core canister. It's not just about squeezing; it's about balance: knowing how to lift and how to let go. A healthy pelvic floor can contract and release. Overusing Kegels or doing them without breath awareness can create more tension, not more strength.</p>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">What is a KEGEL?</p>
+                <p className="text-xs mb-2">A Kegel is the gentle activation of the pelvic floor muscles—think of stopping the flow of urine or lifting something small (like a blueberry) with your vagina. But Kegels are not just squeezing. True function comes from the ability to contract and release with control.</p>
+                
+                <p className="font-semibold mb-1 text-xs">How to do a kegel with breath:</p>
+                <ul className="ml-4 list-disc text-xs space-y-1 mb-2">
+                  <li><strong>Inhale</strong> – Let the ribs expand sideways. As you breathe in, let your pelvic floor soften and drop gently.</li>
+                  <li><strong>Exhale</strong> – As you breathe out, gently lift the pelvic floor upward (imagine sipping a smoothie through a straw). Feel a rising sensation from the base of your core.</li>
+                  <li><strong>Pause.</strong> Then repeat for 5–8 gentle reps.</li>
+                  <li>🧘 Only do this once a day. Quality matters more than quantity.</li>
+                </ul>
+                
+                <p className="font-semibold mb-1 text-xs">🚫 Common mistakes to avoid:</p>
+                <ul className="ml-4 list-disc text-xs space-y-1">
+                  <li>Holding your breath while squeezing</li>
+                  <li>Clenching your glutes or inner thighs instead of the pelvic floor</li>
+                  <li>Overdoing reps/creating tightness or fatigue</li>
+                  <li>Never relaxing after a contraction</li>
+                </ul>
+              </div>
+              
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">How to release the pelvic floor:</p>
+                <p className="text-xs mb-2">Sometimes what your pelvic floor really needs is to let go. Especially if you've:</p>
+                <ul className="ml-4 list-disc text-xs space-y-1 mb-2">
+                  <li>Been holding tension (emotionally or physically)</li>
+                  <li>Experienced painful intercourse, tightness, or heaviness</li>
+                  <li>Tried Kegels and felt worse</li>
+                </ul>
+                
+                <p className="font-semibold mb-1 text-xs">Try This Daily Release Drill:</p>
+                <p className="text-xs mb-1">This release can be done at the end of your workout or any time during the day.</p>
+                <ul className="ml-4 list-disc text-xs space-y-1">
+                  <li>Sit on a yoga block (or a firm book stack) with your back supported against the wall. Bring your knees wide—about chest height—and let your arms rest gently on your thighs. Allow your belly to soften.</li>
+                  <li>Take a slow inhale, feeling your ribs expand and your pelvic floor drop downward—as if traveling down 2 elevator levels. Think of it as a gentle opening or blossoming sensation at the base of your core.</li>
+                  <li>On the exhale, lift the pelvic floor just back to its resting level (not above).</li>
+                  <li>👉 Avoid gripping, clenching, or "doing" too much. You're training release, not strength here.</li>
+                  <li>Repeat this for 5 full breaths, relaxing your jaw, face, and belly as much as possible.</li>
+                  <li>This daily practice will help reduce unnecessary pelvic tension, improve breath-led movement, and support your healing from the inside out.</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* When to Use Breathing + Core Activation */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">When to Use Breathing + Core Activation</CardTitle>
+            <Badge variant="outline" className="mb-2">Application</Badge>
+          </CardHeader>
+          <CardContent className="text-sm space-y-4">
+            <div className="bg-primary/10 p-4 rounded text-center">
+              <p className="font-semibold">👉 Key Principle: "Exhale on effort."</p>
+              <p className="text-xs mt-1">When performing a hard part of any movement (like lifting, standing, pushing), breathe out while activating your core.</p>
+            </div>
+            
+            <div>
+              <p className="font-semibold mb-2">Use this technique:</p>
+              <ul className="ml-4 list-disc space-y-1">
+                <li>Before lifting (groceries, kids, weights).</li>
+                <li>Before every exercise repetition (squats, lunges, rows, etc.).</li>
+                <li>When changing positions (lying to sitting, sitting to standing).</li>
+              </ul>
+              
+              <Button variant="outline" className="w-full mt-2 text-primary">
+                <Video className="w-4 h-4 mr-2" />
+                CLICK HERE: HOW TO GET UP CORRECTLY
+              </Button>
+              
+              <p className="text-xs mt-2">During pushing in labor (proper breath and core work helps massively).</p>
+            </div>
+            
+            <div className="bg-red-50 p-4 rounded">
+              <p className="font-semibold mb-2 text-red-700">Common Mistakes to Avoid:</p>
+              <ul className="ml-4 list-disc text-xs space-y-1">
+                <li>Breath-holding (Valsalva maneuver) - can increase abdominal pressure dangerously.</li>
+                <li>Belly-only breathing (causes poor rib and back engagement).</li>
+                <li>Over-bracing the core (hard sucking in can actually create more pressure & instability).</li>
+                <li>Neglecting pelvic floor coordination - pelvic floor must gently lift with the deep core, not bear down.</li>
+              </ul>
+            </div>
+            
+            <div className="bg-muted/50 p-4 rounded">
+              <p className="font-semibold mb-1">What is doming or coning?</p>
+              <p className="text-xs">Doming (also called coning) happens when your abdominal wall bulges outward along the midline during movement. It often shows up like a ridge or peak down the center of your belly—especially when lying down and lifting your head or doing traditional "ab" exercises. This is a sign that your deep core isn't activating properly to manage pressure, and the movement needs to be modified or paused.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Diastasis Recti Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Do I Have Diastasis Recti?</CardTitle>
+            <Badge variant="outline" className="mb-2">Assessment</Badge>
+          </CardHeader>
+          <CardContent className="text-sm space-y-4">
+            <div className="bg-primary/10 p-4 rounded text-center">
+              <p className="font-semibold text-sm">DON'T WORRY IF YOUR ABDOMINAL WALLS DON'T FULLY TOUCH — THAT'S NORMAL. FOCUS ON IMPROVING FUNCTION, NOT PERFECTION.</p>
+            </div>
+            
+            <Button variant="outline" className="w-full text-primary mb-3">
+              <Video className="w-4 h-4 mr-2" />
+              CLICK HERE: HOW TO CHECK FOR DIASTASIS RECTI
+            </Button>
+            
+            <div className="bg-muted/50 p-4 rounded">
+              <p className="font-semibold mb-2">How to Check:</p>
+              <p className="mb-2">Lie on your back, knees bent, feet flat on the floor. Get comfortable & breathe naturally. Place one hand behind your head, and the other hand across your belly, with your fingers pointing down toward your navel. Make sure your fingers are together (not spread wide).</p>
+              
+              <ol className="ml-4 list-decimal space-y-2 text-xs">
+                <li>Press your fingertips gently into your belly, just above your belly button. This is where we'll check the depth and width of any separation.</li>
+                <li>Exhale & slowly lift your head & shoulders off the floor (just a small lift - around 2–3 inches). You should feel the two sides of your abdominal wall moving toward each other.</li>
+                <li>Count how many fingers fit into the gap between your abdominal walls at the navel.</li>
+                <li>Move your fingers above and below the belly button (around 2 inches in each direction) and repeat the lift to feel if the gap is larger or smaller there.</li>
+                <li>Now test the depth: How far do your fingers sink into your abdomen?
+                  <ul className="ml-4 list-disc mt-1 space-y-1">
+                    <li>Does the tissue feel firm and springy (good tension)?</li>
+                    <li>Or soft, deep, and hard to engage (poor tension)?</li>
+                  </ul>
+                </li>
+              </ol>
+              
+              <p className="text-xs mt-3"><strong>Sample result:</strong> "2 fingers at the navel, 2 above, 1 below with moderate depth" This is helpful to note so you can track changes as the program progresses.</p>
+            </div>
+            
+            <div className="bg-yellow-50 p-3 rounded">
+              <p className="font-semibold text-xs text-yellow-800 mb-1">⚠️ Disclaimer:</p>
+              <p className="text-xs text-yellow-700">If you notice a very large gap (more than 4 fingers), significant abdominal bulging, persistent pain, or feelings of instability in your core, back, or pelvis, this program alone may not be enough. Please consult a women's health physiotherapist or qualified healthcare provider before continuing. Your safety and long-term recovery come first.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Why Core Rehab Matters */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Why Core Rehab Matters</CardTitle>
+            <Badge variant="outline" className="mb-2">Recovery</Badge>
+          </CardHeader>
+          <CardContent className="text-sm space-y-4">
+            <p>Even without visible DR, your core may feel disconnected, weak, or uncoordinated. That's where core rehab comes in. This isn't just about workouts—it's about making your core functional again for everything from lifting your baby to carrying groceries. The best part? You're retraining your whole body, not just your abs.</p>
+            
+            <div className="bg-primary/10 p-4 rounded text-center">
+              <p className="font-semibold text-lg">IT'S NEVER TOO LATE TO HEAL ✨</p>
+              <p className="text-xs mt-1">The core is trainable at any stage, and you are worthy of that healing. There's no expiration date on recovery. Let's start where you are.</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <p className="font-semibold mb-2">Whether you're:</p>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>6 weeks postpartum</li>
+                  <li>6 months into motherhood</li>
+                  <li>Or even 6 years down the line</li>
+                </ul>
+                
+                <p className="font-semibold mt-3 mb-2">As you continue through the program, we'll work to:</p>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Reduce the gap width (if present)</li>
+                  <li>Improve tension & strength in the connective tissue</li>
+                  <li>Enhance coordination between breath, core, and pelvic floor</li>
+                </ul>
+              </div>
+              
+              <div>
+                <p className="font-semibold mb-2">Rebuilding your core helps you:</p>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Restore strength and stability</li>
+                  <li>Prevent pain or injury</li>
+                  <li>Improve posture and breathing</li>
+                  <li>Reduce pelvic floor symptoms</li>
+                  <li>Feel more confident and connected</li>
+                </ul>
+                
+                <p className="font-semibold mt-3 mb-2">Many women see noticeable improvement in:</p>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Core connection</li>
+                  <li>Diastasis recti</li>
+                  <li>Pelvic floor symptoms</li>
+                  <li>Strength and balance</li>
+                  <li>Confidence and energy</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Why Crunches Won't Work */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Why Crunches Won't Work</CardTitle>
+            <Badge variant="outline" className="mb-2">Important</Badge>
+          </CardHeader>
+          <CardContent className="text-sm space-y-4">
+            <p className="font-semibold text-red-600">Crunches and sit-ups increase intra-abdominal pressure, which pushes outward against the separation—further stretching the Linea alba instead of healing it. These exercises load the abdominal wall before it's ready, worsening doming, coning, and core dysfunction.</p>
+            
+            <div className="bg-primary/10 p-4 rounded text-center">
+              <p className="font-semibold text-lg">THE FOCUS NEEDS TO BE ON:</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">1. Pressure Management</p>
+                <p className="text-xs">Understanding how pressure moves through the core during breath, lifting, or movement. The goal is to avoid excess intra-abdominal pressure by coordinating breath and posture.</p>
+              </div>
+              
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">2. Breath Coordination</p>
+                <p className="text-xs">Practice 360° breathing where your ribs, belly, and back all expand on the inhale, and gently draw in and up on the exhale. This restores natural core function and reconnects the pelvic floor and TVA.</p>
+              </div>
+              
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">3. TVA Activation</p>
+                <p className="text-xs">The transverse abdominis is like a natural corset wrapping around your spine and organs. Training it through controlled movement and breath helps flatten and support the abdominal wall from the inside out.</p>
+              </div>
+              
+              <div className="bg-muted/50 p-4 rounded">
+                <p className="font-semibold mb-2">4. Alignment & Core-Pelvic Synergy</p>
+                <p className="text-xs">Learn how your posture and rib cage position influence pressure. When your ribs are flared or your pelvis is tilted, your core system is out of sync. Restoring alignment helps all core muscles work together safely.</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
