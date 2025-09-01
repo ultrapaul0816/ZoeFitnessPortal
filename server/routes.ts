@@ -8,15 +8,43 @@ import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve assets
-  app.get("/assets/:filename", (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(process.cwd(), "attached_assets", filename);
-    
-    // Check if file exists
-    if (fs.existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      res.status(404).json({ error: "Asset not found" });
+  app.get("/assets/:filename(*)", (req, res) => {
+    try {
+      const requestedFilename = decodeURIComponent(req.params.filename);
+      const attachedAssetsPath = path.resolve(process.cwd(), "attached_assets");
+      
+      // Find the actual file by listing directory and matching
+      const allFiles = fs.readdirSync(attachedAssetsPath);
+      console.log(`Requested filename: "${requestedFilename}"`);
+      console.log(`Requested filename length: ${requestedFilename.length}`);
+      
+      // Debug each file comparison
+      const matchedFile = allFiles.find(file => {
+        const matches = file === requestedFilename;
+        if (file.includes('11.07.44')) {
+          console.log(`Comparing "${file}" (len=${file.length}) with "${requestedFilename}" (len=${requestedFilename.length}): ${matches}`);
+        }
+        return matches;
+      });
+      
+      if (matchedFile) {
+        const filePath = path.resolve(attachedAssetsPath, matchedFile);
+        
+        // Security check to ensure we're still in the attached_assets directory
+        if (!filePath.startsWith(attachedAssetsPath)) {
+          return res.status(403).json({ error: "Access denied" });
+        }
+        
+        console.log(`Serving file: ${filePath}`);
+        res.sendFile(filePath);
+      } else {
+        console.log(`Asset not found: ${requestedFilename}`);
+        console.log(`Available files:`, allFiles);
+        res.status(404).json({ error: "Asset not found" });
+      }
+    } catch (error) {
+      console.error("Asset serving error:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 

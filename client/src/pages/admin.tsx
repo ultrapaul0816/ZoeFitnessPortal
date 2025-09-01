@@ -96,7 +96,7 @@ export default function Admin() {
             <div className="flex items-center">
               <div className="w-10 h-10 flex items-center justify-center">
                 <img 
-                  src="/assets/Screenshot 2025-09-01 at 11.07.44 PM_1756748649756.png" 
+                  src="/assets/logo.png" 
                   alt="Stronger With Zoe" 
                   className="h-8 w-auto object-contain"
                 />

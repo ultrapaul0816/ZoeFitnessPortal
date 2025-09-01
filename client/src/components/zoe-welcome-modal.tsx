@@ -39,7 +39,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
         <div className="px-6 pb-4">
           <div className="relative w-full h-64 rounded-lg overflow-hidden mb-4">
             <img 
-              src="/assets/Screenshot 2025-09-01 at 11.19.02 PM_1756748945653.png"
+              src="/assets/zoe-photo.png"
               alt="Zoe with her children"
               className="w-full h-full object-cover grayscale"
             />

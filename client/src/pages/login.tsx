@@ -80,7 +80,7 @@ export default function Login() {
             <div className="text-center mb-8">
               <div className="w-24 h-16 mx-auto mb-4 flex items-center justify-center">
                 <img 
-                  src="/assets/Screenshot 2025-09-01 at 11.07.44 PM_1756748649756.png" 
+                  src="/assets/logo.png" 
                   alt="Stronger With Zoe" 
                   className="w-full h-full object-contain"
                 />

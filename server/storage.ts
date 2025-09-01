@@ -195,7 +195,7 @@ export class MemStorage implements IStorage {
       level: "Postnatal",
       duration: "6 Weeks",
       equipment: "Minimal Equipment",
-      imageUrl: "/assets/Screenshot 2025-09-01 at 11.11.48 PM_1756748511780.png",
+      imageUrl: "/assets/program-cover.png",
       price: 4500, // Premium pricing for specialized program
       workoutCount: 22, // 4 workouts week 1&6, 3 workouts weeks 2-5
     };
