@@ -359,7 +359,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .map(file => ({
           filename: file,
           displayName: file === "Screenshot 2025-09-01 at 11.11.48 PM_1756748511780.png" ? "zoe-cover-1" : 
-                      file === "Screenshot 2025-09-01 at 11.07.44 PM_1756748649756.png" ? "stronger-with-zoe-logo" : file,
+                      file === "Screenshot 2025-09-01 at 11.07.44 PM_1756748649756.png" ? "stronger-with-zoe-logo" :
+                      file === "Screenshot 2025-09-01 at 11.19.02 PM_1756748945653.png" ? "zoe-welcome-photo" : file,
           url: `/assets/${file}`,
           lastModified: fs.statSync(path.join(assetsDir, file)).mtime
         }));

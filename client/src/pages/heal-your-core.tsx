@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import KnowledgeArticleModal from "@/components/knowledge-article-modal";
+import ZoeWelcomeModal from "@/components/zoe-welcome-modal";
 import { 
   Play, 
   BookOpen, 
@@ -30,6 +31,7 @@ export default function HealYourCorePage() {
   const [user, setUser] = useState<User | null>(null);
   const [programId, setProgramId] = useState<string>("");
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -72,6 +74,23 @@ export default function HealYourCorePage() {
     queryKey: ["/api/progress-tracking", user?.id, programId],
     enabled: !!user && !!programId && (accessData as any)?.hasAccess,
   });
+
+  // Check if user has seen welcome modal
+  useEffect(() => {
+    if (user && (accessData as any)?.hasAccess) {
+      const hasSeenWelcome = localStorage.getItem(`heal-your-core-welcome-${user.id}`);
+      if (!hasSeenWelcome) {
+        setShowWelcomeModal(true);
+      }
+    }
+  }, [user, accessData]);
+
+  const handleWelcomeClose = () => {
+    if (user) {
+      localStorage.setItem(`heal-your-core-welcome-${user.id}`, 'true');
+    }
+    setShowWelcomeModal(false);
+  };
 
   if (!user || !healYourCoreProgram) {
     return <div>Loading...</div>;
@@ -264,6 +283,12 @@ export default function HealYourCorePage() {
             onClose={() => setSelectedArticle(null)}
           />
         )}
+        
+        {/* Zoe Welcome Modal */}
+        <ZoeWelcomeModal 
+          isOpen={showWelcomeModal}
+          onClose={handleWelcomeClose}
+        />
       </div>
     </div>
   );
