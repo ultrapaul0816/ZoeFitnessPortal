@@ -236,55 +236,69 @@ export default function HealYourCorePage() {
         </Card>
 
         {/* Navigation Tabs */}
-        <Tabs defaultValue="guidelines" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="guidelines" data-testid="tab-guidelines">
-              <BookOpen className="w-4 h-4 mr-2" />
-              📖 Guidelines
+        <Tabs defaultValue="welcome" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
+            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm">
+              <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">✨ Welcome</span>
+              <span className="sm:hidden">Welcome</span>
             </TabsTrigger>
-            <TabsTrigger value="knowledge" data-testid="tab-knowledge">
-              <Brain className="w-4 h-4 mr-2" />
-              🧠 Knowledge
+            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm">
+              <Brain className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">🧠 Understanding Your Core</span>
+              <span className="sm:hidden">Core</span>
             </TabsTrigger>
-            <TabsTrigger value="workouts" data-testid="tab-workouts">
-              <Dumbbell className="w-4 h-4 mr-2" />
-              💪 Workouts
+            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm">
+              <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">💙 Let Healing Begin</span>
+              <span className="sm:hidden">Healing</span>
             </TabsTrigger>
-            <TabsTrigger value="nutrition" data-testid="tab-nutrition">
-              <Apple className="w-4 h-4 mr-2" />
-              🍎 Nutrition
+            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm">
+              <Dumbbell className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">💪 Your 6 Core Programs</span>
+              <span className="sm:hidden">Programs</span>
             </TabsTrigger>
-            <TabsTrigger value="progress" data-testid="tab-progress">
-              <ChartBar className="w-4 h-4 mr-2" />
-              📈 Progress
+            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm">
+              <ChartBar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">📈 What Comes Next</span>
+              <span className="sm:hidden">Next</span>
+            </TabsTrigger>
+            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm">
+              <Apple className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">🍎 The Role of Nutrition</span>
+              <span className="sm:hidden">Nutrition</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="guidelines">
-            <GuidelinesSection />
+          <TabsContent value="welcome">
+            <WelcomeSection />
           </TabsContent>
 
-          <TabsContent value="knowledge">
-            <KnowledgeCenterSection 
+          <TabsContent value="understanding">
+            <UnderstandingYourCoreSection 
               articles={Array.isArray(knowledgeArticles) ? knowledgeArticles : []} 
               onArticleClick={setSelectedArticle}
             />
           </TabsContent>
 
-          <TabsContent value="workouts">
-            <WorkoutsSection programId={programId} />
+          <TabsContent value="healing">
+            <LetHealingBeginSection />
           </TabsContent>
 
-          <TabsContent value="nutrition">
-            <NutritionSection />
+          <TabsContent value="programs">
+            <YourSixCoreProgramsSection programId={programId} />
           </TabsContent>
 
-          <TabsContent value="progress">
-            <ProgressSection 
+          <TabsContent value="next-steps">
+            <WhatComesNextSection 
               userId={user.id} 
               programId={programId} 
               progressEntries={Array.isArray(progressEntries) ? progressEntries : []} 
             />
+          </TabsContent>
+
+          <TabsContent value="nutrition">
+            <TheRoleOfNutritionSection />
           </TabsContent>
         </Tabs>
 
@@ -307,12 +321,12 @@ export default function HealYourCorePage() {
   );
 }
 
-function GuidelinesSection() {
+function WelcomeSection() {
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>📖 Guidelines - Start Here</CardTitle>
+          <CardTitle>✨ Welcome - Start Here</CardTitle>
           <CardDescription>
             Essential preparatory information for your core recovery journey
           </CardDescription>
@@ -488,7 +502,7 @@ function GuidelinesSection() {
   );
 }
 
-function KnowledgeCenterSection({ 
+function UnderstandingYourCoreSection({ 
   articles, 
   onArticleClick 
 }: { 
@@ -501,9 +515,9 @@ function KnowledgeCenterSection({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>🧠 Knowledge Center</CardTitle>
+          <CardTitle>🧠 Understanding Your Core</CardTitle>
           <CardDescription>
-            Educational library to empower you with understanding the "why" behind your recovery
+            Educational foundation to empower you with understanding the "why" behind your recovery
           </CardDescription>
         </CardHeader>
       </Card>
@@ -946,7 +960,144 @@ function KnowledgeCenterSection({
   );
 }
 
-function WorkoutsSection({ programId }: { programId: string }) {
+function LetHealingBeginSection() {
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>💙 Let Healing Begin</CardTitle>
+          <CardDescription>
+            Core rehabilitation and daily practice to kickstart your recovery journey
+          </CardDescription>
+        </CardHeader>
+      </Card>
+      
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Daily Reconnection Routine</CardTitle>
+            <Badge variant="outline" className="mb-2">Core Foundation</Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Your daily foundation for core reconnection. These gentle exercises can be done every day to rebuild your connection with your deep core muscles.
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-base">Morning Routine (5-10 mins)</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>360° Breathing - 10 breaths</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>Gentle Core Activation</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>Pelvic Tilts - 8 reps</span>
+                  </div>
+                  <Button variant="outline" className="w-full mt-3" size="sm">
+                    <Play className="w-4 h-4 mr-2" />
+                    Start Morning Routine
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-base">Evening Routine (5-10 mins)</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span>Heel Slides - 6 per leg</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span>Gentle Pelvic Floor Release</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span>Relaxation Breathing</span>
+                  </div>
+                  <Button variant="outline" className="w-full mt-3" size="sm">
+                    <Play className="w-4 h-4 mr-2" />
+                    Start Evening Routine
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Week-by-Week Reconnection Plan</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Your progressive journey through the 6-week core rehabilitation program
+            </p>
+            
+            <div className="space-y-3">
+              {Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className="flex items-center gap-4 p-3 border rounded-lg">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-semibold text-primary">{i + 1}</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-sm">
+                      Week {i + 1}: {
+                        i === 0 ? "Foundation & Breath" :
+                        i === 1 ? "Gentle Activation" :
+                        i === 2 ? "Building Stability" :
+                        i === 3 ? "Strengthening" :
+                        i === 4 ? "Integration" :
+                        "Confidence Building"
+                      }
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      {
+                        i === 0 ? "Establish breathing patterns and core awareness" :
+                        i === 1 ? "Begin gentle core activation exercises" :
+                        i === 2 ? "Add stability challenges and control" :
+                        i === 3 ? "Introduce progressive strengthening" :
+                        i === 4 ? "Combine movements for functional strength" :
+                        "Prepare for return to normal activities"
+                      }
+                    </p>
+                  </div>
+                  <Button variant="ghost" size="sm">
+                    <ChartBar className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+              <h4 className="font-semibold text-sm mb-2">Remember:</h4>
+              <ul className="text-xs space-y-1 text-muted-foreground">
+                <li>• Listen to your body - rest when you need to</li>
+                <li>• Quality over quantity - perfect form is key</li>
+                <li>• Consistency matters more than intensity</li>
+                <li>• Every small step is progress</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function YourSixCoreProgramsSection({ programId }: { programId: string }) {
   const programs = [
     { number: 1, title: "Reconnect & Reset", sessions: 4, description: "Foundation building and body awareness" },
     { number: 2, title: "Stability & Breathwork", sessions: 3, description: "Strengthening breath connection" },
@@ -962,7 +1113,7 @@ function WorkoutsSection({ programId }: { programId: string }) {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>💪 Workouts - The 6-Week Core Program</CardTitle>
+          <CardTitle>💪 Your 6 Core Programs</CardTitle>
           <CardDescription>
             Clean and focused area for your physical exercises and recovery
           </CardDescription>
@@ -1040,12 +1191,12 @@ function WorkoutsSection({ programId }: { programId: string }) {
   );
 }
 
-function NutritionSection() {
+function TheRoleOfNutritionSection() {
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>🍎 Nutrition</CardTitle>
+          <CardTitle>🍎 The Role of Nutrition</CardTitle>
           <CardDescription>
             Nutritional guidance giving the importance it deserves for your core recovery
           </CardDescription>
@@ -1127,7 +1278,7 @@ function NutritionSection() {
   );
 }
 
-function ProgressSection({ userId, programId, progressEntries }: { 
+function WhatComesNextSection({ userId, programId, progressEntries }: { 
   userId: string; 
   programId: string; 
   progressEntries: any[];
@@ -1136,7 +1287,7 @@ function ProgressSection({ userId, programId, progressEntries }: {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>📈 Progress</CardTitle>
+          <CardTitle>📈 What Comes Next</CardTitle>
           <CardDescription>
             Track your journey and find information on what to do after the program
           </CardDescription>
