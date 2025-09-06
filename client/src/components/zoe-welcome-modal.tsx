@@ -17,7 +17,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>  {/* Disable default close behavior */}
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0">
         <DialogHeader className="sr-only">
           <DialogTitle>Welcome to Heal Your Core</DialogTitle>
