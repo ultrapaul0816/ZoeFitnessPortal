@@ -482,24 +482,42 @@ function WelcomeSection() {
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Special Considerations</CardTitle>
+                <CardTitle className="text-lg text-center text-pink-600">SPECIAL CONSIDERATIONS FOR EACH DELIVERY TYPE</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-3">
+              <CardContent className="space-y-6">
                 <div>
-                  <p className="font-semibold">Vaginal Delivery Considerations:</p>
-                  <ul className="ml-4 list-disc space-y-1 text-xs">
-                    <li>Pelvic floor may need more gentle release work initially</li>
-                    <li>Focus on breath coordination before adding resistance</li>
-                    <li>Pay attention to any feelings of heaviness or pressure</li>
+                  <h4 className="font-semibold text-lg text-blue-400 mb-4">VAGINAL DELIVERY:</h4>
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><span className="text-pink-600 font-semibold">Core engagement</span> may feel easier to activate, but be mindful of pelvic floor health, especially if you experienced tearing, an episiotomy, or pelvic floor weakness.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><span className="text-pink-600 font-semibold">Gradual integration</span> of more dynamic exercises can occur if the pelvic floor feels strong and supported.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><span className="text-pink-600 font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
+                    </li>
                   </ul>
                 </div>
+                
                 <div>
-                  <p className="font-semibold">C-Section Delivery Considerations:</p>
-                  <ul className="ml-4 list-disc space-y-1 text-xs">
-                    <li>Scar tissue affects deep core connection</li>
-                    <li>May experience tightness or pulling around incision</li>
-                    <li>Gentle scar massage can help tissue mobility</li>
-                    <li>Take extra time with breath work and gentle movements</li>
+                  <h4 className="font-semibold text-lg text-blue-400 mb-4">C-SECTION DELIVERY:</h4>
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><span className="text-pink-600 font-semibold">Continue to approach core work</span> with care and intention, avoiding movements that cause pain or pulling around the incision site.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><span className="text-pink-600 font-semibold">Gradual progression</span> is essential, especially when introducing core-focused movements.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><span className="text-pink-600 font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
+                    </li>
                   </ul>
                 </div>
               </CardContent>
