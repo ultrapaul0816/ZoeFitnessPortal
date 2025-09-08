@@ -525,29 +525,112 @@ function WelcomeSection() {
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">How to Use This Guide</CardTitle>
+                <CardTitle className="text-lg text-center text-gray-400">HOW TO USE THIS GUIDE</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-3">
+              <CardContent className="space-y-5">
+                <p className="text-sm">
+                  This guide is your companion through rebuilding your core strength, reconnecting with your body, and feeling more confident in movement again.
+                </p>
+                
                 <div>
-                  <p className="font-semibold">Video Access:</p>
-                  <p className="text-xs">All blue underlined text is clickable and will open exercise videos. Practice each movement slowly and with control.</p>
+                  <p className="font-semibold text-pink-600 text-sm mb-3">Tune In Weekly:</p>
+                  <p className="text-sm">
+                    Assess how you feel. Did you sleep well? Are you feeling sore or energized? Are you holding tension from feeding or carrying your baby? Adjust the plan based on energy levels, core connection, and overall recovery.
+                  </p>
                 </div>
+                
                 <div>
-                  <p className="font-semibold">Scheduling:</p>
-                  <ul className="ml-4 list-disc space-y-1 text-xs">
-                    <li>Week 1 & 6: 4 sessions per week</li>
-                    <li>Weeks 2-5: 3 sessions per week</li>
-                    <li>Sessions: 15-25 minutes each</li>
-                    <li>Feel free to shuffle days based on your energy</li>
+                  <p className="font-semibold text-pink-600 text-sm mb-3">Your program is divided into 6 weekly phases, each with:</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>A <em>Core Strength Program</em> (Program 1 to 6)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>A <em>suggested Cardio Plan</em> for that week</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>Built-in Rest Days</em></span>
+                    </li>
                   </ul>
                 </div>
+                
                 <div>
-                  <p className="font-semibold">Final Tips:</p>
-                  <ul className="ml-4 list-disc space-y-1 text-xs">
-                    <li>Quality over quantity - slow and controlled wins</li>
-                    <li>If interrupted, finish where you left off later</li>
-                    <li>Don't skip more than 2 days without movement</li>
-                    <li>Always warm up (3-5 mins) and cool down</li>
+                  <p className="font-semibold text-pink-600 text-sm mb-3">How to view the videos of the exercises:</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>All blue underlined text is clickable and will open a video link.</em></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><strong>PLAY ALL</strong> <em>indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</em></span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <p className="font-semibold text-pink-600 text-sm mb-3">How to schedule your week:</p>
+                  <p className="text-sm mb-2">Each week follows a 7-day rhythm, with a mix of:</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>Core Training Days</em> (2–4 sessions depending on the week)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>Optional Cardio Days</em> (1–3 light/moderate intensity sessions)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>At least 1 full Rest Day</em></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>You'll see suggestions like "Day 1, Day 3, Day 5" - these refer to days of your week, so you can fit the workouts to your schedule flexibly.</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <p className="font-semibold text-pink-600 text-sm mb-3">Move at your own pace:</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>You can stay on a week for longer if needed — don't feel rushed to move forward.</em></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>If you feel fatigued, emotional, or life just gets full… that's OK. Pause, rest, and return.</em></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>Progress isn't linear — even one session a week is a win.</em></span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <p className="font-semibold text-pink-600 text-sm mb-3">Final tips:</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>Begin each session with your breath</em></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>End with a moment of stillness or gratitude</em></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>Don't skip rest- it's just as important as movement</em></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span><em>You're not just rebuilding your core- you're rebuilding trust in your body</em></span>
+                    </li>
                   </ul>
                 </div>
               </CardContent>
@@ -556,34 +639,101 @@ function WelcomeSection() {
           
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Equipment Needed</CardTitle>
+              <CardTitle className="text-lg text-center">
+                <span className="text-yellow-500">✨</span>
+                <span className="text-pink-600 mx-2">WHAT EQUIPMENT DO YOU NEED</span>
+                <span className="text-yellow-500">✨</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm">
-              <div className="grid md:grid-cols-3 gap-4">
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div className="text-center">
-                  <p className="font-semibold">Essential:</p>
-                  <ul className="space-y-1 text-xs">
-                    <li>• Yoga mat</li>
-                    <li>• Mini resistance bands</li>
-                    <li>• Small Pilates ball</li>
-                  </ul>
+                  <div className="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <div className="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center">
+                      <div className="w-8 h-1 bg-pink-600 rounded-full"></div>
+                    </div>
+                  </div>
+                  <p className="font-medium text-sm">Yoga Mat</p>
                 </div>
+                
                 <div className="text-center">
-                  <p className="font-semibold">Optional:</p>
-                  <ul className="space-y-1 text-xs">
-                    <li>• Yoga blocks</li>
-                    <li>• Light dumbbells</li>
-                    <li>• Swiss ball</li>
-                  </ul>
+                  <div className="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <div className="space-y-1">
+                      <div className="w-10 h-3 bg-pink-400 rounded"></div>
+                      <div className="w-10 h-3 bg-pink-400 rounded"></div>
+                    </div>
+                  </div>
+                  <p className="font-medium text-sm">Yoga Blocks</p>
                 </div>
+                
                 <div className="text-center">
-                  <p className="font-semibold">Alternatives:</p>
-                  <ul className="space-y-1 text-xs">
-                    <li>• Towels for blocks</li>
-                    <li>• Water bottles for weights</li>
-                    <li>• Firm pillow for ball</li>
-                  </ul>
+                  <div className="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <div className="space-y-1">
+                      <div className="w-8 h-1 bg-purple-600 rounded-full"></div>
+                      <div className="w-8 h-1 bg-pink-500 rounded-full"></div>
+                      <div className="w-8 h-1 bg-pink-300 rounded-full"></div>
+                      <div className="w-8 h-1 bg-pink-200 rounded-full"></div>
+                    </div>
+                  </div>
+                  <p className="font-medium text-sm">Mini Resistance Bands</p>
                 </div>
+                
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <div className="w-12 h-12 bg-blue-200 rounded-full border-2 border-blue-300"></div>
+                  </div>
+                  <p className="font-medium text-sm">Mini Pilates Ball</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <div className="space-y-1">
+                      <div className="w-12 h-1 bg-purple-500 rounded-full"></div>
+                      <div className="w-12 h-1 bg-blue-500 rounded-full"></div>
+                      <div className="w-12 h-1 bg-green-500 rounded-full"></div>
+                      <div className="w-12 h-1 bg-yellow-500 rounded-full"></div>
+                      <div className="w-12 h-1 bg-orange-500 rounded-full"></div>
+                      <div className="w-12 h-1 bg-red-500 rounded-full"></div>
+                    </div>
+                  </div>
+                  <p className="font-medium text-sm">Pilates Theraband Or Long Resistance Band</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <div className="w-14 h-14 bg-gray-300 rounded-full border-2 border-gray-400"></div>
+                  </div>
+                  <p className="font-medium text-sm">Medium Swiss Ball</p>
+                </div>
+                
+                <div className="text-center md:col-start-2">
+                  <div className="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <div className="w-12 h-6 bg-black rounded-lg">
+                      <div className="w-full h-full bg-gray-800 rounded-lg" style={{
+                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, #666 1px, #666 2px)'
+                      }}></div>
+                    </div>
+                  </div>
+                  <p className="font-medium text-sm">Foam Roller</p>
+                </div>
+              </div>
+              
+              <div className="mt-8 bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                <h4 className="font-bold text-lg mb-4">BONUS TIPS:</h4>
+                <ul className="space-y-3 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Find a quiet space, but don't stress if it's not perfect.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Keep water nearby, wear comfortable attire.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Treat these sessions like acts of care, not chores.</span>
+                  </li>
+                </ul>
               </div>
             </CardContent>
           </Card>
