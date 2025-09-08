@@ -384,14 +384,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const files = fs.readdirSync(assetsDir);
       const assets = files
         .filter(file => /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(file))
-        .map(file => ({
-          filename: file,
-          displayName: file === "Screenshot 2025-09-01 at 11.11.48 PM_1756748511780.png" ? "zoe-cover-1" : 
+        .map(file => {
+          // Check if there's a custom display name stored
+          const customDisplayName = storage.assetDisplayNames.get(file);
+          const defaultDisplayName = file === "Screenshot 2025-09-01 at 11.11.48 PM_1756748511780.png" ? "zoe-cover-1" : 
                       file === "Screenshot 2025-09-01 at 11.07.44 PM_1756748649756.png" ? "stronger-with-zoe-logo" :
-                      file === "Screenshot 2025-09-01 at 11.19.02 PM_1756748945653.png" ? "zoe-welcome-photo" : file,
-          url: `/assets/${file}`,
-          lastModified: fs.statSync(path.join(assetsDir, file)).mtime
-        }));
+                      file === "Screenshot 2025-09-01 at 11.19.02 PM_1756748945653.png" ? "zoe-welcome-photo" : file;
+          
+          return {
+            filename: file,
+            displayName: customDisplayName || defaultDisplayName,
+            url: `/assets/${file}`,
+            lastModified: fs.statSync(path.join(assetsDir, file)).mtime
+          };
+        });
       res.json(assets);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch assets" });
@@ -412,6 +418,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedProgram);
     } catch (error) {
       res.status(500).json({ message: "Failed to update program" });
+    }
+  });
+
+  // Update asset display name
+  app.put("/api/admin/assets/:filename", async (req, res) => {
+    try {
+      const { filename } = req.params;
+      const { displayName } = req.body;
+      
+      storage.assetDisplayNames.set(filename, displayName);
+      
+      res.json({ filename, displayName, message: "Asset display name updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update asset display name" });
     }
   });
 

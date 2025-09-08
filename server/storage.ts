@@ -73,6 +73,9 @@ export interface IStorage {
   
   // Weekly Workouts
   createWeeklyWorkout(workout: InsertWeeklyWorkout): Promise<WeeklyWorkout>;
+  
+  // Assets
+  assetDisplayNames?: Map<string, string>;
   getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
   getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
 }
@@ -92,6 +95,7 @@ export class MemStorage implements IStorage {
   private knowledgeArticles: Map<string, KnowledgeArticle>;
   private exercises: Map<string, Exercise>;
   private weeklyWorkouts: Map<string, WeeklyWorkout>;
+  public assetDisplayNames: Map<string, string>;
 
   constructor() {
     this.users = new Map();
@@ -108,6 +112,7 @@ export class MemStorage implements IStorage {
     this.knowledgeArticles = new Map();
     this.exercises = new Map();
     this.weeklyWorkouts = new Map();
+    this.assetDisplayNames = new Map();
     
     this.initializeData();
   }

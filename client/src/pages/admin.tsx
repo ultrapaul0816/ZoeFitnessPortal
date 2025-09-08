@@ -18,6 +18,8 @@ export default function Admin() {
   const [, setLocation] = useLocation();
   const [user, setUser] = useState<any>(null);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
+  const [editingAsset, setEditingAsset] = useState<string | null>(null);
+  const [assetDisplayNames, setAssetDisplayNames] = useState<{[key: string]: string}>({});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -81,8 +83,45 @@ export default function Admin() {
     },
   });
 
+  const updateAssetMutation = useMutation({
+    mutationFn: async ({ filename, displayName }: { filename: string; displayName: string }) => {
+      const response = await fetch(`/api/admin/assets/${encodeURIComponent(filename)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ displayName }),
+      });
+      if (!response.ok) throw new Error('Failed to update asset');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/assets"] });
+      setEditingAsset(null);
+      setAssetDisplayNames({});
+      toast({
+        title: "Success",
+        description: "Asset name updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update asset name",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleUpdateProgram = (updatedProgram: Program) => {
     updateProgramMutation.mutate(updatedProgram);
+  };
+
+  const handleUpdateAsset = (filename: string, displayName: string) => {
+    updateAssetMutation.mutate({ filename, displayName });
+  };
+
+  const handleEditAsset = (filename: string, currentDisplayName: string) => {
+    setEditingAsset(filename);
+    setAssetDisplayNames({ [filename]: currentDisplayName });
   };
 
   if (!user?.isAdmin) return null;
@@ -384,9 +423,55 @@ export default function Admin() {
                         />
                       </div>
                       <div>
-                        <h3 className="font-medium text-foreground" data-testid={`asset-name-${asset.displayName}`}>
-                          {asset.displayName}
-                        </h3>
+                        {editingAsset === asset.filename ? (
+                          <div className="space-y-2">
+                            <Label htmlFor={`asset-name-${asset.filename}`}>Display Name</Label>
+                            <Input
+                              id={`asset-name-${asset.filename}`}
+                              value={assetDisplayNames[asset.filename] || asset.displayName}
+                              onChange={(e) => setAssetDisplayNames({ 
+                                ...assetDisplayNames, 
+                                [asset.filename]: e.target.value 
+                              })}
+                              data-testid={`input-asset-name-${asset.filename}`}
+                            />
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm"
+                                onClick={() => handleUpdateAsset(asset.filename, assetDisplayNames[asset.filename] || asset.displayName)}
+                                disabled={updateAssetMutation.isPending}
+                                data-testid={`button-save-asset-${asset.filename}`}
+                              >
+                                <Save className="w-3 h-3 mr-1" />
+                                {updateAssetMutation.isPending ? "Saving..." : "Save"}
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setEditingAsset(null)}
+                                data-testid={`button-cancel-asset-${asset.filename}`}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-medium text-foreground" data-testid={`asset-name-${asset.displayName}`}>
+                                {asset.displayName}
+                              </h3>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditAsset(asset.filename, asset.displayName)}
+                              data-testid={`button-edit-asset-${asset.filename}`}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
                         <p className="text-xs text-muted-foreground mt-1">
                           {new Date(asset.lastModified).toLocaleDateString()}
                         </p>
