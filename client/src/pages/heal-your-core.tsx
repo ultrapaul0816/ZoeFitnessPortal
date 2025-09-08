@@ -1037,58 +1037,120 @@ function LetHealingBeginSection() {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Week-by-Week Reconnection Plan</CardTitle>
+            <CardTitle className="text-lg">REHAB ROUTINE - Week-by-Week Core Reconnection</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Your progressive journey through the 6-week core rehabilitation program
+              Core healing doesn't happen in a week. A routine builds over time, prioritizing breath, posture, and function. Use this checklist below to add to your warmup each week before your main workouts.
             </p>
             
-            <div className="space-y-3">
-              {Array.from({ length: 6 }, (_, i) => (
-                <div key={i} className="flex items-center gap-4 p-3 border rounded-lg">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-semibold text-primary">{i + 1}</span>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-sm">
-                      Week {i + 1}: {
-                        i === 0 ? "Foundation & Breath" :
-                        i === 1 ? "Gentle Activation" :
-                        i === 2 ? "Building Stability" :
-                        i === 3 ? "Strengthening" :
-                        i === 4 ? "Integration" :
-                        "Confidence Building"
-                      }
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      {
-                        i === 0 ? "Establish breathing patterns and core awareness" :
-                        i === 1 ? "Begin gentle core activation exercises" :
-                        i === 2 ? "Add stability challenges and control" :
-                        i === 3 ? "Introduce progressive strengthening" :
-                        i === 4 ? "Combine movements for functional strength" :
-                        "Prepare for return to normal activities"
-                      }
-                    </p>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    <ChartBar className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300 text-sm">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-3 text-left font-semibold">WEEK</th>
+                    <th className="border border-gray-300 p-3 text-left font-semibold">EXERCISES</th>
+                    <th className="border border-gray-300 p-3 text-left font-semibold">FOCUS & PURPOSE</th>
+                    <th className="border border-gray-300 p-3 text-left font-semibold">NOTES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-300 p-3 font-semibold">Week 1-2</td>
+                    <td className="border border-gray-300 p-3">
+                      <div className="space-y-2">
+                        <div className="text-blue-600 underline cursor-pointer">360° BREATHING</div>
+                        <div className="text-xs text-muted-foreground">(any comfortable position)</div>
+                        <div className="text-blue-600 underline cursor-pointer">SUPINE DIAPHRAGMATIC BREATHING</div>
+                        <div className="text-blue-600 underline cursor-pointer">SIDE LYING DIAPHRAGMATIC BREATHING</div>
+                      </div>
+                    </td>
+                    <td className="border border-gray-300 p-3 text-xs">
+                      Reconnect to breath, rebuild mind-muscle connection with deep core and pelvic floor, reduce internal pressure.
+                    </td>
+                    <td className="border border-gray-300 p-3 text-xs">
+                      Best done lying or seated. Practice 2-3 times/day. Prioritize breath + awareness.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-3 font-semibold">Week 3-4</td>
+                    <td className="border border-gray-300 p-3">
+                      <div className="space-y-2">
+                        <div className="text-blue-600 underline cursor-pointer">SUPINE HEEL SLIDES</div>
+                        <div className="text-blue-600 underline cursor-pointer">SUPINE PELVIC TILTS</div>
+                        <div className="text-blue-600 underline cursor-pointer">SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS</div>
+                        <div className="text-blue-600 underline cursor-pointer">STANDING POSTURE RESET</div>
+                      </div>
+                    </td>
+                    <td className="border border-gray-300 p-3 text-xs">
+                      Begin adding gentle movement to deepen core engagement. Build awareness of core activation in daily life (lifting baby, standing).
+                    </td>
+                    <td className="border border-gray-300 p-3 text-xs">
+                      Maintain slow tempo. Avoid doming/coning. Continue breath-coordinated movement.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-3 font-semibold">Week 5-6</td>
+                    <td className="border border-gray-300 p-3">
+                      <div className="space-y-2">
+                        <div className="text-blue-600 underline cursor-pointer">ELEVATED CHAIR BIRD DOGS</div>
+                        <div className="text-blue-600 underline cursor-pointer">SUPINE ALT LEG MARCHES</div>
+                        <div className="text-xs text-muted-foreground">(only if no doming)</div>
+                        <div className="text-blue-600 underline cursor-pointer">MINI SQUATS ON CHAIR</div>
+                        <div className="text-xs text-muted-foreground">Core-integrated Movement (exhale-to-stand, baby lifts)</div>
+                      </div>
+                    </td>
+                    <td className="border border-gray-300 p-3 text-xs">
+                      Train core stability in more dynamic tasks. Start integrating breath + core into real-life movements.
+                    </td>
+                    <td className="border border-gray-300 p-3 text-xs">
+                      Keep reps low (5-8), focus on form. Stop if there's pain, coning, or pelvic pressure.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             
-            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-              <h4 className="font-semibold text-sm mb-2">Remember:</h4>
-              <ul className="text-xs space-y-1 text-muted-foreground">
-                <li>• Listen to your body - rest when you need to</li>
-                <li>• Quality over quantity - perfect form is key</li>
-                <li>• Consistency matters more than intensity</li>
-                <li>• Every small step is progress</li>
-              </ul>
+            <div className="mt-6 grid md:grid-cols-2 gap-6">
+              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-pink-500">
+                <h4 className="font-semibold text-sm mb-3 text-pink-600">Do Daily / Improve On:</h4>
+                <ul className="text-xs space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Breath leads movement</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Pause if you see doming</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Practice posture during daily tasks</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>5-10 min counts!</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-pink-500">
+                <h4 className="font-semibold text-sm mb-3 text-pink-600">Tips:</h4>
+                <ul className="text-xs space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>5-8 reps | 1-2 rounds | 3-5x/week</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Avoid pain, doming, leaking</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">❖</span>
+                    <span>Rest is progress</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </CardContent>
         </Card>
