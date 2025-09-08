@@ -25,6 +25,8 @@ export const programs = pgTable("programs", {
   imageUrl: text("image_url").notNull(),
   price: integer("price").notNull(),
   workoutCount: integer("workout_count").notNull(),
+  isActive: boolean("is_active").notNull().default(false), // draft/active state
+  isVisible: boolean("is_visible").notNull().default(true), // visibility to members
 });
 
 export const memberPrograms = pgTable("member_programs", {

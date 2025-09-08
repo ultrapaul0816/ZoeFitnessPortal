@@ -1837,13 +1837,13 @@ function ProgramDetailView({
       {programContent.content.parts && programContent.content.parts.map((part, partIndex) => (
         <Card key={partIndex}>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <span className="text-pink-600">▶ {part.title}</span>
               {part.hasPlayAll && (
                 <Button
                   variant="outline"
                   onClick={() => handleVideoClick(part.playAllUrl, "Play All - Main Workout")}
-                  className="text-pink-600 border-pink-600"
+                  className="text-pink-600 border-pink-600 w-fit"
                 >
                   <Video className="w-4 h-4 mr-2" />
                   ▶ PLAY ALL
