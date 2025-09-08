@@ -417,31 +417,64 @@ function WelcomeSection() {
           
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Safety & Mindset Shifts</CardTitle>
+              <CardTitle className="text-lg text-center text-gray-400">SAFETY & MINDSET SHIFTS</CardTitle>
             </CardHeader>
-            <CardContent className="grid md:grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-semibold mb-2 text-red-600">⚠️ When to Stop & Consult Your Provider</h4>
-                <ul className="space-y-1 text-sm">
-                  <li>• Persistent pelvic, back, or joint pain</li>
-                  <li>• Leaking urine during or after exercise</li>
-                  <li>• Pelvic heaviness or pressure</li>
-                  <li>• Abdominal doming/coning that doesn't improve</li>
-                  <li>• Any pain or discomfort around C-section scar</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">💭 Mindset Matters</h4>
-                <ul className="space-y-1 text-sm">
-                  <li>• This is healing, not "bouncing back"</li>
-                  <li>• Progress isn't always linear</li>
-                  <li>• Small changes compound over time</li>
-                  <li>• Rest is part of recovery</li>
-                  <li>• Your body has been through something incredible</li>
-                </ul>
-                <div className="mt-3 p-2 bg-muted/50 rounded text-xs">
-                  <p><strong>Bulging/Doming:</strong> When your abdominal wall pushes outward during movement, creating a ridge down the center. If you see this, pause and regress to easier exercises.</p>
+            <CardContent className="space-y-6">
+              <p className="text-sm text-center">
+                Healing is not linear—and that's okay. Let this be a gentle return to movement, not a rush back to pre-pregnancy anything.
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold mb-4 text-pink-600">Please stop and consult your provider if you experience:</h4>
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Pain in your pelvis, back, or abdomen</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>A bulging/doming of the tummy that worsens with effort</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Urinary or fecal incontinence</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Feeling of heaviness or dragging in the pelvis</span>
+                    </li>
+                  </ul>
                 </div>
+                
+                <div>
+                  <h4 className="font-semibold mb-4 text-pink-600">Mindset Matters:</h4>
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>You don't need a flat stomach to be strong.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Core rehab is not about aesthetics—it's about function, connection, and confidence.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>This is a judgment-free space. Begin wherever you are and go at your pace.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-lg border-l-4 border-gray-300">
+                <p className="text-sm">
+                  <strong>BULGING/DOMING OF THE TUMMY :</strong> This refers to a noticeable ridge or bulge that appears along the center of your abdomen—often from your breastbone down to your belly button—especially when you're doing movements like sitting up, coughing, or straining. This can be a sign of diastasis recti, which is a separation of the left and right abdominal muscles.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-lg italic text-gray-700">You've got this. And I've got you.</p>
+                <p className="text-lg italic text-gray-700">Let's begin. 💛</p>
               </div>
             </CardContent>
           </Card>
