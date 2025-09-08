@@ -91,11 +91,11 @@ export default function KnowledgeArticleModal({
 
           {/* Category-specific additional content */}
           {article.category === 'diastasis-recti' && (
-            <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+            <div className="bg-pink-50 dark:bg-pink-950 p-4 rounded-lg border border-pink-200 dark:border-pink-800">
+              <h4 className="font-semibold text-pink-900 dark:text-pink-100 mb-2">
                 How to Check for Diastasis Recti
               </h4>
-              <ol className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+              <ol className="text-sm text-pink-800 dark:text-pink-200 space-y-1">
                 <li>1. Lie on your back with knees bent</li>
                 <li>2. Place fingers horizontally above your belly button</li>
                 <li>3. Lift your head slightly off the ground</li>
