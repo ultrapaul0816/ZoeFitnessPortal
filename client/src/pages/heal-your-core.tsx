@@ -1176,97 +1176,97 @@ function LetHealingBeginSection() {
               </div>
               
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-sm">
+                <table className="w-full border-collapse border border-gray-300">
                   <thead>
                     <tr className="bg-gray-100">
-                      <th className="border border-gray-300 p-3 text-left font-semibold">EXERCISE</th>
-                      <th className="border border-gray-300 p-3 text-left font-semibold">WHAT IT DOES</th>
-                      <th className="border border-gray-300 p-3 text-left font-semibold">HOW TO PERFORM</th>
-                      <th className="border border-gray-300 p-3 text-left font-semibold">KEY TIPS</th>
+                      <th className="border border-gray-300 p-4 text-left font-semibold text-sm">EXERCISE</th>
+                      <th className="border border-gray-300 p-4 text-left font-semibold text-sm">WHAT IT DOES</th>
+                      <th className="border border-gray-300 p-4 text-left font-semibold text-sm">HOW TO PERFORM</th>
+                      <th className="border border-gray-300 p-4 text-left font-semibold text-sm">KEY TIPS</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-3">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold">SUPINE PELVIC TILTS</div>
+                      <td className="border border-gray-300 p-4">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SUPINE PELVIC TILTS</div>
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
-                        Gently mobilizes the lower back and pelvis, builds awareness of core engagement
+                      <td className="border border-gray-300 p-4 text-sm">
+                        Gently mobilizes the lower back and pelvis; builds awareness of core engagement
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Lie on your back with knees bent, feet flat. Gently tilt pelvis to flatten lower back into the floor on exhale; return to neutral on inhale
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Keep glutes and upper body relaxed; move slowly with breath, not momentum
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-3">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold">90 90 BOX BREATHING</div>
+                      <td className="border border-gray-300 p-4">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">90 90 BOX BREATHING</div>
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Reconnects breath to deep core and pelvic floor
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
-                        Inhale to expand ribs; exhale slowly while engaging TVA and lifting pelvic floor
+                      <td className="border border-gray-300 p-4 text-sm">
+                        Inhale to expand ribs; exhale slowly while gently engaging TVA and lifting pelvic floor
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Keep shoulders relaxed; feel ribcage expand in all directions
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-3">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold">SUPINE HEEL SLIDES</div>
+                      <td className="border border-gray-300 p-4">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SUPINE HEEL SLIDES</div>
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Activates TVA while keeping pelvis stable
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Slide one heel out along the floor on exhale, bring back in on inhale
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Maintain a neutral spine; avoid doming or pelvis tilting
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-3">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold">SIDE LYING DIAPHRAGMATIC BREATHING</div>
+                      <td className="border border-gray-300 p-4">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SIDE LYING DIAPHRAGMATIC BREATHING</div>
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Improves rib mobility and lateral expansion
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Lie on side with pillow support, inhale into top ribs and side body
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Focus on breath movement in the ribs and back, not belly
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-3">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold">SUPINE DIAPHRAGMATIC BREATHING</div>
+                      <td className="border border-gray-300 p-4">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SUPINE DIAPHRAGMATIC BREATHING</div>
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Strengthens deep core through subtle activation
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         On each exhale, gently hug belly inward like zipping up jeans
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
-                        Keep it light—no gripping or bracing; coordinate with breath
+                      <td className="border border-gray-300 p-4 text-sm">
+                        Keep it light—no gripping or bracing, coordinate with breath
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-3">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold">BIRD DOGS GROUND LEVEL</div>
+                      <td className="border border-gray-300 p-4">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">BIRD DOGS GROUND LEVEL</div>
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Builds core stability and cross-body coordination
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         From hands and knees, extend opposite arm and leg while exhaling
                       </td>
-                      <td className="border border-gray-300 p-3 text-xs">
+                      <td className="border border-gray-300 p-4 text-sm">
                         Keep hips level, core engaged; move slowly and stay balanced
                       </td>
                     </tr>
@@ -1274,14 +1274,29 @@ function LetHealingBeginSection() {
                 </table>
               </div>
               
-              <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
-                <h4 className="font-semibold text-sm mb-3 text-pink-600">Quick Guidelines:</h4>
-                <ul className="text-xs space-y-1">
-                  <li><strong>Duration / Reps:</strong> 5–10 minutes per session / 5-8 Breaths per movement per side.</li>
-                  <li><strong>Frequency:</strong> Daily or every other day – or use as your warmup</li>
-                  <li><strong>Focus:</strong> Controlled, mindful movement with breath coordination</li>
-                  <li><strong>Avoid:</strong> Any pain, pelvic heaviness, doming, or bulging during exercises</li>
-                  <li>Holding your breath increases intra-abdominal pressure—use breath-led movement and never perform Valsalva maneuvers during these drills.</li>
+              <div className="bg-pink-50 p-6 rounded-lg border-l-4 border-pink-500">
+                <h4 className="font-semibold text-base mb-4 text-pink-600">Quick Guidelines:</h4>
+                <ul className="text-sm space-y-3">
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">•</span>
+                    <span><strong>Duration / Reps:</strong> 5–10 minutes per session / 5-8 Breaths per movement per side.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">•</span>
+                    <span><strong>Frequency:</strong> Daily or every other day – or use as your warmup</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">•</span>
+                    <span><strong>Focus:</strong> Controlled, mindful movement with breath coordination</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">•</span>
+                    <span><strong>Avoid:</strong> Any pain, pelvic heaviness, doming, or bulging during exercises</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold">•</span>
+                    <span>Holding your breath increases intra-abdominal pressure—use breath-led movement and never perform Valsalva maneuvers during these drills.</span>
+                  </li>
                 </ul>
               </div>
             </div>
