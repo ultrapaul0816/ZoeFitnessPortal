@@ -142,7 +142,7 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
           <div className="space-y-3">
             <div className="text-center">
               <p className="text-2xl font-bold text-primary mb-1">
-                ${(program.price / 100).toFixed(2)}
+                ₹{(program.price / 100).toFixed(2)}
               </p>
               <p className="text-xs text-muted-foreground">One-time purchase</p>
             </div>

@@ -145,7 +145,7 @@ export default function HealYourCorePage() {
                     <span>{healYourCoreProgram.equipment}</span>
                   </div>
                   <div className="text-2xl font-bold text-primary">
-                    ${(healYourCoreProgram.price / 100).toFixed(2)}
+                    ₹{(healYourCoreProgram.price / 100).toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -990,18 +990,18 @@ function LetHealingBeginSection() {
                 </CardHeader>
                 <CardContent className="text-sm space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
                     <span>360° Breathing - 10 breaths</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
                     <span>Gentle Core Activation</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
                     <span>Pelvic Tilts - 8 reps</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-3" size="sm">
+                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50" size="sm">
                     <Play className="w-4 h-4 mr-2" />
                     Start Morning Routine
                   </Button>
@@ -1025,7 +1025,7 @@ function LetHealingBeginSection() {
                     <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                     <span>Relaxation Breathing</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-3" size="sm">
+                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50" size="sm">
                     <Play className="w-4 h-4 mr-2" />
                     Start Evening Routine
                   </Button>
@@ -1059,10 +1059,10 @@ function LetHealingBeginSection() {
                     <td className="border border-gray-300 p-3 font-semibold">Week 1-2</td>
                     <td className="border border-gray-300 p-3">
                       <div className="space-y-2">
-                        <div className="text-blue-600 underline cursor-pointer">360° BREATHING</div>
+                        <div className="text-pink-600 underline cursor-pointer">360° BREATHING</div>
                         <div className="text-xs text-muted-foreground">(any comfortable position)</div>
-                        <div className="text-blue-600 underline cursor-pointer">SUPINE DIAPHRAGMATIC BREATHING</div>
-                        <div className="text-blue-600 underline cursor-pointer">SIDE LYING DIAPHRAGMATIC BREATHING</div>
+                        <div className="text-pink-600 underline cursor-pointer">SUPINE DIAPHRAGMATIC BREATHING</div>
+                        <div className="text-pink-600 underline cursor-pointer">SIDE LYING DIAPHRAGMATIC BREATHING</div>
                       </div>
                     </td>
                     <td className="border border-gray-300 p-3 text-xs">
@@ -1076,10 +1076,10 @@ function LetHealingBeginSection() {
                     <td className="border border-gray-300 p-3 font-semibold">Week 3-4</td>
                     <td className="border border-gray-300 p-3">
                       <div className="space-y-2">
-                        <div className="text-blue-600 underline cursor-pointer">SUPINE HEEL SLIDES</div>
-                        <div className="text-blue-600 underline cursor-pointer">SUPINE PELVIC TILTS</div>
-                        <div className="text-blue-600 underline cursor-pointer">SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS</div>
-                        <div className="text-blue-600 underline cursor-pointer">STANDING POSTURE RESET</div>
+                        <div className="text-pink-600 underline cursor-pointer">SUPINE HEEL SLIDES</div>
+                        <div className="text-pink-600 underline cursor-pointer">SUPINE PELVIC TILTS</div>
+                        <div className="text-pink-600 underline cursor-pointer">SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS</div>
+                        <div className="text-pink-600 underline cursor-pointer">STANDING POSTURE RESET</div>
                       </div>
                     </td>
                     <td className="border border-gray-300 p-3 text-xs">
@@ -1093,10 +1093,10 @@ function LetHealingBeginSection() {
                     <td className="border border-gray-300 p-3 font-semibold">Week 5-6</td>
                     <td className="border border-gray-300 p-3">
                       <div className="space-y-2">
-                        <div className="text-blue-600 underline cursor-pointer">ELEVATED CHAIR BIRD DOGS</div>
-                        <div className="text-blue-600 underline cursor-pointer">SUPINE ALT LEG MARCHES</div>
+                        <div className="text-pink-600 underline cursor-pointer">ELEVATED CHAIR BIRD DOGS</div>
+                        <div className="text-pink-600 underline cursor-pointer">SUPINE ALT LEG MARCHES</div>
                         <div className="text-xs text-muted-foreground">(only if no doming)</div>
-                        <div className="text-blue-600 underline cursor-pointer">MINI SQUATS ON CHAIR</div>
+                        <div className="text-pink-600 underline cursor-pointer">MINI SQUATS ON CHAIR</div>
                         <div className="text-xs text-muted-foreground">Core-integrated Movement (exhale-to-stand, baby lifts)</div>
                       </div>
                     </td>
@@ -1149,6 +1149,139 @@ function LetHealingBeginSection() {
                     <span className="text-pink-500 font-bold">❖</span>
                     <span>Rest is progress</span>
                   </li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg text-center">CORE REHAB & DAILY PRACTICE</CardTitle>
+            <CardDescription className="text-center">
+              <span className="text-pink-600 font-semibold text-base">SHORT REPEATABLE RITUALS</span>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                These foundational core reconnection exercises are designed to be gentle, effective, and easy to fit into a busy postpartum day. They require no equipment, take only 5–10 minutes, and can be repeated daily or every other day to build a strong foundation for future movement. Each movement focuses on breath awareness, alignment, and deep core engagement. <strong>LEARN TO DO THESE VERY WELL!</strong>
+              </p>
+              
+              <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
+                <h4 className="font-semibold text-sm mb-2 text-pink-600">How to view the videos of the exercises:</h4>
+                <p className="text-xs">
+                  All blue underlined text is clickable and will open a video link. <strong>PLAY ALL</strong> indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.
+                </p>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-300 p-3 text-left font-semibold">EXERCISE</th>
+                      <th className="border border-gray-300 p-3 text-left font-semibold">WHAT IT DOES</th>
+                      <th className="border border-gray-300 p-3 text-left font-semibold">HOW TO PERFORM</th>
+                      <th className="border border-gray-300 p-3 text-left font-semibold">KEY TIPS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-3">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold">SUPINE PELVIC TILTS</div>
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Gently mobilizes the lower back and pelvis, builds awareness of core engagement
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Lie on your back with knees bent, feet flat. Gently tilt pelvis to flatten lower back into the floor on exhale; return to neutral on inhale
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Keep glutes and upper body relaxed; move slowly with breath, not momentum
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-3">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold">90 90 BOX BREATHING</div>
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Reconnects breath to deep core and pelvic floor
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Inhale to expand ribs; exhale slowly while engaging TVA and lifting pelvic floor
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Keep shoulders relaxed; feel ribcage expand in all directions
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-3">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold">SUPINE HEEL SLIDES</div>
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Activates TVA while keeping pelvis stable
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Slide one heel out along the floor on exhale, bring back in on inhale
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Maintain a neutral spine; avoid doming or pelvis tilting
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-3">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold">SIDE LYING DIAPHRAGMATIC BREATHING</div>
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Improves rib mobility and lateral expansion
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Lie on side with pillow support, inhale into top ribs and side body
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Focus on breath movement in the ribs and back, not belly
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-3">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold">SUPINE DIAPHRAGMATIC BREATHING</div>
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Strengthens deep core through subtle activation
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        On each exhale, gently hug belly inward like zipping up jeans
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Keep it light—no gripping or bracing; coordinate with breath
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-3">
+                        <div className="text-pink-600 underline cursor-pointer font-semibold">BIRD DOGS GROUND LEVEL</div>
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Builds core stability and cross-body coordination
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        From hands and knees, extend opposite arm and leg while exhaling
+                      </td>
+                      <td className="border border-gray-300 p-3 text-xs">
+                        Keep hips level, core engaged; move slowly and stay balanced
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
+                <h4 className="font-semibold text-sm mb-3 text-pink-600">Quick Guidelines:</h4>
+                <ul className="text-xs space-y-1">
+                  <li><strong>Duration / Reps:</strong> 5–10 minutes per session / 5-8 Breaths per movement per side.</li>
+                  <li><strong>Frequency:</strong> Daily or every other day – or use as your warmup</li>
+                  <li><strong>Focus:</strong> Controlled, mindful movement with breath coordination</li>
+                  <li><strong>Avoid:</strong> Any pain, pelvic heaviness, doming, or bulging during exercises</li>
+                  <li>Holding your breath increases intra-abdominal pressure—use breath-led movement and never perform Valsalva maneuvers during these drills.</li>
                 </ul>
               </div>
             </div>
@@ -1710,7 +1843,7 @@ function ProgramDetailView({
                 <Button
                   variant="outline"
                   onClick={() => handleVideoClick(part.playAllUrl, "Play All - Main Workout")}
-                  className="text-blue-600 border-blue-600"
+                  className="text-pink-600 border-pink-600"
                 >
                   <Video className="w-4 h-4 mr-2" />
                   ▶ PLAY ALL
@@ -1725,12 +1858,12 @@ function ProgramDetailView({
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        {exercise.number && (
+                        {'number' in exercise && exercise.number && (
                           <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-semibold">
                             {exercise.number}
                           </span>
                         )}
-                        <h4 className="font-semibold text-blue-600 underline cursor-pointer" 
+                        <h4 className="font-semibold text-pink-600 underline cursor-pointer" 
                             onClick={() => handleVideoClick(exercise.videoUrl, exercise.name)}>
                           {exercise.name}
                         </h4>
@@ -1769,9 +1902,9 @@ function ProgramDetailView({
             <div className="space-y-3">
               {programContent.content.tips.map((tip, index) => (
                 <div key={index} className="flex gap-2">
-                  <span className="text-blue-400 font-bold">❖</span>
+                  <span className="text-pink-500 font-bold">❖</span>
                   <div>
-                    <span className="text-blue-400 font-semibold">{tip.title}</span>{" "}
+                    <span className="text-pink-500 font-semibold">{tip.title}</span>{" "}
                     <span className="text-sm">{tip.description}</span>
                   </div>
                 </div>
