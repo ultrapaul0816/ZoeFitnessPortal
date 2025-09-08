@@ -358,19 +358,59 @@ function WelcomeSection() {
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">When to Start</CardTitle>
+                <CardTitle className="text-lg text-center text-pink-600">WHEN TO START THIS PROGRAM</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-3">
+              <CardContent className="space-y-4">
+                <p className="text-sm">
+                  You can begin this program anytime from 6 weeks postpartum with a vaginal delivery and 8-10 weeks post a C-section (or once cleared by your healthcare provider). However, it is highly recommended to start breath work and gentle reconnection much earlier. This is safe for both vaginal and C-section recoveries, take notes and modifications where needed.
+                </p>
+                
                 <div>
-                  <p className="font-semibold mb-2">General Timeline:</p>
-                  <p><strong>Vaginal Delivery:</strong> 6 weeks postpartum minimum (with healthcare provider clearance)</p>
-                  <p><strong>C-Section Delivery:</strong> 8+ weeks postpartum minimum (with healthcare provider clearance)</p>
+                  <p className="font-semibold text-pink-600 text-sm mb-3">This program is suitable whether you're:</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>6 weeks, 6 months, or even 6 years postpartum</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Managing diastasis recti or just looking to feel strong again</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Starting fresh after a break or following your initial rehab phase</span>
+                    </li>
+                  </ul>
                 </div>
-                <div className="bg-muted/50 p-3 rounded">
-                  <p className="font-semibold text-sm">IMPORTANT:</p>
-                  <p className="text-xs">Always get medical clearance from your healthcare provider before beginning any postpartum exercise program. Every body and birth experience is different.</p>
+                
+                <p className="text-sm">
+                  If you've had complications or are unsure where to begin, please consult your doctor or pelvic health physiotherapist first.
+                </p>
+                
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-yellow-600 text-lg">⚠️</span>
+                    <p className="font-semibold text-pink-600 text-sm">Important notes before you begin</p>
+                  </div>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>This is not a "no pain, no gain" plan. Your healing journey is valid no matter the pace.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Listen to your body: if something feels off, pause and consult your provider.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>You do not need a flat stomach or a perfect gap to be strong or functional.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-500 font-bold">❖</span>
+                      <span>Give yourself permission to begin again—this is about building trust with your body.</span>
+                    </li>
+                  </ul>
                 </div>
-                <p className="text-muted-foreground text-xs">This program can be started at any time postpartum - even years later. It's never too late to heal.</p>
               </CardContent>
             </Card>
           </div>
