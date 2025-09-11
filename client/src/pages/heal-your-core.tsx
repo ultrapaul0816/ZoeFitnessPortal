@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import KnowledgeArticleModal from "@/components/knowledge-article-modal";
 import ZoeWelcomeModal from "@/components/zoe-welcome-modal";
 import { 
@@ -22,7 +23,9 @@ import {
   Apple,
   Brain,
   Clock,
-  CheckCircle
+  CheckCircle,
+  ChevronDown,
+  TrendingUp
 } from "lucide-react";
 
 interface User {
@@ -190,83 +193,109 @@ export default function HealYourCorePage() {
           </Badge>
         </div>
 
-        {/* Welcome Section */}
-        <Card className="mb-8">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl mb-2">Welcome to Heal Your Core</CardTitle>
-            <CardDescription className="text-lg">
-              Your 6-week journey to core recovery and strength
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold">Hello {user.firstName}!</h3>
-                <p className="text-muted-foreground">
-                  Welcome to your personalized postnatal core recovery program. This journey has been 
-                  carefully designed to help you safely rebuild your core strength, address diastasis recti, 
-                  and support your overall postpartum recovery.
-                </p>
-                <div className="space-y-2">
+        {/* Progress-Focused Welcome Section */}
+        <Accordion type="single" collapsible className="mb-6" defaultValue="">
+          <AccordionItem value="welcome" className="border-0">
+            <AccordionTrigger className="hover:no-underline p-0">
+              <Card className="w-full border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between">
-                    <span>Your Progress</span>
-                    <span>{completedWeeks}/6 weeks</span>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                        <TrendingUp className="w-6 h-6 text-primary-foreground" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-lg font-semibold text-primary">Hello {user.firstName}!</h3>
+                        <p className="text-sm text-muted-foreground">{completedWeeks}/6 weeks completed</p>
+                      </div>
+                    </div>
+                    <div className="text-right space-y-1">
+                      <div className="text-2xl font-bold text-primary">{Math.round(progressPercentage)}%</div>
+                      <div className="w-24">
+                        <Progress value={progressPercentage} className="h-2" />
+                      </div>
+                    </div>
                   </div>
-                  <Progress value={progressPercentage} className="h-2" />
-                </div>
-              </div>
-              <div className="relative">
-                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Welcome Video from Zoe</p>
-                    <p className="text-xs text-muted-foreground mt-1">Click to play</p>
+                </CardContent>
+              </Card>
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="grid md:grid-cols-2 gap-6 items-center">
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold">Your Healing Journey</h3>
+                      <p className="text-muted-foreground">
+                        Welcome to your personalized postnatal core recovery program. This journey has been 
+                        carefully designed to help you safely rebuild your core strength, address diastasis recti, 
+                        and support your overall postpartum recovery.
+                      </p>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                          <span className="font-medium">Current Week</span>
+                          <span className="text-primary font-bold">Week {Math.min(completedWeeks + 1, 6)}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                          <span className="font-medium">Total Progress</span>
+                          <span className="text-primary font-bold">{completedWeeks}/6 weeks</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">Welcome Video from Zoe</p>
+                          <p className="text-xs text-muted-foreground mt-1">Click to play</p>
+                        </div>
+                      </div>
+                      <Button 
+                        className="absolute inset-0 w-full h-full bg-black/20 hover:bg-black/30 text-white"
+                        variant="ghost"
+                        data-testid="button-play-welcome-video"
+                      >
+                        <Play className="w-8 h-8" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <Button 
-                  className="absolute inset-0 w-full h-full bg-black/20 hover:bg-black/30 text-white"
-                  variant="ghost"
-                  data-testid="button-play-welcome-video"
-                >
-                  <Play className="w-8 h-8" />
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         {/* Navigation Tabs */}
         <Tabs defaultValue="welcome" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
-            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm">
-              <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-2 h-auto p-2">
+            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <BookOpen className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
               <span className="hidden sm:inline">✨ Welcome</span>
-              <span className="sm:hidden">Welcome</span>
+              <span className="sm:hidden leading-tight">Welcome</span>
             </TabsTrigger>
-            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm">
-              <Brain className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Brain className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
               <span className="hidden sm:inline">🧠 Understanding Your Core</span>
-              <span className="sm:hidden">Core</span>
+              <span className="sm:hidden leading-tight">Core</span>
             </TabsTrigger>
-            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm">
-              <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Heart className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
               <span className="hidden sm:inline">💙 Let Healing Begin</span>
-              <span className="sm:hidden">Healing</span>
+              <span className="sm:hidden leading-tight">Healing</span>
             </TabsTrigger>
-            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm">
-              <Dumbbell className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Dumbbell className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
               <span className="hidden sm:inline">💪 Your 6 Core Programs</span>
-              <span className="sm:hidden">Programs</span>
+              <span className="sm:hidden leading-tight">Programs</span>
             </TabsTrigger>
-            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm">
-              <ChartBar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <ChartBar className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
               <span className="hidden sm:inline">📈 What Comes Next</span>
-              <span className="sm:hidden">Next</span>
+              <span className="sm:hidden leading-tight">Next</span>
             </TabsTrigger>
-            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm">
-              <Apple className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Apple className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
               <span className="hidden sm:inline">🍎 The Role of Nutrition</span>
-              <span className="sm:hidden">Nutrition</span>
+              <span className="sm:hidden leading-tight">Nutrition</span>
             </TabsTrigger>
           </TabsList>
 
