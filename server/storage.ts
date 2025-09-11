@@ -222,7 +222,7 @@ export class MemStorage implements IStorage {
         videoUrl: "https://www.youtube.com/embed/example-breathing",
         duration: "2 minutes",
         instructions: "Lie on your back with knees bent. Place one hand on chest, one on belly. Breathe deeply into your belly.",
-        category: "breathing",
+        category: "Breathing",
         difficulty: "beginner",
       },
       {
@@ -232,7 +232,7 @@ export class MemStorage implements IStorage {
         videoUrl: "https://www.youtube.com/embed/example-pelvic-tilts",
         duration: "10 reps",
         instructions: "Lie on back, knees bent. Gently tilt pelvis to flatten lower back against floor.",
-        category: "core",
+        category: "Core",
         difficulty: "beginner",
       },
       {
@@ -242,7 +242,7 @@ export class MemStorage implements IStorage {
         videoUrl: "https://www.youtube.com/embed/example-modified-plank", 
         duration: "15-30 seconds",
         instructions: "Start on knees and forearms. Hold straight line from knees to head.",
-        category: "core",
+        category: "Core",
         difficulty: "beginner",
       },
       {
@@ -252,7 +252,7 @@ export class MemStorage implements IStorage {
         videoUrl: "https://www.youtube.com/embed/example-wall-pushups",
         duration: "8-12 reps", 
         instructions: "Stand arm's length from wall. Push against wall, engaging core throughout.",
-        category: "strength",
+        category: "Strength",
         difficulty: "beginner",
       },
       {
@@ -262,7 +262,7 @@ export class MemStorage implements IStorage {
         videoUrl: "https://www.youtube.com/embed/example-bird-dog",
         duration: "5 reps each side",
         instructions: "On hands and knees, extend opposite arm and leg. Hold briefly, return to start.",
-        category: "core",
+        category: "Core",
         difficulty: "intermediate",
       },
     ];
@@ -278,7 +278,7 @@ export class MemStorage implements IStorage {
         programId: healYourCoreId,
         title: "Understanding Your Core",
         content: "Your core is more than just your abs. It includes your diaphragm, pelvic floor, deep abdominal muscles, and back muscles working together to support your spine and pelvis. After pregnancy, these muscles need time and proper exercises to recover their function.",
-        category: "core-understanding",
+        category: "Core-Understanding",
         videoUrl: "https://www.youtube.com/embed/example-core-anatomy",
         orderIndex: 1,
       },
@@ -287,7 +287,7 @@ export class MemStorage implements IStorage {
         programId: healYourCoreId, 
         title: "Diastasis Recti: What You Need to Know",
         content: "Diastasis recti is the separation of the rectus abdominis muscles that commonly occurs during pregnancy. Learn how to check for it, understand its impact, and discover safe exercises to help heal this condition naturally.",
-        category: "diastasis-recti",
+        category: "Diastasis-Recti",
         videoUrl: "https://www.youtube.com/embed/example-diastasis-check",
         orderIndex: 2,
       },
@@ -296,7 +296,7 @@ export class MemStorage implements IStorage {
         programId: healYourCoreId,
         title: "The Role of Nutrition in Recovery",
         content: "Proper nutrition supports your body's healing process and gives you energy for your workouts. Focus on whole foods, adequate protein, healthy fats, and staying hydrated to optimize your recovery journey.",
-        category: "nutrition",
+        category: "Nutrition",
         videoUrl: "https://www.youtube.com/embed/example-nutrition-tips",
         orderIndex: 3,
       },
@@ -305,7 +305,7 @@ export class MemStorage implements IStorage {
         programId: healYourCoreId,
         title: "Breathing Techniques for Core Recovery",
         content: "Proper breathing is fundamental to core recovery. Learn the 360-degree breathing technique that helps activate your deep core muscles and supports your healing process.",
-        category: "breathing",
+        category: "Breathing",
         videoUrl: "https://www.youtube.com/embed/example-breathing-techniques",
         orderIndex: 4,
       },
@@ -316,7 +316,7 @@ export class MemStorage implements IStorage {
     });
 
     // Create weekly workouts for Heal Your Core (6 weeks)
-    const healYourCoreExercises = exercises.filter(ex => ex.category === 'breathing' || ex.category === 'core');
+    const healYourCoreExercises = exercises.filter(ex => ex.category === 'Breathing' || ex.category === 'Core');
     
     // Week 1 & 6: 4 workouts per week
     [1, 6].forEach(week => {

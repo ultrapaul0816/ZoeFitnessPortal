@@ -174,11 +174,11 @@ export default function ProgramWorkouts({ program, memberProgram, userId, onClos
                             <p className="text-sm text-muted-foreground">{workout.description}</p>
                             {isCompleted && completion && (
                               <div className="mt-2 flex items-center space-x-2">
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge variant="secondary" className="rounded-none px-4 py-2 text-xs">
                                   Completed {new Date(completion.completedAt!).toLocaleDateString()}
                                 </Badge>
                                 {completion.challengeRating && (
-                                  <Badge variant="outline" className="text-xs">
+                                  <Badge variant="outline" className="rounded-none px-4 py-2 text-xs">
                                     Challenge: {completion.challengeRating}/5
                                   </Badge>
                                 )}

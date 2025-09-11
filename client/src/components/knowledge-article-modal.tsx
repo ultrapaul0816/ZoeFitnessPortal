@@ -33,7 +33,7 @@ export default function KnowledgeArticleModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <DialogTitle className="text-2xl">{article.title}</DialogTitle>
-              <Badge variant="outline">
+              <Badge variant="outline" className="rounded-none px-4 py-2">
                 {formatCategory(article.category)}
               </Badge>
             </div>

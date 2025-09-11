@@ -108,7 +108,7 @@ export default function HealYourCorePage() {
           <Button 
             variant="ghost" 
             onClick={() => navigate("/dashboard")}
-            className="mb-6"
+            className="mb-6 h-auto py-3"
             data-testid="button-back-to-dashboard"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -153,7 +153,7 @@ export default function HealYourCorePage() {
               <div className="text-center">
                 <Button 
                   size="lg" 
-                  className="w-full max-w-md"
+                  className="w-full max-w-md h-auto py-3"
                   data-testid="button-purchase-program"
                 >
                   <Heart className="w-5 h-5 mr-2" />
@@ -335,7 +335,7 @@ function WelcomeSection() {
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="border-primary/20">
               <CardHeader>
-                <CardTitle className="text-lg">Welcome from Zoe</CardTitle>
+                <CardTitle className="text-xl font-semibold">Welcome from Zoe</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 text-sm">
@@ -358,7 +358,7 @@ function WelcomeSection() {
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg text-center text-pink-600">WHEN TO START THIS PROGRAM</CardTitle>
+                <CardTitle className="text-xl font-semibold text-center text-primary">WHEN TO START THIS PROGRAM</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm">
@@ -366,7 +366,7 @@ function WelcomeSection() {
                 </p>
                 
                 <div>
-                  <p className="font-semibold text-pink-600 text-sm mb-3">This program is suitable whether you're:</p>
+                  <p className="font-semibold text-primary text-sm mb-3">This program is suitable whether you're:</p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
@@ -390,7 +390,7 @@ function WelcomeSection() {
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-yellow-600 text-lg">⚠️</span>
-                    <p className="font-semibold text-pink-600 text-sm">Important notes before you begin</p>
+                    <p className="font-semibold text-primary text-sm">Important notes before you begin</p>
                   </div>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
@@ -417,7 +417,7 @@ function WelcomeSection() {
           
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg text-center text-gray-400">SAFETY & MINDSET SHIFTS</CardTitle>
+              <CardTitle className="text-xl font-semibold text-center">SAFETY & MINDSET SHIFTS</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-sm text-center">
@@ -426,7 +426,7 @@ function WelcomeSection() {
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold mb-4 text-pink-600">Please stop and consult your provider if you experience:</h4>
+                  <h4 className="font-semibold mb-4 text-primary">Please stop and consult your provider if you experience:</h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
@@ -448,7 +448,7 @@ function WelcomeSection() {
                 </div>
                 
                 <div>
-                  <h4 className="font-semibold mb-4 text-pink-600">Mindset Matters:</h4>
+                  <h4 className="font-semibold mb-4 text-primary">Mindset Matters:</h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
@@ -482,7 +482,7 @@ function WelcomeSection() {
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg text-center text-pink-600">SPECIAL CONSIDERATIONS FOR EACH DELIVERY TYPE</CardTitle>
+                <CardTitle className="text-xl font-semibold text-center text-primary">SPECIAL CONSIDERATIONS FOR EACH DELIVERY TYPE</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
@@ -490,15 +490,15 @@ function WelcomeSection() {
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
-                      <span><span className="text-pink-600 font-semibold">Core engagement</span> may feel easier to activate, but be mindful of pelvic floor health, especially if you experienced tearing, an episiotomy, or pelvic floor weakness.</span>
+                      <span><span className="text-primary font-semibold">Core engagement</span> may feel easier to activate, but be mindful of pelvic floor health, especially if you experienced tearing, an episiotomy, or pelvic floor weakness.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
-                      <span><span className="text-pink-600 font-semibold">Gradual integration</span> of more dynamic exercises can occur if the pelvic floor feels strong and supported.</span>
+                      <span><span className="text-primary font-semibold">Gradual integration</span> of more dynamic exercises can occur if the pelvic floor feels strong and supported.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
-                      <span><span className="text-pink-600 font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
+                      <span><span className="text-primary font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
                     </li>
                   </ul>
                 </div>
@@ -508,15 +508,15 @@ function WelcomeSection() {
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
-                      <span><span className="text-pink-600 font-semibold">Continue to approach core work</span> with care and intention, avoiding movements that cause pain or pulling around the incision site.</span>
+                      <span><span className="text-primary font-semibold">Continue to approach core work</span> with care and intention, avoiding movements that cause pain or pulling around the incision site.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
-                      <span><span className="text-pink-600 font-semibold">Gradual progression</span> is essential, especially when introducing core-focused movements.</span>
+                      <span><span className="text-primary font-semibold">Gradual progression</span> is essential, especially when introducing core-focused movements.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
-                      <span><span className="text-pink-600 font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
+                      <span><span className="text-primary font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
                     </li>
                   </ul>
                 </div>
@@ -525,7 +525,7 @@ function WelcomeSection() {
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg text-center text-gray-400">HOW TO USE THIS GUIDE</CardTitle>
+                <CardTitle className="text-xl font-semibold text-center">HOW TO USE THIS GUIDE</CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 <p className="text-sm">
@@ -533,14 +533,14 @@ function WelcomeSection() {
                 </p>
                 
                 <div>
-                  <p className="font-semibold text-pink-600 text-sm mb-3">Tune In Weekly:</p>
+                  <p className="font-semibold text-primary text-sm mb-3">Tune In Weekly:</p>
                   <p className="text-sm">
                     Assess how you feel. Did you sleep well? Are you feeling sore or energized? Are you holding tension from feeding or carrying your baby? Adjust the plan based on energy levels, core connection, and overall recovery.
                   </p>
                 </div>
                 
                 <div>
-                  <p className="font-semibold text-pink-600 text-sm mb-3">Your program is divided into 6 weekly phases, each with:</p>
+                  <p className="font-semibold text-primary text-sm mb-3">Your program is divided into 6 weekly phases, each with:</p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
@@ -558,7 +558,7 @@ function WelcomeSection() {
                 </div>
                 
                 <div>
-                  <p className="font-semibold text-pink-600 text-sm mb-3">How to view the videos of the exercises:</p>
+                  <p className="font-semibold text-primary text-sm mb-3">How to view the videos of the exercises:</p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
@@ -572,7 +572,7 @@ function WelcomeSection() {
                 </div>
                 
                 <div>
-                  <p className="font-semibold text-pink-600 text-sm mb-3">How to schedule your week:</p>
+                  <p className="font-semibold text-primary text-sm mb-3">How to schedule your week:</p>
                   <p className="text-sm mb-2">Each week follows a 7-day rhythm, with a mix of:</p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
@@ -595,7 +595,7 @@ function WelcomeSection() {
                 </div>
                 
                 <div>
-                  <p className="font-semibold text-pink-600 text-sm mb-3">Move at your own pace:</p>
+                  <p className="font-semibold text-primary text-sm mb-3">Move at your own pace:</p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
@@ -613,7 +613,7 @@ function WelcomeSection() {
                 </div>
                 
                 <div>
-                  <p className="font-semibold text-pink-600 text-sm mb-3">Final tips:</p>
+                  <p className="font-semibold text-primary text-sm mb-3">Final tips:</p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-pink-500 font-bold">❖</span>
@@ -641,7 +641,7 @@ function WelcomeSection() {
             <CardHeader>
               <CardTitle className="text-lg text-center">
                 <span className="text-yellow-500">✨</span>
-                <span className="text-pink-600 mx-2">WHAT EQUIPMENT DO YOU NEED</span>
+                <span className="text-primary mx-2">WHAT EQUIPMENT DO YOU NEED</span>
                 <span className="text-yellow-500">✨</span>
               </CardTitle>
             </CardHeader>
@@ -756,7 +756,7 @@ function UnderstandingYourCoreSection({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>🧠 Understanding Your Core</CardTitle>
+          <CardTitle className="text-xl font-semibold">🧠 Understanding Your Core</CardTitle>
           <CardDescription>
             Educational foundation to empower you with understanding the "why" behind your recovery
           </CardDescription>
@@ -767,7 +767,7 @@ function UnderstandingYourCoreSection({
         {/* Breathing & Core Activation */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Breathing & Core Activation</CardTitle>
+            <CardTitle className="text-xl font-semibold">Breathing & Core Activation</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Fundamentals</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
@@ -791,7 +791,7 @@ function UnderstandingYourCoreSection({
         {/* 360° Breathing */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">How to Breathe Properly: 360° Breathing</CardTitle>
+            <CardTitle className="text-xl font-semibold">How to Breathe Properly: 360° Breathing</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Essential Skill</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
@@ -834,7 +834,7 @@ function UnderstandingYourCoreSection({
         {/* Understanding Your Core & TVA Engagement */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Understanding Your Core & TVA Engagement</CardTitle>
+            <CardTitle className="text-xl font-semibold">Understanding Your Core & TVA Engagement</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Deep Core</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
@@ -875,7 +875,7 @@ function UnderstandingYourCoreSection({
         {/* Foundational Core Compressions */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Foundational Core Compressions</CardTitle>
+            <CardTitle className="text-xl font-semibold">Foundational Core Compressions</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Essential Tools</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
@@ -935,7 +935,7 @@ function UnderstandingYourCoreSection({
         {/* Understanding Kegels & Pelvic Floor Release */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Understanding Kegels & Pelvic Floor Release</CardTitle>
+            <CardTitle className="text-xl font-semibold">Understanding Kegels & Pelvic Floor Release</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Balance</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
@@ -990,7 +990,7 @@ function UnderstandingYourCoreSection({
         {/* When to Use Breathing + Core Activation */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">When to Use Breathing + Core Activation</CardTitle>
+            <CardTitle className="text-xl font-semibold">When to Use Breathing + Core Activation</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Application</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
@@ -1035,7 +1035,7 @@ function UnderstandingYourCoreSection({
         {/* Diastasis Recti Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Do I Have Diastasis Recti?</CardTitle>
+            <CardTitle className="text-xl font-semibold">Do I Have Diastasis Recti?</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Assessment</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
@@ -1078,7 +1078,7 @@ function UnderstandingYourCoreSection({
         {/* Why Core Rehab Matters */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Why Core Rehab Matters</CardTitle>
+            <CardTitle className="text-xl font-semibold">Why Core Rehab Matters</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Recovery</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
@@ -1132,7 +1132,7 @@ function UnderstandingYourCoreSection({
         {/* Why Crunches Won't Work */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Why Crunches Won't Work</CardTitle>
+            <CardTitle className="text-xl font-semibold">Why Crunches Won't Work</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Important</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
@@ -1179,7 +1179,7 @@ function UnderstandingYourCoreSection({
                 data-testid={`card-article-${article.id}`}
               >
                 <CardHeader>
-                  <CardTitle className="text-lg">{article.title}</CardTitle>
+                  <CardTitle className="text-lg font-medium">{article.title}</CardTitle>
                   <Badge variant="outline" className="w-fit rounded-none px-4 py-2">
                     {article.category.replace('-', ' ')}
                   </Badge>
@@ -1219,7 +1219,7 @@ function LetHealingBeginSection() {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Daily Reconnection Routine</CardTitle>
+            <CardTitle className="text-xl font-semibold">Daily Reconnection Routine</CardTitle>
             <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Core Foundation</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -1230,7 +1230,7 @@ function LetHealingBeginSection() {
             <div className="grid md:grid-cols-2 gap-4">
               <Card className="border-primary/20">
                 <CardHeader>
-                  <CardTitle className="text-base">Morning Routine (5-10 mins)</CardTitle>
+                  <CardTitle className="text-lg font-medium">Morning Routine (5-10 mins)</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm space-y-2">
                   <div className="flex items-center gap-2">
@@ -1245,7 +1245,7 @@ function LetHealingBeginSection() {
                     <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
                     <span>Pelvic Tilts - 8 reps</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50 h-auto py-3" size="sm">
+                  <Button variant="outline" className="w-full mt-3 border-primary text-primary hover:bg-primary/10 h-auto py-3" size="sm">
                     <Play className="w-4 h-4 mr-2" />
                     Start Morning Routine
                   </Button>
@@ -1254,7 +1254,7 @@ function LetHealingBeginSection() {
               
               <Card className="border-primary/20">
                 <CardHeader>
-                  <CardTitle className="text-base">Evening Routine (5-10 mins)</CardTitle>
+                  <CardTitle className="text-lg font-medium">Evening Routine (5-10 mins)</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm space-y-2">
                   <div className="flex items-center gap-2">
@@ -1269,7 +1269,7 @@ function LetHealingBeginSection() {
                     <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                     <span>Relaxation Breathing</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50 h-auto py-3" size="sm">
+                  <Button variant="outline" className="w-full mt-3 border-primary text-primary hover:bg-primary/10 h-auto py-3" size="sm">
                     <Play className="w-4 h-4 mr-2" />
                     Start Evening Routine
                   </Button>
@@ -1281,7 +1281,7 @@ function LetHealingBeginSection() {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">REHAB ROUTINE - Week-by-Week Core Reconnection</CardTitle>
+            <CardTitle className="text-xl font-semibold">REHAB ROUTINE - Week-by-Week Core Reconnection</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
@@ -1303,10 +1303,10 @@ function LetHealingBeginSection() {
                     <td className="border border-gray-300 p-3 font-semibold">Week 1-2</td>
                     <td className="border border-gray-300 p-3">
                       <div className="space-y-2">
-                        <div className="text-pink-600 underline cursor-pointer">360° BREATHING</div>
+                        <div className="text-primary underline cursor-pointer">360° BREATHING</div>
                         <div className="text-xs text-muted-foreground">(any comfortable position)</div>
-                        <div className="text-pink-600 underline cursor-pointer">SUPINE DIAPHRAGMATIC BREATHING</div>
-                        <div className="text-pink-600 underline cursor-pointer">SIDE LYING DIAPHRAGMATIC BREATHING</div>
+                        <div className="text-primary underline cursor-pointer">SUPINE DIAPHRAGMATIC BREATHING</div>
+                        <div className="text-primary underline cursor-pointer">SIDE LYING DIAPHRAGMATIC BREATHING</div>
                       </div>
                     </td>
                     <td className="border border-gray-300 p-3 text-xs">
@@ -1320,10 +1320,10 @@ function LetHealingBeginSection() {
                     <td className="border border-gray-300 p-3 font-semibold">Week 3-4</td>
                     <td className="border border-gray-300 p-3">
                       <div className="space-y-2">
-                        <div className="text-pink-600 underline cursor-pointer">SUPINE HEEL SLIDES</div>
-                        <div className="text-pink-600 underline cursor-pointer">SUPINE PELVIC TILTS</div>
-                        <div className="text-pink-600 underline cursor-pointer">SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS</div>
-                        <div className="text-pink-600 underline cursor-pointer">STANDING POSTURE RESET</div>
+                        <div className="text-primary underline cursor-pointer">SUPINE HEEL SLIDES</div>
+                        <div className="text-primary underline cursor-pointer">SUPINE PELVIC TILTS</div>
+                        <div className="text-primary underline cursor-pointer">SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS</div>
+                        <div className="text-primary underline cursor-pointer">STANDING POSTURE RESET</div>
                       </div>
                     </td>
                     <td className="border border-gray-300 p-3 text-xs">
@@ -1337,10 +1337,10 @@ function LetHealingBeginSection() {
                     <td className="border border-gray-300 p-3 font-semibold">Week 5-6</td>
                     <td className="border border-gray-300 p-3">
                       <div className="space-y-2">
-                        <div className="text-pink-600 underline cursor-pointer">ELEVATED CHAIR BIRD DOGS</div>
-                        <div className="text-pink-600 underline cursor-pointer">SUPINE ALT LEG MARCHES</div>
+                        <div className="text-primary underline cursor-pointer">ELEVATED CHAIR BIRD DOGS</div>
+                        <div className="text-primary underline cursor-pointer">SUPINE ALT LEG MARCHES</div>
                         <div className="text-xs text-muted-foreground">(only if no doming)</div>
-                        <div className="text-pink-600 underline cursor-pointer">MINI SQUATS ON CHAIR</div>
+                        <div className="text-primary underline cursor-pointer">MINI SQUATS ON CHAIR</div>
                         <div className="text-xs text-muted-foreground">Core-integrated Movement (exhale-to-stand, baby lifts)</div>
                       </div>
                     </td>
@@ -1356,8 +1356,8 @@ function LetHealingBeginSection() {
             </div>
             
             <div className="mt-6 grid md:grid-cols-2 gap-6">
-              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-pink-500">
-                <h4 className="font-semibold text-sm mb-3 text-pink-600">Do Daily / Improve On:</h4>
+              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-primary">
+                <h4 className="font-semibold text-sm mb-3 text-primary">Do Daily / Improve On:</h4>
                 <ul className="text-xs space-y-2">
                   <li className="flex items-start gap-2">
                     <span className="text-pink-500 font-bold">❖</span>
@@ -1378,8 +1378,8 @@ function LetHealingBeginSection() {
                 </ul>
               </div>
               
-              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-pink-500">
-                <h4 className="font-semibold text-sm mb-3 text-pink-600">Tips:</h4>
+              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-primary">
+                <h4 className="font-semibold text-sm mb-3 text-primary">Tips:</h4>
                 <ul className="text-xs space-y-2">
                   <li className="flex items-start gap-2">
                     <span className="text-pink-500 font-bold">❖</span>
@@ -1401,9 +1401,9 @@ function LetHealingBeginSection() {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg text-center">CORE REHAB & DAILY PRACTICE</CardTitle>
+            <CardTitle className="text-xl font-semibold text-center">CORE REHAB & DAILY PRACTICE</CardTitle>
             <CardDescription className="text-center">
-              <span className="text-pink-600 font-semibold text-base">SHORT REPEATABLE RITUALS</span>
+              <span className="text-primary font-semibold text-base">SHORT REPEATABLE RITUALS</span>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1412,8 +1412,8 @@ function LetHealingBeginSection() {
                 These foundational core reconnection exercises are designed to be gentle, effective, and easy to fit into a busy postpartum day. They require no equipment, take only 5–10 minutes, and can be repeated daily or every other day to build a strong foundation for future movement. Each movement focuses on breath awareness, alignment, and deep core engagement. <strong>LEARN TO DO THESE VERY WELL!</strong>
               </p>
               
-              <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
-                <h4 className="font-semibold text-sm mb-2 text-pink-600">How to view the videos of the exercises:</h4>
+              <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-primary">
+                <h4 className="font-semibold text-sm mb-2 text-primary">How to view the videos of the exercises:</h4>
                 <p className="text-xs">
                   All blue underlined text is clickable and will open a video link. <strong>PLAY ALL</strong> indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.
                 </p>
@@ -1432,7 +1432,7 @@ function LetHealingBeginSection() {
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-4">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SUPINE PELVIC TILTS</div>
+                        <div className="text-primary underline cursor-pointer font-semibold text-sm">SUPINE PELVIC TILTS</div>
                       </td>
                       <td className="border border-gray-300 p-4 text-sm">
                         Gently mobilizes the lower back and pelvis; builds awareness of core engagement
@@ -1446,7 +1446,7 @@ function LetHealingBeginSection() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-4">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">90 90 BOX BREATHING</div>
+                        <div className="text-primary underline cursor-pointer font-semibold text-sm">90 90 BOX BREATHING</div>
                       </td>
                       <td className="border border-gray-300 p-4 text-sm">
                         Reconnects breath to deep core and pelvic floor
@@ -1460,7 +1460,7 @@ function LetHealingBeginSection() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-4">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SUPINE HEEL SLIDES</div>
+                        <div className="text-primary underline cursor-pointer font-semibold text-sm">SUPINE HEEL SLIDES</div>
                       </td>
                       <td className="border border-gray-300 p-4 text-sm">
                         Activates TVA while keeping pelvis stable
@@ -1474,7 +1474,7 @@ function LetHealingBeginSection() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-4">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SIDE LYING DIAPHRAGMATIC BREATHING</div>
+                        <div className="text-primary underline cursor-pointer font-semibold text-sm">SIDE LYING DIAPHRAGMATIC BREATHING</div>
                       </td>
                       <td className="border border-gray-300 p-4 text-sm">
                         Improves rib mobility and lateral expansion
@@ -1488,7 +1488,7 @@ function LetHealingBeginSection() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-4">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">SUPINE DIAPHRAGMATIC BREATHING</div>
+                        <div className="text-primary underline cursor-pointer font-semibold text-sm">SUPINE DIAPHRAGMATIC BREATHING</div>
                       </td>
                       <td className="border border-gray-300 p-4 text-sm">
                         Strengthens deep core through subtle activation
@@ -1502,7 +1502,7 @@ function LetHealingBeginSection() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-4">
-                        <div className="text-pink-600 underline cursor-pointer font-semibold text-sm">BIRD DOGS GROUND LEVEL</div>
+                        <div className="text-primary underline cursor-pointer font-semibold text-sm">BIRD DOGS GROUND LEVEL</div>
                       </td>
                       <td className="border border-gray-300 p-4 text-sm">
                         Builds core stability and cross-body coordination
@@ -1518,8 +1518,8 @@ function LetHealingBeginSection() {
                 </table>
               </div>
               
-              <div className="bg-pink-50 p-6 rounded-lg border-l-4 border-pink-500">
-                <h4 className="font-semibold text-base mb-4 text-pink-600">Quick Guidelines:</h4>
+              <div className="bg-pink-50 p-6 rounded-lg border-l-4 border-primary">
+                <h4 className="font-semibold text-base mb-4 text-primary">Quick Guidelines:</h4>
                 <ul className="text-sm space-y-3">
                   <li className="flex items-start gap-2">
                     <span className="text-pink-500 font-bold">•</span>
@@ -1567,7 +1567,7 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>💪 Your 6 Core Programs</CardTitle>
+          <CardTitle className="text-xl font-semibold">💪 Your 6 Core Programs</CardTitle>
           <CardDescription>
             Clean and focused area for your physical exercises and recovery
           </CardDescription>
@@ -1584,7 +1584,7 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
           {programs.map((program) => (
             <Card key={program.number} className="cursor-pointer hover:shadow-md transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg">Program {program.number}: {program.title}</CardTitle>
+                <CardTitle className="text-xl font-semibold">Program {program.number}: {program.title}</CardTitle>
                 <Badge variant="outline" className="rounded-none px-4 py-2">{program.sessions} sessions/week</Badge>
               </CardHeader>
               <CardContent>
@@ -1605,7 +1605,7 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Daily Reconnection Routine</CardTitle>
+            <CardTitle className="text-xl font-semibold">Daily Reconnection Routine</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-3">
@@ -1624,7 +1624,7 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Optional Cardio Plan</CardTitle>
+            <CardTitle className="text-xl font-semibold">Optional Cardio Plan</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-3">
@@ -1660,7 +1660,7 @@ function TheRoleOfNutritionSection() {
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Nutrition for Core Repair</CardTitle>
+            <CardTitle className="text-xl font-semibold">Nutrition for Core Repair</CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <p className="text-muted-foreground">
@@ -1681,7 +1681,7 @@ function TheRoleOfNutritionSection() {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Your Portion Guide</CardTitle>
+            <CardTitle className="text-xl font-semibold">Your Portion Guide</CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <p className="text-muted-foreground mb-3">
@@ -1702,7 +1702,7 @@ function TheRoleOfNutritionSection() {
       
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Healing Foods Checklist</CardTitle>
+          <CardTitle className="text-xl font-semibold">Healing Foods Checklist</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
@@ -1751,7 +1751,7 @@ function WhatComesNextSection({ userId, programId, progressEntries }: {
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">My Progress Tracker</CardTitle>
+            <CardTitle className="text-xl font-semibold">My Progress Tracker</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
@@ -1760,7 +1760,7 @@ function WhatComesNextSection({ userId, programId, progressEntries }: {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span>Week 1 Assessment</span>
-                <Button variant="outline" size="sm">Record</Button>
+                <Button variant="outline" size="sm" className="h-auto py-3">Record</Button>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span>Gap Measurement</span>
@@ -1783,7 +1783,7 @@ function WhatComesNextSection({ userId, programId, progressEntries }: {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Ready for More?</CardTitle>
+            <CardTitle className="text-xl font-semibold">Ready for More?</CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <div>
@@ -1804,7 +1804,7 @@ function WhatComesNextSection({ userId, programId, progressEntries }: {
       
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Red Flag Movements</CardTitle>
+          <CardTitle className="text-xl font-semibold">Red Flag Movements</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-3">
@@ -2097,12 +2097,12 @@ function ProgramDetailView({
         <Card key={partIndex}>
           <CardHeader>
             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <span className="text-pink-600">▶ {part.title}</span>
+              <span className="text-primary">▶ {part.title}</span>
               {part.hasPlayAll && (
                 <Button
                   variant="outline"
                   onClick={() => handleVideoClick(part.playAllUrl, "Play All - Main Workout")}
-                  className="text-pink-600 border-pink-600 w-fit"
+                  className="text-primary border-pink-600 w-fit"
                 >
                   <Video className="w-4 h-4 mr-2" />
                   ▶ PLAY ALL
@@ -2122,7 +2122,7 @@ function ProgramDetailView({
                             {exercise.number}
                           </span>
                         )}
-                        <h4 className="font-semibold text-pink-600 underline cursor-pointer" 
+                        <h4 className="font-semibold text-primary underline cursor-pointer" 
                             onClick={() => handleVideoClick(exercise.videoUrl, exercise.name)}>
                           {exercise.name}
                         </h4>
@@ -2155,7 +2155,7 @@ function ProgramDetailView({
       {programContent.content.tips && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-pink-600">Tips before you begin:</CardTitle>
+            <CardTitle className="text-lg font-semibold text-primary">Tips before you begin:</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

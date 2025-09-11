@@ -268,12 +268,12 @@ export default function Admin() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <Badge variant={member.termsAccepted ? "default" : "secondary"}>
+                      <Badge variant={member.termsAccepted ? "default" : "secondary"} className="rounded-none px-4 py-2">
                         {member.termsAccepted ? "Active" : "Pending"}
                       </Badge>
                     </td>
                     <td className="py-3 px-4">
-                      <Badge variant={member.isAdmin ? "destructive" : "outline"}>
+                      <Badge variant={member.isAdmin ? "destructive" : "outline"} className="rounded-none px-4 py-2">
                         {member.isAdmin ? "Admin" : "Member"}
                       </Badge>
                     </td>

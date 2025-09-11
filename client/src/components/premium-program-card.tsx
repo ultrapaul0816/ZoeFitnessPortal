@@ -97,7 +97,7 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-lg">{program.name}</h3>
-          <Badge variant="secondary" className="px-2 py-1">
+          <Badge variant="secondary" className="rounded-none px-4 py-2">
             {program.level}
           </Badge>
         </div>

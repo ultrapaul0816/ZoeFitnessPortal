@@ -71,7 +71,7 @@ export default function CongratulationsModal({ onClose, workoutName }: Congratul
             <p className="text-muted-foreground mb-4">
               You successfully completed
             </p>
-            <Badge variant="secondary" className="text-sm px-3 py-1">
+            <Badge variant="secondary" className="rounded-none px-4 py-2 text-sm">
               {workoutName}
             </Badge>
           </div>
@@ -104,7 +104,7 @@ export default function CongratulationsModal({ onClose, workoutName }: Congratul
             <Button
               onClick={handleShare}
               variant="outline"
-              className="w-full"
+              className="w-full h-auto py-3"
               data-testid="button-share-achievement"
             >
               <Share2 className="w-4 h-4 mr-2" />
