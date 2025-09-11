@@ -792,16 +792,19 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">How to Breathe Properly: 360° Breathing</CardTitle>
-            <Badge variant="outline" className="mb-2">Essential Skill</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Essential Skill</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <p>360° breathing is a deep, diaphragmatic breathing technique that encourages expansion in all directions — front, sides, and back — rather than just the chest or belly.</p>
             
             <div className="bg-muted/50 p-4 rounded">
               <p className="font-semibold mb-2">Steps to Practice 360° Breathing:</p>
-              <Button variant="outline" className="mb-3 w-full text-primary">
+              <Button variant="outline" className="mb-3 w-full text-primary h-auto py-3">
                 <Video className="w-4 h-4 mr-2" />
-                CLICK HERE: 360° BREATHING (any comfortable position)
+                <div className="text-center">
+                  <div>CLICK HERE: 360° BREATHING</div>
+                  <div className="text-xs">(any comfortable position)</div>
+                </div>
               </Button>
               <ol className="ml-4 list-decimal space-y-2">
                 <li>Sit upright or stand tall with a neutral pelvis (not tucked or overly arched).</li>
