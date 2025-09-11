@@ -185,7 +185,7 @@ export default function HealYourCorePage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
-          <Badge variant="secondary" className="px-3 py-1">
+          <Badge variant="secondary" className="rounded-none px-4 py-2">
             {healYourCoreProgram.level}
           </Badge>
         </div>
@@ -768,7 +768,7 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Breathing & Core Activation</CardTitle>
-            <Badge variant="outline" className="mb-2">Fundamentals</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Fundamentals</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <p className="font-semibold text-primary">Learning how to breathe properly is essential to activating your deep core muscles safely.</p>
@@ -835,7 +835,7 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Understanding Your Core & TVA Engagement</CardTitle>
-            <Badge variant="outline" className="mb-2">Deep Core</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Deep Core</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             <p>Why "pull your belly in" isn't enough — and what to do instead. Before you can rebuild strength, you need to find your deep stabilizing muscles and learn how to activate them with proper breathing.</p>
@@ -876,13 +876,13 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Foundational Core Compressions</CardTitle>
-            <Badge variant="outline" className="mb-2">Essential Tools</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Essential Tools</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
             <p>These are the 3 essential tools you'll use throughout your journey to connect to your deep core, support your spine, and move with intention.</p>
             <p className="font-semibold">Learn & Practice these!</p>
             
-            <Button variant="outline" className="w-full text-primary mb-4">
+            <Button variant="outline" className="w-full text-primary mb-4 h-auto py-3">
               <Video className="w-4 h-4 mr-2" />
               CLICK HERE: CORE COMPRESSIONS - BELLY PUMP / DEEP CORE HOLD / AB WRAPS
             </Button>
@@ -936,7 +936,7 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Understanding Kegels & Pelvic Floor Release</CardTitle>
-            <Badge variant="outline" className="mb-2">Balance</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Balance</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
             <p><strong>Why this matters?</strong> Your pelvic floor is a key part of your core canister. It's not just about squeezing; it's about balance: knowing how to lift and how to let go. A healthy pelvic floor can contract and release. Overusing Kegels or doing them without breath awareness can create more tension, not more strength.</p>
@@ -991,7 +991,7 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">When to Use Breathing + Core Activation</CardTitle>
-            <Badge variant="outline" className="mb-2">Application</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Application</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
             <div className="bg-primary/10 p-4 rounded text-center">
@@ -1007,7 +1007,7 @@ function UnderstandingYourCoreSection({
                 <li>When changing positions (lying to sitting, sitting to standing).</li>
               </ul>
               
-              <Button variant="outline" className="w-full mt-2 text-primary">
+              <Button variant="outline" className="w-full mt-2 text-primary h-auto py-3">
                 <Video className="w-4 h-4 mr-2" />
                 CLICK HERE: HOW TO GET UP CORRECTLY
               </Button>
@@ -1036,14 +1036,14 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Do I Have Diastasis Recti?</CardTitle>
-            <Badge variant="outline" className="mb-2">Assessment</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Assessment</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
             <div className="bg-primary/10 p-4 rounded text-center">
               <p className="font-semibold text-sm">DON'T WORRY IF YOUR ABDOMINAL WALLS DON'T FULLY TOUCH — THAT'S NORMAL. FOCUS ON IMPROVING FUNCTION, NOT PERFECTION.</p>
             </div>
             
-            <Button variant="outline" className="w-full text-primary mb-3">
+            <Button variant="outline" className="w-full text-primary mb-3 h-auto py-3">
               <Video className="w-4 h-4 mr-2" />
               CLICK HERE: HOW TO CHECK FOR DIASTASIS RECTI
             </Button>
@@ -1079,7 +1079,7 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Why Core Rehab Matters</CardTitle>
-            <Badge variant="outline" className="mb-2">Recovery</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Recovery</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
             <p>Even without visible DR, your core may feel disconnected, weak, or uncoordinated. That's where core rehab comes in. This isn't just about workouts—it's about making your core functional again for everything from lifting your baby to carrying groceries. The best part? You're retraining your whole body, not just your abs.</p>
@@ -1133,7 +1133,7 @@ function UnderstandingYourCoreSection({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Why Crunches Won't Work</CardTitle>
-            <Badge variant="outline" className="mb-2">Important</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Important</Badge>
           </CardHeader>
           <CardContent className="text-sm space-y-4">
             <p className="font-semibold text-red-600">Crunches and sit-ups increase intra-abdominal pressure, which pushes outward against the separation—further stretching the Linea alba instead of healing it. These exercises load the abdominal wall before it's ready, worsening doming, coning, and core dysfunction.</p>
@@ -1180,7 +1180,7 @@ function UnderstandingYourCoreSection({
               >
                 <CardHeader>
                   <CardTitle className="text-lg">{article.title}</CardTitle>
-                  <Badge variant="outline" className="w-fit">
+                  <Badge variant="outline" className="w-fit rounded-none px-4 py-2">
                     {article.category.replace('-', ' ')}
                   </Badge>
                 </CardHeader>
@@ -1220,7 +1220,7 @@ function LetHealingBeginSection() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Daily Reconnection Routine</CardTitle>
-            <Badge variant="outline" className="mb-2">Core Foundation</Badge>
+            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Core Foundation</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
@@ -1245,7 +1245,7 @@ function LetHealingBeginSection() {
                     <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
                     <span>Pelvic Tilts - 8 reps</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50" size="sm">
+                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50 h-auto py-3" size="sm">
                     <Play className="w-4 h-4 mr-2" />
                     Start Morning Routine
                   </Button>
@@ -1269,7 +1269,7 @@ function LetHealingBeginSection() {
                     <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                     <span>Relaxation Breathing</span>
                   </div>
-                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50" size="sm">
+                  <Button variant="outline" className="w-full mt-3 border-pink-500 text-pink-600 hover:bg-pink-50 h-auto py-3" size="sm">
                     <Play className="w-4 h-4 mr-2" />
                     Start Evening Routine
                   </Button>
@@ -1585,7 +1585,7 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
             <Card key={program.number} className="cursor-pointer hover:shadow-md transition-shadow">
               <CardHeader>
                 <CardTitle className="text-lg">Program {program.number}: {program.title}</CardTitle>
-                <Badge variant="outline">{program.sessions} sessions/week</Badge>
+                <Badge variant="outline" className="rounded-none px-4 py-2">{program.sessions} sessions/week</Badge>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-3">{program.description}</p>
@@ -1616,7 +1616,7 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
               <p>• Heel Slides</p>
               <p>• Gentle Core Activation</p>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full h-auto py-3">
               Start Daily Routine
             </Button>
           </CardContent>
@@ -1635,7 +1635,7 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
               <p><strong>MISS:</strong> Moderate Intensity</p>
               <p><strong>HIIT:</strong> High Intensity (when ready)</p>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full h-auto py-3">
               View Cardio Guide
             </Button>
           </CardContent>
@@ -1693,7 +1693,7 @@ function TheRoleOfNutritionSection() {
               <p><strong>Thumb:</strong> Healthy fats</p>
               <p><strong>Fist:</strong> Vegetables</p>
             </div>
-            <Button variant="outline" className="w-full mt-3">
+            <Button variant="outline" className="w-full mt-3 h-auto py-3">
               View Detailed Guide
             </Button>
           </CardContent>
@@ -1795,7 +1795,7 @@ function WhatComesNextSection({ userId, programId, progressEntries }: {
                 <li>• Increased energy and strength</li>
               </ul>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full h-auto py-3">
               Return to Impact Readiness Test
             </Button>
           </CardContent>

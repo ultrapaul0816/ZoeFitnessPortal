@@ -149,47 +149,6 @@ export class MemStorage implements IStorage {
     this.users.set(userId, user);
 
     // Create programs
-    const igniteId = randomUUID();
-    const ignite: Program = {
-      id: igniteId,
-      name: "IGNITE Challenge",
-      description: "21-day beginner program to build consistency and energy",
-      level: "Beginner",
-      duration: "21 Days",
-      equipment: "Mainly Bodyweight",
-      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=300",
-      price: 1500,
-      workoutCount: 21,
-    };
-    this.programs.set(igniteId, ignite);
-
-    const transformId = randomUUID();
-    const transform: Program = {
-      id: transformId,
-      name: "TRANSFORM",
-      description: "Advanced strength training with dumbbells & bands",
-      level: "Intermediate to Advanced",
-      duration: "4 Month Bundle",
-      equipment: "Dumbbells & Bands",
-      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=300",
-      price: 2500,
-      workoutCount: 80,
-    };
-    this.programs.set(transformId, transform);
-
-    const awakenId = randomUUID();
-    const awaken: Program = {
-      id: awakenId,
-      name: "AWAKEN",
-      description: "Bodyweight program to build functional strength",
-      level: "Beginner",
-      duration: "3 Month Bundle",
-      equipment: "Bodyweight Only",
-      imageUrl: "https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=300",
-      price: 2500,
-      workoutCount: 60,
-    };
-    this.programs.set(awakenId, awaken);
 
     // Create Heal Your Core premium program
     const healYourCoreId = randomUUID();
@@ -203,31 +162,11 @@ export class MemStorage implements IStorage {
       imageUrl: "/assets/program-cover.png",
       price: 4500, // Premium pricing for specialized program
       workoutCount: 22, // 4 workouts week 1&6, 3 workouts weeks 2-5
+      isActive: true,
+      isVisible: true,
     };
     this.programs.set(healYourCoreId, healYourCore);
 
-    // Create member programs for test user
-    const memberProgram1: MemberProgram = {
-      id: randomUUID(),
-      userId,
-      programId: igniteId,
-      purchaseDate: new Date(),
-      expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
-      isActive: true,
-      progress: 15,
-    };
-    this.memberPrograms.set(memberProgram1.id, memberProgram1);
-
-    const memberProgram2: MemberProgram = {
-      id: randomUUID(),
-      userId,
-      programId: transformId,
-      purchaseDate: new Date(),
-      expiryDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000), // 120 days
-      isActive: true,
-      progress: 8,
-    };
-    this.memberPrograms.set(memberProgram2.id, memberProgram2);
 
     // Give test user access to Heal Your Core
     const healYourCorePurchase: ProgramPurchase = {
@@ -240,55 +179,6 @@ export class MemStorage implements IStorage {
     };
     this.programPurchases.set(healYourCorePurchase.id, healYourCorePurchase);
 
-    // Create workouts for IGNITE program
-    for (let day = 1; day <= 21; day++) {
-      const workout: Workout = {
-        id: randomUUID(),
-        programId: igniteId,
-        name: `Day ${day} - ${day <= 7 ? 'Foundation' : day <= 14 ? 'Building' : 'Mastery'}`,
-        description: `Day ${day} workout focusing on building strength and endurance`,
-        duration: "25-30 minutes",
-        day,
-      };
-      this.workouts.set(workout.id, workout);
-    }
-
-    // Create workouts for TRANSFORM program
-    for (let day = 1; day <= 80; day++) {
-      const workout: Workout = {
-        id: randomUUID(),
-        programId: transformId,
-        name: `Day ${day} - Advanced Strength Training`,
-        description: `Day ${day} advanced workout with dumbbells and resistance bands`,
-        duration: "35-45 minutes",
-        day,
-      };
-      this.workouts.set(workout.id, workout);
-    }
-
-    // Create workouts for AWAKEN program
-    for (let day = 1; day <= 60; day++) {
-      const workout: Workout = {
-        id: randomUUID(),
-        programId: awakenId,
-        name: `Day ${day} - Bodyweight Strength`,
-        description: `Day ${day} functional bodyweight training session`,
-        duration: "30-35 minutes",
-        day,
-      };
-      this.workouts.set(workout.id, workout);
-    }
-
-    // Create sample notifications
-    const notification1: Notification = {
-      id: randomUUID(),
-      userId,
-      title: "New workout available in TRANSFORM",
-      message: 'Check out "Advanced Core Blast" - now available in your program',
-      isRead: false,
-      createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-    };
-    this.notifications.set(notification1.id, notification1);
 
     // Create terms
     const termsId = randomUUID();
