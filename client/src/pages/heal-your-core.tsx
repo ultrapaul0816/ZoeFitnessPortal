@@ -359,16 +359,39 @@ export default function HealYourCorePage() {
 }
 
 function WelcomeSection() {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>✨ Welcome - Start Here</CardTitle>
-          <CardDescription>
-            Essential preparatory information for your core recovery journey
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <Card className="overflow-hidden">
+        {/* Cover Image Header */}
+        <div className="relative">
+          <img 
+            src="/attached_assets/Screenshot 2025-09-20 at 21.03.56_1758382675508.png"
+            alt="Heal Your Core Program Overview"
+            className="w-full h-48 object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          <div className="absolute bottom-4 left-6 right-6">
+            <h2 className="text-2xl font-bold text-white mb-2">✨ Welcome - Start Here</h2>
+            <p className="text-white/90 text-sm">
+              Essential preparatory information for your core recovery journey
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
+            data-testid="button-toggle-welcome"
+          >
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+          </Button>
+        </div>
+        
+        {/* Collapsible Content */}
+        {isExpanded && (
+          <CardContent className="p-6 space-y-6 animate-in slide-in-from-top-2 duration-300">
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="border-primary/20">
               <CardHeader>
@@ -774,7 +797,8 @@ function WelcomeSection() {
               </div>
             </CardContent>
           </Card>
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
     </div>
   );
