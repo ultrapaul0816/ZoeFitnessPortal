@@ -385,8 +385,8 @@ function WelcomeSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">1</span>
-                  <h3 className="text-base font-semibold text-left">Welcome from Zoe</h3>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
+                  <h3 className="text-sm font-semibold text-left">Welcome from Zoe</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -430,8 +430,8 @@ function WelcomeSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">2</span>
-                  <h3 className="text-base font-semibold text-left">When to Start This Program</h3>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">2</span>
+                  <h3 className="text-sm font-semibold text-left">When to Start This Program</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -512,8 +512,8 @@ function WelcomeSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">3</span>
-                  <h3 className="text-base font-semibold text-left">Safety & Mindset Shifts</h3>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">3</span>
+                  <h3 className="text-sm font-semibold text-left">Safety & Mindset Shifts</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -599,9 +599,9 @@ function WelcomeSection() {
             {/* Topic 4: Special Considerations for Each Delivery Type */}
             <div>
               <div className="flex items-center justify-between py-5">
-                <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">4</span>
-                  <h3 className="text-base font-semibold text-left">Special Considerations for Each Delivery Type</h3>
+                <div className="flex items-center gap-3 flex-1">
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">4</span>
+                  <h3 className="text-sm font-semibold text-left leading-tight">Special Considerations for Each Delivery Type</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -667,8 +667,8 @@ function WelcomeSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">5</span>
-                  <h3 className="text-base font-semibold text-left">How to Use This Guide</h3>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">5</span>
+                  <h3 className="text-sm font-semibold text-left">How to Use This Guide</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -804,8 +804,8 @@ function WelcomeSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">6</span>
-                  <h3 className="text-base font-semibold text-left">Disclaimer</h3>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">6</span>
+                  <h3 className="text-sm font-semibold text-left">Disclaimer</h3>
                 </div>
                 <Button
                   variant="outline"
