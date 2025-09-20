@@ -66,7 +66,7 @@ export default function Dashboard() {
               <img 
                 src="/assets/logo.png" 
                 alt="Studio Bloom" 
-                className="h-8 w-auto"
+                className="h-12 w-auto"
               />
             </div>
             
@@ -87,7 +87,7 @@ export default function Dashboard() {
 
               {/* Profile Avatar */}
               <button 
-                className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-sm hover:bg-teal-200 transition-colors"
+                className="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-profile-avatar"
               >
