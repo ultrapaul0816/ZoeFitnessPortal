@@ -40,6 +40,7 @@ export default function HealYourCorePage() {
   const [programId, setProgramId] = useState<string>("");
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [isProgressExpanded, setIsProgressExpanded] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -189,118 +190,117 @@ export default function HealYourCorePage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
+          <Badge className="bg-gradient-to-r from-pink-400 to-pink-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
             {healYourCoreProgram.level}
           </Badge>
         </div>
 
         {/* Progress-Focused Welcome Section */}
-        <Accordion type="single" collapsible className="mb-6" defaultValue="">
-          <AccordionItem value="welcome" className="border-0">
-            <AccordionTrigger className="hover:no-underline p-0 [&[data-state=open]_.accordion-chevron]:rotate-180">
-              <Card className="w-full border-pink-200 bg-gradient-to-r from-pink-50 to-purple-50 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                        <TrendingUp className="w-7 h-7 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
-                        <p className="text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right space-y-2">
-                        <div className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
-                        <div className="w-28">
-                          <Progress value={progressPercentage} className="h-3 bg-gray-200">
-                            <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
-                          </Progress>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-4"
-                      >
-                        <ChevronDown className="w-5 h-5 text-pink-600 transition-transform duration-200 accordion-chevron" />
-                      </Button>
+        <div className="mb-6 w-full max-w-6xl mx-auto">
+          <Card className="w-full border-pink-200 bg-gradient-to-r from-pink-50 to-pink-100 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center space-x-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                    <TrendingUp className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                    <p className="text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="text-right space-y-2">
+                    <div className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
+                    <div className="w-28">
+                      <Progress value={progressPercentage} className="h-3 bg-gray-200">
+                        <div className="h-full bg-gradient-to-r from-pink-400 to-pink-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
+                      </Progress>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </AccordionTrigger>
-            <AccordionContent className="pt-4">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="grid md:grid-cols-2 gap-6 items-center">
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-semibold">Your Healing Journey</h3>
-                      <p className="text-muted-foreground">
-                        Welcome to your personalized postnatal core recovery program. This journey has been 
-                        carefully designed to help you safely rebuild your core strength, address diastasis recti, 
-                        and support your overall postpartum recovery.
-                      </p>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                          <span className="font-medium">Current Week</span>
-                          <span className="text-primary font-bold">Week {Math.min(completedWeeks + 1, 6)}</span>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                          <span className="font-medium">Total Progress</span>
-                          <span className="text-primary font-bold">{completedWeeks}/6 weeks</span>
-                        </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsProgressExpanded(!isProgressExpanded)}
+                    className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-4"
+                    data-testid="button-toggle-progress"
+                  >
+                    <ChevronDown className={`w-5 h-5 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {isProgressExpanded && (
+            <Card className="mt-4 animate-in slide-in-from-top-2 duration-300">
+              <CardContent className="p-6">
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">Your Healing Journey</h3>
+                    <p className="text-muted-foreground">
+                      Welcome to your personalized postnatal core recovery program. This journey has been 
+                      carefully designed to help you safely rebuild your core strength, address diastasis recti, 
+                      and support your overall postpartum recovery.
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Current Week</span>
+                        <span className="text-primary font-bold">Week {Math.min(completedWeeks + 1, 6)}</span>
                       </div>
-                    </div>
-                    <div className="relative">
-                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                        <div className="text-center">
-                          <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">Welcome Video from Zoe</p>
-                          <p className="text-xs text-muted-foreground mt-1">Click to play</p>
-                        </div>
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Total Progress</span>
+                        <span className="text-primary font-bold">{completedWeeks}/6 weeks</span>
                       </div>
-                      <Button 
-                        className="absolute inset-0 w-full h-full bg-black/20 hover:bg-black/30 text-white"
-                        variant="ghost"
-                        data-testid="button-play-welcome-video"
-                      >
-                        <Play className="w-8 h-8" />
-                      </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+                  <div className="relative">
+                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">Welcome Video from Zoe</p>
+                        <p className="text-xs text-muted-foreground mt-1">Click to play</p>
+                      </div>
+                    </div>
+                    <Button 
+                      className="absolute inset-0 w-full h-full bg-black/20 hover:bg-black/30 text-white"
+                      variant="ghost"
+                      data-testid="button-play-welcome-video"
+                    >
+                      <Play className="w-8 h-8" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
         {/* Navigation Tabs */}
-        <div className="w-full max-w-6xl">
+        <div className="w-full max-w-6xl mx-auto">
           <Tabs defaultValue="welcome" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-3 h-auto p-3 bg-gray-50 rounded-xl">
-            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <BookOpen className="w-5 h-5 mb-2" />
               <span className="font-medium">Welcome</span>
             </TabsTrigger>
-            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Brain className="w-5 h-5 mb-2" />
               <span className="font-medium text-center leading-tight">Core</span>
             </TabsTrigger>
-            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Heart className="w-5 h-5 mb-2" />
               <span className="font-medium">Healing</span>
             </TabsTrigger>
-            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Dumbbell className="w-5 h-5 mb-2" />
               <span className="font-medium">Programs</span>
             </TabsTrigger>
-            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <ChartBar className="w-5 h-5 mb-2" />
               <span className="font-medium">Next</span>
             </TabsTrigger>
-            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Apple className="w-5 h-5 mb-2" />
               <span className="font-medium">Nutrition</span>
             </TabsTrigger>
