@@ -383,10 +383,10 @@ function WelcomeSection() {
           <div className="space-y-0">
             {/* Topic 1: Welcome from Zoe */}
             <div>
-              <div className="flex items-center justify-between py-6">
+              <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">1</span>
-                  <h3 className="text-lg font-semibold">Welcome from Zoe</h3>
+                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">1</span>
+                  <h3 className="text-base font-semibold text-left">Welcome from Zoe</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -428,10 +428,10 @@ function WelcomeSection() {
 
             {/* Topic 2: When to Start This Program */}
             <div>
-              <div className="flex items-center justify-between py-6">
+              <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">2</span>
-                  <h3 className="text-lg font-semibold">When to Start This Program</h3>
+                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">2</span>
+                  <h3 className="text-base font-semibold text-left">When to Start This Program</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -510,10 +510,10 @@ function WelcomeSection() {
 
             {/* Topic 3: Safety & Mindset Shifts */}
             <div>
-              <div className="flex items-center justify-between py-6">
+              <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">3</span>
-                  <h3 className="text-lg font-semibold">Safety & Mindset Shifts</h3>
+                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">3</span>
+                  <h3 className="text-base font-semibold text-left">Safety & Mindset Shifts</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -598,10 +598,10 @@ function WelcomeSection() {
 
             {/* Topic 4: Special Considerations for Each Delivery Type */}
             <div>
-              <div className="flex items-center justify-between py-6">
+              <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">4</span>
-                  <h3 className="text-lg font-semibold">Special Considerations for Each Delivery Type</h3>
+                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">4</span>
+                  <h3 className="text-base font-semibold text-left">Special Considerations for Each Delivery Type</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -665,10 +665,10 @@ function WelcomeSection() {
 
             {/* Topic 5: How to Use This Guide */}
             <div>
-              <div className="flex items-center justify-between py-6">
+              <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">5</span>
-                  <h3 className="text-lg font-semibold">How to Use This Guide</h3>
+                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">5</span>
+                  <h3 className="text-base font-semibold text-left">How to Use This Guide</h3>
                 </div>
                 <Button
                   variant="outline"
@@ -802,10 +802,10 @@ function WelcomeSection() {
 
             {/* Topic 6: Disclaimer */}
             <div>
-              <div className="flex items-center justify-between py-6">
+              <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">6</span>
-                  <h3 className="text-lg font-semibold">Disclaimer</h3>
+                  <span className="w-7 h-7 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">6</span>
+                  <h3 className="text-base font-semibold text-left">Disclaimer</h3>
                 </div>
                 <Button
                   variant="outline"
