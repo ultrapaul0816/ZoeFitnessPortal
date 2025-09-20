@@ -71,10 +71,10 @@ export default function Dashboard() {
             </div>
             
             {/* Right side navigation */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {/* Notification Bell */}
               <button 
-                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative"
+                className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors relative"
                 data-testid="button-notifications"
               >
                 <Bell className="w-5 h-5 text-gray-600" />
@@ -85,24 +85,23 @@ export default function Dashboard() {
                 )}
               </button>
 
-              {/* Profile Avatar + Hamburger Menu Combined */}
-              <div className="flex items-center bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <button 
-                  className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-sm hover:bg-teal-200 transition-colors ml-1"
-                  onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  data-testid="button-profile-avatar"
-                >
-                  {user.firstName?.[0]}{user.lastName?.[0]}
-                </button>
+              {/* Profile Avatar */}
+              <button 
+                className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-sm hover:bg-teal-200 transition-colors"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                data-testid="button-profile-avatar"
+              >
+                {user.firstName?.[0]}{user.lastName?.[0]}
+              </button>
 
-                <button 
-                  className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-                  onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  data-testid="button-hamburger-menu"
-                >
-                  <Menu className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
+              {/* Hamburger Menu */}
+              <button 
+                className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                data-testid="button-hamburger-menu"
+              >
+                <Menu className="w-5 h-5 text-gray-600" />
+              </button>
             </div>
           </div>
         </div>
