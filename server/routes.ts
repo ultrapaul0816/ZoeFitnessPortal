@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { loginSchema, insertWorkoutCompletionSchema } from "@shared/schema";
+import { loginSchema, insertWorkoutCompletionSchema, updateUserProfileSchema } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
@@ -91,6 +91,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to accept terms" });
+    }
+  });
+
+  // Update user profile
+  app.patch("/api/users/:id/profile", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const profileUpdates = updateUserProfileSchema.parse(req.body);
+      
+      const updatedUser = await storage.updateUser(id, profileUpdates);
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Return user without password
+      const { password, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid profile data", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to update profile" });
     }
   });
 

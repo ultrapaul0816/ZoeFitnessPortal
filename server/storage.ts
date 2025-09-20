@@ -126,6 +126,8 @@ export class MemStorage implements IStorage {
       password: "admin123",
       firstName: "Zoe",
       lastName: "Modgill",
+      phone: null,
+      profilePictureUrl: null,
       isAdmin: true,
       termsAccepted: true,
       termsAcceptedAt: new Date(),
@@ -141,6 +143,8 @@ export class MemStorage implements IStorage {
       password: "password123",
       firstName: "Jane",
       lastName: "Doe",
+      phone: null,
+      profilePictureUrl: null,
       isAdmin: false,
       termsAccepted: true,
       termsAcceptedAt: new Date(),
@@ -368,6 +372,8 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      phone: insertUser.phone ?? null,
+      profilePictureUrl: insertUser.profilePictureUrl ?? null,
       isAdmin: insertUser.isAdmin ?? false,
       termsAccepted: insertUser.termsAccepted ?? false,
       termsAcceptedAt: insertUser.termsAcceptedAt ?? null,
@@ -381,7 +387,12 @@ export class MemStorage implements IStorage {
     const user = this.users.get(id);
     if (!user) return undefined;
     
-    const updatedUser = { ...user, ...updates };
+    const updatedUser: User = {
+      ...user,
+      ...updates,
+      phone: updates.phone !== undefined ? (updates.phone || null) : user.phone,
+      profilePictureUrl: updates.profilePictureUrl !== undefined ? (updates.profilePictureUrl || null) : user.profilePictureUrl,
+    };
     this.users.set(id, updatedUser);
     return updatedUser;
   }
@@ -396,7 +407,12 @@ export class MemStorage implements IStorage {
 
   async createProgram(insertProgram: InsertProgram): Promise<Program> {
     const id = randomUUID();
-    const program: Program = { ...insertProgram, id };
+    const program: Program = {
+      ...insertProgram,
+      id,
+      isActive: insertProgram.isActive ?? true,
+      isVisible: insertProgram.isVisible ?? true,
+    };
     this.programs.set(id, program);
     return program;
   }
@@ -596,6 +612,7 @@ export class MemStorage implements IStorage {
     const purchase: ProgramPurchase = {
       ...insertPurchase,
       id,
+      status: insertPurchase.status ?? "active",
       purchaseDate: new Date(),
     };
     this.programPurchases.set(id, purchase);
@@ -619,6 +636,12 @@ export class MemStorage implements IStorage {
     const entry: ProgressTracking = {
       ...insertEntry,
       id,
+      notes: insertEntry.notes ?? null,
+      drGapMeasurement: insertEntry.drGapMeasurement ?? null,
+      coreConnectionScore: insertEntry.coreConnectionScore ?? null,
+      pelvicFloorSymptoms: insertEntry.pelvicFloorSymptoms ?? null,
+      postureBackDiscomfort: insertEntry.postureBackDiscomfort ?? null,
+      energyLevel: insertEntry.energyLevel ?? null,
       recordedAt: new Date(),
     };
     this.progressTracking.set(id, entry);
@@ -646,6 +669,8 @@ export class MemStorage implements IStorage {
     const article: KnowledgeArticle = {
       ...insertArticle,
       id,
+      videoUrl: insertArticle.videoUrl ?? null,
+      orderIndex: insertArticle.orderIndex ?? null,
       createdAt: new Date(),
     };
     this.knowledgeArticles.set(id, article);
@@ -655,13 +680,19 @@ export class MemStorage implements IStorage {
   async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> {
     return Array.from(this.knowledgeArticles.values())
       .filter(article => article.programId === programId)
-      .sort((a, b) => a.orderIndex - b.orderIndex);
+      .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
   }
 
   // Exercise methods
   async createExercise(insertExercise: InsertExercise): Promise<Exercise> {
     const id = randomUUID();
-    const exercise: Exercise = { ...insertExercise, id };
+    const exercise: Exercise = {
+      ...insertExercise,
+      id,
+      duration: insertExercise.duration ?? null,
+      instructions: insertExercise.instructions ?? null,
+      difficulty: insertExercise.difficulty ?? null,
+    };
     this.exercises.set(id, exercise);
     return exercise;
   }
@@ -677,7 +708,12 @@ export class MemStorage implements IStorage {
   // Weekly Workout methods
   async createWeeklyWorkout(insertWorkout: InsertWeeklyWorkout): Promise<WeeklyWorkout> {
     const id = randomUUID();
-    const workout: WeeklyWorkout = { ...insertWorkout, id };
+    const workout: WeeklyWorkout = {
+      ...insertWorkout,
+      id,
+      orderIndex: insertWorkout.orderIndex ?? null,
+      isOptional: insertWorkout.isOptional ?? null,
+    };
     this.weeklyWorkouts.set(id, workout);
     return workout;
   }
@@ -685,7 +721,7 @@ export class MemStorage implements IStorage {
   async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
     const weeklyWorkouts = Array.from(this.weeklyWorkouts.values())
       .filter(workout => workout.programId === programId && workout.week === week)
-      .sort((a, b) => a.day - b.day || a.orderIndex - b.orderIndex);
+      .sort((a, b) => a.day - b.day || (a.orderIndex || 0) - (b.orderIndex || 0));
     
     return weeklyWorkouts.map(workout => ({
       ...workout,
@@ -696,7 +732,7 @@ export class MemStorage implements IStorage {
   async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
     const weeklyWorkouts = Array.from(this.weeklyWorkouts.values())
       .filter(workout => workout.programId === programId)
-      .sort((a, b) => a.week - b.week || a.day - b.day || a.orderIndex - b.orderIndex);
+      .sort((a, b) => a.week - b.week || a.day - b.day || (a.orderIndex || 0) - (b.orderIndex || 0));
     
     return weeklyWorkouts.map(workout => ({
       ...workout,
