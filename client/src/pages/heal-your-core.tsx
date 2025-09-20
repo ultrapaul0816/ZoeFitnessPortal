@@ -222,10 +222,10 @@ export default function HealYourCorePage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsProgressExpanded(!isProgressExpanded)}
-                  className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-2 md:ml-4"
+                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-2 md:ml-4"
                   data-testid="button-toggle-progress"
                 >
-                  <ChevronDown className={`w-3 h-3 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
             </div>
