@@ -188,7 +188,7 @@ export default function HealYourCorePage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
-          <Badge variant="secondary" className="rounded-none px-4 py-2">
+          <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
             {healYourCoreProgram.level}
           </Badge>
         </div>
@@ -197,22 +197,24 @@ export default function HealYourCorePage() {
         <Accordion type="single" collapsible className="mb-6" defaultValue="">
           <AccordionItem value="welcome" className="border-0">
             <AccordionTrigger className="hover:no-underline p-0">
-              <Card className="w-full border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
-                <CardContent className="p-4">
+              <Card className="w-full border-pink-200 bg-gradient-to-r from-pink-50 to-purple-50 shadow-lg">
+                <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                        <TrendingUp className="w-6 h-6 text-primary-foreground" />
+                      <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                        <TrendingUp className="w-7 h-7 text-white" />
                       </div>
                       <div className="text-left">
-                        <h3 className="text-lg font-semibold text-primary">Hello {user.firstName}!</h3>
-                        <p className="text-sm text-muted-foreground">{completedWeeks}/6 weeks completed</p>
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                        <p className="text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
                       </div>
                     </div>
-                    <div className="text-right space-y-1">
-                      <div className="text-2xl font-bold text-primary">{Math.round(progressPercentage)}%</div>
-                      <div className="w-24">
-                        <Progress value={progressPercentage} className="h-2" />
+                    <div className="text-right space-y-2">
+                      <div className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
+                      <div className="w-28">
+                        <Progress value={progressPercentage} className="h-3 bg-gray-200">
+                          <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
+                        </Progress>
                       </div>
                     </div>
                   </div>
@@ -266,36 +268,30 @@ export default function HealYourCorePage() {
 
         {/* Navigation Tabs */}
         <Tabs defaultValue="welcome" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-2 h-auto p-2">
-            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <BookOpen className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
-              <span className="hidden sm:inline">✨ Welcome</span>
-              <span className="sm:hidden leading-tight">Welcome</span>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-3 h-auto p-3 bg-gray-50 rounded-xl">
+            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <BookOpen className="w-5 h-5 mb-2" />
+              <span className="font-medium">Welcome</span>
             </TabsTrigger>
-            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Brain className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
-              <span className="hidden sm:inline">🧠 Understanding Your Core</span>
-              <span className="sm:hidden leading-tight">Core</span>
+            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <Brain className="w-5 h-5 mb-2" />
+              <span className="font-medium text-center leading-tight">Core</span>
             </TabsTrigger>
-            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Heart className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
-              <span className="hidden sm:inline">💙 Let Healing Begin</span>
-              <span className="sm:hidden leading-tight">Healing</span>
+            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <Heart className="w-5 h-5 mb-2" />
+              <span className="font-medium">Healing</span>
             </TabsTrigger>
-            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Dumbbell className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
-              <span className="hidden sm:inline">💪 Your 6 Core Programs</span>
-              <span className="sm:hidden leading-tight">Programs</span>
+            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <Dumbbell className="w-5 h-5 mb-2" />
+              <span className="font-medium">Programs</span>
             </TabsTrigger>
-            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <ChartBar className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
-              <span className="hidden sm:inline">📈 What Comes Next</span>
-              <span className="sm:hidden leading-tight">Next</span>
+            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <ChartBar className="w-5 h-5 mb-2" />
+              <span className="font-medium">Next</span>
             </TabsTrigger>
-            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[50px] flex-col sm:flex-row p-3 bg-primary/10 border-primary/20 text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Apple className="w-4 h-4 sm:w-4 sm:h-4 mb-1 sm:mb-0 sm:mr-2" />
-              <span className="hidden sm:inline">🍎 The Role of Nutrition</span>
-              <span className="sm:hidden leading-tight">Nutrition</span>
+            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <Apple className="w-5 h-5 mb-2" />
+              <span className="font-medium">Nutrition</span>
             </TabsTrigger>
           </TabsList>
 
