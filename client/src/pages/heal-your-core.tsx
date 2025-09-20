@@ -820,9 +820,6 @@ function WelcomeSection() {
               {expandedTopics['disclaimer'] && (
                 <div className="pb-3 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-6 text-sm">
-                    <div className="text-center">
-                      <div className="text-2xl font-light text-gray-400 mb-4">❋</div>
-                    </div>
                     
                     <div>
                       <p className="font-semibold text-primary mb-3">General Disclaimer:</p>
