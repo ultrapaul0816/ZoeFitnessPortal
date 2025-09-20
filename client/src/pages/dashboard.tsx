@@ -58,62 +58,50 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
-      <header className="bg-card border-b border-border shadow-sm">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-[auto_1fr_auto] items-center h-16">
-            {/* Hamburger Menu */}
-            <div className="justify-self-start">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowHamburgerMenu(!showHamburgerMenu)}
-                data-testid="button-hamburger"
-                className="w-9 h-9 md:w-10 md:h-10"
-              >
-                <Menu className="w-5 h-5" />
-              </Button>
-            </div>
-            
-            {/* Centered Logo */}
-            <div className="justify-self-center">
-              <div className="w-16 h-12 md:w-20 md:h-14 flex items-center justify-center">
-                <img 
-                  src="/assets/logo.png" 
-                  alt="Stronger With Zoe" 
-                  className="h-10 w-auto md:h-12 object-contain"
-                />
-              </div>
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <img 
+                src="/assets/logo.png" 
+                alt="Studio Bloom" 
+                className="h-8 w-auto"
+              />
             </div>
             
             {/* Right side navigation */}
-            <div className="flex items-center gap-3 md:gap-6 justify-self-end">
-              {/* Profile */}
+            <div className="flex items-center space-x-4">
+              {/* Notification Bell */}
               <button 
-                className="flex items-center space-x-2 md:space-x-3 px-2 py-1.5 md:px-3 md:py-2 rounded-lg hover:bg-muted/50 transition-colors"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                data-testid="button-profile"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative"
+                data-testid="button-notifications"
               >
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-primary">
-                    {user.firstName?.[0]}{user.lastName?.[0]}
+                <Bell className="w-5 h-5 text-gray-600" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
-                </div>
-                <span className="text-sm font-medium text-foreground hidden sm:block">
-                  {user.firstName} {user.lastName}
-                </span>
+                )}
               </button>
-              
-              {/* Admin Button */}
-              {user.isAdmin && (
-                <Button
-                  variant="secondary"
-                  onClick={() => setLocation("/admin")}
-                  data-testid="button-admin"
-                  className="h-9 md:h-10 px-3 md:px-4"
-                >
-                  Admin
-                </Button>
-              )}
+
+              {/* Profile Avatar */}
+              <button 
+                className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-sm hover:bg-teal-200 transition-colors"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                data-testid="button-profile-avatar"
+              >
+                {user.firstName?.[0]}{user.lastName?.[0]}
+              </button>
+
+              {/* Hamburger Menu */}
+              <button 
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                data-testid="button-hamburger-menu"
+              >
+                <Menu className="w-5 h-5 text-gray-600" />
+              </button>
             </div>
           </div>
         </div>
