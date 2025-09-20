@@ -601,7 +601,7 @@ function WelcomeSection() {
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3 flex-1">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">4</span>
-                  <h3 className="text-sm font-semibold text-left leading-tight">Special Considerations for Each Delivery Type</h3>
+                  <h3 className="text-sm font-semibold text-left leading-tight">Special Considerations for<br />Each Delivery Type</h3>
                 </div>
                 <Button
                   variant="ghost"
@@ -869,11 +869,21 @@ function WelcomeSection() {
                 data-testid="button-next-section"
                 onClick={() => {
                   // Navigate to next section (Understanding Your Core)
-                  const targetSection = document.querySelector('[data-section="understanding-core"]');
+                  const targetSection = document.getElementById('understanding-core-section') 
+                    || document.querySelector('[data-section="understanding-core"]');
+                  
                   if (targetSection) {
+                    console.log('Scrolling to:', targetSection);
                     targetSection.scrollIntoView({ 
                       behavior: 'smooth',
                       block: 'start'
+                    });
+                  } else {
+                    console.log('Target section not found, scrolling by viewport height');
+                    // Fallback - scroll down by viewport height
+                    window.scrollBy({
+                      top: window.innerHeight,
+                      behavior: 'smooth'
                     });
                   }
                 }}
@@ -911,7 +921,7 @@ function UnderstandingYourCoreSection({
         </CardHeader>
       </Card>
       
-      <div className="space-y-6" data-section="understanding-core">
+      <div className="space-y-6" data-section="understanding-core" id="understanding-core-section">
         {/* Breathing & Core Activation */}
         <Card>
           <CardHeader>
