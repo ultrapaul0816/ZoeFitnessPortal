@@ -868,7 +868,7 @@ function WelcomeSection() {
           <div className="mt-12 pt-8 border-t border-gray-200">
             <div className="text-center">
               <Button
-                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-8 py-4 h-auto text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
                 data-testid="button-next-section"
                 onClick={() => {
                   // Navigate to next section (Understanding Your Core)
@@ -877,12 +877,7 @@ function WelcomeSection() {
                   });
                 }}
               >
-                <div className="flex items-center gap-3">
-                  <span>Continue to Understanding Your Core</span>
-                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                    <ChevronDown className="w-4 h-4 rotate-270" />
-                  </div>
-                </div>
+                Next Section
               </Button>
               <p className="text-sm text-muted-foreground mt-3">
                 Ready to dive deeper? Let's explore the foundation of your core recovery.
