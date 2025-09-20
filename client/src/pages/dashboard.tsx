@@ -113,7 +113,7 @@ export default function Dashboard() {
       {showProfileMenu && (
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0" onClick={() => setShowProfileMenu(false)} />
-          <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl z-60 overflow-y-auto">
+          <div className="absolute right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-xl z-60 overflow-y-auto">
             {/* Header Section */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
