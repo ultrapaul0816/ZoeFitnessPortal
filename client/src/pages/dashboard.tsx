@@ -87,15 +87,6 @@ export default function Dashboard() {
                 )}
               </button>
 
-              {/* Profile Avatar */}
-              <button 
-                className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors shadow-sm"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                data-testid="button-profile-avatar"
-              >
-                {user.firstName?.[0]}{user.lastName?.[0]}
-              </button>
-
               {/* Hamburger Menu */}
               <button 
                 className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow-sm"
