@@ -4,7 +4,7 @@
 
 :root {
   --background: hsl(0 0% 97%);
-  --foreground: hsl(240 10% 4%);
+  --foreground: hsl(0deg 0% 0%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(240 10% 4%);
   --popover: hsl(0 0% 100%);
@@ -35,9 +35,9 @@
   --sidebar-accent-foreground: hsl(240 10% 4%);
   --sidebar-border: hsl(240 6% 90%);
   --sidebar-ring: hsl(333 100% 50%);
-  --font-sans: "Inter", sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: Inter;
+  --font-serif: Architects Daughter;
+  --font-mono: JetBrains Mono;
   --radius: 0rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(75 100% 60% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(75 100% 60% / 0.00);
