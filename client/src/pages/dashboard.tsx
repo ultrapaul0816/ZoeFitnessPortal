@@ -58,12 +58,12 @@ export default function Dashboard() {
       <header className="bg-card border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="w-16 h-12 flex items-center justify-center">
+            <div className="flex items-center justify-center">
+              <div className="w-20 h-14 flex items-center justify-center">
                 <img 
                   src="/assets/logo.png" 
                   alt="Stronger With Zoe" 
-                  className="h-10 w-auto object-contain"
+                  className="h-12 w-auto object-contain"
                 />
               </div>
             </div>
