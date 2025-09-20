@@ -201,7 +201,7 @@ export default function HealYourCorePage() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-3 md:space-x-4">
-                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
                   <TrendingUp className="w-6 h-6 md:w-7 md:h-7 text-white" />
                 </div>
                 <div className="text-left">

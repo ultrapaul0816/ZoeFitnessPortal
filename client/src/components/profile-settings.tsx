@@ -346,8 +346,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
                 
                 <div className="border border-gray-200 rounded-lg p-8 text-center">
                   <div className="flex justify-center mb-4">
-                    <div className="w-12 h-12 bg-green-500 rounded flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <div className="w-10 h-10 bg-green-500 rounded flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"/>
                       </svg>
                     </div>
