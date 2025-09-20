@@ -57,23 +57,23 @@ export default function Dashboard() {
       {/* Navigation Header */}
       <header className="bg-card border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-16 relative">
-            {/* Spacer for left side */}
-            <div className="flex-1"></div>
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16">
+            {/* Left spacer */}
+            <div></div>
             
             {/* Centered Logo */}
-            <div className="absolute left-1/2 transform -translate-x-1/2">
-              <div className="w-20 h-14 flex items-center justify-center">
+            <div className="justify-self-center">
+              <div className="w-16 h-12 md:w-20 md:h-14 flex items-center justify-center">
                 <img 
                   src="/assets/logo.png" 
                   alt="Stronger With Zoe" 
-                  className="h-12 w-auto object-contain"
+                  className="h-10 w-auto md:h-12 object-contain"
                 />
               </div>
             </div>
             
             {/* Right side navigation */}
-            <div className="flex items-center space-x-6 ml-auto">
+            <div className="flex items-center gap-3 md:gap-6 justify-self-end">
               {/* Notifications */}
               <div className="relative">
                 <Button
@@ -81,7 +81,7 @@ export default function Dashboard() {
                   size="icon"
                   onClick={() => setShowNotifications(!showNotifications)}
                   data-testid="button-notifications"
-                  className="w-10 h-10"
+                  className="w-9 h-9 md:w-10 md:h-10"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
@@ -102,13 +102,13 @@ export default function Dashboard() {
                 size="icon"
                 onClick={() => setShowCommunity(true)}
                 data-testid="button-community"
-                className="w-10 h-10"
+                className="w-9 h-9 md:w-10 md:h-10"
               >
                 <Users className="w-5 h-5" />
               </Button>
               
               {/* Profile */}
-              <div className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-center space-x-2 md:space-x-3 px-2 py-1.5 md:px-3 md:py-2 rounded-lg hover:bg-muted/50 transition-colors">
                 <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-primary">
                     {user.firstName?.[0]}{user.lastName?.[0]}
@@ -125,7 +125,7 @@ export default function Dashboard() {
                   variant="secondary"
                   onClick={() => setLocation("/admin")}
                   data-testid="button-admin"
-                  className="h-10 px-4"
+                  className="h-9 md:h-10 px-3 md:px-4"
                 >
                   Admin
                 </Button>
