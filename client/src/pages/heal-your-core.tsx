@@ -868,24 +868,16 @@ function WelcomeSection() {
                 className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
                 data-testid="button-next-section"
                 onClick={() => {
-                  // Navigate to next section (Understanding Your Core)
-                  const targetSection = document.getElementById('understanding-core-section') 
-                    || document.querySelector('[data-section="understanding-core"]');
+                  console.log('Next Section button clicked');
                   
-                  if (targetSection) {
-                    console.log('Scrolling to:', targetSection);
-                    targetSection.scrollIntoView({ 
-                      behavior: 'smooth',
-                      block: 'start'
-                    });
-                  } else {
-                    console.log('Target section not found, scrolling by viewport height');
-                    // Fallback - scroll down by viewport height
-                    window.scrollBy({
-                      top: window.innerHeight,
-                      behavior: 'smooth'
-                    });
-                  }
+                  // Simple approach - scroll to a fixed distance
+                  const scrollDistance = 800; // Scroll 800px down
+                  window.scrollBy({
+                    top: scrollDistance,
+                    behavior: 'smooth'
+                  });
+                  
+                  console.log('Scrolled by:', scrollDistance, 'pixels');
                 }}
               >
                 Next Section
