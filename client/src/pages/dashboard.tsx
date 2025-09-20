@@ -117,47 +117,11 @@ export default function Dashboard() {
 
       {/* Profile Menu Dropdown */}
       {showProfileMenu && (
-        <div className={`fixed inset-0 z-50 bg-white transform transition-transform duration-300 ease-out ${
-          showProfileMenu ? 'translate-y-0' : 'translate-y-full'
+        <div className={`fixed top-16 left-0 right-0 bottom-0 z-50 bg-white transform transition-all duration-500 ease-out ${
+          showProfileMenu ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}>
-          {/* Header Section */}
-          <div className="border-b border-gray-200 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <img 
-                  src="/assets/logo.png" 
-                  alt="Studio Bloom" 
-                  className="h-8 w-auto"
-                />
-              </div>
-              <div className="flex items-center space-x-3">
-                <button 
-                  className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
-                  data-testid="button-notifications-menu"
-                >
-                  <Bell className="w-5 h-5 text-gray-600" />
-                </button>
-                <button 
-                  className="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors"
-                  data-testid="profile-avatar-header"
-                >
-                  {user.firstName?.[0]}{user.lastName?.[0]}
-                </button>
-                <button 
-                  onClick={() => setShowProfileMenu(false)}
-                  className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
-                  data-testid="button-close-profile-menu"
-                >
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Content */}
-          <div className="flex flex-col h-[calc(100vh-80px)]">
+          <div className="flex flex-col h-full">
             {/* User Info Section */}
             <div className="border-b border-gray-200 p-6">
               <button
