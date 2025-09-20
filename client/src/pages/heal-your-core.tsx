@@ -196,10 +196,10 @@ export default function HealYourCorePage() {
         {/* Progress-Focused Welcome Section */}
         <Accordion type="single" collapsible className="mb-6" defaultValue="">
           <AccordionItem value="welcome" className="border-0">
-            <AccordionTrigger className="hover:no-underline p-0">
+            <AccordionTrigger className="hover:no-underline p-0 [&[data-state=open]>div>div>.accordion-chevron]:rotate-180">
               <Card className="w-full border-pink-200 bg-gradient-to-r from-pink-50 to-purple-50 shadow-lg">
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between w-full">
                     <div className="flex items-center space-x-4">
                       <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                         <TrendingUp className="w-7 h-7 text-white" />
@@ -209,12 +209,17 @@ export default function HealYourCorePage() {
                         <p className="text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
                       </div>
                     </div>
-                    <div className="text-right space-y-2">
-                      <div className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
-                      <div className="w-28">
-                        <Progress value={progressPercentage} className="h-3 bg-gray-200">
-                          <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
-                        </Progress>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right space-y-2">
+                        <div className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
+                        <div className="w-28">
+                          <Progress value={progressPercentage} className="h-3 bg-gray-200">
+                            <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
+                          </Progress>
+                        </div>
+                      </div>
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 ml-4">
+                        <ChevronDown className="w-5 h-5 text-pink-600 transition-transform duration-200 accordion-chevron" />
                       </div>
                     </div>
                   </div>
