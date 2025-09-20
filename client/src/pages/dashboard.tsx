@@ -9,11 +9,12 @@ import ProgramCard from "@/components/program-card";
 import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
 import NotificationsDropdown from "@/components/notifications-dropdown";
-import type { MemberProgram, Program, Notification } from "@shared/schema";
+import ProfileModal from "@/components/profile-modal";
+import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [showCommunity, setShowCommunity] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -183,6 +184,16 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Profile Modal */}
+      {showProfileMenu && user && (
+        <ProfileModal
+          isOpen={showProfileMenu}
+          onClose={() => setShowProfileMenu(false)}
+          user={user}
+          onUserUpdate={(updatedUser) => setUser(updatedUser)}
+        />
       )}
 
       {/* Main Content */}
