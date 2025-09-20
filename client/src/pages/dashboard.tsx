@@ -64,32 +64,19 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left side navigation */}
-            <div className="flex items-center space-x-3">
-              {/* Notification Bell */}
-              <button 
-                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative shadow-md"
-                data-testid="button-notifications"
-              >
-                <Bell className="w-4 h-4 text-gray-600" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </button>
-
+            <div className="flex items-center">
               {/* Hamburger Menu */}
               <button 
-                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow-md"
+                className="p-3 hover:bg-gray-100 transition-colors rounded-lg"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-hamburger-menu"
               >
                 {showProfileMenu ? (
-                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 ) : (
-                  <Menu className="w-4 h-4 text-gray-600" />
+                  <Menu className="w-6 h-6 text-gray-600" />
                 )}
               </button>
             </div>
@@ -104,12 +91,9 @@ export default function Dashboard() {
             </div>
             
             {/* Right side spacer to maintain balance */}
-            <div className="flex items-center space-x-3 opacity-0 pointer-events-none">
-              <button className="p-2 rounded-full">
-                <Bell className="w-4 h-4" />
-              </button>
-              <button className="p-2 rounded-full">
-                <Menu className="w-4 h-4" />
+            <div className="flex items-center opacity-0 pointer-events-none">
+              <button className="p-3 rounded-lg">
+                <Menu className="w-6 h-6" />
               </button>
             </div>
           </div>
@@ -151,6 +135,18 @@ export default function Dashboard() {
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="space-y-4 max-w-md">
                 <nav className="space-y-4">
+                  <button
+                    className="flex items-center space-x-3 w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors p-2 rounded-lg hover:bg-gray-50"
+                    data-testid="menu-notifications"
+                  >
+                    <Bell className="w-4 h-4 text-gray-600" />
+                    <span>Notifications</span>
+                    {unreadCount > 0 && (
+                      <span className="w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </button>
                   <button
                     onClick={() => {
                       setShowCommunity(true);
