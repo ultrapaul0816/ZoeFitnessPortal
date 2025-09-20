@@ -368,414 +368,529 @@ function WelcomeSection() {
 
   return (
     <div className="space-y-6">
-      {/* Main Welcome Block */}
+      {/* Single Container with Welcome Header and All Topics */}
       <Card>
         <CardContent className="p-6">
-          <div>
+          {/* Welcome Header */}
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-2">✨ Welcome - Start Here</h2>
             <p className="text-muted-foreground text-sm">
               Essential preparatory information for your core recovery journey
             </p>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Topic Dropdowns */}
-      <div className="space-y-4">
-        {/* Topic 1: Welcome from Zoe */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">1</span>
-                <h3 className="text-lg font-semibold">Welcome from Zoe</h3>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => toggleTopic('welcome-zoe')}
-                className="shrink-0"
-                data-testid="button-toggle-welcome-zoe"
-              >
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['welcome-zoe'] ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
-            {expandedTopics['welcome-zoe'] && (
-              <div className="mt-6 pt-6 border-t animate-in slide-in-from-top-2 duration-300">
-                <div className="space-y-4 text-sm">
-                  <p className="font-medium">Dear Mama, Welcome to Heal Your Core.</p>
-                  <p>I created this program after my own struggle with diastasis recti. I spent the first two years postpartum with a painful gap in my abdominal wall and no guidance—just conflicting advice and exercises that made me feel worse.</p>
-                  <p>Through research, consistency, and patience, I learned that healing isn't about "bouncing back" or doing endless crunches. It's about rebuilding your deep core connection from the ground up.</p>
-                  <p className="font-medium text-primary">What makes "The Zoe Difference"?</p>
-                  <ul className="space-y-1 ml-4 list-disc">
-                    <li>✅ I've walked this path myself</li>
-                    <li>✅ Evidence-based approach to healing</li>
-                    <li>✅ It worked for my own postpartum journey</li>
-                    <li>✅ Focus on breath & deep core connection over perfection</li>
-                    <li>✅ Gentle, progressive, and realistic for busy mothers</li>
-                  </ul>
-                  <p className="italic">This program isn't just about your core—it's about reclaiming your confidence and feeling strong in your body again. It's never too late to start healing. Your body is capable of amazing things. Let's begin.</p>
-                  <p className="font-medium">With love & support, Zoe x</p>
+          {/* All Topics with Line Dividers */}
+          <div className="space-y-0">
+            {/* Topic 1: Welcome from Zoe */}
+            <div>
+              <div className="flex items-center justify-between py-6">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">1</span>
+                  <h3 className="text-lg font-semibold">Welcome from Zoe</h3>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleTopic('welcome-zoe')}
+                  className="shrink-0"
+                  data-testid="button-toggle-welcome-zoe"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['welcome-zoe'] ? 'rotate-180' : ''}`} />
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Topic 2: When to Start This Program */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">2</span>
-                <h3 className="text-lg font-semibold">When to Start This Program</h3>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => toggleTopic('when-start')}
-                className="shrink-0"
-                data-testid="button-toggle-when-start"
-              >
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['when-start'] ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
-            {expandedTopics['when-start'] && (
-              <div className="mt-6 pt-6 border-t animate-in slide-in-from-top-2 duration-300">
-                <div className="space-y-4">
-                  <p className="text-sm">
-                    You can begin this program anytime from 6 weeks postpartum with a vaginal delivery and 8-10 weeks post a C-section (or once cleared by your healthcare provider). However, it is highly recommended to start breath work and gentle reconnection much earlier. This is safe for both vaginal and C-section recoveries, take notes and modifications where needed.
-                  </p>
-                  
-                  <div>
-                    <p className="font-semibold text-primary text-sm mb-3">This program is suitable whether you're:</p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>6 weeks, 6 months, or even 6 years postpartum</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>Managing diastasis recti or just looking to feel strong again</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>Starting fresh after a break or following your initial rehab phase</span>
-                      </li>
+              {expandedTopics['welcome-zoe'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-4 text-sm">
+                    <p className="font-medium">Dear Mama, Welcome to Heal Your Core.</p>
+                    <p>I created this program after my own struggle with diastasis recti. I spent the first two years postpartum with a painful gap in my abdominal wall and no guidance—just conflicting advice and exercises that made me feel worse.</p>
+                    <p>Through research, consistency, and patience, I learned that healing isn't about "bouncing back" or doing endless crunches. It's about rebuilding your deep core connection from the ground up.</p>
+                    <p className="font-medium text-primary">What makes "The Zoe Difference"?</p>
+                    <ul className="space-y-1 ml-4 list-disc">
+                      <li>✅ I've walked this path myself</li>
+                      <li>✅ Evidence-based approach to healing</li>
+                      <li>✅ It worked for my own postpartum journey</li>
+                      <li>✅ Focus on breath & deep core connection over perfection</li>
+                      <li>✅ Gentle, progressive, and realistic for busy mothers</li>
                     </ul>
-                  </div>
-                  
-                  <p className="text-sm">
-                    If you've had complications or are unsure where to begin, please consult your doctor or pelvic health physiotherapist first.
-                  </p>
-                  
-                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-yellow-600 text-lg">⚠️</span>
-                      <p className="font-semibold text-primary text-sm">Important notes before you begin</p>
-                    </div>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>This is not a "no pain, no gain" plan. Your healing journey is valid no matter the pace.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>Listen to your body: if something feels off, pause and consult your provider.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>You do not need a flat stomach or a perfect gap to be strong or functional.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>Give yourself permission to begin again—this is about building trust with your body.</span>
-                      </li>
-                    </ul>
+                    <p className="italic">This program isn't just about your core—it's about reclaiming your confidence and feeling strong in your body again. It's never too late to start healing. Your body is capable of amazing things. Let's begin.</p>
+                    <p className="font-medium">With love & support, Zoe x</p>
                   </div>
                 </div>
+              )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Topic 3: Safety & Mindset Shifts */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">3</span>
-                <h3 className="text-lg font-semibold">Safety & Mindset Shifts</h3>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => toggleTopic('safety-mindset')}
-                className="shrink-0"
-                data-testid="button-toggle-safety-mindset"
-              >
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['safety-mindset'] ? 'rotate-180' : ''}`} />
-              </Button>
             </div>
-            {expandedTopics['safety-mindset'] && (
-              <div className="mt-6 pt-6 border-t animate-in slide-in-from-top-2 duration-300">
-                <div className="space-y-6">
-                  <p className="text-sm text-center">
-                    Healing is not linear—and that's okay. Let this be a gentle return to movement, not a rush back to pre-pregnancy anything.
-                  </p>
-                  
-                  <div className="grid md:grid-cols-2 gap-6">
+
+            {/* Topic 2: When to Start This Program */}
+            <div>
+              <div className="flex items-center justify-between py-6">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">2</span>
+                  <h3 className="text-lg font-semibold">When to Start This Program</h3>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleTopic('when-start')}
+                  className="shrink-0"
+                  data-testid="button-toggle-when-start"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['when-start'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['when-start'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-4">
+                    <p className="text-sm">
+                      You can begin this program anytime from 6 weeks postpartum with a vaginal delivery and 8-10 weeks post a C-section (or once cleared by your healthcare provider). However, it is highly recommended to start breath work and gentle reconnection much earlier. This is safe for both vaginal and C-section recoveries, take notes and modifications where needed.
+                    </p>
+                    
                     <div>
-                      <h4 className="font-semibold mb-4 text-primary">Please stop and consult your provider if you experience:</h4>
+                      <p className="font-semibold text-primary text-sm mb-3">This program is suitable whether you're:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>6 weeks, 6 months, or even 6 years postpartum</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Managing diastasis recti or just looking to feel strong again</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Starting fresh after a break or following your initial rehab phase</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <p className="text-sm">
+                      If you've had complications or are unsure where to begin, please consult your doctor or pelvic health physiotherapist first.
+                    </p>
+                    
+                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-yellow-600 text-lg">⚠️</span>
+                        <p className="font-semibold text-primary text-sm">Important notes before you begin</p>
+                      </div>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>This is not a "no pain, no gain" plan. Your healing journey is valid no matter the pace.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Listen to your body: if something feels off, pause and consult your provider.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>You do not need a flat stomach or a perfect gap to be strong or functional.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Give yourself permission to begin again—this is about building trust with your body.</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Topic 3: Safety & Mindset Shifts */}
+            <div>
+              <div className="flex items-center justify-between py-6">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">3</span>
+                  <h3 className="text-lg font-semibold">Safety & Mindset Shifts</h3>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleTopic('safety-mindset')}
+                  className="shrink-0"
+                  data-testid="button-toggle-safety-mindset"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['safety-mindset'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['safety-mindset'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-6">
+                    <p className="text-sm text-center">
+                      Healing is not linear—and that's okay. Let this be a gentle return to movement, not a rush back to pre-pregnancy anything.
+                    </p>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-semibold mb-4 text-primary">Please stop and consult your provider if you experience:</h4>
+                        <ul className="space-y-3 text-sm">
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Pain in your pelvis, back, or abdomen</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>A bulging/doming of the tummy that worsens with effort</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Urinary or fecal incontinence</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Feeling of heaviness or dragging in the pelvis</span>
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold mb-4 text-primary">Mindset Matters:</h4>
+                        <ul className="space-y-3 text-sm">
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>You don't need a flat stomach to be strong.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Core rehab is not about aesthetics—it's about function, connection, and confidence.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>This is a judgment-free space. Begin wherever you are and go at your pace.</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-4 rounded-lg border-l-4 border-gray-300">
+                      <p className="text-sm">
+                        <strong>BULGING/DOMING OF THE TUMMY :</strong> This refers to a noticeable ridge or bulge that appears along the center of your abdomen—often from your breastbone down to your belly button—especially when you're doing movements like sitting up, coughing, or straining. This can be a sign of diastasis recti, which is a separation of the left and right abdominal muscles.
+                      </p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <p className="text-lg italic text-gray-700">You've got this. And I've got you.</p>
+                      <p className="text-lg italic text-gray-700">Let's begin. 💛</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Topic 4: Special Considerations for Each Delivery Type */}
+            <div>
+              <div className="flex items-center justify-between py-6">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">4</span>
+                  <h3 className="text-lg font-semibold">Special Considerations for Each Delivery Type</h3>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleTopic('delivery-type')}
+                  className="shrink-0"
+                  data-testid="button-toggle-delivery-type"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['delivery-type'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['delivery-type'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold text-lg text-blue-400 mb-4">VAGINAL DELIVERY:</h4>
                       <ul className="space-y-3 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>Pain in your pelvis, back, or abdomen</span>
+                          <span><span className="text-primary font-semibold">Core engagement</span> may feel easier to activate, but be mindful of pelvic floor health, especially if you experienced tearing, an episiotomy, or pelvic floor weakness.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>A bulging/doming of the tummy that worsens with effort</span>
+                          <span><span className="text-primary font-semibold">Gradual integration</span> of more dynamic exercises can occur if the pelvic floor feels strong and supported.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>Urinary or fecal incontinence</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Feeling of heaviness or dragging in the pelvis</span>
+                          <span><span className="text-primary font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
                         </li>
                       </ul>
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-4 text-primary">Mindset Matters:</h4>
+                      <h4 className="font-semibold text-lg text-blue-400 mb-4">C-SECTION DELIVERY:</h4>
                       <ul className="space-y-3 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>You don't need a flat stomach to be strong.</span>
+                          <span><span className="text-primary font-semibold">Continue to approach core work</span> with care and intention, avoiding movements that cause pain or pulling around the incision site.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>Core rehab is not about aesthetics—it's about function, connection, and confidence.</span>
+                          <span><span className="text-primary font-semibold">Gradual progression</span> is essential, especially when introducing core-focused movements.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>This is a judgment-free space. Begin wherever you are and go at your pace.</span>
+                          <span><span className="text-primary font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
                         </li>
                       </ul>
                     </div>
                   </div>
-                  
-                  <div className="bg-gray-50 p-4 rounded-lg border-l-4 border-gray-300">
-                    <p className="text-sm">
-                      <strong>BULGING/DOMING OF THE TUMMY :</strong> This refers to a noticeable ridge or bulge that appears along the center of your abdomen—often from your breastbone down to your belly button—especially when you're doing movements like sitting up, coughing, or straining. This can be a sign of diastasis recti, which is a separation of the left and right abdominal muscles.
-                    </p>
-                  </div>
-                  
-                  <div className="text-center">
-                    <p className="text-lg italic text-gray-700">You've got this. And I've got you.</p>
-                    <p className="text-lg italic text-gray-700">Let's begin. 💛</p>
-                  </div>
+                </div>
+              )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Topic 4: Special Considerations for Each Delivery Type */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">4</span>
-                <h3 className="text-lg font-semibold">Special Considerations for Each Delivery Type</h3>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => toggleTopic('delivery-type')}
-                className="shrink-0"
-                data-testid="button-toggle-delivery-type"
-              >
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['delivery-type'] ? 'rotate-180' : ''}`} />
-              </Button>
             </div>
-            {expandedTopics['delivery-type'] && (
-              <div className="mt-6 pt-6 border-t animate-in slide-in-from-top-2 duration-300">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-semibold text-lg text-blue-400 mb-4">VAGINAL DELIVERY:</h4>
-                    <ul className="space-y-3 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><span className="text-primary font-semibold">Core engagement</span> may feel easier to activate, but be mindful of pelvic floor health, especially if you experienced tearing, an episiotomy, or pelvic floor weakness.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><span className="text-primary font-semibold">Gradual integration</span> of more dynamic exercises can occur if the pelvic floor feels strong and supported.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><span className="text-primary font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-lg text-blue-400 mb-4">C-SECTION DELIVERY:</h4>
-                    <ul className="space-y-3 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><span className="text-primary font-semibold">Continue to approach core work</span> with care and intention, avoiding movements that cause pain or pulling around the incision site.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><span className="text-primary font-semibold">Gradual progression</span> is essential, especially when introducing core-focused movements.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><span className="text-primary font-semibold">Pelvic-Floor Cues</span> If you experience pelvic heaviness, bulging at your vaginal opening, or any urinary leakage during exercises, pause the program and seek guidance from a pelvic-floor specialist before continuing.</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Topic 5: How to Use This Guide */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">5</span>
-                <h3 className="text-lg font-semibold">How to Use This Guide</h3>
+            {/* Topic 5: How to Use This Guide */}
+            <div>
+              <div className="flex items-center justify-between py-6">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">5</span>
+                  <h3 className="text-lg font-semibold">How to Use This Guide</h3>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleTopic('how-to-use')}
+                  className="shrink-0"
+                  data-testid="button-toggle-how-to-use"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['how-to-use'] ? 'rotate-180' : ''}`} />
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => toggleTopic('how-to-use')}
-                className="shrink-0"
-                data-testid="button-toggle-how-to-use"
-              >
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['how-to-use'] ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
-            {expandedTopics['how-to-use'] && (
-              <div className="mt-6 pt-6 border-t animate-in slide-in-from-top-2 duration-300">
-                <div className="space-y-5">
-                  <p className="text-sm">
-                    This guide is your companion through rebuilding your core strength, reconnecting with your body, and feeling more confident in movement again.
-                  </p>
-                  
-                  <div>
-                    <p className="font-semibold text-primary text-sm mb-3">Tune In Weekly:</p>
+              {expandedTopics['how-to-use'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-5">
                     <p className="text-sm">
-                      Assess how you feel. Did you sleep well? Are you feeling sore or energized? Are you holding tension from feeding or carrying your baby? Adjust the plan based on energy levels, core connection, and overall recovery.
+                      This guide is your companion through rebuilding your core strength, reconnecting with your body, and feeling more confident in movement again.
                     </p>
-                  </div>
-                  
-                  <div>
-                    <p className="font-semibold text-primary text-sm mb-3">Your program is divided into 6 weekly phases, each with:</p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>A <em>Core Strength Program</em> (Program 1 to 6)</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>A <em>suggested Cardio Plan</em> for that week</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>Built-in Rest Days</em></span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <p className="font-semibold text-primary text-sm mb-3">How to view the videos of the exercises:</p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>All blue underlined text is clickable and will open a video link.</em></span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><strong>PLAY ALL</strong> <em>indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</em></span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <p className="font-semibold text-primary text-sm mb-3">How to schedule your week:</p>
-                    <p className="text-sm mb-2">Each week follows a 7-day rhythm, with a mix of:</p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>Core Training Days</em> (2–4 sessions depending on the week)</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>Optional Cardio Days</em> (1–3 light/moderate intensity sessions)</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>At least 1 full Rest Day</em></span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span>You'll see suggestions like "Day 1, Day 3, Day 5" - these refer to days of your week, so you can fit the workouts to your schedule flexibly.</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <p className="font-semibold text-primary text-sm mb-3">Move at your own pace:</p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>You can stay on a week for longer if needed — don't feel rushed to move forward.</em></span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>If you feel fatigued, emotional, or life just gets full… that's OK. Pause, rest, and return.</em></span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>Progress isn't linear — even one session a week is a win.</em></span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <p className="font-semibold text-primary text-sm mb-3">Final tips:</p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>Begin each session with your breath</em></span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>End with a moment of stillness or gratitude</em></span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>Don't skip rest- it's just as important as movement</em></span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-pink-500 font-bold">❖</span>
-                        <span><em>You're not just rebuilding your core- you're rebuilding trust in your body</em></span>
-                      </li>
-                    </ul>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Tune In Weekly:</p>
+                      <p className="text-sm">
+                        Assess how you feel. Did you sleep well? Are you feeling sore or energized? Are you holding tension from feeding or carrying your baby? Adjust the plan based on energy levels, core connection, and overall recovery.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Your program is divided into 6 weekly phases, each with:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>A <em>Core Strength Program</em> (Program 1 to 6)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>A <em>suggested Cardio Plan</em> for that week</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Built-in Rest Days</em></span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">How to view the videos of the exercises:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>All blue underlined text is clickable and will open a video link.</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>PLAY ALL</strong> <em>indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</em></span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">How to schedule your week:</p>
+                      <p className="text-sm mb-2">Each week follows a 7-day rhythm, with a mix of:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Core Training Days</em> (2–4 sessions depending on the week)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Optional Cardio Days</em> (1–3 light/moderate intensity sessions)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>At least 1 full Rest Day</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>You'll see suggestions like "Day 1, Day 3, Day 5" - these refer to days of your week, so you can fit the workouts to your schedule flexibly.</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Move at your own pace:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>You can stay on a week for longer if needed — don't feel rushed to move forward.</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>If you feel fatigued, emotional, or life just gets full… that's OK. Pause, rest, and return.</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Progress isn't linear — even one session a week is a win.</em></span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Final tips:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Begin each session with your breath</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>End with a moment of stillness or gratitude</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Don't skip rest- it's just as important as movement</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>You're not just rebuilding your core- you're rebuilding trust in your body</em></span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
+              )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+
+            {/* Topic 6: Disclaimer */}
+            <div>
+              <div className="flex items-center justify-between py-6">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">6</span>
+                  <h3 className="text-lg font-semibold">Disclaimer</h3>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleTopic('disclaimer')}
+                  className="shrink-0"
+                  data-testid="button-toggle-disclaimer"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['disclaimer'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['disclaimer'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-6 text-sm">
+                    <div className="text-center">
+                      <div className="text-2xl font-light text-gray-400 mb-4">❋</div>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary mb-3">General Disclaimer:</p>
+                      <p className="leading-relaxed">
+                        "Stronger with Zoe – Postnatal Health & Fitness Bible" is designed to provide general information and support for postpartum women on their recovery, health, and fitness journey. The information and exercises provided are for educational purposes only and are not intended to replace professional medical advice, diagnosis, or treatment from a qualified healthcare provider. Always consult with your physician, physiotherapist, or other qualified health provider regarding any medical condition, postpartum recovery concerns, or exercise regimen.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary mb-3">Participant Responsibility:</p>
+                      <p className="leading-relaxed">
+                        Participation in any postnatal exercise program carries inherent risks, particularly following childbirth. It is the responsibility of each participant to consult with a healthcare provider before beginning this or any other exercise program. By using "Stronger with Zoe – Postnatal Health & Fitness Bible," you acknowledge that you have been cleared by your healthcare provider to engage in postpartum physical activities. You voluntarily assume all risks associated with participation and accept full responsibility for any potential injury, discomfort, or health complications that may arise.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary mb-3">Limitation of Liability:</p>
+                      <p className="leading-relaxed">
+                        Zoe Modgill and "Stronger with Zoe" shall not be liable for any claims, demands, injuries, damages, actions, or causes of action that arise in connection with, or as a result of, the postnatal program, workouts, or any recommendations provided therein. Participants agree to release and hold harmless Zoe Modgill and any affiliated entities from and against any claims arising from their participation in the program.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary mb-3">Accuracy of Information:</p>
+                      <p className="leading-relaxed">
+                        While every effort is made to ensure the accuracy of the information presented in this guide, "Stronger with Zoe" cannot guarantee that all information is up-to-date, accurate, or complete at all times. Health and fitness recommendations evolve, and individual needs may vary. Any reliance you place on the information in this guide is strictly at your own risk.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary mb-3">Privacy:</p>
+                      <p className="leading-relaxed">
+                        Your privacy is of utmost importance. Any personal information you choose to share within "Stronger with Zoe" communities, coaching sessions, or discussions will be treated with confidentiality and will not be disclosed to any third party without your explicit consent, except as required by law.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next Section Button */}
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="text-center">
+              <Button
+                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-8 py-4 h-auto text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                data-testid="button-next-section"
+                onClick={() => {
+                  // Navigate to next section (Understanding Your Core)
+                  document.querySelector('[data-section="understanding-core"]')?.scrollIntoView({ 
+                    behavior: 'smooth' 
+                  });
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <span>Continue to Understanding Your Core</span>
+                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                    <ChevronDown className="w-4 h-4 rotate-270" />
+                  </div>
+                </div>
+              </Button>
+              <p className="text-sm text-muted-foreground mt-3">
+                Ready to dive deeper? Let's explore the foundation of your core recovery.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -800,7 +915,7 @@ function UnderstandingYourCoreSection({
         </CardHeader>
       </Card>
       
-      <div className="space-y-6">
+      <div className="space-y-6" data-section="understanding-core">
         {/* Breathing & Core Activation */}
         <Card>
           <CardHeader>
