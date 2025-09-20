@@ -9,6 +9,8 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
+  phone: text("phone"),
+  profilePictureUrl: text("profile_picture_url"),
   isAdmin: boolean("is_admin").default(false),
   termsAccepted: boolean("terms_accepted").default(false),
   termsAcceptedAt: timestamp("terms_accepted_at"),
@@ -228,6 +230,15 @@ export const insertTermsSchema = createInsertSchema(terms).omit({
   createdAt: true,
 });
 
+// Update user profile schema
+export const updateUserProfileSchema = z.object({
+  firstName: z.string().min(1, "First name is required").optional(),
+  lastName: z.string().min(1, "Last name is required").optional(),
+  email: z.string().email("Please enter a valid email address").optional(),
+  phone: z.string().optional(),
+  profilePictureUrl: z.string().url("Please enter a valid URL").optional(),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -257,6 +268,7 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Terms = typeof terms.$inferSelect;
 export type InsertTerms = z.infer<typeof insertTermsSchema>;
+export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 
 // Login schema
 export const loginSchema = z.object({
