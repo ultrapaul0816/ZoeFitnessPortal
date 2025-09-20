@@ -158,8 +158,8 @@ export class MemStorage implements IStorage {
     const healYourCoreId = randomUUID();
     const healYourCore: Program = {
       id: healYourCoreId,
-      name: "Heal Your Core",
-      description: "6-week postnatal fitness course designed to help you recover and strengthen your core after childbirth",
+      name: "Your Postpartum Strength Recovery Program",
+      description: "A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.",
       level: "Postnatal",
       duration: "6 Weeks",
       equipment: "Minimal Equipment",
