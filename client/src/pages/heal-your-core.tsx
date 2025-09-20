@@ -367,7 +367,7 @@ function WelcomeSection() {
         {/* Cover Image Header */}
         <div className="relative">
           <img 
-            src="/attached_assets/Screenshot 2025-09-20 at 21.03.56_1758382675508.png"
+            src="/assets/Screenshot 2025-09-20 at 21.03.56_1758382675508.png"
             alt="Heal Your Core Program Overview"
             className="w-full h-48 object-cover"
           />
