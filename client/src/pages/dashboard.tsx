@@ -76,10 +76,10 @@ export default function Dashboard() {
             <div className="flex items-center space-x-3">
               {/* Notification Bell */}
               <button 
-                className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors relative"
+                className="p-2 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors relative"
                 data-testid="button-notifications"
               >
-                <Bell className="w-5 h-5 text-gray-600" />
+                <Bell className="w-4 h-4 text-gray-600" />
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                     {unreadCount > 9 ? '9+' : unreadCount}
@@ -89,7 +89,7 @@ export default function Dashboard() {
 
               {/* Profile Avatar */}
               <button 
-                className="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors"
+                className="w-10 h-10 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-profile-avatar"
               >
@@ -98,16 +98,16 @@ export default function Dashboard() {
 
               {/* Hamburger Menu */}
               <button 
-                className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                className="p-2 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-hamburger-menu"
               >
                 {showProfileMenu ? (
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 ) : (
-                  <Menu className="w-5 h-5 text-gray-600" />
+                  <Menu className="w-4 h-4 text-gray-600" />
                 )}
               </button>
             </div>
@@ -149,11 +149,8 @@ export default function Dashboard() {
             {/* Menu Content */}
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="space-y-8 max-w-md">
-                {/* The App Section */}
+                {/* Community */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 underline">
-                    The App
-                  </h3>
                   <nav className="space-y-4">
                     <button
                       onClick={() => {
@@ -164,18 +161,6 @@ export default function Dashboard() {
                       data-testid="menu-community"
                     >
                       Community
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-blog"
-                    >
-                      Blog
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-calendar"
-                    >
-                      Calendar
                     </button>
                   </nav>
                 </div>
