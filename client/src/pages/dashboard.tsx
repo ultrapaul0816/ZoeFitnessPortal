@@ -63,20 +63,11 @@ export default function Dashboard() {
       <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <img 
-                src="/assets/logo.png" 
-                alt="Studio Bloom" 
-                className="h-12 w-auto"
-              />
-            </div>
-            
-            {/* Right side navigation */}
+            {/* Left side navigation */}
             <div className="flex items-center space-x-3">
               {/* Notification Bell */}
               <button 
-                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative shadow-sm"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative shadow-md"
                 data-testid="button-notifications"
               >
                 <Bell className="w-4 h-4 text-gray-600" />
@@ -89,7 +80,7 @@ export default function Dashboard() {
 
               {/* Hamburger Menu */}
               <button 
-                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow-sm"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow-md"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-hamburger-menu"
               >
@@ -100,6 +91,25 @@ export default function Dashboard() {
                 ) : (
                   <Menu className="w-4 h-4 text-gray-600" />
                 )}
+              </button>
+            </div>
+            
+            {/* Centered Logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <img 
+                src="/assets/logo.png" 
+                alt="Studio Bloom" 
+                className="h-12 w-auto"
+              />
+            </div>
+            
+            {/* Right side spacer to maintain balance */}
+            <div className="flex items-center space-x-3 opacity-0 pointer-events-none">
+              <button className="p-2 rounded-full">
+                <Bell className="w-4 h-4" />
+              </button>
+              <button className="p-2 rounded-full">
+                <Menu className="w-4 h-4" />
               </button>
             </div>
           </div>
