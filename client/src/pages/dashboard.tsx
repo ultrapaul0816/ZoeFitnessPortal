@@ -174,12 +174,22 @@ export default function Dashboard() {
 
             {/* Menu Content */}
             <div className="p-6">
-              {/* The App Section */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">
-                  The App
+              {/* My Library Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-600 mb-4 border-b border-gray-100 pb-2">
+                  My Library
                 </h3>
                 <nav className="space-y-2">
+                  <button
+                    onClick={() => {
+                      setLocation("/my-library");
+                      setShowProfileMenu(false);
+                    }}
+                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+                    data-testid="menu-my-library"
+                  >
+                    My Library
+                  </button>
                   <button
                     onClick={() => {
                       setShowCommunity(true);
@@ -190,27 +200,6 @@ export default function Dashboard() {
                   >
                     Community
                   </button>
-                  <button
-                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                    data-testid="menu-blog"
-                  >
-                    Blog
-                  </button>
-                  <button
-                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                    data-testid="menu-calendar"
-                  >
-                    Calendar
-                  </button>
-                </nav>
-              </div>
-
-              {/* My Library Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-600 mb-4 border-b border-gray-100 pb-2">
-                  My Library
-                </h3>
-                <nav className="space-y-2">
                   <button
                     className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
                     data-testid="menu-email-notifications"

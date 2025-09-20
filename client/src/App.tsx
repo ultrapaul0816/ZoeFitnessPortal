@@ -7,6 +7,7 @@ import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
 import HealYourCorePage from "@/pages/heal-your-core";
+import MyLibrary from "@/pages/my-library";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/heal-your-core" component={HealYourCorePage} />
+      <Route path="/my-library" component={MyLibrary} />
       <Route component={NotFound} />
     </Switch>
   );
