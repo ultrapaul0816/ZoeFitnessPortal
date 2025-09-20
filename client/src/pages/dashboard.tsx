@@ -102,7 +102,13 @@ export default function Dashboard() {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-hamburger-menu"
               >
-                <Menu className="w-5 h-5 text-gray-600" />
+                {showProfileMenu ? (
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <Menu className="w-5 h-5 text-gray-600" />
+                )}
               </button>
             </div>
           </div>
@@ -114,55 +120,21 @@ export default function Dashboard() {
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0" onClick={() => setShowProfileMenu(false)} />
           <div className="absolute right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-xl z-60 overflow-y-auto">
-            {/* Header Section */}
+            {/* User Info Section */}
             <div className="border-b border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <img 
-                    src="/assets/logo.png" 
-                    alt="Studio Bloom" 
-                    className="h-6 w-auto"
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button 
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                    data-testid="button-notifications-menu"
-                  >
-                    <Bell className="w-4 h-4 text-gray-600" />
-                  </button>
-                  <button 
-                    className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-sm"
-                    data-testid="profile-avatar-header"
-                  >
-                    {user.firstName?.[0]}{user.lastName?.[0]}
-                  </button>
-                  <button 
-                    onClick={() => setShowProfileMenu(false)}
-                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                    data-testid="button-close-profile-menu"
-                  >
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              {/* User Info */}
               <button
                 onClick={() => {
                   setShowProfileSettings(true);
                   setShowProfileMenu(false);
                 }}
-                className="flex items-center space-x-3 py-3 border-b border-gray-100 w-full text-left hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-3 w-full text-left hover:bg-gray-50 transition-colors p-2 rounded-lg"
                 data-testid="button-open-profile-settings"
               >
                 <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
                   {user.firstName?.[0]}{user.lastName?.[0]}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-gray-900 text-base">
                     {user.firstName} {user.lastName}
                   </p>
                   <p className="text-sm text-gray-500">
@@ -174,55 +146,79 @@ export default function Dashboard() {
 
             {/* Menu Content */}
             <div className="p-6">
-              {/* My Library Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-600 mb-4 border-b border-gray-100 pb-2">
-                  My Library
-                </h3>
-                <nav className="space-y-2">
-                  <button
-                    onClick={() => {
-                      setLocation("/my-library");
-                      setShowProfileMenu(false);
-                    }}
-                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                    data-testid="menu-my-library"
-                  >
+              {/* Menu Sections */}
+              <div className="space-y-8">
+                {/* The App Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    The App
+                  </h3>
+                  <nav className="space-y-3">
+                    <button
+                      onClick={() => {
+                        setShowCommunity(true);
+                        setShowProfileMenu(false);
+                      }}
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-community"
+                    >
+                      Community
+                    </button>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-blog"
+                    >
+                      Blog
+                    </button>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors underline"
+                      data-testid="menu-calendar"
+                    >
+                      Calendar
+                    </button>
+                  </nav>
+                </div>
+
+                {/* My Library Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-600 mb-4">
                     My Library
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowCommunity(true);
-                      setShowProfileMenu(false);
-                    }}
-                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                    data-testid="menu-community"
-                  >
-                    Community
-                  </button>
-                  <button
-                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                    data-testid="menu-email-notifications"
-                  >
-                    Email notifications
-                  </button>
-                  <button
-                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                    data-testid="menu-purchases"
-                  >
-                    Purchases & payments
-                  </button>
-                  <button
-                    onClick={() => {
-                      localStorage.removeItem("user");
-                      setLocation("/");
-                    }}
-                    className="block w-full text-left px-0 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                    data-testid="menu-sign-out"
-                  >
-                    Sign out
-                  </button>
-                </nav>
+                  </h3>
+                  <nav className="space-y-3">
+                    <button
+                      onClick={() => {
+                        setLocation("/my-library");
+                        setShowProfileMenu(false);
+                      }}
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-my-library"
+                    >
+                      My Library
+                    </button>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-email-notifications"
+                    >
+                      Email notifications
+                    </button>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-purchases"
+                    >
+                      Purchases & payments
+                    </button>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("user");
+                        setLocation("/");
+                      }}
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-sign-out"
+                    >
+                      Sign out
+                    </button>
+                  </nav>
+                </div>
               </div>
             </div>
           </div>
