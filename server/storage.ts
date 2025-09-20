@@ -164,7 +164,7 @@ export class MemStorage implements IStorage {
       duration: "6 Weeks",
       equipment: "Minimal Equipment",
       imageUrl: "/assets/program-cover.png",
-      price: 4500, // Premium pricing for specialized program
+      price: 2500, // Premium pricing for specialized program
       workoutCount: 22, // 4 workouts week 1&6, 3 workouts weeks 2-5
       isActive: true,
       isVisible: true,

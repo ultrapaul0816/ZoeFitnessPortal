@@ -86,6 +86,9 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
             </div>
           </div>
         )}
+        <Badge className="absolute top-3 left-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-semibold shadow-lg border-0">
+          {program.level}
+        </Badge>
         {hasAccess && (
           <Badge className="absolute top-3 right-3 bg-green-600 hover:bg-green-700">
             <Star className="w-3 h-3 mr-1" />
@@ -95,11 +98,8 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
       </div>
 
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3">
           <h3 className="font-semibold text-lg">{program.name}</h3>
-          <Badge variant="secondary" className="rounded-none px-4 py-2">
-            {program.level}
-          </Badge>
         </div>
         
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
