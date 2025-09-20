@@ -27,7 +27,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
         {/* Header - Logo */}
         <div className="pt-8 pb-6 text-center">
           <img 
-            src="/attached_assets/Screenshot 2025-09-20 at 21.18.10_1758383297530.png"
+            src="/assets/Screenshot 2025-09-20 at 21.18.10_1758383297530.png"
             alt="Postnatal Pregnancy with Zoe Logo"
             className="mx-auto h-24 w-auto"
           />
@@ -110,7 +110,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
             <div className="flex justify-center items-start">
               <div className="w-full max-w-sm">
                 <img 
-                  src="/attached_assets/zoe-photo.png"
+                  src="/assets/zoe-photo.png"
                   alt="Zoe with her children"
                   className="w-full h-auto object-cover rounded-lg grayscale"
                 />
