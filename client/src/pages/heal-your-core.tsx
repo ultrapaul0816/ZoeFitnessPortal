@@ -818,7 +818,7 @@ function WelcomeSection() {
                 </Button>
               </div>
               {expandedTopics['disclaimer'] && (
-                <div className="pb-3 animate-in slide-in-from-top-2 duration-300">
+                <div className="pb-0 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-6 text-sm">
                     
                     <div>
