@@ -219,13 +219,13 @@ export default function HealYourCorePage() {
                   </div>
                 </div>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => setIsProgressExpanded(!isProgressExpanded)}
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-4 md:ml-6"
+                  className="shrink-0"
                   data-testid="button-toggle-progress"
                 >
-                  <ChevronDown className={`w-4 h-4 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
             </div>
@@ -818,7 +818,7 @@ function WelcomeSection() {
                 </Button>
               </div>
               {expandedTopics['disclaimer'] && (
-                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                <div className="pb-3 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-6 text-sm">
                     <div className="text-center">
                       <div className="text-2xl font-light text-gray-400 mb-4">❋</div>
