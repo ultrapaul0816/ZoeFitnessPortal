@@ -76,7 +76,7 @@ export default function Dashboard() {
             <div className="flex items-center space-x-3">
               {/* Notification Bell */}
               <button 
-                className="p-2 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors relative"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative shadow-sm"
                 data-testid="button-notifications"
               >
                 <Bell className="w-4 h-4 text-gray-600" />
@@ -89,7 +89,7 @@ export default function Dashboard() {
 
               {/* Profile Avatar */}
               <button 
-                className="w-10 h-10 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors"
+                className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors shadow-sm"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-profile-avatar"
               >
@@ -98,7 +98,7 @@ export default function Dashboard() {
 
               {/* Hamburger Menu */}
               <button 
-                className="p-2 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow-sm"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-hamburger-menu"
               >
