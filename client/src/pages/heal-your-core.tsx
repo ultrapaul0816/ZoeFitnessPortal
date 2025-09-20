@@ -181,12 +181,13 @@ export default function HealYourCorePage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <Button 
-            variant="ghost" 
+            variant="outline"
             onClick={() => navigate("/dashboard")}
-            data-testid="button-back-to-dashboard"
+            data-testid="button-back"
+            className="bg-white hover:bg-gray-50 border-gray-300 shadow-sm px-4 py-2 rounded-lg font-medium"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
+            Back
           </Button>
           <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
             {healYourCoreProgram.level}
@@ -196,7 +197,7 @@ export default function HealYourCorePage() {
         {/* Progress-Focused Welcome Section */}
         <Accordion type="single" collapsible className="mb-6" defaultValue="">
           <AccordionItem value="welcome" className="border-0">
-            <AccordionTrigger className="hover:no-underline p-0 [&[data-state=open]>div>div>.accordion-chevron]:rotate-180">
+            <AccordionTrigger className="hover:no-underline p-0 [&[data-state=open]_.accordion-chevron]:rotate-180">
               <Card className="w-full border-pink-200 bg-gradient-to-r from-pink-50 to-purple-50 shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between w-full">
@@ -218,9 +219,13 @@ export default function HealYourCorePage() {
                           </Progress>
                         </div>
                       </div>
-                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 ml-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-4"
+                      >
                         <ChevronDown className="w-5 h-5 text-pink-600 transition-transform duration-200 accordion-chevron" />
-                      </div>
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -272,8 +277,9 @@ export default function HealYourCorePage() {
         </Accordion>
 
         {/* Navigation Tabs */}
-        <Tabs defaultValue="welcome" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-3 h-auto p-3 bg-gray-50 rounded-xl">
+        <div className="w-full max-w-6xl">
+          <Tabs defaultValue="welcome" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-3 h-auto p-3 bg-gray-50 rounded-xl">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <BookOpen className="w-5 h-5 mb-2" />
               <span className="font-medium">Welcome</span>
@@ -330,7 +336,8 @@ export default function HealYourCorePage() {
           <TabsContent value="nutrition">
             <TheRoleOfNutritionSection />
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </div>
 
         {/* Knowledge Article Modal */}
         {selectedArticle && (
