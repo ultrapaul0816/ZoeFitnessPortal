@@ -117,8 +117,8 @@ export default function Dashboard() {
 
       {/* Profile Menu Dropdown */}
       {showProfileMenu && (
-        <div className={`fixed top-16 left-0 right-0 bottom-0 z-50 bg-white transform transition-all duration-500 ease-out ${
-          showProfileMenu ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        <div className={`fixed top-16 left-0 right-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-sm transform transition-all duration-700 ease-out ${
+          showProfileMenu ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}>
           {/* Content */}
           <div className="flex flex-col h-full">
