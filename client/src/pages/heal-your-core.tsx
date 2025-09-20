@@ -867,18 +867,12 @@ function WelcomeSection() {
               <Button
                 className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
                 data-testid="button-next-section"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  
-                  alert('Button clicked! Scrolling now...');
-                  
-                  // Simple approach - scroll to a fixed distance
-                  const scrollDistance = 800; // Scroll 800px down
-                  window.scrollBy({
-                    top: scrollDistance,
-                    behavior: 'smooth'
-                  });
+                onClick={() => {
+                  // Navigate to the Core tab (Understanding Your Core)
+                  const coreTab = document.querySelector('[data-testid="tab-understanding"]');
+                  if (coreTab) {
+                    (coreTab as HTMLElement).click();
+                  }
                 }}
               >
                 Next Section
