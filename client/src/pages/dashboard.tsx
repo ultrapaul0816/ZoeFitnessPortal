@@ -10,6 +10,7 @@ import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
 import NotificationsDropdown from "@/components/notifications-dropdown";
 import ProfileModal from "@/components/profile-modal";
+import ProfileSettings from "@/components/profile-settings";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 export default function Dashboard() {
@@ -18,6 +19,7 @@ export default function Dashboard() {
   const [showCommunity, setShowCommunity] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [showHamburgerMenu, setShowHamburgerMenu] = useState(false);
 
   useEffect(() => {
@@ -148,7 +150,14 @@ export default function Dashboard() {
               </div>
               
               {/* User Info */}
-              <div className="flex items-center space-x-3 py-3 border-b border-gray-100">
+              <button
+                onClick={() => {
+                  setShowProfileSettings(true);
+                  setShowProfileMenu(false);
+                }}
+                className="flex items-center space-x-3 py-3 border-b border-gray-100 w-full text-left hover:bg-gray-50 transition-colors"
+                data-testid="button-open-profile-settings"
+              >
                 <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
                   {user.firstName?.[0]}{user.lastName?.[0]}
                 </div>
@@ -160,7 +169,7 @@ export default function Dashboard() {
                     {user.email}
                   </p>
                 </div>
-              </div>
+              </button>
             </div>
 
             {/* Menu Content */}
@@ -230,6 +239,14 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Profile Settings */}
+      <ProfileSettings
+        isOpen={showProfileSettings}
+        onClose={() => setShowProfileSettings(false)}
+        user={user}
+        onUserUpdate={(updatedUser) => setUser(updatedUser)}
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
