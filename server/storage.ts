@@ -1,5 +1,19 @@
-import { type User, type InsertUser, type Program, type InsertProgram, type MemberProgram, type InsertMemberProgram, type Workout, type InsertWorkout, type WorkoutCompletion, type InsertWorkoutCompletion, type SavedWorkout, type InsertSavedWorkout, type CommunityPost, type InsertCommunityPost, type Notification, type InsertNotification, type Terms, type InsertTerms, type ProgramPurchase, type InsertProgramPurchase, type ProgressTracking, type InsertProgressTracking, type KnowledgeArticle, type InsertKnowledgeArticle, type Exercise, type InsertExercise, type WeeklyWorkout, type InsertWeeklyWorkout } from "@shared/schema";
+import { 
+  users, programs, memberPrograms, workouts, workoutCompletions, savedWorkouts,
+  communityPosts, notifications, terms, programPurchases, progressTracking,
+  knowledgeArticles, exercises, weeklyWorkouts,
+  type User, type InsertUser, type Program, type InsertProgram, 
+  type MemberProgram, type InsertMemberProgram, type Workout, type InsertWorkout, 
+  type WorkoutCompletion, type InsertWorkoutCompletion, type SavedWorkout, 
+  type InsertSavedWorkout, type CommunityPost, type InsertCommunityPost, 
+  type Notification, type InsertNotification, type Terms, type InsertTerms, 
+  type ProgramPurchase, type InsertProgramPurchase, type ProgressTracking, 
+  type InsertProgressTracking, type KnowledgeArticle, type InsertKnowledgeArticle, 
+  type Exercise, type InsertExercise, type WeeklyWorkout, type InsertWeeklyWorkout 
+} from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -741,4 +755,309 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database Storage Implementation based on javascript_database integration
+export class DatabaseStorage implements IStorage {
+  public assetDisplayNames: Map<string, string>;
+
+  constructor() {
+    this.assetDisplayNames = new Map();
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getPrograms(): Promise<Program[]> {
+    return await db.select().from(programs);
+  }
+
+  async getProgram(id: string): Promise<Program | undefined> {
+    const [program] = await db.select().from(programs).where(eq(programs.id, id));
+    return program || undefined;
+  }
+
+  async createProgram(insertProgram: InsertProgram): Promise<Program> {
+    const [program] = await db
+      .insert(programs)
+      .values(insertProgram)
+      .returning();
+    return program;
+  }
+
+  async getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]> {
+    return await db
+      .select()
+      .from(memberPrograms)
+      .innerJoin(programs, eq(memberPrograms.programId, programs.id))
+      .where(eq(memberPrograms.userId, userId))
+      .then(rows => rows.map(row => ({ ...row.member_programs, program: row.programs })));
+  }
+
+  async createMemberProgram(insertMemberProgram: InsertMemberProgram): Promise<MemberProgram> {
+    const [memberProgram] = await db
+      .insert(memberPrograms)
+      .values(insertMemberProgram)
+      .returning();
+    return memberProgram;
+  }
+
+  async getWorkoutsByProgram(programId: string): Promise<Workout[]> {
+    return await db.select().from(workouts).where(eq(workouts.programId, programId));
+  }
+
+  async getWorkout(id: string): Promise<Workout | undefined> {
+    const [workout] = await db.select().from(workouts).where(eq(workouts.id, id));
+    return workout || undefined;
+  }
+
+  async createWorkout(insertWorkout: InsertWorkout): Promise<Workout> {
+    const [workout] = await db
+      .insert(workouts)
+      .values(insertWorkout)
+      .returning();
+    return workout;
+  }
+
+  async getWorkoutCompletions(userId: string): Promise<WorkoutCompletion[]> {
+    return await db.select().from(workoutCompletions).where(eq(workoutCompletions.userId, userId));
+  }
+
+  async createWorkoutCompletion(insertCompletion: InsertWorkoutCompletion): Promise<WorkoutCompletion> {
+    const [completion] = await db
+      .insert(workoutCompletions)
+      .values(insertCompletion)
+      .returning();
+    return completion;
+  }
+
+  async getSavedWorkouts(userId: string): Promise<(SavedWorkout & { workout: Workout })[]> {
+    return await db
+      .select()
+      .from(savedWorkouts)
+      .innerJoin(workouts, eq(savedWorkouts.workoutId, workouts.id))
+      .where(eq(savedWorkouts.userId, userId))
+      .then(rows => rows.map(row => ({ ...row.saved_workouts, workout: row.workouts })));
+  }
+
+  async createSavedWorkout(insertSavedWorkout: InsertSavedWorkout): Promise<SavedWorkout> {
+    const [savedWorkout] = await db
+      .insert(savedWorkouts)
+      .values(insertSavedWorkout)
+      .returning();
+    return savedWorkout;
+  }
+
+  async deleteSavedWorkout(userId: string, workoutId: string): Promise<boolean> {
+    const result = await db
+      .delete(savedWorkouts)
+      .where(and(eq(savedWorkouts.userId, userId), eq(savedWorkouts.workoutId, workoutId)));
+    return (result as any).rowCount > 0;
+  }
+
+  async getCommunityPosts(channel?: string): Promise<(CommunityPost & { user: Pick<User, 'firstName' | 'lastName'> })[]> {
+    const query = db
+      .select({
+        id: communityPosts.id,
+        userId: communityPosts.userId,
+        channel: communityPosts.channel,
+        content: communityPosts.content,
+        createdAt: communityPosts.createdAt,
+        isModerated: communityPosts.isModerated,
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName
+        }
+      })
+      .from(communityPosts)
+      .innerJoin(users, eq(communityPosts.userId, users.id));
+    
+    if (channel) {
+      query.where(eq(communityPosts.channel, channel));
+    }
+    
+    return await query;
+  }
+
+  async createCommunityPost(insertPost: InsertCommunityPost): Promise<CommunityPost> {
+    const [post] = await db
+      .insert(communityPosts)
+      .values(insertPost)
+      .returning();
+    return post;
+  }
+
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    return await db.select().from(notifications).where(eq(notifications.userId, userId));
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const [notification] = await db
+      .insert(notifications)
+      .values(insertNotification)
+      .returning();
+    return notification;
+  }
+
+  async markNotificationRead(id: string): Promise<boolean> {
+    const result = await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, id));
+    return (result as any).rowCount > 0;
+  }
+
+  async getActiveTerms(): Promise<Terms | undefined> {
+    const [activeTerms] = await db.select().from(terms).where(eq(terms.isActive, true));
+    return activeTerms || undefined;
+  }
+
+  async createTerms(insertTerms: InsertTerms): Promise<Terms> {
+    const [termsRecord] = await db
+      .insert(terms)
+      .values(insertTerms)
+      .returning();
+    return termsRecord;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getUserStats(): Promise<{ totalMembers: number; activeMembers: number; expiringSoon: number; }> {
+    const allUsers = await db.select().from(users);
+    const allMemberPrograms = await db.select().from(memberPrograms);
+    
+    const totalMembers = allUsers.filter(u => !u.isAdmin).length;
+    const activeMembers = allMemberPrograms.filter(mp => mp.isActive).length;
+    const expiringSoon = allMemberPrograms.filter(mp => {
+      const daysUntilExpiry = (mp.expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+      return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
+    }).length;
+
+    return { totalMembers, activeMembers, expiringSoon };
+  }
+
+  async createProgramPurchase(insertPurchase: InsertProgramPurchase): Promise<ProgramPurchase> {
+    const [purchase] = await db
+      .insert(programPurchases)
+      .values(insertPurchase)
+      .returning();
+    return purchase;
+  }
+
+  async getUserPurchases(userId: string): Promise<ProgramPurchase[]> {
+    return await db.select().from(programPurchases).where(eq(programPurchases.userId, userId));
+  }
+
+  async hasProgramAccess(userId: string, programId: string): Promise<boolean> {
+    const [purchase] = await db
+      .select()
+      .from(programPurchases)
+      .where(and(eq(programPurchases.userId, userId), eq(programPurchases.programId, programId), eq(programPurchases.status, 'active')));
+    return !!purchase;
+  }
+
+  async createProgressEntry(insertEntry: InsertProgressTracking): Promise<ProgressTracking> {
+    const [entry] = await db
+      .insert(progressTracking)
+      .values(insertEntry)
+      .returning();
+    return entry;
+  }
+
+  async getProgressEntries(userId: string, programId: string): Promise<ProgressTracking[]> {
+    return await db
+      .select()
+      .from(progressTracking)
+      .where(and(eq(progressTracking.userId, userId), eq(progressTracking.programId, programId)));
+  }
+
+  async updateProgressEntry(id: string, updates: Partial<ProgressTracking>): Promise<ProgressTracking | undefined> {
+    const [entry] = await db
+      .update(progressTracking)
+      .set(updates)
+      .where(eq(progressTracking.id, id))
+      .returning();
+    return entry || undefined;
+  }
+
+  async createKnowledgeArticle(insertArticle: InsertKnowledgeArticle): Promise<KnowledgeArticle> {
+    const [article] = await db
+      .insert(knowledgeArticles)
+      .values(insertArticle)
+      .returning();
+    return article;
+  }
+
+  async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> {
+    return await db.select().from(knowledgeArticles).where(eq(knowledgeArticles.programId, programId));
+  }
+
+  async createExercise(insertExercise: InsertExercise): Promise<Exercise> {
+    const [exercise] = await db
+      .insert(exercises)
+      .values(insertExercise)
+      .returning();
+    return exercise;
+  }
+
+  async getExercises(): Promise<Exercise[]> {
+    return await db.select().from(exercises);
+  }
+
+  async getExercise(id: string): Promise<Exercise | undefined> {
+    const [exercise] = await db.select().from(exercises).where(eq(exercises.id, id));
+    return exercise || undefined;
+  }
+
+  async createWeeklyWorkout(insertWorkout: InsertWeeklyWorkout): Promise<WeeklyWorkout> {
+    const [weeklyWorkout] = await db
+      .insert(weeklyWorkouts)
+      .values(insertWorkout)
+      .returning();
+    return weeklyWorkout;
+  }
+
+  async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
+    return await db
+      .select()
+      .from(weeklyWorkouts)
+      .innerJoin(exercises, eq(weeklyWorkouts.exerciseId, exercises.id))
+      .where(and(eq(weeklyWorkouts.programId, programId), eq(weeklyWorkouts.week, week)))
+      .then(rows => rows.map(row => ({ ...row.weekly_workouts, exercise: row.exercises })));
+  }
+
+  async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
+    return await db
+      .select()
+      .from(weeklyWorkouts)
+      .innerJoin(exercises, eq(weeklyWorkouts.exerciseId, exercises.id))
+      .where(eq(weeklyWorkouts.programId, programId))
+      .then(rows => rows.map(row => ({ ...row.weekly_workouts, exercise: row.exercises })));
+  }
+}
+
+export const storage = new DatabaseStorage();
