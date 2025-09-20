@@ -363,31 +363,27 @@ function WelcomeSection() {
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden">
-        {/* Cover Image Header */}
-        <div className="relative">
-          <img 
-            src="/assets/Screenshot 2025-09-20 at 21.03.56_1758382675508.png"
-            alt="Heal Your Core Program Overview"
-            className="w-full h-48 object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-          <div className="absolute bottom-4 left-6 right-6">
-            <h2 className="text-2xl font-bold text-white mb-2">✨ Welcome - Start Here</h2>
-            <p className="text-white/90 text-sm">
-              Essential preparatory information for your core recovery journey
-            </p>
+      <Card>
+        {/* Simple Header */}
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-foreground mb-2">✨ Welcome - Start Here</h2>
+              <p className="text-muted-foreground text-sm">
+                Essential preparatory information for your core recovery journey
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="ml-4 shrink-0"
+              data-testid="button-toggle-welcome"
+            >
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
-            data-testid="button-toggle-welcome"
-          >
-            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
-          </Button>
-        </div>
+        </CardContent>
         
         {/* Collapsible Content */}
         {isExpanded && (
