@@ -117,107 +117,200 @@ export default function Dashboard() {
 
       {/* Profile Menu Dropdown */}
       {showProfileMenu && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0" onClick={() => setShowProfileMenu(false)} />
-          <div className="absolute right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-xl z-60 overflow-y-auto">
-            {/* User Info Section */}
-            <div className="border-b border-gray-200 p-6">
-              <button
-                onClick={() => {
-                  setShowProfileSettings(true);
-                  setShowProfileMenu(false);
-                }}
-                className="flex items-center space-x-3 w-full text-left hover:bg-gray-50 transition-colors p-2 rounded-lg"
-                data-testid="button-open-profile-settings"
-              >
-                <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
+        <div className="fixed inset-0 z-50 bg-white">
+          {/* Header Section */}
+          <div className="border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <img 
+                  src="/assets/logo.png" 
+                  alt="Studio Bloom" 
+                  className="h-8 w-auto"
+                />
+              </div>
+              <div className="flex items-center space-x-3">
+                <button 
+                  className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                  data-testid="button-notifications-menu"
+                >
+                  <Bell className="w-5 h-5 text-gray-600" />
+                </button>
+                <button 
+                  className="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors"
+                  data-testid="profile-avatar-header"
+                >
                   {user.firstName?.[0]}{user.lastName?.[0]}
+                </button>
+                <button 
+                  onClick={() => setShowProfileMenu(false)}
+                  className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                  data-testid="button-close-profile-menu"
+                >
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex h-[calc(100vh-80px)]">
+            {/* Left Side - Dashboard Preview */}
+            <div className="flex-1 p-6 bg-gray-50 overflow-hidden">
+              <div className="space-y-6 opacity-60">
+                {/* User Info */}
+                <div className="flex items-center space-x-3">
+                  <div className="w-16 h-16 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-lg">
+                    {user.firstName?.[0]}{user.lastName?.[0]}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Welcome back, {user.firstName}!</h2>
+                    <p className="text-gray-500">Ready to get stronger today?</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900 text-base">
-                    {user.firstName} {user.lastName}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {user.email}
-                  </p>
+
+                {/* Stats Preview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <p className="text-sm text-gray-500">Workouts Completed</p>
+                    <p className="text-2xl font-bold">0</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <p className="text-sm text-gray-500">Current Streak</p>
+                    <p className="text-2xl font-bold">7 days</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <p className="text-sm text-gray-500">Programs Active</p>
+                    <p className="text-2xl font-bold">0</p>
+                  </div>
                 </div>
-              </button>
+
+                {/* Section Headers */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-gray-900">Your Programs</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Premium Programs</h3>
+                </div>
+              </div>
             </div>
 
-            {/* Menu Content */}
-            <div className="p-6">
-              {/* Menu Sections */}
-              <div className="space-y-8">
-                {/* The App Section */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    The App
-                  </h3>
-                  <nav className="space-y-3">
-                    <button
-                      onClick={() => {
-                        setShowCommunity(true);
-                        setShowProfileMenu(false);
-                      }}
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-community"
-                    >
-                      Community
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-blog"
-                    >
-                      Blog
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors underline"
-                      data-testid="menu-calendar"
-                    >
-                      Calendar
-                    </button>
-                  </nav>
-                </div>
+            {/* Right Side - Menu Content */}
+            <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
+              {/* User Info Section */}
+              <div className="border-b border-gray-200 p-6">
+                <button
+                  onClick={() => {
+                    setShowProfileSettings(true);
+                    setShowProfileMenu(false);
+                  }}
+                  className="flex items-center space-x-3 w-full text-left hover:bg-gray-50 transition-colors p-2 rounded-lg"
+                  data-testid="button-open-profile-settings"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
+                    {user.firstName?.[0]}{user.lastName?.[0]}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-base">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {user.email}
+                    </p>
+                  </div>
+                </button>
+              </div>
 
-                {/* My Library Section */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-600 mb-4">
-                    My Library
-                  </h3>
-                  <nav className="space-y-3">
-                    <button
-                      onClick={() => {
-                        setLocation("/my-library");
-                        setShowProfileMenu(false);
-                      }}
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-my-library"
-                    >
+              {/* Menu Content */}
+              <div className="flex-1 p-6">
+                <div className="space-y-8">
+                  {/* The App Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      The App
+                    </h3>
+                    <nav className="space-y-3">
+                      <button
+                        onClick={() => {
+                          setShowCommunity(true);
+                          setShowProfileMenu(false);
+                        }}
+                        className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                        data-testid="menu-community"
+                      >
+                        Community
+                      </button>
+                      <button
+                        className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                        data-testid="menu-blog"
+                      >
+                        Blog
+                      </button>
+                      <button
+                        className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors underline"
+                        data-testid="menu-calendar"
+                      >
+                        Calendar
+                      </button>
+                    </nav>
+                  </div>
+
+                  {/* My Library Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-600 mb-4">
                       My Library
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-email-notifications"
-                    >
-                      Email notifications
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-purchases"
-                    >
-                      Purchases & payments
-                    </button>
-                    <button
-                      onClick={() => {
-                        localStorage.removeItem("user");
-                        setLocation("/");
-                      }}
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-sign-out"
-                    >
-                      Sign out
-                    </button>
-                  </nav>
+                    </h3>
+                    <nav className="space-y-3">
+                      <button
+                        onClick={() => {
+                          setLocation("/my-library");
+                          setShowProfileMenu(false);
+                        }}
+                        className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                        data-testid="menu-my-library"
+                      >
+                        My Library
+                      </button>
+                      <button
+                        className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                        data-testid="menu-email-notifications"
+                      >
+                        Email notifications
+                      </button>
+                      <button
+                        className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                        data-testid="menu-purchases"
+                      >
+                        Purchases & payments
+                      </button>
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem("user");
+                          setLocation("/");
+                        }}
+                        className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                        data-testid="menu-sign-out"
+                      >
+                        Sign out
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="border-t border-gray-200 p-6">
+                <div className="space-y-4">
+                  <button className="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                    Get the app →
+                  </button>
+                  <div className="flex flex-wrap gap-3 text-sm text-gray-500">
+                    <button className="hover:text-gray-700 transition-colors">Terms</button>
+                    <span>•</span>
+                    <button className="hover:text-gray-700 transition-colors">Privacy</button>
+                    <span>•</span>
+                    <button className="hover:text-gray-700 transition-colors">Buy gift card</button>
+                    <span>•</span>
+                    <button className="hover:text-gray-700 transition-colors">Claim gift card</button>
+                  </div>
                 </div>
               </div>
             </div>
