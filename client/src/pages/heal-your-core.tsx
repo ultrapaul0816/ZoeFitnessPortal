@@ -802,7 +802,7 @@ function WelcomeSection() {
 
             {/* Topic 6: Disclaimer */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between pt-5 pb-0">
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">6</span>
                   <h3 className="text-sm font-semibold text-left">Disclaimer</h3>
