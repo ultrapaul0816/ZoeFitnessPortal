@@ -57,8 +57,12 @@ export default function Dashboard() {
       {/* Navigation Header */}
       <header className="bg-card border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center justify-center">
+          <div className="flex items-center h-16 relative">
+            {/* Spacer for left side */}
+            <div className="flex-1"></div>
+            
+            {/* Centered Logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
               <div className="w-20 h-14 flex items-center justify-center">
                 <img 
                   src="/assets/logo.png" 
@@ -68,7 +72,8 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-6">
+            {/* Right side navigation */}
+            <div className="flex items-center space-x-6 ml-auto">
               {/* Notifications */}
               <div className="relative">
                 <Button
