@@ -117,177 +117,162 @@ export default function Dashboard() {
 
       {/* Profile Menu Dropdown */}
       {showProfileMenu && (
-        <div className="fixed inset-0 z-50">
-          {/* Background overlay */}
-          <div 
-            className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
-            onClick={() => setShowProfileMenu(false)}
-          />
-          
-          {/* Menu Panel */}
-          <div className={`fixed bottom-0 left-0 right-0 bg-white transform transition-transform duration-300 ease-out ${
-            showProfileMenu ? 'translate-y-0' : 'translate-y-full'
-          }`}>
-            <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
-              <div className="flex h-full">
-                {/* Left Side - Dashboard Preview */}
-                <div className="flex-1 p-6 bg-gray-50 overflow-hidden">
-                  <div className="space-y-6 opacity-60">
-                    {/* User Info */}
-                    <div className="flex items-center space-x-3">
-                      <div className="w-16 h-16 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-lg">
-                        {user.firstName?.[0]}{user.lastName?.[0]}
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Welcome back, {user.firstName}!</h2>
-                        <p className="text-gray-500">Ready to get stronger today?</p>
-                      </div>
-                    </div>
+        <div className={`fixed inset-0 z-50 bg-white transform transition-transform duration-300 ease-out ${
+          showProfileMenu ? 'translate-y-0' : 'translate-y-full'
+        }`}>
+          {/* Header Section */}
+          <div className="border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <img 
+                  src="/assets/logo.png" 
+                  alt="Studio Bloom" 
+                  className="h-8 w-auto"
+                />
+              </div>
+              <div className="flex items-center space-x-3">
+                <button 
+                  className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                  data-testid="button-notifications-menu"
+                >
+                  <Bell className="w-5 h-5 text-gray-600" />
+                </button>
+                <button 
+                  className="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-700 font-medium text-sm hover:bg-pink-200 transition-colors"
+                  data-testid="profile-avatar-header"
+                >
+                  {user.firstName?.[0]}{user.lastName?.[0]}
+                </button>
+                <button 
+                  onClick={() => setShowProfileMenu(false)}
+                  className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                  data-testid="button-close-profile-menu"
+                >
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
 
-                    {/* Stats Preview */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <p className="text-sm text-gray-500">Workouts Completed</p>
-                        <p className="text-2xl font-bold">0</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <p className="text-sm text-gray-500">Current Streak</p>
-                        <p className="text-2xl font-bold">7 days</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <p className="text-sm text-gray-500">Programs Active</p>
-                        <p className="text-2xl font-bold">0</p>
-                      </div>
-                    </div>
-
-                    {/* Section Headers */}
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-gray-900">Your Programs</h3>
-                      <h3 className="text-xl font-bold text-gray-900">Premium Programs</h3>
-                    </div>
-                  </div>
+          {/* Content */}
+          <div className="flex flex-col h-[calc(100vh-80px)]">
+            {/* User Info Section */}
+            <div className="border-b border-gray-200 p-6">
+              <button
+                onClick={() => {
+                  setShowProfileSettings(true);
+                  setShowProfileMenu(false);
+                }}
+                className="flex items-center space-x-3 w-full text-left hover:bg-gray-50 transition-colors p-2 rounded-lg"
+                data-testid="button-open-profile-settings"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
+                  {user.firstName?.[0]}{user.lastName?.[0]}
                 </div>
+                <div>
+                  <p className="font-medium text-gray-900 text-base">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {user.email}
+                  </p>
+                </div>
+              </button>
+            </div>
 
-                {/* Right Side - Menu Content */}
-                <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
-                  {/* User Info Section */}
-                  <div className="border-b border-gray-200 p-6">
+            {/* Menu Content */}
+            <div className="flex-1 p-6 overflow-y-auto">
+              <div className="space-y-8 max-w-md">
+                {/* The App Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 underline">
+                    The App
+                  </h3>
+                  <nav className="space-y-4">
                     <button
                       onClick={() => {
-                        setShowProfileSettings(true);
+                        setShowCommunity(true);
                         setShowProfileMenu(false);
                       }}
-                      className="flex items-center space-x-3 w-full text-left hover:bg-gray-50 transition-colors p-2 rounded-lg"
-                      data-testid="button-open-profile-settings"
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-community"
                     >
-                      <div className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
-                        {user.firstName?.[0]}{user.lastName?.[0]}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900 text-base">
-                          {user.firstName} {user.lastName}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {user.email}
-                        </p>
-                      </div>
+                      Community
                     </button>
-                  </div>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-blog"
+                    >
+                      Blog
+                    </button>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-calendar"
+                    >
+                      Calendar
+                    </button>
+                  </nav>
+                </div>
 
-                  {/* Menu Content */}
-                  <div className="flex-1 p-6 overflow-y-auto">
-                    <div className="space-y-8">
-                      {/* The App Section */}
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                          The App
-                        </h3>
-                        <nav className="space-y-3">
-                          <button
-                            onClick={() => {
-                              setShowCommunity(true);
-                              setShowProfileMenu(false);
-                            }}
-                            className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                            data-testid="menu-community"
-                          >
-                            Community
-                          </button>
-                          <button
-                            className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                            data-testid="menu-blog"
-                          >
-                            Blog
-                          </button>
-                          <button
-                            className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors underline"
-                            data-testid="menu-calendar"
-                          >
-                            Calendar
-                          </button>
-                        </nav>
-                      </div>
+                {/* My Library Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-600 mb-4">
+                    My Library
+                  </h3>
+                  <nav className="space-y-4">
+                    <button
+                      onClick={() => {
+                        setLocation("/my-library");
+                        setShowProfileMenu(false);
+                      }}
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-my-library"
+                    >
+                      My Library
+                    </button>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-email-notifications"
+                    >
+                      Email notifications
+                    </button>
+                    <button
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-purchases"
+                    >
+                      Purchases & payments
+                    </button>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("user");
+                        setLocation("/");
+                      }}
+                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                      data-testid="menu-sign-out"
+                    >
+                      Sign out
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
 
-                      {/* My Library Section */}
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-600 mb-4">
-                          My Library
-                        </h3>
-                        <nav className="space-y-3">
-                          <button
-                            onClick={() => {
-                              setLocation("/my-library");
-                              setShowProfileMenu(false);
-                            }}
-                            className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                            data-testid="menu-my-library"
-                          >
-                            My Library
-                          </button>
-                          <button
-                            className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                            data-testid="menu-email-notifications"
-                          >
-                            Email notifications
-                          </button>
-                          <button
-                            className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                            data-testid="menu-purchases"
-                          >
-                            Purchases & payments
-                          </button>
-                          <button
-                            onClick={() => {
-                              localStorage.removeItem("user");
-                              setLocation("/");
-                            }}
-                            className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                            data-testid="menu-sign-out"
-                          >
-                            Sign out
-                          </button>
-                        </nav>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="border-t border-gray-200 p-6">
-                    <div className="space-y-4">
-                      <button className="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
-                        Get the app →
-                      </button>
-                      <div className="flex flex-wrap gap-3 text-sm text-gray-500">
-                        <button className="hover:text-gray-700 transition-colors">Terms</button>
-                        <span>•</span>
-                        <button className="hover:text-gray-700 transition-colors">Privacy</button>
-                        <span>•</span>
-                        <button className="hover:text-gray-700 transition-colors">Buy gift card</button>
-                        <span>•</span>
-                        <button className="hover:text-gray-700 transition-colors">Claim gift card</button>
-                      </div>
-                    </div>
-                  </div>
+            {/* Footer */}
+            <div className="border-t border-gray-200 p-6">
+              <div className="space-y-4 max-w-md">
+                <button className="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                  Get the app →
+                </button>
+                <div className="text-sm text-gray-500">
+                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Terms</span>
+                  <span className="mx-2">•</span>
+                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Privacy</span>
+                  <span className="mx-2">•</span>
+                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Buy gift card</span>
+                  <span className="mx-2">•</span>
+                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Claim gift card</span>
                 </div>
               </div>
             </div>
