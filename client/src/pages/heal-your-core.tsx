@@ -178,9 +178,10 @@ export default function HealYourCorePage() {
   const progressPercentage = (completedWeeks / 6) * 100;
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
+        {/* Header Navigation */}
+        <div className="flex items-center justify-between">
           <Button 
             variant="outline"
             onClick={() => navigate("/dashboard")}
@@ -195,91 +196,89 @@ export default function HealYourCorePage() {
           </Badge>
         </div>
 
-        {/* Progress-Focused Welcome Section */}
-        <div className="mb-6 w-full max-w-6xl mx-auto">
-          <Card className="w-full border-pink-200 bg-gradient-to-r from-pink-50 to-pink-100 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                    <TrendingUp className="w-7 h-7 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
-                    <p className="text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
+        {/* Progress Section */}
+        <Card className="border-pink-200 bg-gradient-to-r from-pink-50 to-pink-100 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                  <TrendingUp className="w-7 h-7 text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                  <p className="text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="text-right space-y-2">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
+                  <div className="w-28">
+                    <Progress value={progressPercentage} className="h-3 bg-gray-200">
+                      <div className="h-full bg-gradient-to-r from-pink-400 to-pink-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
+                    </Progress>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <div className="text-right space-y-2">
-                    <div className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
-                    <div className="w-28">
-                      <Progress value={progressPercentage} className="h-3 bg-gray-200">
-                        <div className="h-full bg-gradient-to-r from-pink-400 to-pink-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
-                      </Progress>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsProgressExpanded(!isProgressExpanded)}
+                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-4"
+                  data-testid="button-toggle-progress"
+                >
+                  <ChevronDown className={`w-5 h-5 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Expandable Progress Details */}
+        {isProgressExpanded && (
+          <Card className="animate-in slide-in-from-top-2 duration-300">
+            <CardContent className="p-6">
+              <div className="grid md:grid-cols-2 gap-6 items-center">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Your Healing Journey</h3>
+                  <p className="text-muted-foreground">
+                    Welcome to your personalized postnatal core recovery program. This journey has been 
+                    carefully designed to help you safely rebuild your core strength, address diastasis recti, 
+                    and support your overall postpartum recovery.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Current Week</span>
+                      <span className="text-primary font-bold">Week {Math.min(completedWeeks + 1, 6)}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Total Progress</span>
+                      <span className="text-primary font-bold">{completedWeeks}/6 weeks</span>
                     </div>
                   </div>
-                  <Button
+                </div>
+                <div className="relative">
+                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Welcome Video from Zoe</p>
+                      <p className="text-xs text-muted-foreground mt-1">Click to play</p>
+                    </div>
+                  </div>
+                  <Button 
+                    className="absolute inset-0 w-full h-full bg-black/20 hover:bg-black/30 text-white"
                     variant="ghost"
-                    size="sm"
-                    onClick={() => setIsProgressExpanded(!isProgressExpanded)}
-                    className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-4"
-                    data-testid="button-toggle-progress"
+                    data-testid="button-play-welcome-video"
                   >
-                    <ChevronDown className={`w-5 h-5 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
+                    <Play className="w-8 h-8" />
                   </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
-          {isProgressExpanded && (
-            <Card className="mt-4 animate-in slide-in-from-top-2 duration-300">
-              <CardContent className="p-6">
-                <div className="grid md:grid-cols-2 gap-6 items-center">
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">Your Healing Journey</h3>
-                    <p className="text-muted-foreground">
-                      Welcome to your personalized postnatal core recovery program. This journey has been 
-                      carefully designed to help you safely rebuild your core strength, address diastasis recti, 
-                      and support your overall postpartum recovery.
-                    </p>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                        <span className="font-medium">Current Week</span>
-                        <span className="text-primary font-bold">Week {Math.min(completedWeeks + 1, 6)}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                        <span className="font-medium">Total Progress</span>
-                        <span className="text-primary font-bold">{completedWeeks}/6 weeks</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                      <div className="text-center">
-                        <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">Welcome Video from Zoe</p>
-                        <p className="text-xs text-muted-foreground mt-1">Click to play</p>
-                      </div>
-                    </div>
-                    <Button 
-                      className="absolute inset-0 w-full h-full bg-black/20 hover:bg-black/30 text-white"
-                      variant="ghost"
-                      data-testid="button-play-welcome-video"
-                    >
-                      <Play className="w-8 h-8" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        )}
 
         {/* Navigation Tabs */}
-        <div className="w-full max-w-6xl mx-auto">
-          <Tabs defaultValue="welcome" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-3 h-auto p-3 bg-gray-50 rounded-xl">
+        <Tabs defaultValue="welcome" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-3 h-auto p-3 bg-gray-50 rounded-xl">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] sm:min-h-[60px] flex-col p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <BookOpen className="w-5 h-5 mb-2" />
               <span className="font-medium">Welcome</span>
@@ -336,8 +335,7 @@ export default function HealYourCorePage() {
           <TabsContent value="nutrition">
             <TheRoleOfNutritionSection />
           </TabsContent>
-          </Tabs>
-        </div>
+        </Tabs>
 
         {/* Knowledge Article Modal */}
         {selectedArticle && (
