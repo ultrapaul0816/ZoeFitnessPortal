@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Users, User, Settings, CheckCircle, Flame, Calendar } from "lucide-react";
+import { Bell, Users, User, Settings, CheckCircle, Flame, Calendar, Menu } from "lucide-react";
 import ProgramCard from "@/components/program-card";
 import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [showCommunity, setShowCommunity] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showHamburgerMenu, setShowHamburgerMenu] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -57,9 +59,19 @@ export default function Dashboard() {
       {/* Navigation Header */}
       <header className="bg-card border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16">
-            {/* Left spacer */}
-            <div></div>
+          <div className="grid grid-cols-[auto_1fr_auto] items-center h-16">
+            {/* Hamburger Menu */}
+            <div className="justify-self-start">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowHamburgerMenu(!showHamburgerMenu)}
+                data-testid="button-hamburger"
+                className="w-9 h-9 md:w-10 md:h-10"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+            </div>
             
             {/* Centered Logo */}
             <div className="justify-self-center">
@@ -74,41 +86,12 @@ export default function Dashboard() {
             
             {/* Right side navigation */}
             <div className="flex items-center gap-3 md:gap-6 justify-self-end">
-              {/* Notifications */}
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  data-testid="button-notifications"
-                  className="w-9 h-9 md:w-10 md:h-10"
-                >
-                  <Bell className="w-5 h-5" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full notification-pulse" />
-                  )}
-                </Button>
-                {showNotifications && (
-                  <NotificationsDropdown
-                    notifications={notifications}
-                    onClose={() => setShowNotifications(false)}
-                  />
-                )}
-              </div>
-              
-              {/* Community */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowCommunity(true)}
-                data-testid="button-community"
-                className="w-9 h-9 md:w-10 md:h-10"
-              >
-                <Users className="w-5 h-5" />
-              </Button>
-              
               {/* Profile */}
-              <div className="flex items-center space-x-2 md:space-x-3 px-2 py-1.5 md:px-3 md:py-2 rounded-lg hover:bg-muted/50 transition-colors">
+              <button 
+                className="flex items-center space-x-2 md:space-x-3 px-2 py-1.5 md:px-3 md:py-2 rounded-lg hover:bg-muted/50 transition-colors"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                data-testid="button-profile"
+              >
                 <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-primary">
                     {user.firstName?.[0]}{user.lastName?.[0]}
@@ -117,7 +100,7 @@ export default function Dashboard() {
                 <span className="text-sm font-medium text-foreground hidden sm:block">
                   {user.firstName} {user.lastName}
                 </span>
-              </div>
+              </button>
               
               {/* Admin Button */}
               {user.isAdmin && (
