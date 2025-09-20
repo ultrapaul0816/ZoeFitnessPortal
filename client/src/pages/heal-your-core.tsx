@@ -869,9 +869,13 @@ function WelcomeSection() {
                 data-testid="button-next-section"
                 onClick={() => {
                   // Navigate to next section (Understanding Your Core)
-                  document.querySelector('[data-section="understanding-core"]')?.scrollIntoView({ 
-                    behavior: 'smooth' 
-                  });
+                  const targetSection = document.querySelector('[data-section="understanding-core"]');
+                  if (targetSection) {
+                    targetSection.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  }
                 }}
               >
                 Next Section
