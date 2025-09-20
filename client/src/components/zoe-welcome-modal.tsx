@@ -24,22 +24,13 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
           <DialogDescription>A personal message from Zoe</DialogDescription>
         </DialogHeader>
         
-        {/* Header - POSTNATAL pregnancy WITH zoe */}
+        {/* Header - Logo */}
         <div className="pt-8 pb-6 text-center">
-          <div className="text-sm tracking-widest text-gray-500 mb-2">
-            P O S T N A T A L
-          </div>
-          <div className="text-4xl font-script text-blue-400 mb-1" style={{ fontFamily: 'cursive' }}>
-            pregnancy
-          </div>
-          <div className="text-xs tracking-widest text-gray-500 mb-2">
-            W I T H
-          </div>
-          <div className="text-5xl font-bold mb-6">
-            <span className="text-pink-400">z</span>
-            <span className="text-orange-400">o</span>
-            <span className="text-green-400">e</span>
-          </div>
+          <img 
+            src="/attached_assets/Screenshot 2025-09-20 at 21.18.10_1758383297530.png"
+            alt="Postnatal Pregnancy with Zoe Logo"
+            className="mx-auto h-24 w-auto"
+          />
         </div>
 
         {/* Large Welcome Heading */}
