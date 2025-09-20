@@ -53,7 +53,7 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
 
   const handleCardClick = () => {
     if (hasAccess) {
-      if (program.name === "Heal Your Core") {
+      if (program.name === "Your Postpartum Strength Recovery Program") {
         navigate("/heal-your-core");
       }
     }

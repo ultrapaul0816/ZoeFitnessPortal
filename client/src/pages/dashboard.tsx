@@ -303,7 +303,7 @@ export default function Dashboard() {
           <p className="text-muted-foreground mb-6">Specialized programs designed for specific fitness goals</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.isArray(allPrograms) && allPrograms
-              .filter((program: any) => program.name === "Heal Your Core")
+              .filter((program: any) => program.name === "Your Postpartum Strength Recovery Program")
               .map((program: any) => (
                 <PremiumProgramCard
                   key={program.id}

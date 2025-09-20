@@ -57,7 +57,7 @@ export default function HealYourCorePage() {
     enabled: !!user,
   });
 
-  const healYourCoreProgram = Array.isArray(programs) ? programs.find((p: any) => p.name === "Heal Your Core") : null;
+  const healYourCoreProgram = Array.isArray(programs) ? programs.find((p: any) => p.name === "Your Postpartum Strength Recovery Program") : null;
 
   useEffect(() => {
     if (healYourCoreProgram) {
