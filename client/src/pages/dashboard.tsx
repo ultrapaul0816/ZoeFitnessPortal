@@ -148,63 +148,51 @@ export default function Dashboard() {
 
             {/* Menu Content */}
             <div className="flex-1 p-6 overflow-y-auto">
-              <div className="space-y-8 max-w-md">
-                {/* Community */}
-                <div>
-                  <nav className="space-y-4">
-                    <button
-                      onClick={() => {
-                        setShowCommunity(true);
-                        setShowProfileMenu(false);
-                      }}
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-community"
-                    >
-                      Community
-                    </button>
-                  </nav>
-                </div>
-
-                {/* My Library Section */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-600 mb-4">
+              <div className="space-y-4 max-w-md">
+                <nav className="space-y-4">
+                  <button
+                    onClick={() => {
+                      setShowCommunity(true);
+                      setShowProfileMenu(false);
+                    }}
+                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    data-testid="menu-community"
+                  >
+                    Community
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLocation("/my-library");
+                      setShowProfileMenu(false);
+                    }}
+                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    data-testid="menu-my-library"
+                  >
                     My Library
-                  </h3>
-                  <nav className="space-y-4">
-                    <button
-                      onClick={() => {
-                        setLocation("/my-library");
-                        setShowProfileMenu(false);
-                      }}
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-my-library"
-                    >
-                      My Library
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-email-notifications"
-                    >
-                      Email notifications
-                    </button>
-                    <button
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-purchases"
-                    >
-                      Purchases & payments
-                    </button>
-                    <button
-                      onClick={() => {
-                        localStorage.removeItem("user");
-                        setLocation("/");
-                      }}
-                      className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
-                      data-testid="menu-sign-out"
-                    >
-                      Sign out
-                    </button>
-                  </nav>
-                </div>
+                  </button>
+                  <button
+                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    data-testid="menu-email-notifications"
+                  >
+                    Email notifications
+                  </button>
+                  <button
+                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    data-testid="menu-purchases"
+                  >
+                    Purchases & payments
+                  </button>
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem("user");
+                      setLocation("/");
+                    }}
+                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    data-testid="menu-sign-out"
+                  >
+                    Sign out
+                  </button>
+                </nav>
               </div>
             </div>
 
