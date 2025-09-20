@@ -201,8 +201,8 @@ export default function HealYourCorePage() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-3 md:space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                  <TrendingUp className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                  <TrendingUp className="w-4 h-4 text-white" />
                 </div>
                 <div className="text-left">
                   <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
@@ -222,10 +222,10 @@ export default function HealYourCorePage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsProgressExpanded(!isProgressExpanded)}
-                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-2 md:ml-4"
+                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-4 md:ml-6"
                   data-testid="button-toggle-progress"
                 >
-                  <ChevronDown className={`w-5 h-5 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
             </div>

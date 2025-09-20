@@ -117,7 +117,7 @@ export default function Dashboard() {
                 className="flex items-center space-x-3 w-full text-left hover:bg-gray-50 transition-colors p-2 rounded-lg"
                 data-testid="button-open-profile-settings"
               >
-                <div className="w-10 h-10 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-sm">
+                <div className="w-8 h-8 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-xs">
                   {user.firstName?.[0]}{user.lastName?.[0]}
                 </div>
                 <div>
@@ -243,8 +243,8 @@ export default function Dashboard() {
                     {stats.completedWorkouts}
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-primary" />
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -259,8 +259,8 @@ export default function Dashboard() {
                     {stats.currentStreak}
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-primary" />
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Flame className="w-4 h-4 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -275,8 +275,8 @@ export default function Dashboard() {
                     {stats.activePrograms}
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-primary" />
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-primary" />
                 </div>
               </div>
             </CardContent>
