@@ -389,13 +389,13 @@ function WelcomeSection() {
                   <h3 className="text-sm font-semibold text-left">Welcome from Zoe</h3>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => toggleTopic('welcome-zoe')}
-                  className="shrink-0"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
                   data-testid="button-toggle-welcome-zoe"
                 >
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['welcome-zoe'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['welcome-zoe'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
               {expandedTopics['welcome-zoe'] && (
@@ -434,13 +434,13 @@ function WelcomeSection() {
                   <h3 className="text-sm font-semibold text-left">When to Start This Program</h3>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => toggleTopic('when-start')}
-                  className="shrink-0"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
                   data-testid="button-toggle-when-start"
                 >
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['when-start'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['when-start'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
               {expandedTopics['when-start'] && (
@@ -516,13 +516,13 @@ function WelcomeSection() {
                   <h3 className="text-sm font-semibold text-left">Safety & Mindset Shifts</h3>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => toggleTopic('safety-mindset')}
-                  className="shrink-0"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
                   data-testid="button-toggle-safety-mindset"
                 >
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['safety-mindset'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['safety-mindset'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
               {expandedTopics['safety-mindset'] && (
@@ -604,13 +604,13 @@ function WelcomeSection() {
                   <h3 className="text-sm font-semibold text-left leading-tight">Special Considerations for Each Delivery Type</h3>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => toggleTopic('delivery-type')}
-                  className="shrink-0"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
                   data-testid="button-toggle-delivery-type"
                 >
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['delivery-type'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['delivery-type'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
               {expandedTopics['delivery-type'] && (
@@ -671,13 +671,13 @@ function WelcomeSection() {
                   <h3 className="text-sm font-semibold text-left">How to Use This Guide</h3>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => toggleTopic('how-to-use')}
-                  className="shrink-0"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
                   data-testid="button-toggle-how-to-use"
                 >
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['how-to-use'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['how-to-use'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
               {expandedTopics['how-to-use'] && (
@@ -808,13 +808,13 @@ function WelcomeSection() {
                   <h3 className="text-sm font-semibold text-left">Disclaimer</h3>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => toggleTopic('disclaimer')}
-                  className="shrink-0"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
                   data-testid="button-toggle-disclaimer"
                 >
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedTopics['disclaimer'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['disclaimer'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
               {expandedTopics['disclaimer'] && (
