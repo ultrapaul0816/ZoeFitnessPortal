@@ -3695,19 +3695,19 @@ function ProgramsSection({
                         { num: 4, name: "GLUTE BRIDGES WITH MINI BALL", reps: "15 reps", url: "https://www.youtube.com/watch?v=1vqv8CqCjY0" },
                         { num: 5, name: "BUTTERFLY STRETCH — DYNAMIC FLUTTER", reps: "1 min", url: "https://www.youtube.com/watch?v=j5ZGvn1EUTo" }
                       ].map((exercise) => (
-                        <div key={exercise.num} className="flex items-center justify-between p-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">
-                          <div className="flex items-center gap-3">
-                            <span className="font-medium text-gray-600 w-4">{exercise.num}</span>
+                        <div key={exercise.num} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 md:p-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm md:text-sm gap-2 sm:gap-3">
+                          <div className="flex items-start sm:items-center gap-2 md:gap-3 flex-1 min-w-0">
+                            <span className="font-medium text-gray-600 w-6 md:w-4 flex-shrink-0">{exercise.num}</span>
                             <a 
                               href={exercise.url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 underline font-medium"
+                              className="text-blue-600 hover:text-blue-800 underline font-medium leading-tight"
                             >
                               {exercise.name}
                             </a>
                           </div>
-                          <span className="text-gray-700 font-medium">{exercise.reps} ×3</span>
+                          <span className="text-gray-700 font-medium text-right sm:text-left flex-shrink-0">{exercise.reps} ×3</span>
                         </div>
                       ))}
                     </div>
