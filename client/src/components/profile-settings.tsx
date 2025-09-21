@@ -33,11 +33,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-gray-50">
-      <div className="h-full overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-gray-50 w-screen h-screen">
+      <div className="w-full h-full min-h-screen overflow-y-auto">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="bg-white border-b border-gray-200 px-6 py-4 w-full">
+          <div className="flex items-center justify-between max-w-full">
             <div className="flex items-center space-x-3">
               <button 
                 onClick={onClose}
@@ -53,8 +53,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
         </div>
 
         {/* User Profile Section */}
-        <div className="bg-white border-b border-gray-200 px-6 py-8">
-          <div className="flex items-center space-x-4">
+        <div className="bg-white border-b border-gray-200 px-6 py-8 w-full">
+          <div className="flex items-center space-x-4 max-w-full">
             <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-xl font-medium">
               {user.firstName?.[0]}{user.lastName?.[0]}
             </div>
@@ -68,7 +68,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
         </div>
 
         {/* Menu Items */}
-        <div className="bg-white">
+        <div className="bg-white w-full flex-1">
           <div className="space-y-0">
             {/* Notifications */}
             <button className="w-full flex items-center px-6 py-6 hover:bg-gray-50 border-b border-gray-100 transition-colors">
