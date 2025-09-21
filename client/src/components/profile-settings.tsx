@@ -306,76 +306,76 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     >
       <div className="w-full h-full overflow-y-auto">
         {/* Menu Items */}
-        <div className="p-6">
-          <div className="space-y-4">
+        <div className="pl-6 pr-6 pt-8 pb-6">
+          <div className="space-y-6">
             {/* Profile */}
             <button 
-              className="w-full flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors group"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('profile');
               }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <User className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <User className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-medium text-gray-900">Profile</span>
+              <span className="text-base font-medium text-gray-900">Profile</span>
             </button>
 
             {/* My Library */}
             <button 
-              className="w-full flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors group"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 window.location.href = "/my-library";
               }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <BookOpen className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <BookOpen className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-medium text-gray-900">My Library</span>
+              <span className="text-base font-medium text-gray-900">My Library</span>
             </button>
 
             {/* Purchases & Payment */}
             <button 
-              className="w-full flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors group"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('purchases');
               }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <CreditCard className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <CreditCard className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-medium text-gray-900">Purchases & Payment</span>
+              <span className="text-base font-medium text-gray-900">Purchases & Payment</span>
             </button>
 
             {/* Notifications */}
             <button 
-              className="w-full flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors group"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 // Handle notifications action
               }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Bell className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Bell className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-medium text-gray-900">Notifications</span>
+              <span className="text-base font-medium text-gray-900">Notifications</span>
             </button>
 
             {/* Logout */}
             <button 
-              className="w-full flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors group"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 handleLogout();
               }}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <LogOut className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <LogOut className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-medium text-gray-900">Logout</span>
+              <span className="text-base font-medium text-gray-900">Logout</span>
             </button>
           </div>
         </div>
