@@ -505,11 +505,11 @@ export default function Dashboard() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button 
-                    className="p-3 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all duration-300 rounded-lg group"
+                    className="p-3"
                     data-testid="button-hamburger-menu"
                     aria-label="Open profile menu"
                   >
-                    <Menu className="w-6 h-6 text-pink-500" />
+                    <Menu className="w-6 h-6 text-gray-600" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
