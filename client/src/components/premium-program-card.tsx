@@ -99,9 +99,6 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
             </div>
           </div>
         )}
-        <Badge className="absolute top-3 left-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-semibold shadow-lg border-0">
-          {program.level}
-        </Badge>
       </div>
 
       <CardContent className="p-6">
@@ -135,10 +132,15 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
         ) : hasAccess ? (
           <div className="space-y-3">
             <div className="flex justify-between items-center mb-3">
-              <Badge className="bg-green-600 hover:bg-green-700">
-                <Star className="w-3 h-3 mr-1" />
-                Premium Access
-              </Badge>
+              <div className="flex gap-2">
+                <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-semibold shadow-lg border-0">
+                  {program.level}
+                </Badge>
+                <Badge className="bg-green-600 hover:bg-green-700">
+                  <Star className="w-3 h-3 mr-1" />
+                  Premium Access
+                </Badge>
+              </div>
             </div>
             <Button 
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-300 ease-out hover:animate-pulse border-0 relative overflow-hidden group" 
