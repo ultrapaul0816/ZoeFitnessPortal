@@ -1,10 +1,42 @@
 # Overview
 
-This is a fitness application called "Stronger With Zoe" - a comprehensive workout and program management platform. The application allows users to access fitness programs, track workout progress, engage with a community, and manage their fitness journey. It includes admin functionality for managing users, programs, and content. The platform features user authentication, terms acceptance, program enrollment, workout tracking, community features, and notification systems.
+This is a fitness application called "Your Postpartum Strength Recovery Program" - a comprehensive 6-week postnatal fitness web application specifically designed for mothers 6 weeks to 6 years postpartum. The application features a complete core rehabilitation program with educational content, structured workout plans, YouTube video integration, progress tracking, and admin panel functionality. The platform uses a cohesive pink brand color scheme (#EC4899) with mobile-responsive design and premium visual appeal, focusing on consistent navigation across all pages and proper UI alignment.
 
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+# Recent Changes (September 2025)
+
+## Major Program Implementation
+- **Comprehensive 6-Week Program Structure**: Implemented complete postnatal fitness program with detailed exercise tables, coach notes, safety tips, and progressive unlock system
+- **YouTube Video Integration**: All exercise videos properly linked with clickable buttons and playlist functionality for seamless workout experience
+- **Program Organization**: Successfully moved 6-week program content from "What's Next" tab to dedicated "Programs" tab for better user experience
+- **Week 1 Complete**: Detailed program structure with:
+  - RECONNECT & RESET phase with breathing exercises and core rehabilitation
+  - 5 structured exercises with YouTube video links and proper repetition guidance
+  - Equipment requirements (mini band, small Pilates ball, mat)
+  - Coach's notes and safety precautions
+  - Program introduction video integration
+- **Weeks 2-6 Structure**: Progressive unlock system with coming soon placeholders for future program phases
+
+## UI/UX Improvements
+- **Consistent Navigation**: Clickable logo across all pages (Dashboard, My Library, Heal Your Core) with proper hover effects
+- **Mobile-Responsive Design**: Proper alignment and responsive padding structure for all screen sizes
+- **Pink Brand Theme**: Cohesive #EC4899 color scheme with gradient effects and shadows
+- **Professional Layout**: Premium visual appeal with rounded corners (rounded-2xl), gradient dividers, and contained hover effects
+
+## Technical Fixes
+- **JSX Structure**: Resolved syntax errors and duplicate content issues that were preventing application loading
+- **Link Component Integration**: Fixed import errors and navigation functionality across all pages
+- **API Integration**: My Library now uses real API endpoints (/api/member-programs/:userId) instead of static mock data
+- **Code Organization**: Removed unused components and streamlined codebase structure
+
+## Current Status
+- **Application**: Successfully running on port 5000 with no critical errors
+- **Database**: PostgreSQL integration working with proper user authentication and progress tracking
+- **Navigation**: Seamless flow between all tabs and sections
+- **Program Access**: Real-time program enrollment and progress tracking functionality
 
 # System Architecture
 
