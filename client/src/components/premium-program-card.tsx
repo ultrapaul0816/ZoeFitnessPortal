@@ -72,18 +72,6 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
       onClick={handleCardClick}
       data-testid={`card-program-${program.id}`}
     >
-      {/* YouTube Video */}
-      <div className="w-full mb-4">
-        <iframe
-          src="https://www.youtube.com/embed/62Qht8GVfPE"
-          title={`${program.name} program video`}
-          className="w-full h-48 rounded-lg"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-      
       {/* Program Cover Image with Tags */}
       <div className="relative">
         <img
@@ -140,6 +128,19 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
                 {program.level}
               </Badge>
             </div>
+            
+            {/* YouTube Video */}
+            <div className="w-full mb-4">
+              <iframe
+                src="https://www.youtube.com/embed/62Qht8GVfPE"
+                title={`${program.name} program video`}
+                className="w-full h-48 rounded-lg"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            
             <Button 
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-200 ease-out border-0 relative overflow-hidden group rounded-lg hover:bg-gradient-to-l focus:ring-4 focus:ring-pink-300 active:shadow-inner" 
               data-testid={`button-start-${program.id}`}
