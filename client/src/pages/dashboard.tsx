@@ -8,12 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, Users, User, Settings, CheckCircle, Flame, Calendar, Menu, BookOpen, Mail, CreditCard, LogOut, Globe, Info, ChevronDown } from "lucide-react";
+import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ProgramCard from "@/components/program-card";
 import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
-import NotificationsDropdown from "@/components/notifications-dropdown";
-import ProfileModal from "@/components/profile-modal";
 import ProfileSettings from "@/components/profile-settings";
 import ZoeWelcomeModal from "@/components/zoe-welcome-modal";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
@@ -23,10 +23,9 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [user, setUser] = useState<UserType | null>(null);
   const [showCommunity, setShowCommunity] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
-  const [activeProfileTab, setActiveProfileTab] = useState("profile");
+  const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
+  const [showPurchasesDialog, setShowPurchasesDialog] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
   const [profileData, setProfileData] = useState({
     fullName: "",
@@ -45,7 +44,6 @@ export default function Dashboard() {
       transactionalEmails: true,
     }
   });
-  const [showHamburgerMenu, setShowHamburgerMenu] = useState(false);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
 
   useEffect(() => {
@@ -491,24 +489,64 @@ export default function Dashboard() {
           <div className="flex items-center justify-between h-16">
             {/* Left side navigation */}
             <div className="flex items-center">
-              {/* Hamburger Menu */}
-              <button 
-                className="p-3 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all duration-300 rounded-lg group"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                data-testid="button-hamburger-menu"
-              >
-                <div className="w-6 h-6 relative flex flex-col justify-center items-center">
-                  <div className={`w-5 h-0.5 bg-pink-500 transition-all duration-300 ease-in-out ${
-                    showProfileMenu ? 'rotate-45 translate-y-0.5' : ''
-                  }`}></div>
-                  <div className={`w-5 h-0.5 bg-pink-500 my-1 transition-all duration-300 ease-in-out ${
-                    showProfileMenu ? 'opacity-0 scale-0' : ''
-                  }`}></div>
-                  <div className={`w-5 h-0.5 bg-pink-500 transition-all duration-300 ease-in-out ${
-                    showProfileMenu ? '-rotate-45 -translate-y-0.5' : ''
-                  }`}></div>
-                </div>
-              </button>
+              {/* Profile Dropdown Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button 
+                    className="p-3 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all duration-300 rounded-lg group"
+                    data-testid="button-hamburger-menu"
+                    aria-label="Open profile menu"
+                  >
+                    <Menu className="w-6 h-6 text-pink-500" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuItem 
+                    onClick={() => setShowProfileSettings(true)}
+                    data-testid="menu-profile"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setShowNotificationsDialog(true)}
+                    data-testid="menu-notifications"
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    Notifications
+                    {unreadCount > 0 && (
+                      <span className="ml-auto w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setLocation("/my-library")}
+                    data-testid="menu-library"
+                  >
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    My Library
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setShowPurchasesDialog(true)}
+                    data-testid="menu-purchases"
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Purchases & payments
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => {
+                      localStorage.removeItem("user");
+                      setLocation("/");
+                    }}
+                    data-testid="menu-sign-out"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             
             {/* Centered Logo */}
@@ -530,129 +568,45 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Profile Menu Dropdown */}
-      {showProfileMenu && (
-        <div className={`fixed top-16 left-0 right-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-sm transform transition-all duration-700 ease-out ${
-          showProfileMenu ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}>
-          {/* Content */}
-          <div className="flex h-full">
-            {/* Tab Navigation */}
-            <div className="bg-white border-r border-gray-200 w-64 flex flex-col">
-              {/* User Info Section */}
-              <div className="border-b border-gray-200 p-6">
-                <div className="flex items-center space-x-3 p-2">
-                  <div className="w-8 h-8 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-xs">
-                    {user.firstName?.[0]}{user.lastName?.[0]}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 text-base">
-                      {user.firstName} {user.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {user.email}
-                    </p>
-                  </div>
+      {/* Notifications Dialog */}
+      <Dialog open={showNotificationsDialog} onOpenChange={setShowNotificationsDialog}>
+        <DialogContent className="sm:max-w-md" data-testid="dialog-notifications">
+          <DialogHeader>
+            <DialogTitle>Notifications</DialogTitle>
+            <DialogDescription>
+              View and manage your notifications and updates.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <div key={notification.id} className="p-4 border rounded-lg">
+                  <h4 className="font-medium">{notification.title}</h4>
+                  <p className="text-sm text-gray-600">{notification.message}</p>
                 </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500">No new notifications</p>
               </div>
-              
-              <div className="p-6">
-                <nav className="flex flex-col space-y-2">
-                  {[
-                    { id: "profile", name: "Profile", icon: User },
-                    { id: "notifications", name: "Notifications", icon: Bell },
-                    { id: "library", name: "My Library", icon: BookOpen },
-                    { id: "purchases", name: "Purchases & payments", icon: CreditCard }
-                  ].map((tab) => {
-                    const IconComponent = tab.icon;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveProfileTab(tab.id)}
-                        className={`py-3 px-4 rounded-lg font-medium text-sm transition-colors flex items-center space-x-3 text-left ${
-                          activeProfileTab === tab.id
-                            ? "bg-pink-100 text-pink-600 border-l-4 border-pink-500"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-                        }`}
-                        data-testid={`tab-${tab.id}`}
-                      >
-                        <IconComponent className="w-4 h-4" />
-                        <span>{tab.name}</span>
-                        {tab.id === 'notifications' && unreadCount > 0 && (
-                          <span className="w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center ml-auto">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </nav>
-              </div>
-            </div>
-
-            {/* Tab Content */}
-            <div className="flex-1 p-6 overflow-y-auto">
-              <div className="max-w-4xl space-y-8">
-                {activeProfileTab === "profile" && (
-                  <ProfileContent />
-                )}
-                {activeProfileTab === "notifications" && (
-                  <div className="text-center py-8">
-                    <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Notifications</h3>
-                    <p className="text-gray-500">Manage your notification preferences here.</p>
-                  </div>
-                )}
-                {activeProfileTab === "library" && (
-                  <div className="text-center py-8">
-                    <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">My Library</h3>
-                    <p className="text-gray-500 mb-4">Access your saved programs and content.</p>
-                    <Button 
-                      onClick={() => {
-                        setLocation("/my-library");
-                        setShowProfileMenu(false);
-                      }}
-                      className="bg-pink-500 hover:bg-pink-600 text-white"
-                    >
-                      Go to My Library
-                    </Button>
-                  </div>
-                )}
-                {activeProfileTab === "purchases" && (
-                  <PurchasesContent />
-                )}
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-gray-200 p-6">
-              <div className="space-y-4 max-w-md">
-                <button 
-                  onClick={() => {
-                    localStorage.removeItem("user");
-                    setLocation("/");
-                  }}
-                  className="flex items-center space-x-3 w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors p-2 rounded-lg hover:bg-gray-50"
-                  data-testid="menu-sign-out"
-                >
-                  <LogOut className="w-4 h-4 text-gray-600" />
-                  <span>Sign out</span>
-                </button>
-                <div className="text-sm text-gray-500">
-                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Terms</span>
-                  <span className="mx-2">•</span>
-                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Privacy</span>
-                  <span className="mx-2">•</span>
-                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Buy gift card</span>
-                  <span className="mx-2">•</span>
-                  <span className="hover:text-gray-700 transition-colors cursor-pointer">Claim gift card</span>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Purchases Dialog */}
+      <Dialog open={showPurchasesDialog} onOpenChange={setShowPurchasesDialog}>
+        <DialogContent className="sm:max-w-2xl" data-testid="dialog-purchases">
+          <DialogHeader>
+            <DialogTitle>Purchases & payments</DialogTitle>
+            <DialogDescription>
+              Manage your subscription, payment methods, and purchase history.
+            </DialogDescription>
+          </DialogHeader>
+          <PurchasesContent />
+        </DialogContent>
+      </Dialog>
 
       {/* Profile Settings */}
       <ProfileSettings
