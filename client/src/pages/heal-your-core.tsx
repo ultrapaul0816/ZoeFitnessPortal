@@ -1901,18 +1901,6 @@ function UnderstandingYourCoreSection({
                       </a>
                     </div>
 
-                    {/* Core Compressions Image */}
-                    <div className="flex justify-center my-6">
-                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-4xl">
-                        <img 
-                          src={coreCompressionsImage} 
-                          alt="Foundational Core Compressions - Belly Pump, Deep Core Hold, and Ab Wraps techniques"
-                          className="w-full h-auto rounded"
-                          data-testid="img-core-compressions"
-                        />
-                      </div>
-                    </div>
-
                     <p className="text-sm text-primary">These are the 3 essential tools you'll use throughout your journey to connect to your deep core, support your spine, and move with intention.</p>
                     
                     <div className="bg-primary/10 p-4 rounded">
