@@ -20,7 +20,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && hasConsented && handleClose()}>
-      <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[95vh] overflow-hidden p-0 bg-white border border-gray-200/50 shadow-2xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[95vh] overflow-hidden p-0 bg-white border border-gray-200/50 shadow-2xl [&>button]:hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>Important Disclaimer</DialogTitle>
           <DialogDescription>Health and Safety Information</DialogDescription>
