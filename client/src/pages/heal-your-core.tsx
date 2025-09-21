@@ -859,6 +859,114 @@ function WelcomeSection() {
                 </div>
               )}
             </div>
+
+            {/* Line Divider with Shadow */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 shadow-sm"></div>
+              </div>
+            </div>
+
+            {/* Topic 7: What Equipment Do You Need */}
+            <div>
+              <div className="flex items-center justify-between py-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">7</span>
+                  <h3 className="text-[15px] font-semibold text-left">What Equipment Do You Need</h3>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleTopic('equipment')}
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
+                  data-testid="button-toggle-equipment"
+                >
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['equipment'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['equipment'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-6 text-sm">
+                    
+                    <div>
+                      <h4 className="font-semibold text-primary text-lg mb-4 text-center">✨ WHAT EQUIPMENT DO YOU NEED ✨</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* Row 1 */}
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                          <span className="text-3xl">🧘‍♀️</span>
+                        </div>
+                        <p className="font-medium">Yoga Mat</p>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                          <span className="text-3xl">🟣</span>
+                        </div>
+                        <p className="font-medium">Yoga Blocks</p>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                          <span className="text-3xl">🎀</span>
+                        </div>
+                        <p className="font-medium">Mini Resistance Bands</p>
+                      </div>
+                      
+                      {/* Row 2 */}
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                          <span className="text-3xl">⚪</span>
+                        </div>
+                        <p className="font-medium">Mini Pilates Ball</p>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                          <span className="text-3xl">🏃‍♀️</span>
+                        </div>
+                        <p className="font-medium">Pilates Theraband Or<br />Long Resistance Band</p>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                          <span className="text-3xl">⚫</span>
+                        </div>
+                        <p className="font-medium">Medium Swiss Ball</p>
+                      </div>
+                      
+                      {/* Row 3 - Foam Roller centered */}
+                      <div className="text-center md:col-start-2">
+                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                          <span className="text-3xl">🏋️</span>
+                        </div>
+                        <p className="font-medium">Foam Roller</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-8">
+                      <h5 className="font-semibold text-primary mb-4">BONUS TIPS:</h5>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Find a quiet space, but don't stress if it's not perfect.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Keep water nearby, wear comfortable attire.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Treat these sessions like acts of care, not chores.</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Next Section Button */}
