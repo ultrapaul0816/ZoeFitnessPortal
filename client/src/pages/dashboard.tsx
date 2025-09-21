@@ -536,28 +536,28 @@ export default function Dashboard() {
           showProfileMenu ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}>
           {/* Content */}
-          <div className="flex flex-col h-full">
-            {/* User Info Section */}
-            <div className="border-b border-gray-200 p-6">
-              <div className="flex items-center space-x-3 p-2">
-                <div className="w-8 h-8 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-xs">
-                  {user.firstName?.[0]}{user.lastName?.[0]}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900 text-base">
-                    {user.firstName} {user.lastName}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {user.email}
-                  </p>
+          <div className="flex h-full">
+            {/* Tab Navigation */}
+            <div className="bg-white border-r border-gray-200 w-64 flex flex-col">
+              {/* User Info Section */}
+              <div className="border-b border-gray-200 p-6">
+                <div className="flex items-center space-x-3 p-2">
+                  <div className="w-8 h-8 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 font-medium text-xs">
+                    {user.firstName?.[0]}{user.lastName?.[0]}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-base">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {user.email}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Tab Navigation */}
-            <div className="bg-white border-b border-gray-200">
-              <div className="px-6">
-                <nav className="flex space-x-8">
+              
+              <div className="p-6">
+                <nav className="flex flex-col space-y-2">
                   {[
                     { id: "profile", name: "Profile", icon: User },
                     { id: "notifications", name: "Notifications", icon: Bell },
@@ -569,17 +569,17 @@ export default function Dashboard() {
                       <button
                         key={tab.id}
                         onClick={() => setActiveProfileTab(tab.id)}
-                        className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 ${
+                        className={`py-3 px-4 rounded-lg font-medium text-sm transition-colors flex items-center space-x-3 text-left ${
                           activeProfileTab === tab.id
-                            ? "border-pink-500 text-pink-600"
-                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                            ? "bg-pink-100 text-pink-600 border-l-4 border-pink-500"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                         }`}
                         data-testid={`tab-${tab.id}`}
                       >
                         <IconComponent className="w-4 h-4" />
                         <span>{tab.name}</span>
                         {tab.id === 'notifications' && unreadCount > 0 && (
-                          <span className="w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                          <span className="w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center ml-auto">
                             {unreadCount > 9 ? '9+' : unreadCount}
                           </span>
                         )}
