@@ -28,6 +28,14 @@ export default function HealYourCorePage() {
   const [user] = useState({ id: '1', role: 'user' });
   const [activeTab, setActiveTab] = useState('welcome');
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({
+    'program1': false,
+    'program2': false,
+    'program3': false,
+    'program4': false,
+    'program5': false,
+    'program6': false
+  });
 
   // Tab navigation functions
   const tabs = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps'];
@@ -53,6 +61,13 @@ export default function HealYourCorePage() {
 
   const handleWelcomeClose = () => {
     setShowWelcomeModal(false);
+  };
+
+  const toggleProgramExpansion = (programId: string) => {
+    setExpandedPrograms(prev => ({
+      ...prev,
+      [programId]: !prev[programId]
+    }));
   };
 
   // Simplified navigation props interface
@@ -170,7 +185,11 @@ export default function HealYourCorePage() {
 
               {/* Program 1 */}
               <Card className="overflow-hidden border-l-4 border-l-pink-500">
-                <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50">
+                <CardHeader 
+                  className="bg-gradient-to-r from-pink-50 to-rose-50 cursor-pointer hover:from-pink-100 hover:to-rose-100 transition-colors"
+                  onClick={() => toggleProgramExpansion('program1')}
+                  data-testid="header-program1"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-lg font-bold">
@@ -181,16 +200,28 @@ export default function HealYourCorePage() {
                         <CardDescription className="text-pink-600 font-semibold">DAY 1, 3, 5, 7</CardDescription>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-600 font-medium">EQUIPMENT NEEDED</div>
-                      <div className="text-sm text-gray-800">Mini band, small Pilates ball, mat</div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-sm text-gray-600 font-medium">EQUIPMENT NEEDED</div>
+                        <div className="text-sm text-gray-800">Mini band, small Pilates ball, mat</div>
+                      </div>
+                      <div className="text-gray-500 ml-2">
+                        {expandedPrograms['program1'] ? (
+                          <ChevronDown className="w-5 h-5" />
+                        ) : (
+                          <ChevronRight className="w-5 h-5" />
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className="mt-2">
+                    <h3 className="text-xl font-bold text-gray-900">RECONNECT & RESET</h3>
+                  </div>
                 </CardHeader>
-                <CardContent className="p-6">
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">RECONNECT & RESET</h3>
-                    <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+                
+                {expandedPrograms['program1'] && (
+                  <CardContent className="p-6">
+                    <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400 mb-6">
                       <div className="flex items-start gap-2">
                         <span className="text-pink-600 font-semibold">COACH'S NOTE:</span>
                         <p className="text-gray-700 text-sm">
@@ -199,10 +230,9 @@ export default function HealYourCorePage() {
                         </p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* How to and Rest Instructions */}
-                  <div className="space-y-4 mb-6">
+                    {/* How to and Rest Instructions */}
+                    <div className="space-y-4 mb-6">
                     <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
                       <p className="text-sm text-blue-800">
                         <strong>How to:</strong> All blue underlined text is clickable and will open a video link. 
@@ -418,8 +448,139 @@ export default function HealYourCorePage() {
                       <p><strong>Consult Your Doctor:</strong> Always consult with your healthcare provider before continuing with the exercises.</p>
                     </div>
                   </div>
-                </CardContent>
+                  </CardContent>
+                )}
               </Card>
+
+              {/* Program 2 */}
+              <Card className="overflow-hidden border-l-4 border-l-blue-500">
+                <CardHeader 
+                  className="bg-gradient-to-r from-blue-50 to-sky-50 cursor-pointer hover:from-blue-100 hover:to-sky-100 transition-colors"
+                  onClick={() => toggleProgramExpansion('program2')}
+                  data-testid="header-program2"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-gradient-to-r from-blue-500 to-sky-500 text-white px-4 py-2 rounded-lg font-bold">
+                        WEEK 2
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl text-gray-900">PROGRAM 2</CardTitle>
+                        <CardDescription className="text-blue-600 font-semibold">DAY 1, 3, 5, 7</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-sm text-gray-600 font-medium">EQUIPMENT NEEDED</div>
+                        <div className="text-sm text-gray-800">Mini band, small Pilates ball, mat</div>
+                      </div>
+                      <div className="text-gray-500 ml-2">
+                        {expandedPrograms['program2'] ? (
+                          <ChevronDown className="w-5 h-5" />
+                        ) : (
+                          <ChevronRight className="w-5 h-5" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <h3 className="text-xl font-bold text-gray-900">BUILD & STRENGTHEN</h3>
+                  </div>
+                </CardHeader>
+                
+                {expandedPrograms['program2'] && (
+                  <CardContent className="p-6">
+                    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 mb-6">
+                      <div className="flex items-start gap-2">
+                        <span className="text-blue-600 font-semibold">COACH'S NOTE:</span>
+                        <p className="text-gray-700 text-sm">
+                          Building on your foundation with added stability challenges. Focus on maintaining core connection while increasing movement complexity.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-center py-8">
+                      <p className="text-gray-600 mb-4">Program 2 content coming soon...</p>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+
+              {/* Program 3 */}
+              <Card className="overflow-hidden border-l-4 border-l-green-500">
+                <CardHeader 
+                  className="bg-gradient-to-r from-green-50 to-emerald-50 cursor-pointer hover:from-green-100 hover:to-emerald-100 transition-colors"
+                  onClick={() => toggleProgramExpansion('program3')}
+                  data-testid="header-program3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg font-bold">
+                        WEEK 3
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl text-gray-900">PROGRAM 3</CardTitle>
+                        <CardDescription className="text-green-600 font-semibold">DAY 1, 3, 5, 7</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-sm text-gray-600 font-medium">EQUIPMENT NEEDED</div>
+                        <div className="text-sm text-gray-800">Mini band, small Pilates ball, mat, light weights</div>
+                      </div>
+                      <div className="text-gray-500 ml-2">
+                        {expandedPrograms['program3'] ? (
+                          <ChevronDown className="w-5 h-5" />
+                        ) : (
+                          <ChevronRight className="w-5 h-5" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <h3 className="text-xl font-bold text-gray-900">PROGRESS & POWER</h3>
+                  </div>
+                </CardHeader>
+                
+                {expandedPrograms['program3'] && (
+                  <CardContent className="p-6">
+                    <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400 mb-6">
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-semibold">COACH'S NOTE:</span>
+                        <p className="text-gray-700 text-sm">
+                          Introducing progressive loading and dynamic movements. Your core is gaining strength and coordination.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-center py-8">
+                      <p className="text-gray-600 mb-4">Program 3 content coming soon...</p>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+
+              {/* Programs 4-6 Coming Soon */}
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  { week: 4, title: "PROGRAM 4", subtitle: "DYNAMIC INTEGRATION", color: "purple" },
+                  { week: 5, title: "PROGRAM 5", subtitle: "FUNCTIONAL STRENGTH", color: "orange" },
+                  { week: 6, title: "PROGRAM 6", subtitle: "PEAK PERFORMANCE", color: "red" }
+                ].map((program, index) => (
+                  <Card key={index} className={`border-l-4 border-l-${program.color}-500 opacity-75`}>
+                    <CardHeader className={`bg-gradient-to-r from-${program.color}-50 to-${program.color}-100`}>
+                      <div className="text-center">
+                        <div className={`bg-gradient-to-r from-${program.color}-500 to-${program.color}-600 text-white px-3 py-1 rounded font-bold text-sm inline-block mb-2`}>
+                          WEEK {program.week}
+                        </div>
+                        <CardTitle className="text-lg text-gray-900">{program.title}</CardTitle>
+                        <CardDescription className={`text-${program.color}-600 font-semibold text-sm`}>{program.subtitle}</CardDescription>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 text-center">
+                      <p className="text-gray-500 text-sm">Coming Soon</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
               {/* Navigation Buttons */}
               <div className="flex justify-center pt-8">
