@@ -12,13 +12,47 @@ Preferred communication style: Simple, everyday language.
 - **Comprehensive 6-Week Program Structure**: Implemented complete postnatal fitness program with detailed exercise tables, coach notes, safety tips, and progressive unlock system
 - **YouTube Video Integration**: All exercise videos properly linked with clickable buttons and playlist functionality for seamless workout experience
 - **Program Organization**: Successfully moved 6-week program content from "What's Next" tab to dedicated "Programs" tab for better user experience
-- **Week 1 Complete**: Detailed program structure with:
+- **Program 1 (Week 1) Complete**: Detailed program structure with:
   - RECONNECT & RESET phase with breathing exercises and core rehabilitation
   - 5 structured exercises with YouTube video links and proper repetition guidance
   - Equipment requirements (mini band, small Pilates ball, mat)
   - Coach's notes and safety precautions
   - Program introduction video integration
-- **Weeks 2-6 Structure**: Progressive unlock system with coming soon placeholders for future program phases
+  - Pink gradient color scheme for visual identity
+- **Program 2 (Week 2) Complete**: Advanced Strength & Conditioning Program with:
+  - STABILITY & BREATHWORK phase with controlled movement focus
+  - Core & Breath Reset Flow + 5 main exercises with YouTube video links
+  - Equipment requirements (mat, breath work, patience)
+  - Coach's notes and safety precautions
+  - Blue/cyan gradient color scheme for visual differentiation
+- **Program Structure Format**: Established collapsible program series pattern for future expansion
+
+## Program Series Format Template
+Each program follows this standardized structure for consistency:
+
+### Program Header Structure:
+- **Mobile Layout**: Badge → Title/Description → Info Box + Dropdown Arrow
+- **Desktop Layout**: Badge + Title/Description + Info Box + Dropdown Arrow (horizontal)
+- **Color Schemes**: Each program uses distinct gradient colors (Program 1: pink, Program 2: blue/cyan)
+- **Collapsible State**: Managed by `expandedPrograms[program-id]` with smooth transitions
+
+### Program Content Structure:
+- **Week Badge**: Gradient colored with week number
+- **Program Title**: Phase name with workout schedule details  
+- **Equipment Section**: Color-coded badges for required equipment
+- **Coach's Notes**: Highlighted section with program-specific guidance
+- **Exercise Sections**: 
+  - Part 1: Breathing/warm-up exercises with rep counts
+  - Part 2: Main workout with "PLAY ALL" playlist button and individual exercise links
+- **How To Use**: Instructions for video links and playlist functionality
+- **Safety Precautions**: Important safety guidelines and warnings
+
+### Technical Implementation Pattern:
+- **Responsive Design**: Separate mobile (`block lg:hidden`) and desktop (`hidden lg:flex`) layouts
+- **State Management**: `useState` for collapse/expand functionality per program
+- **Video Integration**: YouTube links with `target="_blank" rel="noopener noreferrer"`
+- **Equipment Badges**: Consistent color coding across all programs
+- **Gradient Themes**: Each program maintains visual differentiation through color schemes
 
 ## UI/UX Improvements
 - **Consistent Navigation**: Clickable logo across all pages (Dashboard, My Library, Heal Your Core) with proper hover effects
