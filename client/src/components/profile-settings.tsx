@@ -24,7 +24,7 @@ interface ProfileSettingsProps {
 }
 
 export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }: ProfileSettingsProps) {
-  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases'>('menu');
+  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'notifications'>('menu');
   const [profileData, setProfileData] = useState({
     country: '',
     bio: '',
@@ -54,6 +54,72 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     'Italy', 'Spain', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Ireland', 
     'New Zealand', 'Japan', 'South Korea', 'Singapore', 'India', 'Brazil', 'Mexico'
   ];
+
+  if (currentView === 'notifications') {
+    return (
+      <div 
+        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in slide-in-from-top-4 duration-300" 
+        data-testid="page-notifications-settings"
+      >
+        <div className="w-full h-full overflow-y-auto p-6">
+          {/* Back Button */}
+          <button 
+            onClick={() => setCurrentView('menu')}
+            className="mb-6 flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 hover:from-rose-100 hover:to-pink-100 hover:border-rose-300 transition-all duration-300 group"
+          >
+            <svg className="w-4 h-4 text-pink-600 group-hover:text-pink-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="text-pink-600 group-hover:text-pink-700 font-medium transition-colors">Back to Menu</span>
+          </button>
+
+          {/* My Notifications */}
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">My Notifications</h2>
+
+            <div className="space-y-4">
+              {/* News & Updates */}
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  checked={profileData.newsUpdates}
+                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, newsUpdates: checked as boolean}))}
+                  className="w-5 h-5"
+                />
+                <label className="text-gray-900 font-medium">News & Updates</label>
+              </div>
+
+              {/* Promotions */}
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  checked={profileData.promotions}
+                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, promotions: checked as boolean}))}
+                  className="w-5 h-5"
+                />
+                <label className="text-gray-900 font-medium">Promotions</label>
+              </div>
+
+              {/* Community Updates */}
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  checked={profileData.communityUpdates}
+                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, communityUpdates: checked as boolean}))}
+                  className="w-5 h-5"
+                />
+                <label className="text-gray-900 font-medium">Community Updates</label>
+              </div>
+
+              {/* Transactional Emails */}
+              <div className="flex items-center space-x-3">
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-500">Transactional Emails</span>
+                <Info className="w-4 h-4 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (currentView === 'purchases') {
     return (
@@ -357,49 +423,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
           </div>
 
-          {/* My Notifications */}
-          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">My Notifications</h2>
-
-            <div className="space-y-4">
-              {/* News & Updates */}
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  checked={profileData.newsUpdates}
-                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, newsUpdates: checked as boolean}))}
-                  className="w-5 h-5"
-                />
-                <label className="text-gray-900 font-medium">News & Updates</label>
-              </div>
-
-              {/* Promotions */}
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  checked={profileData.promotions}
-                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, promotions: checked as boolean}))}
-                  className="w-5 h-5"
-                />
-                <label className="text-gray-900 font-medium">Promotions</label>
-              </div>
-
-              {/* Community Updates */}
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  checked={profileData.communityUpdates}
-                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, communityUpdates: checked as boolean}))}
-                  className="w-5 h-5"
-                />
-                <label className="text-gray-900 font-medium">Community Updates</label>
-              </div>
-
-              {/* Transactional Emails */}
-              <div className="flex items-center space-x-3">
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-500">Transactional Emails</span>
-                <Info className="w-4 h-4 text-gray-400" />
-              </div>
-            </div>
-          </div>
 
           {/* Danger Zone */}
           <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
@@ -493,7 +516,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
               style={{ animationDelay: '320ms' }}
               onClick={(e) => {
                 e.stopPropagation();
-                // Handle notifications action
+                setCurrentView('notifications');
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
