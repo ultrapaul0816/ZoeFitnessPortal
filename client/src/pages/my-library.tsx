@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, PlayCircle, BookOpen } from "lucide-react";
+import { ArrowLeft, PlayCircle, BookOpen, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import programCover from "@assets/program-cover.png";
@@ -36,30 +36,30 @@ export default function MyLibrary() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center space-x-4">
-            <Link to="/dashboard">
-              <button 
-                className="group relative flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
-                data-testid="button-back-to-dashboard"
-              >
-                <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
-                  Back
-                </span>
-                {/* Subtle gradient overlay on hover */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
-              </button>
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">My Library</h1>
-          </div>
-        </div>
-      </div>
-
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link to="/dashboard">
+            <button 
+              className="group relative flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
+              data-testid="button-back-to-dashboard"
+            >
+              <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+                Back
+              </span>
+              {/* Subtle gradient overlay on hover */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
+            </button>
+          </Link>
+        </div>
+
+        {/* My Library Title */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">My Library</h1>
+          <p className="text-gray-600 mt-2">Your purchased programs and content</p>
+        </div>
         <div className="grid gap-6 md:grid-cols-2">
           {boughtPrograms.map((program) => (
             <Link key={program.id} to={program.id === "1" ? "/heal-your-core" : "/dashboard"}>
@@ -79,6 +79,12 @@ export default function MyLibrary() {
                       <BookOpen className="w-16 h-16 text-pink-400" />
                     </div>
                   )}
+                  
+                  {/* Purchased Badge */}
+                  <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 shadow-lg">
+                    <CheckCircle className="w-3 h-3" />
+                    Purchased
+                  </div>
                   
                   {/* Play overlay */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-t-lg flex items-center justify-center">
