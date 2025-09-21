@@ -3430,58 +3430,267 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
 // Core Program Components
 
 function TheRoleOfNutritionSection() {
+  const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
+
+  const toggleTopic = (topic: string) => {
+    setExpandedTopics(prev => ({
+      ...prev,
+      [topic]: !prev[topic]
+    }));
+  };
+
+  const topics = [
+    { id: 'a-note-on-nutrition', n: 1, title: 'A Note on Nutrition' },
+    { id: 'supporting-diastasis-core-repair', n: 2, title: 'Supporting Diastasis & Core Repair with Nutrition' },
+    { id: 'portion-quantity-guidance', n: 3, title: 'Portion & Quantity Guidance' },
+  ];
+
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>🍎 The Role of Nutrition</CardTitle>
           <CardDescription>
             Nutritional guidance giving the importance it deserves for your core recovery
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="space-y-0 divide-y divide-gray-100">
+            {topics.map((topic) => (
+              <div key={topic.id}>
+                <div className="flex items-center justify-between py-5">
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
+                    <h3 className="text-[15px] font-semibold text-left">{topic.title}</h3>
+                  </div>
+                  <div
+                    onClick={() => toggleTopic(topic.id)}
+                    className="w-8 h-8 min-w-[32px] min-h-[32px] bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200 flex-shrink-0"
+                    style={{ border: 'none', outline: 'none', boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3)' }}
+                    data-testid={`toggle-${topic.id}`}
+                  >
+                    <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics[topic.id] ? 'rotate-180' : ''}`} />
+                  </div>
+                </div>
+                {expandedTopics[topic.id] && (
+                  <div className="pb-5 space-y-4" data-testid={`content-${topic.id}`}>
+                    {topic.id === 'a-note-on-nutrition' ? (
+                      <div className="space-y-4 text-sm">
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-2">A NOTE ON <span className="text-pink-500">NUTRITION</span></h3>
+                        </div>
+                        
+                        <p>
+                          Proper nutrition plays a crucial role in your postpartum recovery and core rehabilitation journey. The foods you eat provide the building blocks for tissue repair, muscle recovery, and overall healing.
+                        </p>
+                        
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-blue-800">Why Nutrition Matters for Core Recovery</h4>
+                          <ul className="space-y-1 text-sm text-blue-700">
+                            <li>• Supports connective tissue repair and strengthening</li>
+                            <li>• Provides essential nutrients for muscle recovery</li>
+                            <li>• Reduces inflammation that can hinder healing</li>
+                            <li>• Optimizes energy levels for consistent exercise</li>
+                            <li>• Supports hormonal balance during postpartum period</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-green-800">Key Principles</h4>
+                          <ul className="space-y-1 text-sm text-green-700">
+                            <li>• Focus on whole, unprocessed foods</li>
+                            <li>• Prioritize adequate protein intake</li>
+                            <li>• Include anti-inflammatory foods</li>
+                            <li>• Stay well-hydrated throughout the day</li>
+                            <li>• Eat regularly to maintain energy levels</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-purple-800">Remember</h4>
+                          <p className="text-sm text-purple-700">
+                            This is not about restriction or weight loss. It's about nourishing your body to heal optimally and support your core recovery journey. Small, consistent changes make the biggest difference.
+                          </p>
+                        </div>
+                      </div>
+                    ) : topic.id === 'supporting-diastasis-core-repair' ? (
+                      <div className="space-y-4 text-sm">
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-2">SUPPORTING <span className="text-pink-500">DIASTASIS & CORE REPAIR</span> WITH NUTRITION</h3>
+                        </div>
+                        
+                        <p>
+                          Specific nutrients play vital roles in connective tissue repair, muscle recovery, and reducing inflammation - all essential for diastasis recti healing.
+                        </p>
+                        
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-blue-800">Protein for Tissue Repair</h4>
+                          <p className="text-sm text-blue-700 mb-2">
+                            <strong>Aim for 1.2-1.6g per kg body weight daily</strong>
+                          </p>
+                          <ul className="space-y-1 text-sm text-blue-700">
+                            <li>• Lean meats, poultry, fish</li>
+                            <li>• Eggs and dairy products</li>
+                            <li>• Legumes, beans, lentils</li>
+                            <li>• Quinoa, hemp seeds, chia seeds</li>
+                            <li>• Greek yogurt, cottage cheese</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-green-800">Collagen Support Nutrients</h4>
+                          <ul className="space-y-1 text-sm text-green-700">
+                            <li>• <strong>Vitamin C:</strong> Citrus fruits, berries, bell peppers, broccoli</li>
+                            <li>• <strong>Zinc:</strong> Pumpkin seeds, seafood, lean meats</li>
+                            <li>• <strong>Copper:</strong> Nuts, seeds, leafy greens</li>
+                            <li>• <strong>Bone broth:</strong> Natural collagen source</li>
+                            <li>• <strong>Gelatin:</strong> Supports connective tissue</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-purple-800">Anti-Inflammatory Foods</h4>
+                          <ul className="space-y-1 text-sm text-purple-700">
+                            <li>• <strong>Omega-3 rich fish:</strong> Salmon, sardines, mackerel</li>
+                            <li>• <strong>Colorful vegetables:</strong> Leafy greens, beets, sweet potatoes</li>
+                            <li>• <strong>Berries:</strong> Blueberries, cherries, pomegranate</li>
+                            <li>• <strong>Healthy fats:</strong> Avocado, olive oil, nuts</li>
+                            <li>• <strong>Spices:</strong> Turmeric, ginger, garlic</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-teal-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-teal-800">Hydration for Healing</h4>
+                          <ul className="space-y-1 text-sm text-teal-700">
+                            <li>• Aim for 8-10 glasses of water daily</li>
+                            <li>• Add extra if breastfeeding</li>
+                            <li>• Include herbal teas and broths</li>
+                            <li>• Limit dehydrating beverages</li>
+                          </ul>
+                        </div>
+                      </div>
+                    ) : topic.id === 'portion-quantity-guidance' ? (
+                      <div className="space-y-4 text-sm">
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-2">PORTION & <span className="text-pink-500">QUANTITY GUIDANCE</span></h3>
+                        </div>
+                        
+                        <p>
+                          Practical portion guidance to ensure you're getting adequate nutrition without overwhelm. Focus on balance and consistency rather than perfection.
+                        </p>
+                        
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-blue-800">Daily Meal Structure</h4>
+                          <ul className="space-y-1 text-sm text-blue-700">
+                            <li>• <strong>3 main meals</strong> + 2-3 small snacks</li>
+                            <li>• Include protein at every meal and snack</li>
+                            <li>• Eat every 3-4 hours to maintain energy</li>
+                            <li>• Don't skip meals - your body needs fuel to heal</li>
+                          </ul>
+                        </div>
+                        
+                        {/* Portion Guide Table */}
+                        <div className="overflow-x-auto">
+                          <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm w-full" style={{ minWidth: '800px' }} data-testid="table-portions">
+                            <div className="bg-gray-100 grid text-sm font-semibold text-gray-700 border-b border-gray-300" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
+                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">FOOD GROUP</div>
+                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">PORTION SIZE</div>
+                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">EXAMPLES</div>
+                              <div className="p-4 flex items-start justify-start">FREQUENCY</div>
+                            </div>
+
+                            {/* Protein */}
+                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
+                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
+                                Protein
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                Palm-sized portion (20-30g)
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                Chicken breast, salmon, eggs, Greek yogurt, lentils, tofu
+                              </div>
+                              <div className="p-4 text-gray-700 flex items-start justify-start">
+                                Every meal + snacks
+                              </div>
+                            </div>
+
+                            {/* Vegetables */}
+                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
+                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
+                                Vegetables
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                2 cupped handfuls
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                Leafy greens, broccoli, bell peppers, carrots, zucchini
+                              </div>
+                              <div className="p-4 text-gray-700 flex items-start justify-start">
+                                Most meals
+                              </div>
+                            </div>
+
+                            {/* Healthy Fats */}
+                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
+                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
+                                Healthy Fats
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                Thumb-sized portion
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                Avocado, nuts, seeds, olive oil, nut butters
+                              </div>
+                              <div className="p-4 text-gray-700 flex items-start justify-start">
+                                Most meals
+                              </div>
+                            </div>
+
+                            {/* Complex Carbs */}
+                            <div className="grid text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
+                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
+                                Complex Carbs
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                Cupped handful
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                Quinoa, sweet potato, oats, brown rice, whole grains
+                              </div>
+                              <div className="p-4 text-gray-700 flex items-start justify-start">
+                                Most meals
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-green-800">Quick Snack Ideas</h4>
+                          <ul className="space-y-1 text-sm text-green-700">
+                            <li>• Greek yogurt + berries + nuts</li>
+                            <li>• Apple slices + almond butter</li>
+                            <li>• Hard-boiled eggs + vegetables</li>
+                            <li>• Hummus + veggie sticks</li>
+                            <li>• Protein smoothie with greens</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-teal-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2 text-teal-800">Listen to Your Body</h4>
+                          <p className="text-sm text-teal-700">
+                            These are guidelines, not rules. Adjust portions based on your hunger, energy levels, activity, and whether you're breastfeeding. Focus on nourishing your body consistently.
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
       </Card>
-      
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Nutrition for Core Repair</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm space-y-3">
-            <p className="text-muted-foreground">
-              Why nutrition is vital for core recovery and tissue repair
-            </p>
-            <div>
-              <h4 className="font-semibold mb-2">Key Foods & Nutrients:</h4>
-              <ul className="space-y-1">
-                <li>• High-quality protein for tissue repair</li>
-                <li>• Collagen-supporting nutrients</li>
-                <li>• Anti-inflammatory foods</li>
-                <li>• Hydration for tissue health</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Meal Planning</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm space-y-3">
-            <p className="text-muted-foreground">
-              Simple meal planning strategies for busy mothers
-            </p>
-            <div>
-              <h4 className="font-semibold mb-2">Quick Prep Ideas:</h4>
-              <ul className="space-y-1">
-                <li>• Batch cooking on weekends</li>
-                <li>• Protein-rich snacks ready</li>
-                <li>• Easy one-pot meals</li>
-                <li>• Nutrient-dense smoothies</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }
