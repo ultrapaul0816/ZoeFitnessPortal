@@ -828,10 +828,6 @@ function HealSection() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        <Button variant="outline" className="w-full text-primary mb-4 h-auto py-3">
-                          <Video className="w-4 h-4 mr-2" />
-                          Watch: {topic.title}
-                        </Button>
                         <div className="space-y-3 text-sm">
                           <p>Educational content for {topic.title} will be added here.</p>
                           <div className="bg-pink-50 p-4 rounded-lg">
@@ -2719,10 +2715,6 @@ function UnderstandingYourCoreSection({
             <p>These are the 3 essential tools you'll use throughout your journey to connect to your deep core, support your spine, and move with intention.</p>
             <p className="font-semibold">Learn & Practice these!</p>
             
-            <Button variant="outline" className="w-full text-primary mb-4 h-auto py-3">
-              <Video className="w-4 h-4 mr-2" />
-              CLICK HERE: CORE COMPRESSIONS - BELLY PUMP / DEEP CORE HOLD / AB WRAPS
-            </Button>
             
             <div className="space-y-4">
               {/* Belly Pump */}
@@ -2844,10 +2836,6 @@ function UnderstandingYourCoreSection({
                 <li>When changing positions (lying to sitting, sitting to standing).</li>
               </ul>
               
-              <Button variant="outline" className="w-full mt-2 text-primary h-auto py-3">
-                <Video className="w-4 h-4 mr-2" />
-                CLICK HERE: HOW TO GET UP CORRECTLY
-              </Button>
               
               <p className="text-xs mt-2">During pushing in labor (proper breath and core work helps massively).</p>
             </div>
@@ -2880,10 +2868,6 @@ function UnderstandingYourCoreSection({
               <p className="font-semibold text-sm">DON'T WORRY IF YOUR ABDOMINAL WALLS DON'T FULLY TOUCH — THAT'S NORMAL. FOCUS ON IMPROVING FUNCTION, NOT PERFECTION.</p>
             </div>
             
-            <Button variant="outline" className="w-full text-primary mb-3 h-auto py-3">
-              <Video className="w-4 h-4 mr-2" />
-              CLICK HERE: HOW TO CHECK FOR DIASTASIS RECTI
-            </Button>
             
             <div className="bg-muted/50 p-4 rounded">
               <p className="font-semibold mb-2">How to Check:</p>
