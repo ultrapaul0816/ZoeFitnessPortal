@@ -45,6 +45,8 @@ import {
   Clock,
   CheckCircle,
   ChevronDown,
+  ChevronRight,
+  ChevronLeft,
   TrendingUp,
   Activity
 } from "lucide-react";
@@ -62,6 +64,34 @@ export default function HealYourCorePage() {
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [isProgressExpanded, setIsProgressExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState("welcome");
+
+  // Tab navigation helpers
+  const tabOrder = ["welcome", "cardio", "understanding", "healing", "programs", "nutrition", "next-steps"];
+  
+  const navigateToNextTab = () => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex < tabOrder.length - 1) {
+      setActiveTab(tabOrder[currentIndex + 1]);
+    }
+  };
+  
+  const navigateToPreviousTab = () => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabOrder[currentIndex - 1]);
+    }
+  };
+  
+  const canGoNext = () => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    return currentIndex < tabOrder.length - 1;
+  };
+  
+  const canGoPrevious = () => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    return currentIndex > 0;
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -302,7 +332,7 @@ export default function HealYourCorePage() {
         )}
 
         {/* Navigation Tabs */}
-        <Tabs defaultValue="welcome" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="overflow-x-auto px-0 shadow-xl rounded-lg">
             <TabsList className="flex w-full md:grid md:grid-cols-7 gap-2 md:gap-4 h-auto p-3 md:p-4 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
@@ -359,17 +389,31 @@ export default function HealYourCorePage() {
           </div>
 
           <TabsContent value="welcome">
-            <WelcomeSection />
+            <WelcomeSection 
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
+            />
           </TabsContent>
 
           <TabsContent value="cardio">
-            <CardioSection />
+            <CardioSection 
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
+            />
           </TabsContent>
 
           <TabsContent value="understanding">
             <UnderstandingYourCoreSection 
               articles={Array.isArray(knowledgeArticles) ? knowledgeArticles : []} 
               onArticleClick={setSelectedArticle}
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
             />
           </TabsContent>
 
@@ -1243,7 +1287,17 @@ function HealSection() {
   );
 }
 
-function WelcomeSection() {
+function WelcomeSection({
+  canGoNext,
+  canGoPrevious,
+  navigateToNextTab,
+  navigateToPreviousTab
+}: {
+  canGoNext: () => boolean;
+  canGoPrevious: () => boolean;
+  navigateToNextTab: () => void;
+  navigateToPreviousTab: () => void;
+}) {
   const [expandedTopics, setExpandedTopics] = useState<{[key: string]: boolean}>({});
 
   const toggleTopic = (topicId: string) => {
@@ -1859,19 +1913,28 @@ function WelcomeSection() {
           {/* Next Section Button */}
           <div className="mt-12 pt-8 border-t border-gray-200">
             <div className="text-center">
-              <Button
-                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
-                data-testid="button-next-section"
-                onClick={() => {
-                  // Navigate to the Cardio Plan tab
-                  const cardioTab = document.querySelector('[data-testid="tab-cardio"]');
-                  if (cardioTab) {
-                    (cardioTab as HTMLElement).click();
-                  }
-                }}
-              >
-                Next Section
-              </Button>
+              <div className="flex gap-4 justify-center">
+                {canGoPrevious() && (
+                  <Button
+                    className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                    data-testid="button-previous-section"
+                    onClick={navigateToPreviousTab}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous Section
+                  </Button>
+                )}
+                {canGoNext() && (
+                  <Button
+                    className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                    data-testid="button-next-section"
+                    onClick={navigateToNextTab}
+                  >
+                    Next Section
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground mt-3">
                 Ready to learn about cardio? Let's explore how to safely include cardio in your recovery.
               </p>
@@ -1883,7 +1946,17 @@ function WelcomeSection() {
   );
 }
 
-function CardioSection() {
+function CardioSection({
+  canGoNext,
+  canGoPrevious,
+  navigateToNextTab,
+  navigateToPreviousTab
+}: {
+  canGoNext: () => boolean;
+  canGoPrevious: () => boolean;
+  navigateToNextTab: () => void;
+  navigateToPreviousTab: () => void;
+}) {
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
 
   const toggleTopic = (topic: string) => {
@@ -2272,19 +2345,28 @@ function CardioSection() {
           {/* Next Section Button */}
           <div className="mt-12 pt-8 border-t border-gray-200">
             <div className="text-center">
-              <Button
-                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
-                data-testid="button-next-section-cardio"
-                onClick={() => {
-                  // Navigate to the Core tab (Understanding Your Core)
-                  const coreTab = document.querySelector('[data-testid="tab-understanding"]');
-                  if (coreTab) {
-                    (coreTab as HTMLElement).click();
-                  }
-                }}
-              >
-                Next Section
-              </Button>
+              <div className="flex gap-4 justify-center">
+                {canGoPrevious() && (
+                  <Button
+                    className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                    data-testid="button-previous-section-cardio"
+                    onClick={navigateToPreviousTab}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous Section
+                  </Button>
+                )}
+                {canGoNext() && (
+                  <Button
+                    className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                    data-testid="button-next-section-cardio"
+                    onClick={navigateToNextTab}
+                  >
+                    Next Section
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground mt-3">
                 Ready to dive deeper? Let's explore the foundation of your core recovery.
               </p>
@@ -2298,10 +2380,18 @@ function CardioSection() {
 
 function UnderstandingYourCoreSection({ 
   articles, 
-  onArticleClick 
+  onArticleClick,
+  canGoNext,
+  canGoPrevious,
+  navigateToNextTab,
+  navigateToPreviousTab
 }: { 
   articles: any[]; 
   onArticleClick: (article: any) => void;
+  canGoNext: () => boolean;
+  canGoPrevious: () => boolean;
+  navigateToNextTab: () => void;
+  navigateToPreviousTab: () => void;
 }) {
   const [expandedTopics, setExpandedTopics] = useState<{[key: string]: boolean}>({});
 
@@ -3073,19 +3163,28 @@ function UnderstandingYourCoreSection({
       {/* Next Section Button */}
       <div className="mt-12 pt-8 border-t border-gray-200">
         <div className="text-center">
-          <Button
-            className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
-            data-testid="button-next-section-core"
-            onClick={() => {
-              // Navigate to the Healing tab
-              const healingTab = document.querySelector('[data-testid="tab-healing"]');
-              if (healingTab) {
-                (healingTab as HTMLElement).click();
-              }
-            }}
-          >
-            Next Section
-          </Button>
+          <div className="flex gap-4 justify-center">
+            {canGoPrevious() && (
+              <Button
+                className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                data-testid="button-previous-section-core"
+                onClick={navigateToPreviousTab}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous Section
+              </Button>
+            )}
+            {canGoNext() && (
+              <Button
+                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                data-testid="button-next-section-core"
+                onClick={navigateToNextTab}
+              >
+                Next Section
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground mt-3">
             Ready to start your healing journey? Let's begin with your daily core routine.
           </p>
