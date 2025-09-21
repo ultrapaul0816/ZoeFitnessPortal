@@ -396,7 +396,7 @@ function WelcomeSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-semibold text-sm shrink-0">1</div>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
                   <h3 className="text-[15px] font-semibold text-left">Welcome from Zoe</h3>
                 </div>
                 <Button
@@ -1033,7 +1033,7 @@ function CardioSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
+                  <div className="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-semibold text-sm shrink-0">1</div>
                   <h3 className="text-[15px] font-semibold text-left">How to Include Cardio – Safely & Strategically</h3>
                 </div>
                 <Button
