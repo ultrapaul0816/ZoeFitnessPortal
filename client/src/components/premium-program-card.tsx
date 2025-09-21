@@ -102,12 +102,6 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
         <Badge className="absolute top-3 left-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-semibold shadow-lg border-0">
           {program.level}
         </Badge>
-        {hasAccess && (
-          <Badge className="absolute bottom-3 left-3 bg-green-600 hover:bg-green-700">
-            <Star className="w-3 h-3 mr-1" />
-            Premium Access
-          </Badge>
-        )}
       </div>
 
       <CardContent className="p-6">
@@ -140,6 +134,12 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
           </Button>
         ) : hasAccess ? (
           <div className="space-y-3">
+            <div className="flex justify-between items-center mb-3">
+              <Badge className="bg-green-600 hover:bg-green-700">
+                <Star className="w-3 h-3 mr-1" />
+                Premium Access
+              </Badge>
+            </div>
             <Button 
               className="w-full" 
               data-testid={`button-start-${program.id}`}
