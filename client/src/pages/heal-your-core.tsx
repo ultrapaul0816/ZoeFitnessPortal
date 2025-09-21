@@ -428,9 +428,8 @@ function HealSection() {
     { id: 'do-i-have-diastasis', n: 2, title: 'Do I Have Diastasis Recti' },
     { id: 'why-core-rehab-matters', n: 3, title: 'Why Core Rehab Matters' },
     { id: 'why-crunches-wont-work', n: 4, title: "Why Crunches Won't Work" },
-    { id: 'let-healing-begin', n: 5, title: 'Let Healing Begin' },
-    { id: 'core-rehab-daily-practice', n: 6, title: 'Core Rehab & Daily Practice' },
-    { id: 'week-by-week-reconnection', n: 7, title: 'Rehab Routine – Week-by-Week Reconnection' },
+    { id: 'core-rehab-daily-practice', n: 5, title: 'Core Rehab & Daily Practice' },
+    { id: 'week-by-week-reconnection', n: 6, title: 'Rehab Routine – Week-by-Week Reconnection' },
   ];
 
   return (
