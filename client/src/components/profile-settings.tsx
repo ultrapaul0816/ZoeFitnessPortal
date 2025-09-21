@@ -432,8 +432,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           <div className="space-y-3">
             {/* Profile */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500 overflow-hidden"
-              style={{ animationDelay: '100ms' }}
+              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              style={{ animationDelay: '80ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('profile');
@@ -451,8 +451,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* My Library */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500 overflow-hidden"
-              style={{ animationDelay: '200ms' }}
+              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              style={{ animationDelay: '160ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 window.location.href = "/my-library";
@@ -470,8 +470,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Purchases & Payment */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500 overflow-hidden"
-              style={{ animationDelay: '300ms' }}
+              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              style={{ animationDelay: '240ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('purchases');
@@ -489,8 +489,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Notifications */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500 overflow-hidden"
-              style={{ animationDelay: '400ms' }}
+              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              style={{ animationDelay: '320ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 // Handle notifications action
@@ -508,8 +508,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Logout */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500 overflow-hidden"
-              style={{ animationDelay: '500ms' }}
+              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              style={{ animationDelay: '400ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleLogout();
