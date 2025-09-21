@@ -147,7 +147,7 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-              <Baby className="w-5 h-5 mr-2 animate-pulse group-hover:animate-bounce group-hover:scale-110 transition-all duration-300" />
+              <Baby className="w-5 h-5 mr-2 animate-bounce group-hover:animate-pulse group-hover:scale-110 transition-all duration-300" />
               <span className="relative z-10 text-lg font-semibold tracking-wide group-hover:tracking-wider transition-all duration-200">Start Program</span>
             </Button>
             <p className="text-xs text-center text-green-600 font-medium">
