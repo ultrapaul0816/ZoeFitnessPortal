@@ -457,7 +457,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     >
       <div className="w-full h-full overflow-y-auto">
         {/* Menu Items */}
-        <div className="pl-4 pr-6 pt-6 pb-6">
+        <div className="pl-2 pr-6 pt-6 pb-6">
           <div className="flex flex-col space-y-3">
             {/* Profile */}
             <div className="flex justify-start">
@@ -481,7 +481,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-start my-2 pl-4">
+            <div className="flex justify-start my-2 pl-2">
               <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
@@ -507,7 +507,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-start my-2 pl-4">
+            <div className="flex justify-start my-2 pl-2">
               <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
@@ -533,7 +533,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-start my-2 pl-4">
+            <div className="flex justify-start my-2 pl-2">
               <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
@@ -559,7 +559,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-start my-2 pl-4">
+            <div className="flex justify-start my-2 pl-2">
               <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
