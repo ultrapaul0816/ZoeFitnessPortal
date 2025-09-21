@@ -1,46 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Play } from "lucide-react";
+import { ArrowLeft, PlayCircle, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import programCover from "@assets/program-cover.png";
 
-interface LibraryItem {
+interface Program {
   id: string;
   title: string;
-  speaker: string;
-  duration: string;
   description: string;
-  thumbnailUrl: string;
-  program: string;
+  thumbnail: string;
+  totalVideos: number;
+  totalDuration: string;
 }
 
 export default function MyLibrary() {
-  const [libraryItems] = useState<LibraryItem[]>([
+  const [boughtPrograms] = useState<Program[]>([
     {
       id: "1",
-      title: "Navigating Relationships As a New Parent",
-      speaker: "Rhonda Richards-Smith",
-      duration: "40:36",
-      description: "Rhonda Richards Smith - Navigating Relationships As a New Parent [41 minutes]",
-      thumbnailUrl: "",
-      program: "The Mama Summit"
+      title: "Your Postpartum Strength Recovery Program",
+      description: "A comprehensive 6-week postnatal fitness program for mothers 6 weeks to 6 years postpartum",
+      thumbnail: programCover,
+      totalVideos: 24,
+      totalDuration: "4h 30m"
     },
     {
-      id: "2", 
-      title: "Honoring Your Birth During Challenges Times",
-      speaker: "Dr. Sarah Bjorkman",
-      duration: "26:46",
-      description: "The Doctors Bjorkman - Honoring Your Birth During Challenges Times [27 minutes]",
-      thumbnailUrl: "",
-      program: "The Mama Summit"
-    },
-    {
-      id: "3",
-      title: "5 Things To Stop Doing To Get Your Sleep Back",
-      speaker: "The Speech Sisters",
-      duration: "32:15",
-      description: "The Speech Sisters - 5 Things To Stop Doing To Get Your Sleep Back [32 minutes]",
-      thumbnailUrl: "", 
-      program: "The Mama Summit"
+      id: "2",
+      title: "The Mama Summit",
+      description: "Expert talks and guidance for new mothers covering relationships, birth, sleep, and more",
+      thumbnail: "",
+      totalVideos: 15,
+      totalDuration: "8h 15m"
     }
   ]);
 
@@ -70,88 +60,78 @@ export default function MyLibrary() {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          {libraryItems.map((item) => (
-            <div 
-              key={item.id}
-              className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
-            >
-              <div className="p-6">
-                {/* Video Thumbnail and Content */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {boughtPrograms.map((program) => (
+            <Link key={program.id} to={program.id === "1" ? "/heal-your-core" : "/dashboard"}>
+              <Card 
+                className="hover:shadow-lg transition-shadow cursor-pointer group"
+                data-testid={`program-card-${program.id}`}
+              >
                 <div className="relative">
-                  <div className="aspect-video bg-gradient-to-br from-orange-100 via-pink-50 to-orange-50 rounded-lg overflow-hidden relative">
-                    {/* Background circles design */}
-                    <div className="absolute inset-0">
-                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-32 h-32 bg-white bg-opacity-20 rounded-full"></div>
-                      <div className="absolute left-8 top-1/2 transform -translate-y-1/2 w-24 h-24 bg-white bg-opacity-30 rounded-full"></div>
-                      <div className="absolute left-12 top-1/2 transform -translate-y-1/2 w-16 h-16 bg-white bg-opacity-40 rounded-full"></div>
+                  {program.thumbnail ? (
+                    <img 
+                      src={program.thumbnail}
+                      alt={program.title}
+                      className="w-full h-48 object-cover rounded-t-lg"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gradient-to-br from-pink-100 to-pink-200 rounded-t-lg flex items-center justify-center">
+                      <BookOpen className="w-16 h-16 text-pink-400" />
                     </div>
-                    
-                    {/* Speaker photo placeholder */}
-                    <div className="absolute right-8 top-1/2 transform -translate-y-1/2">
-                      <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
-                        <img 
-                          src={item.thumbnailUrl}
-                          alt={item.speaker}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            target.parentElement!.innerHTML = '<svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Program and Speaker Text Overlay */}
-                    <div className="absolute right-8 top-8 text-right">
-                      <div className="text-lg font-light text-gray-600 mb-1">
-                        The <span className="italic">Mama</span> Summit
-                      </div>
-                      <div className="text-lg italic text-gray-600 mb-2">
-                        {item.speaker}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {item.title}
-                      </div>
-                    </div>
-
-                    {/* Duration badge */}
-                    <div className="absolute bottom-4 right-4 bg-gray-800 bg-opacity-80 text-white px-2 py-1 rounded text-sm font-medium">
-                      {item.duration}
-                    </div>
-
-                    {/* Play button overlay */}
-                    <button 
-                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-10 transition-all group"
-                      data-testid={`button-play-${item.id}`}
-                    >
-                      <div className="w-16 h-16 bg-pink-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
-                      </div>
-                    </button>
+                  )}
+                  
+                  {/* Play overlay */}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-t-lg flex items-center justify-center">
+                    <PlayCircle className="w-16 h-16 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
-
-                {/* Description */}
-                <div className="mt-4">
-                  <p className="text-gray-700 font-medium">{item.description}</p>
-                </div>
-              </div>
-            </div>
+                
+                <CardHeader>
+                  <CardTitle 
+                    className="text-lg text-gray-900 group-hover:text-pink-600 transition-colors"
+                    data-testid={`text-program-title-${program.id}`}
+                  >
+                    {program.title}
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {program.description}
+                  </p>
+                  
+                  <div 
+                    className="flex items-center justify-between text-sm text-gray-500"
+                    data-testid={`text-program-stats-${program.id}`}
+                  >
+                    <span className="flex items-center gap-1">
+                      <PlayCircle className="w-4 h-4" />
+                      {program.totalVideos} videos
+                    </span>
+                    <span>{program.totalDuration}</span>
+                  </div>
+                  
+                  <Button 
+                    className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                    data-testid={`button-access-program-${program.id}`}
+                    asChild
+                  >
+                    <span>Access Program</span>
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 
-        {/* Empty state if no items */}
-        {libraryItems.length === 0 && (
+        {/* Empty state if no programs */}
+        {boughtPrograms.length === 0 && (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
+              <BookOpen className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No content yet</h3>
-            <p className="text-gray-500">Your purchased programs and content will appear here.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No programs yet</h3>
+            <p className="text-gray-500">Your purchased programs will appear here.</p>
           </div>
         )}
       </div>
