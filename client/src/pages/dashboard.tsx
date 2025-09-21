@@ -491,28 +491,31 @@ export default function Dashboard() {
             <div className="flex items-center">
               {/* Hamburger Menu Button */}
               <button 
-                className="p-3 relative transition-transform duration-200 hover:scale-105"
+                className="p-3 relative transition-all duration-300 hover:scale-110 hover:rotate-12 active:scale-95 group"
                 data-testid="button-hamburger-menu"
                 aria-label={showProfileSettings ? "Close menu" : "Open menu"}
                 onClick={() => setShowProfileSettings(!showProfileSettings)}
               >
                 <div className="relative w-6 h-6 flex items-center justify-center">
-                  <div className={`absolute transition-all duration-300 transform ${
+                  <div className={`absolute transition-all duration-300 transform group-hover:scale-110 ${
                     showProfileSettings ? 'rotate-45 translate-y-0' : 'rotate-0 -translate-y-2'
                   }`}>
-                    <div className="w-6 h-0.5 bg-gray-600 rounded"></div>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded shadow-sm group-hover:shadow-md group-hover:shadow-pink-200"></div>
                   </div>
-                  <div className={`absolute transition-all duration-300 ${
-                    showProfileSettings ? 'opacity-0' : 'opacity-100'
+                  <div className={`absolute transition-all duration-300 group-hover:scale-110 ${
+                    showProfileSettings ? 'opacity-0 scale-75' : 'opacity-100 scale-100'
                   }`}>
-                    <div className="w-6 h-0.5 bg-gray-600 rounded"></div>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded shadow-sm group-hover:shadow-md group-hover:shadow-pink-200"></div>
                   </div>
-                  <div className={`absolute transition-all duration-300 transform ${
+                  <div className={`absolute transition-all duration-300 transform group-hover:scale-110 ${
                     showProfileSettings ? '-rotate-45 translate-y-0' : 'rotate-0 translate-y-2'
                   }`}>
-                    <div className="w-6 h-0.5 bg-gray-600 rounded"></div>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded shadow-sm group-hover:shadow-md group-hover:shadow-pink-200"></div>
                   </div>
                 </div>
+                
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
               </button>
             </div>
             
