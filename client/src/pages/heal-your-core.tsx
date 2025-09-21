@@ -1321,7 +1321,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous Section
+              Prev
             </Button>
           )}
           {canGoNext() && (
@@ -1330,7 +1330,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
               data-testid="button-next-section-heal"
               onClick={navigateToNextTab}
             >
-              Next Section
+              Next
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
@@ -1974,7 +1974,7 @@ function WelcomeSection({
                     onClick={navigateToPreviousTab}
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    Previous Section
+                    Prev
                   </Button>
                 )}
                 {canGoNext() && (
@@ -1983,7 +1983,7 @@ function WelcomeSection({
                     data-testid="button-next-section"
                     onClick={navigateToNextTab}
                   >
-                    Next Section
+                    Next
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 )}
@@ -2406,7 +2406,7 @@ function CardioSection({
                     onClick={navigateToPreviousTab}
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    Previous Section
+                    Prev
                   </Button>
                 )}
                 {canGoNext() && (
@@ -2415,7 +2415,7 @@ function CardioSection({
                     data-testid="button-next-section-cardio"
                     onClick={navigateToNextTab}
                   >
-                    Next Section
+                    Next
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 )}
@@ -3224,7 +3224,7 @@ function UnderstandingYourCoreSection({
                 onClick={navigateToPreviousTab}
               >
                 <ChevronLeft className="w-4 h-4" />
-                Previous Section
+                Prev
               </Button>
             )}
             {canGoNext() && (
@@ -3233,7 +3233,7 @@ function UnderstandingYourCoreSection({
                 data-testid="button-next-section-core"
                 onClick={navigateToNextTab}
               >
-                Next Section
+                Next
                 <ChevronRight className="w-4 h-4" />
               </Button>
             )}
@@ -3598,7 +3598,7 @@ function YourSixCoreProgramsSection({
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous Section
+              Prev
             </Button>
           )}
           {canGoNext() && (
@@ -3607,7 +3607,7 @@ function YourSixCoreProgramsSection({
               data-testid="button-next-section-programs"
               onClick={navigateToNextTab}
             >
-              Next Section
+              Next
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
@@ -3897,7 +3897,7 @@ function TheRoleOfNutritionSection({
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous Section
+              Prev
             </Button>
           )}
           {canGoNext() && (
@@ -3906,7 +3906,7 @@ function TheRoleOfNutritionSection({
               data-testid="button-next-section-nutrition"
               onClick={navigateToNextTab}
             >
-              Next Section
+              Next
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
@@ -4050,7 +4050,7 @@ function WhatComesNextSection({
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous Section
+              Prev
             </Button>
           )}
           {canGoNext() && (
@@ -4059,7 +4059,7 @@ function WhatComesNextSection({
               data-testid="button-next-section-next-steps"
               onClick={navigateToNextTab}
             >
-              Next Section
+              Next
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
