@@ -2141,10 +2141,6 @@ function UnderstandingYourCoreSection({
                           <span>When changing positions (lying to sitting, sitting to standing).</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-primary font-bold">▶</span>
-                          <span className="font-semibold">CLICK HERE&gt; <a href="#" className="text-blue-600 underline">HOW TO GET UP CORRECTLY</a></span>
-                        </li>
-                        <li className="flex items-start gap-2">
                           <span className="text-primary font-bold">❖</span>
                           <span>During pushing in labor (proper breath and core work helps massively).</span>
                         </li>
