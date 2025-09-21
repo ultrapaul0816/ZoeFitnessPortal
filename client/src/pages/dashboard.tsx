@@ -501,64 +501,15 @@ export default function Dashboard() {
           <div className="flex items-center justify-between h-16">
             {/* Left side navigation */}
             <div className="flex items-center">
-              {/* Profile Dropdown Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button 
-                    className="p-3 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all duration-300 rounded-lg group"
-                    data-testid="button-hamburger-menu"
-                    aria-label="Open profile menu"
-                  >
-                    <Menu className="w-6 h-6 text-pink-500" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  <DropdownMenuItem 
-                    onSelect={() => setShowProfileSettings(true)}
-                    data-testid="menu-profile"
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setShowNotificationsDialog(true)}
-                    data-testid="menu-notifications"
-                  >
-                    <Bell className="w-4 h-4 mr-2" />
-                    Notifications
-                    {unreadCount > 0 && (
-                      <span className="ml-auto w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setLocation("/my-library")}
-                    data-testid="menu-library"
-                  >
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    My Library
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setShowPurchasesDialog(true)}
-                    data-testid="menu-purchases"
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Purchases & payments
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => {
-                      localStorage.removeItem("user");
-                      setLocation("/");
-                    }}
-                    data-testid="menu-sign-out"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Hamburger Menu - Direct Profile Access */}
+              <button 
+                className="p-3 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all duration-300 rounded-lg group"
+                data-testid="button-hamburger-menu"
+                aria-label="Open profile"
+                onClick={() => setShowProfileSettings(true)}
+              >
+                <Menu className="w-6 h-6 text-pink-500" />
+              </button>
             </div>
             
             {/* Centered Logo */}
