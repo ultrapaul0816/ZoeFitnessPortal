@@ -513,50 +513,6 @@ export default function Dashboard() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
-                  <DropdownMenuItem 
-                    onClick={() => setShowProfileSettings(true)}
-                    data-testid="menu-profile"
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setShowNotificationsDialog(true)}
-                    data-testid="menu-notifications"
-                  >
-                    <Bell className="w-4 h-4 mr-2" />
-                    Notifications
-                    {unreadCount > 0 && (
-                      <span className="ml-auto w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setLocation("/my-library")}
-                    data-testid="menu-library"
-                  >
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    My Library
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setShowPurchasesDialog(true)}
-                    data-testid="menu-purchases"
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Purchases & payments
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => {
-                      localStorage.removeItem("user");
-                      setLocation("/");
-                    }}
-                    data-testid="menu-sign-out"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign out
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
