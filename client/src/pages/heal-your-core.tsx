@@ -25,7 +25,8 @@ import {
   Clock,
   CheckCircle,
   ChevronDown,
-  TrendingUp
+  TrendingUp,
+  Activity
 } from "lucide-react";
 
 interface User {
@@ -278,10 +279,14 @@ export default function HealYourCorePage() {
 
         {/* Navigation Tabs */}
         <Tabs defaultValue="welcome" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 gap-2 md:gap-3 h-auto p-2 md:p-3 bg-gray-50 rounded-xl">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-7 gap-2 md:gap-3 h-auto p-2 md:p-3 bg-gray-50 rounded-xl">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Welcome</span>
+            </TabsTrigger>
+            <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+              <span className="font-medium text-center leading-tight">Cardio Plan</span>
             </TabsTrigger>
             <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
@@ -307,6 +312,10 @@ export default function HealYourCorePage() {
 
           <TabsContent value="welcome">
             <WelcomeSection />
+          </TabsContent>
+
+          <TabsContent value="cardio">
+            <CardioSection />
           </TabsContent>
 
           <TabsContent value="understanding">
@@ -975,6 +984,282 @@ function WelcomeSection() {
               <Button
                 className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
                 data-testid="button-next-section"
+                onClick={() => {
+                  // Navigate to the Cardio Plan tab
+                  const cardioTab = document.querySelector('[data-testid="tab-cardio"]');
+                  if (cardioTab) {
+                    (cardioTab as HTMLElement).click();
+                  }
+                }}
+              >
+                Next Section
+              </Button>
+              <p className="text-sm text-muted-foreground mt-3">
+                Ready to learn about cardio? Let's explore how to safely include cardio in your recovery.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function CardioSection() {
+  const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
+
+  const toggleTopic = (topic: string) => {
+    setExpandedTopics(prev => ({
+      ...prev,
+      [topic]: !prev[topic]
+    }));
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-center">🏃‍♀️ Cardio Plan</CardTitle>
+          <CardDescription className="text-center">
+            Safe and strategic cardiovascular training for your postpartum journey
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-1">
+            
+            {/* Topic 1: How to Include Cardio – Safely & Strategically */}
+            <div>
+              <div className="flex items-center justify-between py-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
+                  <h3 className="text-[15px] font-semibold text-left">How to Include Cardio – Safely & Strategically</h3>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleTopic('cardio-safety')}
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
+                  data-testid="button-toggle-cardio-safety"
+                >
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['cardio-safety'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['cardio-safety'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-5">
+                    <p className="text-sm">
+                      Adding cardio back into your routine is exciting, but it requires a careful, progressive approach to support your body's ongoing recovery.
+                    </p>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Start Small and Listen to Your Body:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Begin with low-impact activities like walking, swimming, or stationary cycling</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Pay attention to your energy levels, core stability, and pelvic floor response</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Stop immediately if you experience any pressure, heaviness, or leaking</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Heart Rate Guidelines:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weeks 1-2:</strong> Stay in the light intensity zone (able to hold a conversation)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weeks 3-4:</strong> Gradually introduce moderate intensity intervals</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weeks 5-6:</strong> Progress to longer moderate intensity sessions</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Topic 2: Cardio Plan Overview */}
+            <div>
+              <div className="flex items-center justify-between py-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">2</span>
+                  <h3 className="text-[15px] font-semibold text-left">Cardio Plan Overview</h3>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleTopic('cardio-overview')}
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
+                  data-testid="button-toggle-cardio-overview"
+                >
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['cardio-overview'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['cardio-overview'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-5">
+                    <p className="text-sm">
+                      This progressive cardio plan complements your core strengthening program, building cardiovascular fitness while supporting your recovery.
+                    </p>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">6-Week Progressive Structure:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weeks 1-2:</strong> Foundation Phase - 15-20 minute light cardio sessions</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weeks 3-4:</strong> Building Phase - 20-30 minute sessions with intervals</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weeks 5-6:</strong> Strengthening Phase - 30-40 minute sessions</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Recommended Activities:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Walking</em> - Perfect starting point, low impact on joints</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Swimming</em> - Excellent full-body, low-impact option</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Stationary Cycling</em> - Controlled environment, easy to modify</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Elliptical</em> - Low impact with upper body involvement</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Topic 3: Your Training Schedule With Cardio */}
+            <div>
+              <div className="flex items-center justify-between py-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">3</span>
+                  <h3 className="text-[15px] font-semibold text-left">Your Training Schedule With Cardio</h3>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleTopic('cardio-schedule')}
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
+                  data-testid="button-toggle-cardio-schedule"
+                >
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['cardio-schedule'] ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              {expandedTopics['cardio-schedule'] && (
+                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-5">
+                    <p className="text-sm">
+                      Integrating cardio with your core training requires smart scheduling to maximize recovery and results.
+                    </p>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Weekly Schedule Example:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Monday:</strong> Core Training + Light Cardio (20 min)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Tuesday:</strong> Rest or Gentle Walk</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Wednesday:</strong> Cardio Focus Day (25-30 min)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Thursday:</strong> Core Training</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Friday:</strong> Light Cardio + Stretching</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weekend:</strong> Active Recovery or Rest</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Important Timing Tips:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Never do intense cardio and core training on the same day initially</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Allow at least 24 hours between intense sessions</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Listen to your body - fatigue is a signal to reduce intensity</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Adjust based on sleep quality and energy levels</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next Section Button */}
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="text-center">
+              <Button
+                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center"
+                data-testid="button-next-section-cardio"
                 onClick={() => {
                   // Navigate to the Core tab (Understanding Your Core)
                   const coreTab = document.querySelector('[data-testid="tab-understanding"]');
