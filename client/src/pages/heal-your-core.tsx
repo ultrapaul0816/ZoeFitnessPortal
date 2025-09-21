@@ -609,14 +609,6 @@ function HealSection() {
                         <div className="text-center">
                           <h3 className="text-lg font-bold mb-4"><span className="text-pink-500">WHY CORE</span> REHAB MATTERS</h3>
                         </div>
-                        
-                        <div className="flex justify-center my-4">
-                          <img 
-                            src={coreRehabMattersImage} 
-                            alt="Woman doing core rehabilitation exercises" 
-                            className="max-w-full h-auto rounded-lg shadow-sm"
-                          />
-                        </div>
 
                         <p className="text-gray-700 mb-4">
                           Even without visible DR, your core may feel disconnected, weak, or uncoordinated. That's where core rehab comes in. This isn't just about workouts—it's about making your core functional again for everything from lifting your baby to carrying groceries. The best part? You're retraining your whole body, not just your abs. <strong className="text-pink-500">IT'S NEVER TOO LATE TO HEAL ✨</strong> The core is trainable at any stage, and you are worthy of that healing. There's no expiration date on recovery. Let's start where you are.
