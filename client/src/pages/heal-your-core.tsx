@@ -1721,7 +1721,6 @@ function UnderstandingYourCoreSection({
                         <span className="text-primary text-lg">✨</span>
                         <p className="font-semibold text-primary">How to engage your TVA:</p>
                       </div>
-                      <p className="text-sm mb-3 text-primary font-semibold">CLICK HERE: <a href="https://www.youtube.com/watch?v=h7MxrsIGCxo" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">HOW TO CONNECT TO YOUR TVA</a> (get a yoga block)</p>
                       
                       <p className="font-semibold text-sm mb-2">Here's how to feel your TVA working:</p>
                       <ul className="ml-4 space-y-2 text-sm">
