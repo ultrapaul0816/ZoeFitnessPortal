@@ -51,21 +51,17 @@ export default function MyLibrary() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center space-x-4">
             <Link to="/dashboard">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="group relative px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+              <button 
+                className="group relative flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
                 data-testid="button-back-to-dashboard"
               >
-                <div className="flex items-center gap-2">
-                  <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
-                  <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
-                    Back
-                  </span>
-                </div>
+                <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+                <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+                  Back
+                </span>
                 {/* Subtle gradient overlay on hover */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/5 group-hover:to-pink-600/5 transition-all duration-300"></div>
-              </Button>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
+              </button>
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">My Library</h1>
           </div>
