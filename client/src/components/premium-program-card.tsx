@@ -103,7 +103,7 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
           {program.level}
         </Badge>
         {hasAccess && (
-          <Badge className="absolute top-3 right-3 bg-green-600 hover:bg-green-700">
+          <Badge className="absolute bottom-3 left-3 bg-green-600 hover:bg-green-700">
             <Star className="w-3 h-3 mr-1" />
             Premium Access
           </Badge>
