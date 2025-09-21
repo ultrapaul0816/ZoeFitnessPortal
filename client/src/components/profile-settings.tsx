@@ -480,6 +480,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
               </button>
             </div>
 
+            {/* Divider */}
+            <div className="flex justify-center my-2">
+              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
+            </div>
+
             {/* My Library */}
             <div className="flex justify-start">
               <button 
@@ -499,6 +504,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
                   <ChevronRight className="w-4 h-4 text-pink-500" />
                 </div>
               </button>
+            </div>
+
+            {/* Divider */}
+            <div className="flex justify-center my-2">
+              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
             {/* Purchases & Payment */}
@@ -522,6 +532,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
               </button>
             </div>
 
+            {/* Divider */}
+            <div className="flex justify-center my-2">
+              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
+            </div>
+
             {/* Notifications */}
             <div className="flex justify-start">
               <button 
@@ -541,6 +556,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
                   <ChevronRight className="w-4 h-4 text-pink-500" />
                 </div>
               </button>
+            </div>
+
+            {/* Divider */}
+            <div className="flex justify-center my-2">
+              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
             {/* Logout */}
