@@ -21,7 +21,7 @@ export default function MyLibrary() {
       speaker: "Rhonda Richards-Smith",
       duration: "40:36",
       description: "Rhonda Richards Smith - Navigating Relationships As a New Parent [41 minutes]",
-      thumbnailUrl: "/assets/mama-summit-1.png",
+      thumbnailUrl: "",
       program: "The Mama Summit"
     },
     {
@@ -30,7 +30,7 @@ export default function MyLibrary() {
       speaker: "Dr. Sarah Bjorkman",
       duration: "26:46",
       description: "The Doctors Bjorkman - Honoring Your Birth During Challenges Times [27 minutes]",
-      thumbnailUrl: "/assets/mama-summit-2.png",
+      thumbnailUrl: "",
       program: "The Mama Summit"
     },
     {
@@ -39,7 +39,7 @@ export default function MyLibrary() {
       speaker: "The Speech Sisters",
       duration: "32:15",
       description: "The Speech Sisters - 5 Things To Stop Doing To Get Your Sleep Back [32 minutes]",
-      thumbnailUrl: "/assets/mama-summit-3.png", 
+      thumbnailUrl: "", 
       program: "The Mama Summit"
     }
   ]);
