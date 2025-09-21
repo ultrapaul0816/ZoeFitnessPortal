@@ -65,9 +65,12 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           {/* Back Button */}
           <button 
             onClick={() => setCurrentView('menu')}
-            className="mb-6 text-pink-600 hover:text-pink-700 transition-colors"
+            className="mb-6 flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 hover:from-rose-100 hover:to-pink-100 hover:border-rose-300 transition-all duration-300 group"
           >
-            ← Back to Menu
+            <svg className="w-4 h-4 text-pink-600 group-hover:text-pink-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="text-pink-600 group-hover:text-pink-700 font-medium transition-colors">Back to Menu</span>
           </button>
 
           {/* Payment Method */}
@@ -185,9 +188,12 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           {/* Back Button */}
           <button 
             onClick={() => setCurrentView('menu')}
-            className="mb-6 text-pink-600 hover:text-pink-700 transition-colors"
+            className="mb-6 flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 hover:from-rose-100 hover:to-pink-100 hover:border-rose-300 transition-all duration-300 group"
           >
-            ← Back to Menu
+            <svg className="w-4 h-4 text-pink-600 group-hover:text-pink-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="text-pink-600 group-hover:text-pink-700 font-medium transition-colors">Back to Menu</span>
           </button>
 
           {/* My Public Info */}
