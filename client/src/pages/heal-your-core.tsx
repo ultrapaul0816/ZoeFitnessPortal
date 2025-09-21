@@ -806,6 +806,200 @@ function HealSection() {
                           </p>
                         </div>
                       </div>
+                    ) : topic.id === 'core-rehab-daily-practice' ? (
+                      <div className="space-y-6 text-sm">
+                        {/* Header */}
+                        <div className="text-center">
+                          <h3 className="text-xl font-bold mb-2">CORE REHAB & DAILY PRACTICE</h3>
+                          <h4 className="text-lg font-semibold text-pink-500 mb-4">SHORT REPEATABLE RITUALS</h4>
+                        </div>
+
+                        {/* Description */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                          <p className="text-gray-700 mb-4">
+                            These foundational core reconnection exercises are designed to be gentle, effective, and easy to fit into a busy postpartum day. They require no equipment, take only 5-10 minutes, and can be repeated daily or every other day to build a strong foundation for functional movement. Each movement focuses on breath awareness, alignment, and deep core engagement. <strong className="text-pink-600">LEARN TO DO THESE VERY WELL!</strong>
+                          </p>
+                          
+                          <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="text-pink-500 text-2xl">▶</div>
+                              <div>
+                                <p className="text-pink-700 font-semibold mb-2">How to view the videos of the exercises:</p>
+                                <p className="text-gray-700 text-sm">All blue underlined text is clickable and will open a video link. <strong>PLAY ALL videos that the following workout can be played as a single playlist combining all six exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</strong></p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Exercise Table */}
+                        <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                          <div className="bg-gray-100 grid grid-cols-4 text-xs font-semibold text-gray-700 border-b border-gray-300">
+                            <div className="p-3 border-r border-gray-300">EXERCISE</div>
+                            <div className="p-3 border-r border-gray-300">WHAT IT DOES</div>
+                            <div className="p-3 border-r border-gray-300">HOW TO PERFORM</div>
+                            <div className="p-3">KEY TIPS</div>
+                          </div>
+
+                          {/* Exercise 1: Supine Pelvic Tilts */}
+                          <div className="grid grid-cols-4 border-b border-gray-200 text-xs">
+                            <div className="p-3 border-r border-gray-300">
+                              <button 
+                                onClick={() => window.open('https://youtu.be/OwFN9Paf26o', '_blank')}
+                                className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                data-testid="video-supine-pelvic-tilts"
+                              >
+                                SUPINE PELVIC TILTS
+                              </button>
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Gently mobilizes the lower back and pelvis, builds awareness of core engagement
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Lie on your back with knees bent, feet flat. Gently flatten lower back onto floor on exhale; return to neutral on inhale
+                            </div>
+                            <div className="p-3 text-gray-700">
+                              Keep glutes and upper body relaxed; move slowly with breath, not momentum
+                            </div>
+                          </div>
+
+                          {/* Exercise 2: 90 90 Box Breathing */}
+                          <div className="grid grid-cols-4 border-b border-gray-200 text-xs">
+                            <div className="p-3 border-r border-gray-300">
+                              <button 
+                                onClick={() => window.open('https://www.youtube.com/watch?v=ehaUhSSY1xY', '_blank')}
+                                className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                data-testid="video-90-90-box-breathing"
+                              >
+                                90 90 BOX BREATHING
+                              </button>
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Reconnects breath to deep core and pelvic floor
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Inhale to expand ribs; exhale slowly while gently engaging TVA and lifting pelvic floor
+                            </div>
+                            <div className="p-3 text-gray-700">
+                              Keep shoulders relaxed; feel ribcage expand in all directions
+                            </div>
+                          </div>
+
+                          {/* Exercise 3: Supine Heel Slides */}
+                          <div className="grid grid-cols-4 border-b border-gray-200 text-xs">
+                            <div className="p-3 border-r border-gray-300">
+                              <button 
+                                onClick={() => window.open('https://www.youtube.com/watch?v=AIEdkm2q-4k', '_blank')}
+                                className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                data-testid="video-supine-heel-slides"
+                              >
+                                SUPINE HEEL SLIDES
+                              </button>
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Activates TVA while keeping pelvis stable
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Slide one heel out along the floor on exhale; bring back in on inhale
+                            </div>
+                            <div className="p-3 text-gray-700">
+                              Maintain a neutral spine; avoid doming or pelvis tilting
+                            </div>
+                          </div>
+
+                          {/* Exercise 4: Side Lying Diaphragmatic Breathing */}
+                          <div className="grid grid-cols-4 border-b border-gray-200 text-xs">
+                            <div className="p-3 border-r border-gray-300">
+                              <button 
+                                onClick={() => window.open('https://www.youtube.com/watch?v=tCzxxPxxtjw', '_blank')}
+                                className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                data-testid="video-side-lying-breathing"
+                              >
+                                SIDE LYING DIAPHRAGMATIC BREATHING
+                              </button>
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Improves rib mobility and lateral expansion
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Lie on side with pillow support; inhale into top ribs and side body
+                            </div>
+                            <div className="p-3 text-gray-700">
+                              Focus on breath movement in the ribs and back belly
+                            </div>
+                          </div>
+
+                          {/* Exercise 5: Supine Diaphragmatic Breathing */}
+                          <div className="grid grid-cols-4 border-b border-gray-200 text-xs">
+                            <div className="p-3 border-r border-gray-300">
+                              <button 
+                                onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
+                                className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                data-testid="video-supine-diaphragmatic-breathing"
+                              >
+                                SUPINE DIAPHRAGMATIC BREATHING
+                              </button>
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Strengthens deep core through subtle activation
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              On each exhale, gently hug belly inward like zipping up jeans
+                            </div>
+                            <div className="p-3 text-gray-700">
+                              Keep it light—no gripping or bracing; coordinate with breath
+                            </div>
+                          </div>
+
+                          {/* Exercise 6: Bird Dog Ground Level */}
+                          <div className="grid grid-cols-4 text-xs">
+                            <div className="p-3 border-r border-gray-300">
+                              <button 
+                                onClick={() => window.open('https://www.youtube.com/watch?v=AaYpP7iV378', '_blank')}
+                                className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                data-testid="video-bird-dog-ground"
+                              >
+                                BIRD DOG GROUND LEVEL
+                              </button>
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              Builds core stability and cross-body coordination
+                            </div>
+                            <div className="p-3 border-r border-gray-300 text-gray-700">
+                              From hands and knees, extend opposite arm and leg while exhaling
+                            </div>
+                            <div className="p-3 text-gray-700">
+                              Keep hips level; core engaged; move slowly and stay balanced
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Quick Guidelines */}
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                          <h4 className="font-bold text-green-700 text-lg mb-4">Quick Guidelines:</h4>
+                          <ul className="space-y-2 text-sm text-gray-700">
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-600 font-bold">•</span>
+                              <span><strong>Duration / Reps:</strong> 5-10 minutes per session / 5-8 Breaths per movement per side.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-600 font-bold">•</span>
+                              <span><strong>Frequency:</strong> Daily or every other day - or use as your warmup</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-600 font-bold">•</span>
+                              <span><strong>Focus:</strong> Controlled, mindful movement with breath coordination</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-600 font-bold">•</span>
+                              <span><strong>Avoid:</strong> Any pain, pelvic pressure, doming, or bulging during exercises</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-green-600 font-bold">•</span>
+                              <span>Holding your breath increases intra-abdominal pressure—use breath-led movement and never perform Valsalva maneuvers during these drills.</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
                     ) : (
                       <div className="space-y-4">
                         <div className="space-y-3 text-sm">
