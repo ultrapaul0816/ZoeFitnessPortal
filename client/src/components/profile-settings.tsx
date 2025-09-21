@@ -33,8 +33,19 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-white w-screen h-screen">
+    <div className="fixed inset-0 z-50 bg-white w-screen h-screen" data-testid="page-profile-settings">
       <div className="w-full h-full min-h-screen overflow-y-auto">
+        {/* Header with back button */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4 w-full">
+          <button 
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-900 transition-colors"
+            data-testid="button-back-to-dashboard"
+          >
+            ← Back
+          </button>
+        </div>
+
         {/* User Profile Section */}
         <div className="bg-white border-b border-gray-200 px-6 py-8 w-full">
           <div className="flex items-center space-x-4">

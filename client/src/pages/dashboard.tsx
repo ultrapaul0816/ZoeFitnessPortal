@@ -514,7 +514,7 @@ export default function Dashboard() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
                   <DropdownMenuItem 
-                    onClick={() => setShowProfileSettings(true)}
+                    onSelect={() => setShowProfileSettings(true)}
                     data-testid="menu-profile"
                   >
                     <User className="w-4 h-4 mr-2" />
