@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_1758445266265.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1488,6 +1489,19 @@ function UnderstandingYourCoreSection({
                         <li>The sides and front are your deep abdominal muscles (transverse abdominis).</li>
                         <li>The back is your spine and deep back muscles.</li>
                       </ul>
+                      
+                      {/* Anatomy Image */}
+                      <div className="mt-4 mb-4 flex justify-center">
+                        <div className="bg-white p-3 rounded-lg shadow-sm border max-w-sm">
+                          <img 
+                            src={anatomyImage} 
+                            alt="Abdominal Muscle Anatomy showing Transverse Abdominis, Rectus Abdominis, Internal Oblique, and External Oblique" 
+                            className="w-full h-auto rounded"
+                            data-testid="img-anatomy-diagram"
+                          />
+                        </div>
+                      </div>
+                      
                       <p className="text-xs text-muted-foreground mt-2">When you inhale and exhale properly, these parts work together to create pressure and stability. Mismanaged breathing (like shallow chest breathing or breath holding) can weaken this system.</p>
                     </div>
                   </div>
