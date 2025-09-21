@@ -7,6 +7,7 @@ import tvaContentImage from "@assets/Screenshot 2025-09-21 at 14.38.24_175844579
 import tvaSkeletonImage from "@assets/Screenshot 2025-09-21 at 14.39.32_1758445791002.png";
 import coreActivationImage from "@assets/Screenshot 2025-09-21 at 14.47.02_1758446239897.png";
 import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_1758446182185.png";
+import coreCompressionsImage from "@assets/Screenshot 2025-09-21 at 14.49.22_1758446389051.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1881,49 +1882,95 @@ function UnderstandingYourCoreSection({
               {expandedTopics['core-compressions'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
-                    <p className="text-sm">These are the 3 essential tools you'll use throughout your journey to connect to your deep core, support your spine, and move with intention.</p>
-                    <p className="font-semibold text-sm">Learn & Practice these!</p>
+                    {/* YouTube Link Button */}
+                    <div className="flex justify-start mb-4">
+                      <a 
+                        href="https://youtube.com/watch?v=h_S_tq0-Pv0&feature=youtu.be" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                        style={{
+                          background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
+                          boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
+                          fontSize: '11px'
+                        }}
+                        data-testid="link-core-compressions-video"
+                      >
+                        <Play className="w-2.5 h-2.5" />
+                        Foundational Core Compressions
+                      </a>
+                    </div>
+
+                    {/* Core Compressions Image */}
+                    <div className="flex justify-center my-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-4xl">
+                        <img 
+                          src={coreCompressionsImage} 
+                          alt="Foundational Core Compressions - Belly Pump, Deep Core Hold, and Ab Wraps techniques"
+                          className="w-full h-auto rounded"
+                          data-testid="img-core-compressions"
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-primary">These are the 3 essential tools you'll use throughout your journey to connect to your deep core, support your spine, and move with intention.</p>
                     
-                    <div className="space-y-4">
-                      {/* Belly Pump */}
-                      <div className="bg-muted/50 p-4 rounded">
-                        <p className="font-semibold mb-2">1. Belly Pump</p>
-                        <p className="text-xs mb-2"><strong>What it is:</strong> A coordinated breath and core activation technique used to gently engage your deep core muscles on the exhale.</p>
-                        <p className="text-xs mb-1"><strong>How to do it:</strong></p>
-                        <ul className="ml-4 list-disc text-xs space-y-1">
-                          <li>Start in a neutral posture (seated, standing, or lying on your back with knees bent).</li>
-                          <li>Inhale through your nose, letting your ribs expand 360° — belly, back, and sides.</li>
-                          <li>Exhale through pursed lips or a gentle "shhh" or "sss" sound.</li>
-                          <li>As you exhale, gently draw your pelvic floor upward and your deep lower belly (below the navel) inward.</li>
-                          <li>Pause. Inhale and let go completely. Repeat.</li>
-                        </ul>
-                        <p className="text-xs mt-2"><strong>Used during:</strong> Most core-focused exercises, strength movements, transitions.</p>
+                    <div className="bg-primary/10 p-4 rounded">
+                      <p className="font-semibold text-primary mb-2">Learn & Practice these!</p>
+                      <p className="text-sm">CLICK HERE: <a href="https://youtube.com/watch?v=h_S_tq0-Pv0&feature=youtu.be" className="text-blue-600 underline font-semibold" target="_blank" rel="noopener noreferrer">CORE COMPRESSIONS - BELLY PUMP / DEEP CORE HOLD / AB WRAPS</a></p>
+                    </div>
+
+                    <p className="font-semibold text-sm">The 3 techniques explained below:</p>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* Left Column - Belly Pump */}
+                      <div className="space-y-4">
+                        <div className="bg-muted/50 p-4 rounded">
+                          <h4 className="font-semibold text-primary mb-3">1. Belly Pump</h4>
+                          <p className="text-sm mb-3"><strong>What it is:</strong> A coordinated breath and core activation technique used to gently engage your deep core muscles on the exhale. It helps retrain the body to stabilize before movement, without excessive pressure or strain.</p>
+                          
+                          <p className="font-semibold text-sm mb-2">How to do it:</p>
+                          <ul className="ml-4 space-y-1 text-sm mb-3">
+                            <li>❖ Start in a neutral posture (seated, standing, or lying on your back with knees bent).</li>
+                            <li>❖ Inhale through your nose, letting your ribs expand 360° — belly, back, and sides.</li>
+                            <li>❖ Exhale through pursed lips or a gentle "shhh" or "sss" sound.</li>
+                            <li>❖ As you exhale, gently draw your pelvic floor upward and your deep lower belly (below the navel) inward — as if lifting a tissue and tightening a low corset.</li>
+                            <li>❖ Pause. Inhale and let go completely. Repeat.</li>
+                          </ul>
+                          
+                          <p className="text-sm"><strong>Used during:</strong> Most core-focused exercises, strength movements, transitions (getting up/down), and posture resets.</p>
+                        </div>
                       </div>
-                      
-                      {/* Deep Core Hold */}
-                      <div className="bg-muted/50 p-4 rounded">
-                        <p className="font-semibold mb-2">2. Deep Core Hold</p>
-                        <p className="text-xs mb-2"><strong>What it is:</strong> A gentle, sustained engagement of the deep core system held during movement.</p>
-                        <p className="text-xs mb-1"><strong>How to do it:</strong></p>
-                        <ul className="ml-4 list-disc text-xs space-y-1">
-                          <li>Begin with a belly pump.</li>
-                          <li>Once you've exhaled and activated your core, maintain that gentle engagement for the duration of the movement.</li>
-                          <li>Keep breathing! You're not holding your breath — just keeping the core switched on while moving mindfully.</li>
-                        </ul>
-                        <p className="text-xs mt-2"><strong>Used during:</strong> Functional movements like squats, pushing a stroller, lifting a baby.</p>
-                      </div>
-                      
-                      {/* Ab Wraps */}
-                      <div className="bg-muted/50 p-4 rounded">
-                        <p className="font-semibold mb-2">3. Ab Wraps</p>
-                        <p className="text-xs mb-2"><strong>What it is:</strong> A visual and tactile cue that helps re-engage and re-align the abdominal wall.</p>
-                        <p className="text-xs mb-1"><strong>How to do it:</strong></p>
-                        <ul className="ml-4 list-disc text-xs space-y-1">
-                          <li>Place your hands on your sides, just above the hip bones.</li>
-                          <li>As you exhale and perform a belly pump, imagine drawing the sides of your waist inward.</li>
-                          <li>You may feel a gentle tightening and lift in your deep core as this happens.</li>
-                        </ul>
-                        <p className="text-xs mt-2"><strong>Used during:</strong> Core exercises, posture work, and movement requiring better core coordination.</p>
+
+                      {/* Right Column - Deep Core Hold & Ab Wraps */}
+                      <div className="space-y-4">
+                        <div className="bg-muted/50 p-4 rounded">
+                          <h4 className="font-semibold text-primary mb-3">2. Deep Core Hold</h4>
+                          <p className="text-sm mb-3"><strong>What it is:</strong> A gentle, sustained engagement of the deep core system (pelvic floor + transverse abdominis) held during movement or specific exercises for stability and control.</p>
+                          
+                          <p className="font-semibold text-sm mb-2">How to do it:</p>
+                          <ul className="ml-4 space-y-1 text-sm mb-3">
+                            <li>❖ Begin with a belly pump.</li>
+                            <li>❖ Once you've exhaled and activated your core, maintain that gentle engagement for the duration of the movement.</li>
+                            <li>❖ Keep breathing! You're not holding your breath — just keeping the core switched on while moving mindfully.</li>
+                          </ul>
+                          
+                          <p className="text-sm mb-4"><strong>Used during:</strong> Functional movements like squats, pushing a stroller, lifting a baby, lunges, or resistance training.</p>
+                        </div>
+
+                        <div className="bg-muted/50 p-4 rounded">
+                          <h4 className="font-semibold text-primary mb-3">3. Ab Wraps</h4>
+                          <p className="text-sm mb-3"><strong>What it is:</strong> A visual and tactile cue that helps pregnant or postpartum women re-engage and re-align their abdominal wall. It's a technique used in breathing or movement patterns.</p>
+                          
+                          <p className="font-semibold text-sm mb-2">How to do it:</p>
+                          <ul className="ml-4 space-y-1 text-sm mb-3">
+                            <li>❖ Place your hands on your sides, just above the hip bones.</li>
+                            <li>❖ As you exhale and perform a belly pump, draw the sides of your waist inward and wrapping them toward your midline — like zipping up a jacket from both sides toward the center.</li>
+                            <li>❖ You may feel a gentle tightening and lift in your deep core as this happens.</li>
+                          </ul>
+                          
+                          <p className="text-sm"><strong>Used during:</strong> Core exercises, posture work, and any movement requiring better core coordination and control (especially when there's doming or coning present).</p>
+                        </div>
                       </div>
                     </div>
                   </div>
