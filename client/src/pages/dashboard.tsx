@@ -261,56 +261,6 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Ready to get stronger today?</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Workouts Completed</p>
-                  <p className="text-2xl font-bold text-foreground" data-testid="stat-completed">
-                    {stats.completedWorkouts}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Current Streak</p>
-                  <p className="text-2xl font-bold text-foreground" data-testid="stat-streak">
-                    {stats.currentStreak}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Flame className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Programs Active</p>
-                  <p className="text-2xl font-bold text-foreground" data-testid="stat-programs">
-                    {stats.activePrograms}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Calendar className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Your Programs Section */}
         <section className="mb-8">
