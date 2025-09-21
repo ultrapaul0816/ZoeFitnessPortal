@@ -5,6 +5,8 @@ import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_175844526626
 import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_1758445423086.png";
 import tvaContentImage from "@assets/Screenshot 2025-09-21 at 14.38.24_1758445791011.png";
 import tvaSkeletonImage from "@assets/Screenshot 2025-09-21 at 14.39.32_1758445791002.png";
+import coreActivationImage from "@assets/Screenshot 2025-09-21 at 14.44.00_1758446060087.png";
+import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_1758446092732.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1791,29 +1793,65 @@ function UnderstandingYourCoreSection({
               {expandedTopics['core-breathing'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
-                    <div className="bg-primary/10 p-4 rounded text-center">
-                      <p className="font-semibold">👉 Key Principle: "Exhale on effort."</p>
-                      <p className="text-xs mt-1">When performing a hard part of any movement (like lifting, standing, pushing), breathe out while activating your core.</p>
-                    </div>
+                    <p className="text-sm">Once you master 360° breathing, you can learn to add gentle core activation — especially important before and during any exercise or lifting movements.</p>
                     
-                    <div>
-                      <p className="font-semibold mb-2 text-sm">Use this technique:</p>
-                      <ul className="ml-4 list-disc space-y-1 text-sm">
-                        <li>Before lifting (groceries, kids, weights).</li>
-                        <li>Before every exercise repetition (squats, lunges, rows, etc.).</li>
-                        <li>When changing positions (lying to sitting, sitting to standing).</li>
-                        <li>During pushing in labor (proper breath and core work helps massively).</li>
-                      </ul>
+                    {/* Core Activation Graphics */}
+                    <div className="flex justify-center my-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-2xl">
+                        <img 
+                          src={coreActivationImage} 
+                          alt="How to Engage Your Core with Breathing - Core Activation steps and anatomical diagram"
+                          className="w-full h-auto rounded"
+                          data-testid="img-core-activation"
+                        />
+                      </div>
                     </div>
-                    
-                    <div className="bg-red-50 p-4 rounded">
-                      <p className="font-semibold mb-2 text-red-700">Common Mistakes to Avoid:</p>
-                      <ul className="ml-4 list-disc text-xs space-y-1">
-                        <li>Breath-holding (Valsalva maneuver) - can increase abdominal pressure dangerously.</li>
-                        <li>Belly-only breathing (causes poor rib and back engagement).</li>
-                        <li>Over-bracing the core (hard sucking in can actually create more pressure & instability).</li>
-                        <li>Neglecting pelvic floor coordination - pelvic floor must gently lift with the deep core, not bear down.</li>
-                      </ul>
+
+                    <div className="bg-muted/50 p-4 rounded">
+                      <h4 className="font-semibold text-primary mb-3">Steps to Activate Core:</h4>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <p className="font-semibold text-sm mb-1">1. <span className="text-primary">INHALE</span> (Prepare):</p>
+                          <p className="text-sm ml-4">❖ Expand ribs, belly, and back — no engagement yet.</p>
+                        </div>
+                        
+                        <div>
+                          <p className="font-semibold text-sm mb-1">2. <span className="text-primary">EXHALE</span> (Activate): As you exhale:</p>
+                          <ul className="ml-6 space-y-1 text-sm">
+                            <li>❖ <strong>Gently lift the pelvic floor</strong> (imagine picking up a blueberry with your vagina or stopping gas).</li>
+                            <li>❖ <strong>At the same time, lightly draw your lower belly</strong> (below your belly button) toward your spine.</li>
+                            <li>❖ <strong>Keep ribs down</strong> (not flaring) and spine neutral.</li>
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <p className="font-semibold text-sm mb-1">3. <span className="text-primary">HOLD GENTLE ENGAGEMENT</span> (During the movement):</p>
+                          <p className="text-sm ml-4">❖ You should still be able to breathe and talk — this is a light, supportive activation, not a hard brace.</p>
+                        </div>
+                        
+                        <div>
+                          <p className="font-semibold text-sm mb-1">4. <span className="text-primary">RELAX</span> Completely after the movement.</p>
+                          <p className="text-sm ml-4">❖ Full relaxation is just as important to prevent over-tightening.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Your Breath & Your Core Diagram */}
+                    <div className="flex justify-center my-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-lg">
+                        <img 
+                          src={breathCoreImage} 
+                          alt="Your Breath and Your Core - anatomical diagram showing breathing and core connection"
+                          className="w-full h-auto rounded"
+                          data-testid="img-breath-core-diagram"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-primary/10 p-4 rounded">
+                      <p className="font-semibold text-primary mb-2">The Purposeful Exhale</p>
+                      <p className="text-sm italic">As you exhale you should feel an automatic tensioning of your abdominals, the muscles of your back and pelvic floor both tightening and lifting.</p>
                     </div>
                   </div>
                 </div>
