@@ -3632,12 +3632,17 @@ function ProgramsSection({
                       </div>
                       <div>
                         <CardTitle className="text-lg text-gray-900">PROGRAM 1 - RECONNECT & RESET</CardTitle>
-                        <CardDescription className="text-pink-600 font-semibold">DAY 1, 3, 5, 7</CardDescription>
+                        <CardDescription className="text-pink-600 font-semibold">Workout Schedule: 4x per week</CardDescription>
+                        <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs text-gray-600 font-medium">EQUIPMENT NEEDED</div>
-                      <div className="text-xs text-gray-800">Mini band, small Pilates ball, mat</div>
+                      <div className="text-xs text-gray-600 font-medium mb-2">EQUIPMENT NEEDED</div>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Mini band</span>
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Small Pilates ball</span>
+                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">Mat</span>
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
@@ -3728,11 +3733,11 @@ function ProgramsSection({
 
               {/* Program 2-6 Placeholders */}
               {[
-                { week: 2, program: 2, days: "DAY 1, 3, 5, 7", title: "BUILD ENDURANCE", phase: "Building Phase" },
-                { week: 3, program: 3, days: "DAY 1, 3, 5, 7", title: "STRENGTH FOUNDATION", phase: "Strength Phase" },
-                { week: 4, program: 4, days: "DAY 1, 3, 5, 7", title: "POWER DEVELOPMENT", phase: "Power Phase" },
-                { week: 5, program: 5, days: "DAY 1, 3, 5, 7", title: "INTEGRATION & FLOW", phase: "Integration Phase" },
-                { week: 6, program: 6, days: "DAY 1, 3, 5, 7", title: "MASTERY & MAINTENANCE", phase: "Mastery Phase" }
+                { week: 2, program: 2, title: "BUILD ENDURANCE", phase: "Building Phase" },
+                { week: 3, program: 3, title: "STRENGTH FOUNDATION", phase: "Strength Phase" },
+                { week: 4, program: 4, title: "POWER DEVELOPMENT", phase: "Power Phase" },
+                { week: 5, program: 5, title: "INTEGRATION & FLOW", phase: "Integration Phase" },
+                { week: 6, program: 6, title: "MASTERY & MAINTENANCE", phase: "Mastery Phase" }
               ].map((prog) => (
                 <Card key={prog.week} className="overflow-hidden border-l-4 border-l-gray-300 opacity-75">
                   <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
@@ -3743,7 +3748,8 @@ function ProgramsSection({
                         </div>
                         <div>
                           <CardTitle className="text-lg text-gray-600">PROGRAM {prog.program} - {prog.title}</CardTitle>
-                          <CardDescription className="text-gray-500 font-semibold">{prog.days}</CardDescription>
+                          <CardDescription className="text-gray-500 font-semibold">Workout Schedule: 4x per week</CardDescription>
+                          <p className="text-xs text-gray-500 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                         </div>
                       </div>
                       <div className="text-right">
