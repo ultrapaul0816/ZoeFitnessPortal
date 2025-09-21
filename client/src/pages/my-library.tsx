@@ -11,7 +11,7 @@ export default function MyLibrary() {
   const [user, setUser] = useState<User | null>(null);
   
   // Fetch user's purchased programs
-  const { data: memberPrograms = [], isLoading } = useQuery({
+  const { data: memberPrograms = [], isLoading } = useQuery<MemberProgram[]>({
     queryKey: ['/api/member-programs', user?.id],
     enabled: !!user?.id,
   });
@@ -131,10 +131,11 @@ export default function MyLibrary() {
         )}
 
         {/* Programs Grid */}
-        {!isLoading && memberPrograms.length > 0 && (
+        {!isLoading && (
           <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
             {memberPrograms.map((memberProgram) => {
-              const program = memberProgram.program;
+              const program = (memberProgram as any).program;
+              if (!program) return null;
               return (
                 <Link key={program.id} to={program.name.includes("Postpartum") ? "/heal-your-core" : "/dashboard"}>
                   <div 
@@ -207,17 +208,98 @@ export default function MyLibrary() {
                     
                     {/* Progress Bar */}
                     <div className="w-full h-2 bg-gray-900 rounded-full">
-                      <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full" style={{width: `${(memberProgram.progress / program.workoutCount) * 100}%`}}></div>
+                      <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full" style={{width: `${((memberProgram.progress || 0) / (program.workoutCount || 1)) * 100}%`}}></div>
                     </div>
                   </div>
                 </Link>
               );
             })}
+            
+            {/* Program 2 - Static Card */}
+            <Link to="/heal-your-core">
+              <div 
+                className="bg-gradient-to-br from-blue-50 to-cyan-100 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-blue-100"
+                data-testid="program-card-program-2"
+              >
+                {/* Header Section */}
+                <div className="text-center mb-6">
+                  <div className="inline-block bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-4 py-2 rounded-full text-sm font-bold mb-3">
+                    PROGRAM 2
+                  </div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
+                    Stability & Breathwork Program
+                  </h2>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    ✨ Week 2 comprehensive movement and breathing focus
+                  </p>
+                </div>
+
+                {/* Program Image */}
+                <div className="relative mb-6 rounded-2xl overflow-hidden">
+                  <img 
+                    src={programCover}
+                    alt="Stability & Breathwork Program"
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20"></div>
+                </div>
+                
+                {/* Program Title */}
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  Week 2: Stability & Breathwork
+                </h3>
+                
+                {/* Program Description */}
+                <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                  Build upon your foundation with controlled movements and enhanced breathwork. Focus on stability, control, and mind-body connection.
+                </p>
+                
+                {/* Program Features */}
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Calendar className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-gray-800 font-medium">1 Week Program</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Target className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-gray-800 font-medium">Intermediate</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Dumbbell className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-gray-800 font-medium">Mat, Breath, Patience</span>
+                  </div>
+                </div>
+                
+                {/* Badges */}
+                <div className="flex gap-3 mb-4">
+                  <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                    <Star className="w-4 h-4" />
+                    Premium Access
+                  </div>
+                  <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                    Week 2
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="w-full h-2 bg-gray-900 rounded-full">
+                  <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full" style={{width: '0%'}}></div>
+                </div>
+              </div>
+            </Link>
           </div>
         )}
 
-        {/* Empty state if no programs */}
-        {!isLoading && memberPrograms.length === 0 && (
+        {/* Empty state if no programs - but we now have static Program 2, so this won't show */}
+        {!isLoading && memberPrograms.length === 0 && false && (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <BookOpen className="w-12 h-12 text-gray-400" />
