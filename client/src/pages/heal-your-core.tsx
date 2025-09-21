@@ -734,23 +734,6 @@ function HealSection() {
                           Crunches and sit-ups increase intra-abdominal pressure, which pushes outward against the separation—further stretching the Linea alba instead of healing it. These exercises load the abdominal wall before it's ready, worsening doming, coning, and core dysfunction.
                         </p>
 
-                        {/* Core Anatomy Diagrams */}
-                        <div className="grid md:grid-cols-2 gap-6 mb-6">
-                          <div className="text-center">
-                            <img 
-                              src={coreBreathImage} 
-                              alt="Core anatomy - diaphragm and abdominal muscles" 
-                              className="max-w-full h-auto rounded-lg shadow-sm"
-                            />
-                          </div>
-                          <div className="text-center">
-                            <img 
-                              src={coreBreathDiagramImage} 
-                              alt="Core breath diagram showing inhale and exhale mechanics" 
-                              className="max-w-full h-auto rounded-lg shadow-sm"
-                            />
-                          </div>
-                        </div>
 
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-blue-800 text-lg mb-2">THE FOCUS NEEDS TO BE ON:</h4>
