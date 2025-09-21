@@ -13,7 +13,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Info, Globe, Bell, BookOpen, CreditCard, User, LogOut } from "lucide-react";
+import { ChevronDown, Info, Globe, Bell, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
 interface ProfileSettingsProps {
@@ -32,7 +32,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     fullName: `${user.firstName} ${user.lastName}`,
     email: user.email,
     dueDate: '',
-    postpartumTime: ''
+    postpartumTime: '',
+    timeFormat: '12 hours',
+    timezone: '',
+    newsUpdates: true,
+    promotions: true,
+    communityUpdates: true,
+    transactionalEmails: false
   });
 
   if (!isOpen) return null;
@@ -294,6 +300,113 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
               />
             </div>
           </div>
+
+          {/* Time & Timezone Settings */}
+          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
+            {/* Time Format */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="timeFormat">Time Format</Label>
+              <Select value={profileData.timeFormat} onValueChange={(value) => setProfileData(prev => ({...prev, timeFormat: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="12 hours" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="12 hours">12 hours</SelectItem>
+                  <SelectItem value="24 hours">24 hours</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Timezone */}
+            <div className="space-y-2">
+              <Label htmlFor="timezone">Timezone</Label>
+              <Select value={profileData.timezone} onValueChange={(value) => setProfileData(prev => ({...prev, timezone: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Your Timezone" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UTC-8">Pacific Time (UTC-8)</SelectItem>
+                  <SelectItem value="UTC-7">Mountain Time (UTC-7)</SelectItem>
+                  <SelectItem value="UTC-6">Central Time (UTC-6)</SelectItem>
+                  <SelectItem value="UTC-5">Eastern Time (UTC-5)</SelectItem>
+                  <SelectItem value="UTC+0">Greenwich Mean Time (UTC+0)</SelectItem>
+                  <SelectItem value="UTC+1">Central European Time (UTC+1)</SelectItem>
+                  <SelectItem value="UTC+10">Australian Eastern Time (UTC+10)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Secure Sign In */}
+          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Secure sign in</h2>
+            <p className="text-gray-600 mb-6">Manage your password</p>
+
+            <div className="space-y-2">
+              <Label className="text-gray-700">Password</Label>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Set new password</span>
+                <ArrowRight className="w-4 h-4 text-gray-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* My Notifications */}
+          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">My Notifications</h2>
+
+            <div className="space-y-4">
+              {/* News & Updates */}
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  checked={profileData.newsUpdates}
+                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, newsUpdates: checked as boolean}))}
+                  className="w-5 h-5"
+                />
+                <label className="text-gray-900 font-medium">News & Updates</label>
+              </div>
+
+              {/* Promotions */}
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  checked={profileData.promotions}
+                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, promotions: checked as boolean}))}
+                  className="w-5 h-5"
+                />
+                <label className="text-gray-900 font-medium">Promotions</label>
+              </div>
+
+              {/* Community Updates */}
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  checked={profileData.communityUpdates}
+                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, communityUpdates: checked as boolean}))}
+                  className="w-5 h-5"
+                />
+                <label className="text-gray-900 font-medium">Community Updates</label>
+              </div>
+
+              {/* Transactional Emails */}
+              <div className="flex items-center space-x-3">
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-500">Transactional Emails</span>
+                <Info className="w-4 h-4 text-gray-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">Danger Zone</h2>
+              <ChevronDown className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+
+          {/* Save Changes Button */}
+          <Button className="w-full bg-rose-400 hover:bg-rose-500 text-white py-3 text-lg font-medium">
+            Save Changes
+          </Button>
         </div>
       </div>
     );
