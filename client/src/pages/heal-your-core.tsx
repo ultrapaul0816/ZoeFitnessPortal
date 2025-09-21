@@ -326,24 +326,23 @@ export default function HealYourCorePage() {
           </div>
           
           {/* Medical Disclaimer Moving Bar */}
-          <div className="bg-gray-100 border-y border-gray-200 py-2 overflow-hidden">
-            <div className="whitespace-nowrap">
-              <div className="inline-block animate-[scroll_30s_linear_infinite]">
-                <span className="text-xs text-gray-600 font-medium pr-16">
-                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
-                </span>
-                <span className="text-xs text-gray-600 font-medium pr-16">
-                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
-                </span>
-                <span className="text-xs text-gray-600 font-medium pr-16">
-                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
-                </span>
-                <span className="text-xs text-gray-600 font-medium pr-16">
-                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
-                </span>
-                <span className="text-xs text-gray-600 font-medium pr-16">
-                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
-                </span>
+          <div className="bg-gray-100 border-y border-gray-200 py-2">
+            <div className="marquee" style={{ ['--marquee-duration' as any]: '90s' }}>
+              <div className="marquee-track">
+                <div className="marquee-content">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <span key={i} className="text-xs text-gray-600 font-medium">
+                      <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
+                    </span>
+                  ))}
+                </div>
+                <div className="marquee-content" aria-hidden="true">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <span key={`duplicate-${i}`} className="text-xs text-gray-600 font-medium">
+                      <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

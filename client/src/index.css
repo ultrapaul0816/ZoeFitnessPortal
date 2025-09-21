@@ -141,12 +141,30 @@
   }
 }
 
-/* Scrolling text animation for disclaimer */
-@keyframes scroll {
+/* Marquee animation for disclaimer */
+@keyframes marquee {
   0% {
-    transform: translateX(100%);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translate3d(-50%, 0, 0);
   }
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee var(--marquee-duration, 90s) linear infinite;
+}
+
+.marquee-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 3rem;
 }
