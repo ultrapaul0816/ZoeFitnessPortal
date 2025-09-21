@@ -416,13 +416,14 @@ function HealSection() {
                     <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
                     <h3 className="text-[15px] font-semibold text-left">{topic.title}</h3>
                   </div>
-                  <button
-                    className="shrink-0 hover:bg-gray-50 rounded-full p-1 transition-colors"
+                  <div
                     onClick={() => toggleTopic(topic.id)}
+                    className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
+                    style={{ border: 'none', outline: 'none', boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3)' }}
                     data-testid={`toggle-${topic.id}`}
                   >
-                    <ChevronDown className={`w-4 h-4 text-pink-600 transition-transform duration-200 ${expandedTopics[topic.id] ? 'rotate-180' : ''}`} />
-                  </button>
+                    <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics[topic.id] ? 'rotate-180' : ''}`} />
+                  </div>
                 </div>
                 {expandedTopics[topic.id] && (
                   <div className="pb-5 space-y-4" data-testid={`content-${topic.id}`}>
