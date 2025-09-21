@@ -1545,6 +1545,24 @@ function UnderstandingYourCoreSection({
               {expandedTopics['360-breathing'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
+                    {/* YouTube Link Button */}
+                    <div className="flex justify-center mb-4">
+                      <a 
+                        href="https://youtu.be/B53GBfgME9E" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                        style={{
+                          background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
+                          boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)'
+                        }}
+                        data-testid="link-360-breathing-video"
+                      >
+                        <Play className="w-3 h-3" />
+                        360 Degree Breathing
+                      </a>
+                    </div>
+                    
                     <p className="text-sm">360° breathing is a deep, diaphragmatic breathing technique that encourages expansion in all directions — front, sides, and back — rather than just the chest or belly.</p>
                     
                     {/* Breathing Diagram */}
