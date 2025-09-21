@@ -3648,10 +3648,13 @@ function ProgramsSection({
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="mb-4">
-                    <div className="bg-pink-50 p-3 rounded-lg border-l-4 border-pink-400">
-                      <div className="flex items-start gap-2">
-                        <span className="text-pink-600 font-semibold text-sm">COACH'S NOTE:</span>
-                        <p className="text-gray-700 text-sm">
+                    <div className="bg-pink-50 p-4 rounded-xl border-l-4 border-pink-400 shadow-sm">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+                          <span className="text-pink-700 font-bold text-sm uppercase tracking-wide">Coach's Note</span>
+                        </div>
+                        <p className="text-gray-700 text-sm leading-relaxed pl-4">
                           This is your foundation. Focus on breath, posture, and gentle reconnection with your core and pelvic floor.
                         </p>
                       </div>
@@ -3659,57 +3662,70 @@ function ProgramsSection({
                   </div>
 
                   {/* Part 1: Breathing */}
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-pink-600 font-bold">▶</span>
-                      <h4 className="font-semibold text-gray-900 text-sm">PART 1: 360° BREATHING</h4>
+                  <div className="mb-6">
+                    <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-3 rounded-t-lg">
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-bold text-lg">▶</span>
+                        <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: 360° Breathing</h4>
+                      </div>
                     </div>
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <div className="flex items-center justify-between">
+                    <div className="bg-blue-50 p-4 rounded-b-lg border border-blue-200">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <span className="text-blue-800 font-semibold underline cursor-pointer text-sm">Morning + Evening Sessions</span>
-                        <span className="text-blue-700 font-medium text-sm">25 breaths</span>
+                        <span className="text-blue-700 font-bold text-sm bg-blue-100 px-3 py-1 rounded-full">25 breaths</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Part 2: Main Workout */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-pink-600 font-bold">▶</span>
-                        <h4 className="font-semibold text-gray-900 text-sm">PART 2: MAIN WORKOUT (3 ROUNDS)</h4>
+                  <div className="mb-6">
+                    <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-3 rounded-t-lg">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-bold text-lg">▶</span>
+                          <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
+                        </div>
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center">
+                          <Play className="w-4 h-4" />
+                          <a href="https://www.youtube.com/playlist?list=PLlZC5Vz4VnBRRdU7wvzJJZVxw4E6sN-fb" target="_blank" rel="noopener noreferrer">
+                            PLAY ALL
+                          </a>
+                        </Button>
                       </div>
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-semibold flex items-center gap-1">
-                        <Play className="w-3 h-3" />
-                        <a href="https://www.youtube.com/playlist?list=PLlZC5Vz4VnBRRdU7wvzJJZVxw4E6sN-fb" target="_blank" rel="noopener noreferrer">
-                          PLAY ALL
-                        </a>
-                      </Button>
                     </div>
 
-                    <div className="space-y-2">
-                      {[
-                        { num: 1, name: "KNEELING MINI BAND PULL APARTS", reps: "12 reps", url: "https://www.youtube.com/watch?v=jiz7-6nJvjY" },
-                        { num: 2, name: "QUADRUPED BALL COMPRESSIONS", reps: "10 reps", url: "https://www.youtube.com/watch?v=1QukYQSq0oQ" },
-                        { num: 3, name: "SUPINE HEEL SLIDES", reps: "10 reps", url: "https://www.youtube.com/watch?v=AIEdkm2q-4k" },
-                        { num: 4, name: "GLUTE BRIDGES WITH MINI BALL", reps: "15 reps", url: "https://www.youtube.com/watch?v=1vqv8CqCjY0" },
-                        { num: 5, name: "BUTTERFLY STRETCH — DYNAMIC FLUTTER", reps: "1 min", url: "https://www.youtube.com/watch?v=j5ZGvn1EUTo" }
-                      ].map((exercise) => (
-                        <div key={exercise.num} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 md:p-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm md:text-sm gap-2 sm:gap-3">
-                          <div className="flex items-start sm:items-center gap-2 md:gap-3 flex-1 min-w-0">
-                            <span className="font-medium text-gray-600 w-6 md:w-4 flex-shrink-0">{exercise.num}</span>
-                            <a 
-                              href={exercise.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 underline font-medium leading-tight"
-                            >
-                              {exercise.name}
-                            </a>
+                    <div className="bg-white rounded-b-lg border border-gray-200 p-4">
+
+                      <div className="space-y-3">
+                        {[
+                          { num: 1, name: "KNEELING MINI BAND PULL APARTS", reps: "12 reps", url: "https://www.youtube.com/watch?v=jiz7-6nJvjY" },
+                          { num: 2, name: "QUADRUPED BALL COMPRESSIONS", reps: "10 reps", url: "https://www.youtube.com/watch?v=1QukYQSq0oQ" },
+                          { num: 3, name: "SUPINE HEEL SLIDES", reps: "10 reps", url: "https://www.youtube.com/watch?v=AIEdkm2q-4k" },
+                          { num: 4, name: "GLUTE BRIDGES WITH MINI BALL", reps: "15 reps", url: "https://www.youtube.com/watch?v=1vqv8CqCjY0" },
+                          { num: 5, name: "BUTTERFLY STRETCH — DYNAMIC FLUTTER", reps: "1 min", url: "https://www.youtube.com/watch?v=j5ZGvn1EUTo" }
+                        ].map((exercise) => (
+                          <div key={exercise.num} className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-400 hover:bg-blue-50 transition-colors">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                              <div className="flex items-center gap-3 flex-1">
+                                <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                  {exercise.num}
+                                </div>
+                                <a 
+                                  href={exercise.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
+                                >
+                                  {exercise.name}
+                                </a>
+                              </div>
+                              <div className="text-gray-700 font-bold text-sm bg-white px-3 py-1.5 rounded-full border flex-shrink-0">
+                                {exercise.reps} ×3
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-gray-700 font-medium text-right sm:text-left flex-shrink-0">{exercise.reps} ×3</span>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
 
