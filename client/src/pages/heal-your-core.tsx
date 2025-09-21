@@ -418,15 +418,31 @@ export default function HealYourCorePage() {
           </TabsContent>
 
           <TabsContent value="healing">
-            <HealSection />
+            <HealSection 
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
+            />
           </TabsContent>
 
           <TabsContent value="programs">
-            <YourSixCoreProgramsSection programId={programId} />
+            <YourSixCoreProgramsSection 
+              programId={programId}
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
+            />
           </TabsContent>
 
           <TabsContent value="nutrition">
-            <TheRoleOfNutritionSection />
+            <TheRoleOfNutritionSection 
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
+            />
           </TabsContent>
 
           <TabsContent value="next-steps">
@@ -434,6 +450,10 @@ export default function HealYourCorePage() {
               userId={user.id} 
               programId={programId} 
               progressEntries={Array.isArray(progressEntries) ? progressEntries : []} 
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
             />
           </TabsContent>
         </Tabs>
@@ -457,7 +477,14 @@ export default function HealYourCorePage() {
   );
 }
 
-function HealSection() {
+interface NavigationProps {
+  canGoNext: () => boolean;
+  canGoPrevious: () => boolean;
+  navigateToNextTab: () => void;
+  navigateToPreviousTab: () => void;
+}
+
+function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPreviousTab }: NavigationProps) {
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
 
   const toggleTopic = (topic: string) => {
@@ -1283,6 +1310,32 @@ function HealSection() {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Navigation Buttons */}
+      <div className="flex justify-center pt-8">
+        <div className="flex gap-4 justify-center">
+          {canGoPrevious() && (
+            <Button
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-previous-section-heal"
+              onClick={navigateToPreviousTab}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous Section
+            </Button>
+          )}
+          {canGoNext() && (
+            <Button
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-next-section-heal"
+              onClick={navigateToNextTab}
+            >
+              Next Section
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
