@@ -13,6 +13,7 @@ import breathingActivationImage from "@assets/Screenshot 2025-09-21 at 14.55.17_
 import domingImage from "@assets/Screenshot 2025-09-21 at 14.56.03_1758446776736.png";
 import diastasisAnatomyImage from "@assets/Screenshot 2025-09-21 at 15.38.53_1758449353065.png";
 import diastasisVariationsImage from "@assets/Screenshot 2025-09-21 at 15.39.02_1758449353058.png";
+import diastasisCheckImage from "@assets/Screenshot 2025-09-21 at 15.56.11_1758450385583.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -544,6 +545,14 @@ function HealSection() {
                             <Play className="w-3 h-3" />
                             HOW TO CHECK FOR DIASTASIS RECTI
                           </a>
+                        </div>
+                        
+                        <div className="flex justify-center my-4">
+                          <img 
+                            src={diastasisCheckImage} 
+                            alt="How to check for diastasis recti - demonstration image" 
+                            className="max-w-full h-auto rounded-lg shadow-sm"
+                          />
                         </div>
 
                         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
