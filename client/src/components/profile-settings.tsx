@@ -33,89 +33,69 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-gray-50 w-screen h-screen">
+    <div className="fixed inset-0 z-50 bg-white w-screen h-screen">
       <div className="w-full h-full min-h-screen overflow-y-auto">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4 w-full">
-          <div className="flex items-center justify-between max-w-full">
-            <div className="flex items-center space-x-3">
-              <button 
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                data-testid="button-close-profile-settings"
-              >
-                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* User Profile Section */}
         <div className="bg-white border-b border-gray-200 px-6 py-8 w-full">
-          <div className="flex items-center space-x-4 max-w-full">
-            <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-xl font-medium">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-lg font-medium">
               {user.firstName?.[0]}{user.lastName?.[0]}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-lg font-medium text-gray-900">
                 {user.firstName} {user.lastName}
               </h2>
-              <p className="text-gray-600">{user.email}</p>
+              <p className="text-gray-600 text-sm">{user.email}</p>
             </div>
           </div>
         </div>
 
-        {/* Menu Items */}
-        <div className="bg-white w-full flex-1">
-          <div className="space-y-0">
-            {/* Notifications */}
-            <button className="w-full flex items-center px-6 py-6 hover:bg-gray-50 border-b border-gray-100 transition-colors">
-              <Bell className="w-5 h-5 text-gray-600 mr-4" />
-              <span className="text-lg text-gray-800">Notifications</span>
+        {/* The App Section */}
+        <div className="px-6 py-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 underline">The App</h3>
+          
+          <div className="space-y-6">
+            <button className="block text-lg text-gray-700 hover:text-gray-900 transition-colors">
+              Community
             </button>
-
-            {/* Community */}
-            <button className="w-full flex items-center px-6 py-6 hover:bg-gray-50 border-b border-gray-100 transition-colors">
-              <svg className="w-5 h-5 text-gray-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span className="text-lg text-gray-800">Community</span>
+            
+            <button className="block text-lg text-gray-700 hover:text-gray-900 transition-colors">
+              Blog
             </button>
+            
+            <button className="block text-lg text-gray-700 hover:text-gray-900 transition-colors">
+              Calendar
+            </button>
+          </div>
+        </div>
 
-            {/* My Library */}
+        {/* Divider */}
+        <div className="border-b border-gray-200"></div>
+
+        {/* Account Section */}
+        <div className="px-6 py-6">
+          <div className="space-y-6">
             <button 
-              className="w-full flex items-center px-6 py-6 hover:bg-gray-50 border-b border-gray-100 transition-colors"
+              className="block text-lg text-gray-700 hover:text-gray-900 transition-colors"
               onClick={() => window.location.href = "/my-library"}
             >
-              <BookOpen className="w-5 h-5 text-gray-600 mr-4" />
-              <span className="text-lg text-gray-800">My Library</span>
+              My Library
             </button>
-
-            {/* Email notifications */}
-            <button className="w-full flex items-center px-6 py-6 hover:bg-gray-50 border-b border-gray-100 transition-colors">
-              <svg className="w-5 h-5 text-gray-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              <span className="text-lg text-gray-800">Email notifications</span>
+            
+            <button className="block text-lg text-gray-700 hover:text-gray-900 transition-colors">
+              Email notifications
             </button>
-
-            {/* Purchases & payments */}
-            <button className="w-full flex items-center px-6 py-6 hover:bg-gray-50 border-b border-gray-100 transition-colors">
-              <CreditCard className="w-5 h-5 text-gray-600 mr-4" />
-              <span className="text-lg text-gray-800">Purchases & payments</span>
+            
+            <button className="block text-lg text-gray-700 hover:text-gray-900 transition-colors">
+              Purchases & payments
             </button>
-
-            {/* Sign out */}
+            
             <button 
-              className="w-full flex items-center px-6 py-6 hover:bg-gray-50 transition-colors"
+              className="block text-lg text-gray-700 hover:text-gray-900 transition-colors"
               onClick={handleLogout}
+              data-testid="button-logout"
             >
-              <svg className="w-5 h-5 text-gray-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              <span className="text-lg text-gray-800">Sign out</span>
+              Sign out
             </button>
           </div>
         </div>
