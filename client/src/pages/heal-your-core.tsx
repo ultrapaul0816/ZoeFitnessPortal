@@ -15,6 +15,7 @@ import diastasisAnatomyImage from "@assets/Screenshot 2025-09-21 at 15.38.53_175
 import diastasisVariationsImage from "@assets/Screenshot 2025-09-21 at 15.39.02_1758449353058.png";
 import diastasisCheckImage from "@assets/Screenshot 2025-09-21 at 15.56.11_1758450385583.png";
 import coreRehabMattersImage from "@assets/Screenshot 2025-09-21 at 15.57.21_1758450453069.png";
+import coreRehabExerciseImage from "@assets/Screenshot 2025-09-21 at 15.57.47_1758450479618.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -661,6 +662,14 @@ function HealSection() {
                           </div>
 
                           <div className="space-y-4">
+                            <div className="flex justify-center mb-4">
+                              <img 
+                                src={coreRehabExerciseImage} 
+                                alt="Woman demonstrating core exercise technique with small ball" 
+                                className="max-w-full h-auto rounded-lg shadow-sm"
+                              />
+                            </div>
+                            
                             <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
                               <h4 className="font-bold text-green-700 mb-3">Rebuilding your core helps you:</h4>
                               <ul className="space-y-2 text-sm">
