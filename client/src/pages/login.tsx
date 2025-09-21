@@ -38,6 +38,8 @@ export default function Login() {
         setShowTermsModal(true);
       } else {
         localStorage.setItem("user", JSON.stringify(data.user));
+        // Set session flag to show disclaimer on this login session
+        sessionStorage.setItem("showDisclaimerOnSession", "true");
         if (data.user.isAdmin) {
           setLocation("/admin");
         } else {
@@ -61,6 +63,8 @@ export default function Login() {
   const handleTermsAccepted = () => {
     if (pendingUser) {
       localStorage.setItem("user", JSON.stringify({ ...pendingUser, termsAccepted: true }));
+      // Set session flag to show disclaimer on this login session
+      sessionStorage.setItem("showDisclaimerOnSession", "true");
       if (pendingUser.isAdmin) {
         setLocation("/admin");
       } else {

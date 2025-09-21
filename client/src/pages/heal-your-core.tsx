@@ -95,19 +95,20 @@ export default function HealYourCorePage() {
     enabled: !!user && !!programId && (accessData as any)?.hasAccess,
   });
 
-  // Check if user has seen welcome modal
+  // Check if user should see disclaimer modal on this session
   useEffect(() => {
     if (user && (accessData as any)?.hasAccess) {
-      const hasSeenWelcome = localStorage.getItem(`heal-your-core-welcome-${user.id}`);
-      if (!hasSeenWelcome) {
+      const shouldShowDisclaimer = sessionStorage.getItem("showDisclaimerOnSession");
+      if (shouldShowDisclaimer === "true") {
         setShowWelcomeModal(true);
       }
     }
   }, [user, accessData]);
 
-  const handleWelcomeClose = (dontShowAgain: boolean) => {
-    if (user && dontShowAgain) {
-      localStorage.setItem(`heal-your-core-welcome-${user.id}`, 'true');
+  const handleWelcomeClose = (hasConsented: boolean) => {
+    if (hasConsented) {
+      // Clear the session flag so disclaimer won't show again this session
+      sessionStorage.removeItem("showDisclaimerOnSession");
     }
     setShowWelcomeModal(false);
   };

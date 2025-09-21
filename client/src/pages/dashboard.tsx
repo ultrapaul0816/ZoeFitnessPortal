@@ -11,6 +11,7 @@ import CommunityModal from "@/components/community-modal";
 import NotificationsDropdown from "@/components/notifications-dropdown";
 import ProfileModal from "@/components/profile-modal";
 import ProfileSettings from "@/components/profile-settings";
+import ZoeWelcomeModal from "@/components/zoe-welcome-modal";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 export default function Dashboard() {
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [showHamburgerMenu, setShowHamburgerMenu] = useState(false);
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -30,6 +32,24 @@ export default function Dashboard() {
     }
     setUser(JSON.parse(userData));
   }, [setLocation]);
+
+  // Check if user should see disclaimer modal on this session
+  useEffect(() => {
+    if (user) {
+      const shouldShowDisclaimer = sessionStorage.getItem("showDisclaimerOnSession");
+      if (shouldShowDisclaimer === "true") {
+        setShowDisclaimerModal(true);
+      }
+    }
+  }, [user]);
+
+  const handleDisclaimerClose = (hasConsented: boolean) => {
+    if (hasConsented) {
+      // Clear the session flag so disclaimer won't show again this session
+      sessionStorage.removeItem("showDisclaimerOnSession");
+    }
+    setShowDisclaimerModal(false);
+  };
 
   const { data: memberPrograms = [] } = useQuery<(MemberProgram & { program: Program })[]>({
     queryKey: ["/api/member-programs", user?.id],
@@ -327,6 +347,12 @@ export default function Dashboard() {
           onClose={() => setShowCommunity(false)}
         />
       )}
+
+      {/* Disclaimer Modal */}
+      <ZoeWelcomeModal
+        isOpen={showDisclaimerModal}
+        onClose={handleDisclaimerClose}
+      />
     </div>
   );
 }
