@@ -401,7 +401,7 @@ function HealSection() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>💙 Heal</CardTitle>
           <CardDescription>
             Understanding diastasis recti and beginning your core rehabilitation journey
