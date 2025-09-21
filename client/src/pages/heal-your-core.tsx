@@ -201,11 +201,222 @@ export default function HealYourCorePage() {
                     </div>
                   </div>
 
-                  <div className="text-center py-8">
-                    <p className="text-gray-600 mb-4">Full program content will be restored shortly</p>
-                    <Button className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white">
-                      View Program Details
-                    </Button>
+                  {/* How to and Rest Instructions */}
+                  <div className="space-y-4 mb-6">
+                    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                      <p className="text-sm text-blue-800">
+                        <strong>How to:</strong> All blue underlined text is clickable and will open a video link. 
+                        <strong className="text-pink-600"> PLAY ALL</strong> indicates that the following workout can be played as a single 
+                        playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
+                      </p>
+                    </div>
+                    
+                    <div className="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-400">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Rest:</strong> Rest a minimum of 30 secs - ONE minute between movements. Rest more if needed.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Part 1: Morning + Evening */}
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="bg-pink-500 text-white text-sm font-bold px-2 py-1 rounded">▶</div>
+                      <h4 className="text-lg font-bold text-pink-600">PART 1: MORNING + EVENING - CAN BE PERFORMED IN MULTIPLE POSITIONS</h4>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-lg overflow-hidden border">
+                      <div className="flex">
+                        <div className="flex-1 p-4 border-r border-gray-200">
+                          <Button 
+                            variant="link" 
+                            className="text-blue-600 underline p-0 h-auto font-normal text-left"
+                            data-testid="button-360-breathing"
+                          >
+                            <a href="https://www.youtube.com/watch?v=breathing_video" target="_blank" rel="noopener noreferrer">
+                              360° BREATHING
+                            </a>
+                          </Button>
+                        </div>
+                        <div className="w-32 p-4 text-center bg-gray-100 font-medium">
+                          25 breaths
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Part 2: Main Workout */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-pink-500 text-white text-sm font-bold px-2 py-1 rounded">▶</div>
+                        <h4 className="text-lg font-bold text-pink-600">PART 2: MAIN WORKOUT:</h4>
+                        <span className="text-gray-600 italic">PERFORM 3 ROUNDS OF THE FOLLOWING</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="bg-pink-500 text-white text-sm font-bold px-2 py-1 rounded">▶</div>
+                        <Button 
+                          className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 text-sm font-bold"
+                          data-testid="button-play-all-workout"
+                        >
+                          <a href="https://www.youtube.com/playlist?list=workout_playlist" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                            <Play className="w-4 h-4" />
+                            PLAY ALL
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-lg overflow-hidden border">
+                      <div className="grid grid-cols-12 bg-gray-100 border-b border-gray-200 font-medium text-sm">
+                        <div className="col-span-1 p-3 text-center">#</div>
+                        <div className="col-span-7 p-3">EXERCISE</div>
+                        <div className="col-span-3 p-3 text-center">REPS</div>
+                        <div className="col-span-1 p-3 text-center">ROUNDS</div>
+                      </div>
+                      
+                      {/* Exercise 1 */}
+                      <div className="grid grid-cols-12 border-b border-gray-200">
+                        <div className="col-span-1 p-3 text-center font-medium">1</div>
+                        <div className="col-span-7 p-3">
+                          <Button 
+                            variant="link" 
+                            className="text-blue-600 underline p-0 h-auto font-normal text-left"
+                            data-testid="button-kneeling-mini-band"
+                          >
+                            <a href="https://www.youtube.com/watch?v=kneeling_mini_band" target="_blank" rel="noopener noreferrer">
+                              KNEELING MINI BAND PULL APARTS
+                            </a>
+                          </Button>
+                        </div>
+                        <div className="col-span-3 p-3 text-center">12 reps</div>
+                        <div className="col-span-1 p-3 text-center text-lg font-bold">X 3</div>
+                      </div>
+                      
+                      {/* Exercise 2 */}
+                      <div className="grid grid-cols-12 border-b border-gray-200">
+                        <div className="col-span-1 p-3 text-center font-medium">2</div>
+                        <div className="col-span-7 p-3">
+                          <Button 
+                            variant="link" 
+                            className="text-blue-600 underline p-0 h-auto font-normal text-left"
+                            data-testid="button-quadruped-ball"
+                          >
+                            <a href="https://www.youtube.com/watch?v=quadruped_ball" target="_blank" rel="noopener noreferrer">
+                              QUADRUPED BALL COMPRESSIONS
+                            </a>
+                          </Button>
+                        </div>
+                        <div className="col-span-3 p-3 text-center">10 reps</div>
+                        <div className="col-span-1 p-3"></div>
+                      </div>
+                      
+                      {/* Exercise 3 */}
+                      <div className="grid grid-cols-12 border-b border-gray-200">
+                        <div className="col-span-1 p-3 text-center font-medium">3</div>
+                        <div className="col-span-7 p-3">
+                          <Button 
+                            variant="link" 
+                            className="text-blue-600 underline p-0 h-auto font-normal text-left"
+                            data-testid="button-supine-heel-slides"
+                          >
+                            <a href="https://www.youtube.com/watch?v=supine_heel_slides" target="_blank" rel="noopener noreferrer">
+                              SUPINE HEEL SLIDES
+                            </a>
+                          </Button>
+                        </div>
+                        <div className="col-span-3 p-3 text-center">10 reps</div>
+                        <div className="col-span-1 p-3"></div>
+                      </div>
+                      
+                      {/* Exercise 4 */}
+                      <div className="grid grid-cols-12 border-b border-gray-200">
+                        <div className="col-span-1 p-3 text-center font-medium">4</div>
+                        <div className="col-span-7 p-3">
+                          <Button 
+                            variant="link" 
+                            className="text-blue-600 underline p-0 h-auto font-normal text-left"
+                            data-testid="button-glute-bridges"
+                          >
+                            <a href="https://www.youtube.com/watch?v=glute_bridges" target="_blank" rel="noopener noreferrer">
+                              GLUTE BRIDGES WITH MINI BALL
+                            </a>
+                          </Button>
+                        </div>
+                        <div className="col-span-3 p-3 text-center">15 reps</div>
+                        <div className="col-span-1 p-3"></div>
+                      </div>
+                      
+                      {/* Exercise 5 */}
+                      <div className="grid grid-cols-12">
+                        <div className="col-span-1 p-3 text-center font-medium">5</div>
+                        <div className="col-span-7 p-3">
+                          <Button 
+                            variant="link" 
+                            className="text-blue-600 underline p-0 h-auto font-normal text-left"
+                            data-testid="button-butterfly-stretch"
+                          >
+                            <a href="https://www.youtube.com/watch?v=butterfly_stretch" target="_blank" rel="noopener noreferrer">
+                              BUTTERFLY STRETCH — DYNAMIC FLUTTER
+                            </a>
+                          </Button>
+                        </div>
+                        <div className="col-span-3 p-3 text-center">1 min</div>
+                        <div className="col-span-1 p-3"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tips before you begin */}
+                  <div className="mb-6">
+                    <h4 className="text-lg font-bold text-pink-600 mb-4">Tips before you begin:</h4>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-blue-600">Breathe First, Move Second:</strong> Every movement begin with deep exhale and gentle core engagement.</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-blue-600">Feel, Don't Force:</strong> The goal is to feel supported - not strained. If something feels off, pause, or regress.</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-blue-600">One Round is Still Progress:</strong> Don't skip a session just because you don't have time for all rounds.</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-red-600">Doming, Heaviness, or Leaking?:</strong> Stop & regress to earlier exercises. That's your body's way of asking.</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-blue-600">Stay Consistent, Not Perfect:</strong> Progress comes from showing up—even imperfectly.</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-blue-600">Hydrate, Rest, Reflect:</strong> These are core parts of your recovery too.</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-red-600">Avoid Overexertion:</strong> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-500 text-lg">✧</span>
+                        <p><strong className="text-red-600">Consult Your Doctor:</strong> Always consult your healthcare provider before continuing with exercises.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Precautions */}
+                  <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                    <h4 className="text-lg font-bold text-red-800 mb-3">Precautions</h4>
+                    <div className="text-sm text-red-700 space-y-2">
+                      <p><strong>Listen to Your Body:</strong> Always pay attention to how you feel and adjust accordingly.</p>
+                      <p><strong>Take Options Given:</strong> Utilize the modifications provided to suit your comfort level.</p>
+                      <p><strong>Reduce Reps or Rounds:</strong> Don't hesitate to reduce the number of repetitions or rounds if needed.</p>
+                      <p><strong>Monitor Weight:</strong> Don't lift heavier weights or try lighter weights to aid in your full recovery by keeping close by and drink frequently to stay hydrated.</p>
+                      <p><strong>Avoid Overexertion:</strong> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</p>
+                      <p><strong>Consult Your Doctor:</strong> Always consult with your healthcare provider before continuing with the exercises.</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
