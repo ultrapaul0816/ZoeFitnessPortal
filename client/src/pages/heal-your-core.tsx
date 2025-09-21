@@ -497,237 +497,12 @@ export default function HealYourCorePage() {
           </TabsContent>
 
           <TabsContent value="programs">
-            <div className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                  Your 6-Week Program
-                </h2>
-                <p className="text-gray-600 max-w-2xl mx-auto">
-                  Complete your personalized postnatal fitness journey with our expertly designed program structure
-                </p>
-              </div>
-
-              {/* Program 1 */}
-              <Card className="overflow-hidden border-l-4 border-l-pink-500">
-                <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-lg font-bold">
-                        WEEK 1
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl text-gray-900">PROGRAM 1</CardTitle>
-                        <CardDescription className="text-pink-600 font-semibold">DAY 1, 3, 5, 7</CardDescription>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-600 font-medium">EQUIPMENT NEEDED</div>
-                      <div className="text-sm text-gray-800">Mini band, small Pilates ball, mat</div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">RECONNECT & RESET</h3>
-                    <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
-                      <div className="flex items-start gap-2">
-                        <span className="text-pink-600 font-semibold">COACH'S NOTE:</span>
-                        <p className="text-gray-700 text-sm">
-                          This is your foundation. Focus on breath, posture, and gentle reconnection with your core and pelvic floor. 
-                          You're not here to sweat—you're here to feel again.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Part 1: Breathing */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-pink-600 text-lg font-bold">▶</span>
-                      <h4 className="text-lg font-semibold text-gray-900">PART 1: MORNING + EVENING – CAN BE PERFORMED IN MULTIPLE POSITIONS</h4>
-                    </div>
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <span className="text-blue-800 font-semibold underline cursor-pointer">360° BREATHING</span>
-                        <span className="text-blue-700 font-medium">25 breaths</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Part 2: Main Workout */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-pink-600 text-lg font-bold">▶</span>
-                        <h4 className="text-lg font-semibold text-gray-900">PART 2: MAIN WORKOUT:</h4>
-                        <span className="text-gray-600 italic">PERFORM 3 ROUNDS OF THE FOLLOWING</span>
-                      </div>
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2">
-                        <Play className="w-4 h-4" />
-                        <a href="https://www.youtube.com/playlist?list=PLlZC5Vz4VnBRRdU7wvzJJZVxw4E6sN-fb" target="_blank" rel="noopener noreferrer">
-                          PLAY ALL
-                        </a>
-                      </Button>
-                    </div>
-
-                    <div className="grid gap-3">
-                      <div className="grid grid-cols-12 gap-4 bg-gray-100 p-3 rounded-lg font-semibold text-gray-800">
-                        <div className="col-span-1">#</div>
-                        <div className="col-span-7">EXERCISE</div>
-                        <div className="col-span-2">REPS</div>
-                        <div className="col-span-2">ROUNDS</div>
-                      </div>
-                      
-                      {[
-                        { num: 1, name: "KNEELING MINI BAND PULL APARTS", reps: "12 reps", url: "https://www.youtube.com/watch?v=jiz7-6nJvjY" },
-                        { num: 2, name: "QUADRUPED BALL COMPRESSIONS", reps: "10 reps", url: "https://www.youtube.com/watch?v=1QukYQSq0oQ" },
-                        { num: 3, name: "SUPINE HEEL SLIDES", reps: "10 reps", url: "https://www.youtube.com/watch?v=AIEdkm2q-4k" },
-                        { num: 4, name: "GLUTE BRIDGES WITH MINI BALL", reps: "15 reps", url: "https://www.youtube.com/watch?v=1vqv8CqCjY0" },
-                        { num: 5, name: "BUTTERFLY STRETCH — DYNAMIC FLUTTER", reps: "1 min", url: "https://www.youtube.com/watch?v=j5ZGvn1EUTo" }
-                      ].map((exercise) => (
-                        <div key={exercise.num} className="grid grid-cols-12 gap-4 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                          <div className="col-span-1 font-medium text-gray-600">{exercise.num}</div>
-                          <div className="col-span-7">
-                            <a 
-                              href={exercise.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 underline font-medium"
-                            >
-                              {exercise.name}
-                            </a>
-                          </div>
-                          <div className="col-span-2 text-gray-700">{exercise.reps}</div>
-                          <div className="col-span-2 text-center">
-                            <span className="text-lg font-bold text-gray-800">×3</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Introduction Video */}
-                  <div className="mb-6">
-                    <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-4 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="text-white font-semibold mb-1">Program Introduction</h4>
-                          <p className="text-pink-100 text-sm">Watch this before starting your journey</p>
-                        </div>
-                        <Button className="bg-white text-pink-600 hover:bg-pink-50 px-4 py-2 rounded-lg font-semibold flex items-center gap-2">
-                          <Play className="w-4 h-4" />
-                          <a href="https://www.youtube.com/watch?v=B53GBfgME9E&feature=youtu.be" target="_blank" rel="noopener noreferrer">
-                            Watch Video
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tips Before You Begin */}
-                  <div className="mb-6">
-                    <h4 className="text-lg font-semibold text-pink-600 mb-4">Tips before you begin:</h4>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {[
-                        { icon: "💨", title: "Breathe First, Move Second", desc: "Every movement begins with deep exhale and gentle core engagement." },
-                        { icon: "🚫", title: "Feel, Don't Force", desc: "The goal is to feel supported – not strained. If something feels off, pause, or regress." },
-                        { icon: "📈", title: "One Round is Still Progress", desc: "Don't skip a session just because you don't have time for all rounds." },
-                        { icon: "⚠️", title: "Doming, Heaviness, or Leaking?", desc: "Stop & regress to earlier exercises. That's your body's way of asking." },
-                        { icon: "🎯", title: "Stay Consistent, Not Perfect", desc: "Progress comes from showing up — even imperfectly." },
-                        { icon: "💧", title: "Hydrate, Rest, Reflect", desc: "These are core parts of your recovery too." },
-                        { icon: "🚨", title: "Avoid Overexertion", desc: "Stop immediately if you feel dizzy, nauseous, or overly fatigued." },
-                        { icon: "👩‍⚕️", title: "Consult Your Doctor", desc: "Always consult your healthcare provider before continuing with exercises." }
-                      ].map((tip, index) => (
-                        <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                          <span className="text-xl">{tip.icon}</span>
-                          <div>
-                            <div className="font-medium text-gray-800 text-sm">{tip.title}:</div>
-                            <div className="text-gray-600 text-xs">{tip.desc}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Precautions */}
-                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
-                    <h4 className="font-semibold text-yellow-800 mb-2">Precautions</h4>
-                    <div className="text-sm text-yellow-700 space-y-1">
-                      <p><strong>Listen to Your Body:</strong> Always pay attention to how you feel and adjust accordingly.</p>
-                      <p><strong>Take Options Given:</strong> Utilize the modifications provided to suit your comfort level.</p>
-                      <p><strong>Reduce Reps or Rounds:</strong> Don't hesitate to reduce the number of repetitions or rounds if needed.</p>
-                      <p><strong>Stay Hydrated:</strong> Keep plenty of water close by and drink frequently to stay hydrated.</p>
-                      <p><strong>Avoid Overexertion:</strong> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</p>
-                      <p><strong>Consult Your Doctor:</strong> Always consult your healthcare provider before continuing with the exercises.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Program 2-6 Placeholders */}
-              {[
-                { week: 2, program: 2, days: "DAY 1, 3, 5, 7", title: "BUILD ENDURANCE", phase: "Building Phase" },
-                { week: 3, program: 3, days: "DAY 1, 3, 5, 7", title: "STRENGTH FOUNDATION", phase: "Strength Phase" },
-                { week: 4, program: 4, days: "DAY 1, 3, 5, 7", title: "POWER DEVELOPMENT", phase: "Power Phase" },
-                { week: 5, program: 5, days: "DAY 1, 3, 5, 7", title: "INTEGRATION & FLOW", phase: "Integration Phase" },
-                { week: 6, program: 6, days: "DAY 1, 3, 5, 7", title: "MASTERY & MAINTENANCE", phase: "Mastery Phase" }
-              ].map((prog) => (
-                <Card key={prog.week} className="overflow-hidden border-l-4 border-l-gray-300 opacity-75">
-                  <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-4 py-2 rounded-lg font-bold">
-                          WEEK {prog.week}
-                        </div>
-                        <div>
-                          <CardTitle className="text-xl text-gray-600">PROGRAM {prog.program}</CardTitle>
-                          <CardDescription className="text-gray-500 font-semibold">{prog.days}</CardDescription>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-500 font-medium">COMING SOON</div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="text-center py-8">
-                      <h3 className="text-xl font-bold text-gray-600 mb-2">{prog.title}</h3>
-                      <p className="text-gray-500 mb-4">{prog.phase}</p>
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                        <span className="text-gray-600 text-sm font-medium">Unlock by completing previous weeks</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-center pt-8">
-                <div className="flex gap-4 justify-center">
-                  {canGoPrevious() && (
-                    <Button
-                      className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
-                      data-testid="button-previous-section-programs"
-                      onClick={navigateToPreviousTab}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      Prev
-                    </Button>
-                  )}
-                  {canGoNext() && (
-                    <Button
-                      className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
-                      data-testid="button-next-section-programs"
-                      onClick={navigateToNextTab}
-                    >
-                      Next
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
+            <ProgramsSection 
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
+            />
           </TabsContent>
 
           <TabsContent value="nutrition">
@@ -3789,6 +3564,245 @@ function UnderstandingYourCoreSection({
 
 
 // Core Program Components
+
+function ProgramsSection({ 
+  canGoNext, 
+  canGoPrevious, 
+  navigateToNextTab, 
+  navigateToPreviousTab 
+}: NavigationProps) {
+  const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({});
+
+  const toggleProgram = (programId: string) => {
+    setExpandedPrograms(prev => ({
+      ...prev,
+      [programId]: !prev[programId]
+    }));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          Your Programs
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Access your personalized fitness programs and track your progress
+        </p>
+      </div>
+
+      {/* 6-Week Program - Collapsible */}
+      <Card className="overflow-hidden border-l-4 border-l-pink-500">
+        <CardHeader 
+          className="bg-gradient-to-r from-pink-50 to-rose-50 cursor-pointer hover:from-pink-100 hover:to-rose-100 transition-all duration-200"
+          onClick={() => toggleProgram('6-week-program')}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-lg font-bold">
+                6 WEEK
+              </div>
+              <div>
+                <CardTitle className="text-xl text-gray-900">Postpartum Strength Recovery Program</CardTitle>
+                <CardDescription className="text-pink-600 font-semibold">Complete postnatal fitness journey</CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-sm text-gray-600 font-medium">COMPREHENSIVE PROGRAM</div>
+                <div className="text-sm text-gray-800">Core rehabilitation & strength building</div>
+              </div>
+              <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        {expandedPrograms['6-week-program'] && (
+          <CardContent className="p-6 border-t border-pink-100">
+            <div className="space-y-8">
+              {/* Program 1 - Week 1 */}
+              <Card className="overflow-hidden border-l-4 border-l-pink-400">
+                <CardHeader className="bg-gradient-to-r from-pink-25 to-rose-25">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-3 py-1 rounded font-semibold text-sm">
+                        WEEK 1
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 1 - RECONNECT & RESET</CardTitle>
+                        <CardDescription className="text-pink-600 font-semibold">DAY 1, 3, 5, 7</CardDescription>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-600 font-medium">EQUIPMENT NEEDED</div>
+                      <div className="text-xs text-gray-800">Mini band, small Pilates ball, mat</div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="mb-4">
+                    <div className="bg-pink-50 p-3 rounded-lg border-l-4 border-pink-400">
+                      <div className="flex items-start gap-2">
+                        <span className="text-pink-600 font-semibold text-sm">COACH'S NOTE:</span>
+                        <p className="text-gray-700 text-sm">
+                          This is your foundation. Focus on breath, posture, and gentle reconnection with your core and pelvic floor.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Part 1: Breathing */}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-pink-600 font-bold">▶</span>
+                      <h4 className="font-semibold text-gray-900 text-sm">PART 1: 360° BREATHING</h4>
+                    </div>
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="text-blue-800 font-semibold underline cursor-pointer text-sm">Morning + Evening Sessions</span>
+                        <span className="text-blue-700 font-medium text-sm">25 breaths</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Part 2: Main Workout */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-pink-600 font-bold">▶</span>
+                        <h4 className="font-semibold text-gray-900 text-sm">PART 2: MAIN WORKOUT (3 ROUNDS)</h4>
+                      </div>
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                        <Play className="w-3 h-3" />
+                        <a href="https://www.youtube.com/playlist?list=PLlZC5Vz4VnBRRdU7wvzJJZVxw4E6sN-fb" target="_blank" rel="noopener noreferrer">
+                          PLAY ALL
+                        </a>
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {[
+                        { num: 1, name: "KNEELING MINI BAND PULL APARTS", reps: "12 reps", url: "https://www.youtube.com/watch?v=jiz7-6nJvjY" },
+                        { num: 2, name: "QUADRUPED BALL COMPRESSIONS", reps: "10 reps", url: "https://www.youtube.com/watch?v=1QukYQSq0oQ" },
+                        { num: 3, name: "SUPINE HEEL SLIDES", reps: "10 reps", url: "https://www.youtube.com/watch?v=AIEdkm2q-4k" },
+                        { num: 4, name: "GLUTE BRIDGES WITH MINI BALL", reps: "15 reps", url: "https://www.youtube.com/watch?v=1vqv8CqCjY0" },
+                        { num: 5, name: "BUTTERFLY STRETCH — DYNAMIC FLUTTER", reps: "1 min", url: "https://www.youtube.com/watch?v=j5ZGvn1EUTo" }
+                      ].map((exercise) => (
+                        <div key={exercise.num} className="flex items-center justify-between p-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium text-gray-600 w-4">{exercise.num}</span>
+                            <a 
+                              href={exercise.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 underline font-medium"
+                            >
+                              {exercise.name}
+                            </a>
+                          </div>
+                          <span className="text-gray-700 font-medium">{exercise.reps} ×3</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Introduction Video */}
+                  <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-3 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-white font-semibold text-sm mb-1">Program Introduction</h4>
+                        <p className="text-pink-100 text-xs">Watch this before starting</p>
+                      </div>
+                      <Button className="bg-white text-pink-600 hover:bg-pink-50 px-3 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                        <Play className="w-3 h-3" />
+                        <a href="https://www.youtube.com/watch?v=B53GBfgME9E&feature=youtu.be" target="_blank" rel="noopener noreferrer">
+                          Watch Video
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Program 2-6 Placeholders */}
+              {[
+                { week: 2, program: 2, days: "DAY 1, 3, 5, 7", title: "BUILD ENDURANCE", phase: "Building Phase" },
+                { week: 3, program: 3, days: "DAY 1, 3, 5, 7", title: "STRENGTH FOUNDATION", phase: "Strength Phase" },
+                { week: 4, program: 4, days: "DAY 1, 3, 5, 7", title: "POWER DEVELOPMENT", phase: "Power Phase" },
+                { week: 5, program: 5, days: "DAY 1, 3, 5, 7", title: "INTEGRATION & FLOW", phase: "Integration Phase" },
+                { week: 6, program: 6, days: "DAY 1, 3, 5, 7", title: "MASTERY & MAINTENANCE", phase: "Mastery Phase" }
+              ].map((prog) => (
+                <Card key={prog.week} className="overflow-hidden border-l-4 border-l-gray-300 opacity-75">
+                  <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-1 rounded font-semibold text-sm">
+                          WEEK {prog.week}
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg text-gray-600">PROGRAM {prog.program} - {prog.title}</CardTitle>
+                          <CardDescription className="text-gray-500 font-semibold">{prog.days}</CardDescription>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-gray-500 font-medium">COMING SOON</div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <div className="text-center py-4">
+                      <h3 className="text-lg font-bold text-gray-600 mb-2">{prog.phase}</h3>
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                        <span className="text-gray-600 text-xs font-medium">Unlock by completing previous weeks</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        )}
+      </Card>
+
+      {/* Space for additional programs */}
+      <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
+        <div className="text-gray-400">
+          <h3 className="text-lg font-semibold mb-2">Add More Programs</h3>
+          <p className="text-sm">Additional fitness programs can be added here</p>
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-center pt-8">
+        <div className="flex gap-4 justify-center">
+          {canGoPrevious() && (
+            <Button
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-previous-section-programs"
+              onClick={navigateToPreviousTab}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Prev
+            </Button>
+          )}
+          {canGoNext() && (
+            <Button
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-next-section-programs"
+              onClick={navigateToNextTab}
+            >
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function TheRoleOfNutritionSection({ 
   canGoNext, 
