@@ -3604,30 +3604,62 @@ function ProgramsSection({
           </div>
           
           <div className="relative z-10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-2 py-1.5 md:px-5 md:py-3 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap shadow-lg border-2 border-pink-200 flex-shrink-0">
-                  <div className="flex items-center gap-1 md:gap-2">
-                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-pink-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs md:text-sm">PROGRAM 1</span>
+            {/* Mobile Layout */}
+            <div className="block lg:hidden">
+              {/* Program Badge on top */}
+              <div className="mb-3">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-pink-200 inline-block">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></div>
+                    PROGRAM 1
+                  </div>
+                </div>
+              </div>
+              
+              {/* Title and Description in one line */}
+              <div className="mb-3">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md">
+                  Postpartum Strength Recovery Program ✨ 6-week comprehensive postnatal fitness journey
+                </div>
+              </div>
+              
+              {/* Info box and dropdown */}
+              <div className="flex items-center justify-between">
+                <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
+                  <div className="text-xs text-pink-100 font-bold uppercase tracking-wide">Comprehensive Program</div>
+                  <div className="text-xs text-white font-medium">Core rehabilitation & strength building</div>
+                </div>
+                <div className="w-8 h-8 bg-gradient-to-br from-white to-pink-100 text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden lg:flex items-center justify-between">
+              <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-pink-200 flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                    <span>PROGRAM 1</span>
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 py-2">
-                  <CardTitle className="text-sm sm:text-lg md:text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
+                  <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                     Postpartum Strength Recovery Program
                   </CardTitle>
-                  <CardDescription className="text-pink-100 font-semibold text-xs md:text-base mt-1 md:mt-2 drop-shadow-sm leading-tight">
+                  <CardDescription className="text-pink-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
                     ✨ 6-week comprehensive postnatal fitness journey
                   </CardDescription>
                 </div>
               </div>
-              <div className="flex items-center gap-2 md:gap-4">
-                <div className="text-right hidden lg:block bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-xs md:text-sm text-pink-100 font-bold uppercase tracking-wide">Comprehensive Program</div>
-                  <div className="text-xs md:text-sm text-white font-medium">Core rehabilitation & strength building</div>
+              <div className="flex items-center gap-4">
+                <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
+                  <div className="text-sm text-pink-100 font-bold uppercase tracking-wide">Comprehensive Program</div>
+                  <div className="text-sm text-white font-medium">Core rehabilitation & strength building</div>
                 </div>
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-white to-pink-100 text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
-                  <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+                <div className="w-10 h-10 bg-gradient-to-br from-white to-pink-100 text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
                 </div>
               </div>
             </div>
