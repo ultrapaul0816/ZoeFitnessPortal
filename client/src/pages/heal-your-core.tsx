@@ -745,9 +745,9 @@ function HealSection() {
                         {/* Four Focus Areas in 2x2 Grid */}
                         <div className="grid md:grid-cols-2 gap-8 mb-6">
                           {/* 1. Pressure Management */}
-                          <div className="space-y-4">
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
                             <div>
-                              <h5 className="font-bold text-pink-600 text-lg mb-3">1. Pressure Management</h5>
+                              <h5 className="font-bold text-blue-600 text-lg mb-3">1. Pressure Management</h5>
                               <p className="text-sm text-gray-700 mb-4">
                                 Understanding how pressure moves through the core during breath, lifting, or movement. The goal is to avoid excess intra-abdominal pressure by coordinating breath and posture.
                               </p>
@@ -763,9 +763,9 @@ function HealSection() {
                           </div>
 
                           {/* 2. Breath Coordination */}
-                          <div className="space-y-4">
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-6 space-y-4">
                             <div>
-                              <h5 className="font-bold text-pink-600 text-lg mb-3">2. Breath Coordination</h5>
+                              <h5 className="font-bold text-green-600 text-lg mb-3">2. Breath Coordination</h5>
                               <p className="text-sm text-gray-700 mb-4">
                                 Practice 360° breathing where your ribs, belly, and back all expand on the inhale, and gently draw in and up on the exhale. This restores natural core function and reconnects the pelvic floor and TVA.
                               </p>
@@ -781,9 +781,9 @@ function HealSection() {
                           </div>
 
                           {/* 3. TVA Activation */}
-                          <div className="space-y-4">
+                          <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 space-y-4">
                             <div>
-                              <h5 className="font-bold text-pink-600 text-lg mb-3">3. TVA Activation</h5>
+                              <h5 className="font-bold text-purple-600 text-lg mb-3">3. TVA Activation</h5>
                               <p className="text-sm text-gray-700">
                                 The transverse abdominis is like a natural corset wrapping around your spine and organs. Training it through controlled movement and breath helps flatten and support the abdominal wall from the inside out.
                               </p>
@@ -791,9 +791,9 @@ function HealSection() {
                           </div>
 
                           {/* 4. Alignment & Core-Pelvic Synergy */}
-                          <div className="space-y-4">
+                          <div className="bg-teal-50 border border-teal-200 rounded-lg p-6 space-y-4">
                             <div>
-                              <h5 className="font-bold text-pink-600 text-lg mb-3">4. Alignment & Core-Pelvic Synergy</h5>
+                              <h5 className="font-bold text-teal-600 text-lg mb-3">4. Alignment & Core-Pelvic Synergy</h5>
                               <p className="text-sm text-gray-700">
                                 Learn how your posture and rib cage position influence pressure. When your ribs are flared or your pelvis is tilted, your core system is out of sync. Restoring alignment helps all core muscles work together safely.
                               </p>
