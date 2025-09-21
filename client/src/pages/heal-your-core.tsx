@@ -1036,15 +1036,13 @@ function CardioSection() {
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
                   <h3 className="text-[15px] font-semibold text-left">How to Include Cardio – Safely & Strategically</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <div
                   onClick={() => toggleTopic('cardio-safety')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0 border-0 outline-none"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
                   data-testid="button-toggle-cardio-safety"
                 >
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['cardio-safety'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['cardio-safety'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
@@ -1096,15 +1094,13 @@ function CardioSection() {
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">2</span>
                   <h3 className="text-[15px] font-semibold text-left">Cardio Plan Overview</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <div
                   onClick={() => toggleTopic('cardio-overview')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0 border-0 outline-none"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
                   data-testid="button-toggle-cardio-overview"
                 >
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['cardio-overview'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['cardio-overview'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
@@ -1271,15 +1267,13 @@ function CardioSection() {
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">3</span>
                   <h3 className="text-[15px] font-semibold text-left">Your Training Schedule With Cardio</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <div
                   onClick={() => toggleTopic('cardio-schedule')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0 border-0 outline-none"
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
                   data-testid="button-toggle-cardio-schedule"
                 >
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['cardio-schedule'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['cardio-schedule'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
