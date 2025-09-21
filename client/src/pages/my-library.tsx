@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import programCover from "@assets/program-cover.png";
 import ProfileSettings from "@/components/profile-settings";
+import type { User } from "@shared/schema";
 
 interface Program {
   id: string;
@@ -13,13 +14,6 @@ interface Program {
   thumbnail: string;
   totalVideos: number;
   totalDuration: string;
-}
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
 }
 
 export default function MyLibrary() {

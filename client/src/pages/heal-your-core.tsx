@@ -52,12 +52,7 @@ import {
   Menu
 } from "lucide-react";
 import ProfileSettings from "@/components/profile-settings";
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-}
+import type { User } from "@shared/schema";
 
 export default function HealYourCorePage() {
   const [, navigate] = useLocation();
