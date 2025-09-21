@@ -429,11 +429,6 @@ function HealSection() {
                 </div>
                 {expandedTopics[topic.id] && (
                   <div className="pb-5 space-y-4" data-testid={`content-${topic.id}`}>
-                    <Button variant="outline" className="w-full text-primary mb-4 h-auto py-3">
-                      <Video className="w-4 h-4 mr-2" />
-                      Watch: {topic.title}
-                    </Button>
-                    
                     {topic.id === 'what-is-diastasis' ? (
                       <div className="space-y-4 text-sm">
                         <div className="text-center">
@@ -507,15 +502,21 @@ function HealSection() {
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-3 text-sm">
-                        <p>Educational content for {topic.title} will be added here.</p>
-                        <div className="bg-pink-50 p-4 rounded-lg">
-                          <p className="font-semibold mb-2">Key Information:</p>
-                          <ul className="space-y-1 text-xs">
-                            <li>• Detailed content coming soon</li>
-                            <li>• Educational materials</li>
-                            <li>• Step-by-step guidance</li>
-                          </ul>
+                      <div className="space-y-4">
+                        <Button variant="outline" className="w-full text-primary mb-4 h-auto py-3">
+                          <Video className="w-4 h-4 mr-2" />
+                          Watch: {topic.title}
+                        </Button>
+                        <div className="space-y-3 text-sm">
+                          <p>Educational content for {topic.title} will be added here.</p>
+                          <div className="bg-pink-50 p-4 rounded-lg">
+                            <p className="font-semibold mb-2">Key Information:</p>
+                            <ul className="space-y-1 text-xs">
+                              <li>• Detailed content coming soon</li>
+                              <li>• Educational materials</li>
+                              <li>• Step-by-step guidance</li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     )}
