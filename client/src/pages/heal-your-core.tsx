@@ -3598,22 +3598,22 @@ function ProgramsSection({
           onClick={() => toggleProgram('6-week-program')}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-white text-pink-600 px-4 py-2 rounded-lg font-bold">
+            <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+              <div className="bg-white text-pink-600 px-2 py-1 md:px-4 md:py-2 rounded-lg font-bold text-xs md:text-sm whitespace-nowrap">
                 PROGRAM 1
               </div>
-              <div>
-                <CardTitle className="text-xl text-white">Postpartum Strength Recovery Program</CardTitle>
-                <CardDescription className="text-pink-100 font-semibold">6-week comprehensive postnatal fitness journey</CardDescription>
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-base md:text-xl text-white truncate">Postpartum Strength Recovery Program</CardTitle>
+                <CardDescription className="text-pink-100 font-semibold text-xs md:text-sm">6-week comprehensive postnatal fitness journey</CardDescription>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-sm text-pink-100 font-medium">COMPREHENSIVE PROGRAM</div>
-                <div className="text-sm text-white">Core rehabilitation & strength building</div>
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="text-right hidden sm:block">
+                <div className="text-xs md:text-sm text-pink-100 font-medium">COMPREHENSIVE PROGRAM</div>
+                <div className="text-xs md:text-sm text-white">Core rehabilitation & strength building</div>
               </div>
-              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-lg">
-                <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                <ChevronDown className={`w-3 h-3 md:w-4 md:h-4 text-white transition-transform duration-200 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
               </div>
             </div>
           </div>
@@ -3625,20 +3625,20 @@ function ProgramsSection({
               {/* Program 1 - Week 1 */}
               <Card className="overflow-hidden border-l-4 border-l-pink-400">
                 <CardHeader className="bg-gradient-to-r from-pink-25 to-rose-25">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-3 py-1 rounded font-semibold text-sm">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="flex items-start gap-2 md:gap-4">
+                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-2 py-1 md:px-3 md:py-1 rounded font-semibold text-xs md:text-sm whitespace-nowrap">
                         WEEK 1
                       </div>
-                      <div>
-                        <CardTitle className="text-lg text-gray-900">PROGRAM 1 - RECONNECT & RESET</CardTitle>
-                        <CardDescription className="text-pink-600 font-semibold">Workout Schedule: 4x per week</CardDescription>
+                      <div className="min-w-0">
+                        <CardTitle className="text-base md:text-lg text-gray-900">PROGRAM 1 - RECONNECT & RESET</CardTitle>
+                        <CardDescription className="text-pink-600 font-semibold text-xs md:text-sm">Workout Schedule: 4x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs text-gray-600 font-medium mb-2">EQUIPMENT NEEDED</div>
-                      <div className="flex flex-wrap gap-1 justify-end">
+                    <div className="flex flex-col gap-2">
+                      <div className="text-xs text-gray-600 font-medium">EQUIPMENT NEEDED</div>
+                      <div className="flex flex-wrap gap-1 lg:justify-end">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Mini band</span>
                         <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Small Pilates ball</span>
                         <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">Mat</span>
