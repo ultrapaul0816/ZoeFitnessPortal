@@ -11,10 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 interface PremiumProgramCardProps {
   program: any;
   userId: string;
-  gradientColors?: string;
 }
 
-export default function PremiumProgramCard({ program, userId, gradientColors = "from-pink-500 to-purple-600" }: PremiumProgramCardProps) {
+export default function PremiumProgramCard({ program, userId }: PremiumProgramCardProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -125,7 +124,7 @@ export default function PremiumProgramCard({ program, userId, gradientColors = "
                 <Star className="w-3 h-3 mr-1" />
                 Premium Access
               </Badge>
-              <Badge className={`bg-gradient-to-r ${gradientColors} text-white px-3 py-1 text-xs font-semibold shadow-lg border-0`}>
+              <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-semibold shadow-lg border-0">
                 {program.level}
               </Badge>
             </div>
@@ -143,7 +142,7 @@ export default function PremiumProgramCard({ program, userId, gradientColors = "
             </div>
             
             <Button 
-              className={`w-full bg-gradient-to-r ${gradientColors} hover:opacity-90 text-white font-bold py-3 px-6 shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-200 ease-out border-0 relative overflow-hidden group rounded-lg focus:ring-4 focus:ring-pink-300 active:shadow-inner`} 
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-200 ease-out border-0 relative overflow-hidden group rounded-lg hover:bg-gradient-to-l focus:ring-4 focus:ring-pink-300 active:shadow-inner" 
               data-testid={`button-start-${program.id}`}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>

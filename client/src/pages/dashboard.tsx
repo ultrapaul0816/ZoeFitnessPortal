@@ -624,25 +624,6 @@ export default function Dashboard() {
                     userId={user.id}
                   />
                 ))}
-              
-              {/* Program 2 - Advanced Strength & Conditioning */}
-              <PremiumProgramCard
-                program={{
-                  id: "program-2",
-                  name: "Advanced Strength & Conditioning Program",
-                  description: "6-week advanced postnatal strength and conditioning program",
-                  level: "Intermediate",
-                  duration: "6 weeks",
-                  equipment: "Dumbbells, resistance bands, stability ball",
-                  imageUrl: "/api/placeholder/400/300",
-                  price: 7900, // $79.00
-                  workoutCount: 42,
-                  isActive: true,
-                  isVisible: true
-                }}
-                userId={user.id}
-                gradientColors="from-blue-400 to-cyan-400"
-              />
             </div>
           </div>
         </section>
