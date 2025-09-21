@@ -1795,6 +1795,18 @@ function UnderstandingYourCoreSection({
                   <div className="space-y-5">
                     <p className="text-sm">Once you master 360° breathing, you can learn to add gentle core activation — especially important before and during any exercise or lifting movements.</p>
                     
+                    {/* Your Breath & Your Core Diagram */}
+                    <div className="flex justify-center my-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-lg">
+                        <img 
+                          src={breathCoreImage} 
+                          alt="Your Breath and Your Core - anatomical diagram showing breathing and core connection"
+                          className="w-full h-auto rounded"
+                          data-testid="img-breath-core-diagram"
+                        />
+                      </div>
+                    </div>
+                    
                     <div className="bg-muted/50 p-4 rounded">
                       <h4 className="font-semibold text-primary mb-3">Steps to Activate Core:</h4>
                       
@@ -1822,18 +1834,6 @@ function UnderstandingYourCoreSection({
                           <p className="font-semibold text-sm mb-1">4. <span className="text-primary">RELAX</span> Completely after the movement.</p>
                           <p className="text-sm ml-4">❖ Full relaxation is just as important to prevent over-tightening.</p>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Your Breath & Your Core Diagram */}
-                    <div className="flex justify-center my-6">
-                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-lg">
-                        <img 
-                          src={breathCoreImage} 
-                          alt="Your Breath and Your Core - anatomical diagram showing breathing and core connection"
-                          className="w-full h-auto rounded"
-                          data-testid="img-breath-core-diagram"
-                        />
                       </div>
                     </div>
 
