@@ -48,8 +48,10 @@ import {
   ChevronRight,
   ChevronLeft,
   TrendingUp,
-  Activity
+  Activity,
+  Menu
 } from "lucide-react";
+import ProfileSettings from "@/components/profile-settings";
 
 interface User {
   id: string;
@@ -65,6 +67,7 @@ export default function HealYourCorePage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [isProgressExpanded, setIsProgressExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("welcome");
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
 
   // Tab navigation helpers
   const tabOrder = ["welcome", "cardio", "understanding", "healing", "programs", "nutrition", "next-steps"];
@@ -229,10 +232,80 @@ export default function HealYourCorePage() {
   const completedWeeks = Array.isArray(progressEntries) ? progressEntries.length : 0;
   const progressPercentage = (completedWeeks / 6) * 100;
 
+  const handleUserUpdate = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Navigation Header */}
+      <header className="bg-white border-b border-gray-200 shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Left side navigation */}
+            <div className="flex items-center">
+              {/* Hamburger Menu Button */}
+              <button 
+                className="p-3 relative transition-all duration-300 md:hover:scale-110 md:hover:rotate-12 active:scale-95 group touch-manipulation"
+                data-testid="button-hamburger-menu"
+                aria-label={showProfileSettings ? "Close menu" : "Open menu"}
+                onClick={() => setShowProfileSettings(!showProfileSettings)}
+              >
+                <div className="relative w-6 h-6 flex items-center justify-center">
+                  <div className={`absolute transition-all duration-300 transform md:group-hover:scale-110 ${
+                    showProfileSettings ? 'rotate-45 translate-y-0' : 'rotate-0 -translate-y-2'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-rose-400 via-pink-500 to-pink-600 rounded shadow-sm md:group-hover:shadow-md md:group-hover:shadow-pink-200"></div>
+                  </div>
+                  <div className={`absolute transition-all duration-300 md:group-hover:scale-110 ${
+                    showProfileSettings ? 'opacity-0 scale-75' : 'opacity-100 scale-100'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-rose-400 via-pink-500 to-pink-600 rounded shadow-sm md:group-hover:shadow-md md:group-hover:shadow-pink-200"></div>
+                  </div>
+                  <div className={`absolute transition-all duration-300 transform md:group-hover:scale-110 ${
+                    showProfileSettings ? '-rotate-45 translate-y-0' : 'rotate-0 translate-y-2'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-rose-400 via-pink-500 to-pink-600 rounded shadow-sm md:group-hover:shadow-md md:group-hover:shadow-pink-200"></div>
+                  </div>
+                </div>
+                
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-rose-400/20 via-pink-500/20 to-pink-600/20 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
+              </button>
+            </div>
+            
+            {/* Centered Logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <img 
+                src="/assets/logo.png" 
+                alt="Studio Bloom" 
+                className="h-12 w-auto"
+              />
+            </div>
+            
+            {/* Right side spacer to maintain balance */}
+            <div className="flex items-center opacity-0 pointer-events-none">
+              <button className="p-3 rounded-lg">
+                <Menu className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Profile Settings Overlay */}
+      {showProfileSettings && user && (
+        <ProfileSettings 
+          isOpen={showProfileSettings} 
+          onClose={() => setShowProfileSettings(false)}
+          user={user}
+          onUserUpdate={handleUserUpdate}
+        />
+      )}
+
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
-        {/* Header Navigation */}
+        {/* Program Header */}
         <div className="flex items-center justify-between">
           <button 
             onClick={() => navigate("/dashboard")}

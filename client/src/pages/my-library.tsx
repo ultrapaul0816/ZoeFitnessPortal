@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, PlayCircle, BookOpen, CheckCircle } from "lucide-react";
+import { ArrowLeft, PlayCircle, BookOpen, CheckCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import programCover from "@assets/program-cover.png";
+import ProfileSettings from "@/components/profile-settings";
 
 interface Program {
   id: string;
@@ -14,7 +15,16 @@ interface Program {
   totalDuration: string;
 }
 
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export default function MyLibrary() {
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [boughtPrograms] = useState<Program[]>([
     {
       id: "1",
@@ -34,8 +44,86 @@ export default function MyLibrary() {
     }
   ]);
 
+  // Get user from localStorage on component mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleUserUpdate = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Navigation Header */}
+      <header className="bg-white border-b border-gray-200 shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Left side navigation */}
+            <div className="flex items-center">
+              {/* Hamburger Menu Button */}
+              <button 
+                className="p-3 relative transition-all duration-300 md:hover:scale-110 md:hover:rotate-12 active:scale-95 group touch-manipulation"
+                data-testid="button-hamburger-menu"
+                aria-label={showProfileSettings ? "Close menu" : "Open menu"}
+                onClick={() => setShowProfileSettings(!showProfileSettings)}
+              >
+                <div className="relative w-6 h-6 flex items-center justify-center">
+                  <div className={`absolute transition-all duration-300 transform md:group-hover:scale-110 ${
+                    showProfileSettings ? 'rotate-45 translate-y-0' : 'rotate-0 -translate-y-2'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-rose-400 via-pink-500 to-pink-600 rounded shadow-sm md:group-hover:shadow-md md:group-hover:shadow-pink-200"></div>
+                  </div>
+                  <div className={`absolute transition-all duration-300 md:group-hover:scale-110 ${
+                    showProfileSettings ? 'opacity-0 scale-75' : 'opacity-100 scale-100'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-rose-400 via-pink-500 to-pink-600 rounded shadow-sm md:group-hover:shadow-md md:group-hover:shadow-pink-200"></div>
+                  </div>
+                  <div className={`absolute transition-all duration-300 transform md:group-hover:scale-110 ${
+                    showProfileSettings ? '-rotate-45 translate-y-0' : 'rotate-0 translate-y-2'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-rose-400 via-pink-500 to-pink-600 rounded shadow-sm md:group-hover:shadow-md md:group-hover:shadow-pink-200"></div>
+                  </div>
+                </div>
+                
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-rose-400/20 via-pink-500/20 to-pink-600/20 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
+              </button>
+            </div>
+            
+            {/* Centered Logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <img 
+                src="/assets/logo.png" 
+                alt="Studio Bloom" 
+                className="h-12 w-auto"
+              />
+            </div>
+            
+            {/* Right side spacer to maintain balance */}
+            <div className="flex items-center opacity-0 pointer-events-none">
+              <button className="p-3 rounded-lg">
+                <Menu className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Profile Settings Overlay */}
+      {showProfileSettings && user && (
+        <ProfileSettings 
+          isOpen={showProfileSettings} 
+          onClose={() => setShowProfileSettings(false)}
+          user={user}
+          onUserUpdate={handleUserUpdate}
+        />
+      )}
+
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
