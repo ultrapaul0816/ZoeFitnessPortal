@@ -33,20 +33,14 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
             <img 
               src="/assets/Screenshot 2025-09-20 at 21.18.10_1758383297530.png"
               alt="Postnatal Pregnancy with Zoe Logo"
-              className="mx-auto h-20 w-auto mb-4 drop-shadow-lg"
+              className="mx-auto h-20 w-auto mb-4"
             />
             
             {/* Modern disclaimer heading */}
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-                <AlertTriangle className="w-5 h-5 text-white" />
-              </div>
+            <div className="mb-2">
               <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent">
                 IMPORTANT DISCLAIMER
               </h1>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-                <AlertTriangle className="w-5 h-5 text-white" />
-              </div>
             </div>
             
             <p className="text-sm text-gray-600 font-medium">
