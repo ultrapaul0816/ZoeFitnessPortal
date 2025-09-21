@@ -328,14 +328,20 @@ export default function HealYourCorePage() {
           {/* Medical Disclaimer Moving Bar */}
           <div className="bg-gray-100 border-y border-gray-200 py-2 overflow-hidden">
             <div className="whitespace-nowrap">
-              <div className="inline-block animate-[scroll_15s_linear_infinite]">
-                <span className="text-xs text-gray-600 font-medium px-8">
+              <div className="inline-block animate-[scroll_30s_linear_infinite]">
+                <span className="text-xs text-gray-600 font-medium pr-16">
                   <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
                 </span>
-                <span className="text-xs text-gray-600 font-medium px-8">
+                <span className="text-xs text-gray-600 font-medium pr-16">
                   <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
                 </span>
-                <span className="text-xs text-gray-600 font-medium px-8">
+                <span className="text-xs text-gray-600 font-medium pr-16">
+                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
+                </span>
+                <span className="text-xs text-gray-600 font-medium pr-16">
+                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
+                </span>
+                <span className="text-xs text-gray-600 font-medium pr-16">
                   <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
                 </span>
               </div>
