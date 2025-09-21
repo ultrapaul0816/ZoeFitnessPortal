@@ -264,32 +264,37 @@ export default function Dashboard() {
 
         {/* Your Programs Section */}
         <section className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Your Programs</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {memberPrograms.map((memberProgram) => (
-              <ProgramCard
-                key={memberProgram.id}
-                memberProgram={memberProgram}
-                userId={user.id}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* Premium Programs Section */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Premium Programs</h2>
-          <p className="text-muted-foreground mb-6">Specialized programs designed for specific fitness goals</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.isArray(allPrograms) && allPrograms
-              .filter((program: any) => program.name === "Your Postpartum Strength Recovery Program")
-              .map((program: any) => (
-                <PremiumProgramCard
-                  key={program.id}
-                  program={program}
+          <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl p-8 shadow-lg border border-pink-200">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                Your Programs
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Discover personalized fitness programs designed to help you achieve your health and wellness goals
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Member Programs */}
+              {memberPrograms.map((memberProgram) => (
+                <ProgramCard
+                  key={memberProgram.id}
+                  memberProgram={memberProgram}
                   userId={user.id}
                 />
               ))}
+              
+              {/* All Programs */}
+              {Array.isArray(allPrograms) && allPrograms
+                .filter((program: any) => program.name === "Your Postpartum Strength Recovery Program")
+                .map((program: any) => (
+                  <PremiumProgramCard
+                    key={program.id}
+                    program={program}
+                    userId={user.id}
+                  />
+                ))}
+            </div>
           </div>
         </section>
       </main>
