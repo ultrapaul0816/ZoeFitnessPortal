@@ -3710,9 +3710,100 @@ function WhatComesNextSection({ userId, programId, progressEntries }: {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Continue building on your core foundation with progressive challenges and ongoing support.
-          </p>
+          <Tabs defaultValue="next-steps" className="space-y-6">
+            <div className="overflow-x-auto px-0 shadow-xl rounded-lg">
+              <TabsList className="flex w-full md:grid md:grid-cols-4 gap-2 md:gap-4 h-auto p-3 md:p-4 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
+                <TabsTrigger value="next-steps" data-testid="tab-next-steps-ready" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[120px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+                  <CheckCircle className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                  <span className="font-medium text-center leading-tight">Next Steps: How To Know You're Ready</span>
+                </TabsTrigger>
+                <TabsTrigger value="red-flags" data-testid="tab-red-flags" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[120px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+                  <Target className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                  <span className="font-medium text-center leading-tight">Red Flag Movements to Avoid</span>
+                </TabsTrigger>
+                <TabsTrigger value="readiness-test" data-testid="tab-readiness-test" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[120px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+                  <TrendingUp className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                  <span className="font-medium text-center leading-tight">Return to Impact Readiness Test</span>
+                </TabsTrigger>
+                <TabsTrigger value="progress-tracker" data-testid="tab-progress-tracker" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[120px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+                  <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                  <span className="font-medium text-center leading-tight">Progress Tracker</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="next-steps">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader className="text-center">
+                    <CardTitle>✅ How To Know You're Ready</CardTitle>
+                    <CardDescription>
+                      Understanding when you're prepared to advance to the next level
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Learn the key indicators that show you're ready to progress in your core recovery journey.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="red-flags">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader className="text-center">
+                    <CardTitle>🚨 Red Flag Movements to Avoid</CardTitle>
+                    <CardDescription>
+                      Important movements and exercises to avoid during your recovery
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Understand which movements could hinder your progress and potentially cause setbacks.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="readiness-test">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader className="text-center">
+                    <CardTitle>📈 Return to Impact Readiness Test</CardTitle>
+                    <CardDescription>
+                      Assess your readiness to return to high-impact activities
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Complete this assessment to determine if you're ready for running, jumping, and other impact activities.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="progress-tracker">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader className="text-center">
+                    <CardTitle>📊 Progress Tracker</CardTitle>
+                    <CardDescription>
+                      Monitor your journey and celebrate your achievements
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Track your progress through each phase of core recovery and see how far you've come.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>
