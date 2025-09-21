@@ -3675,20 +3675,48 @@ function ProgramsSection({
               {/* Program 1 - Week 1 */}
               <Card className="overflow-hidden border-l-4 border-l-pink-400">
                 <CardHeader className="bg-gradient-to-r from-pink-25 to-rose-25">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div className="flex items-start gap-2 md:gap-4">
-                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-2 py-1 md:px-3 md:py-1 rounded font-semibold text-xs md:text-sm whitespace-nowrap">
+                  {/* Mobile Layout */}
+                  <div className="block lg:hidden">
+                    {/* Week Badge */}
+                    <div className="mb-4">
+                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                        WEEK 1
+                      </div>
+                    </div>
+                    
+                    {/* Program Title */}
+                    <div className="mb-3">
+                      <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 1 - RECONNECT & RESET</CardTitle>
+                      <CardDescription className="text-pink-600 font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
+                      <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
+                    </div>
+                    
+                    {/* Equipment Section */}
+                    <div>
+                      <div className="text-xs text-gray-700 font-bold uppercase tracking-wide mb-2">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini band</span>
+                        <span className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Small Pilates ball</span>
+                        <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Desktop Layout */}
+                  <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
                         WEEK 1
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-base md:text-lg text-gray-900">PROGRAM 1 - RECONNECT & RESET</CardTitle>
-                        <CardDescription className="text-pink-600 font-semibold text-xs md:text-sm">Workout Schedule: 4x per week</CardDescription>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 1 - RECONNECT & RESET</CardTitle>
+                        <CardDescription className="text-pink-600 font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                       </div>
                     </div>
                     <div className="flex flex-col gap-3">
                       <div className="text-xs text-gray-600 font-medium uppercase tracking-wide">Equipment Needed</div>
-                      <div className="flex flex-wrap gap-2 lg:justify-end">
+                      <div className="flex flex-wrap gap-2 justify-end">
                         <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini band</span>
                         <span className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Small Pilates ball</span>
                         <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
