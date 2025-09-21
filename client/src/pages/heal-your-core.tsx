@@ -199,15 +199,18 @@ export default function HealYourCorePage() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Header Navigation */}
         <div className="flex items-center justify-between">
-          <Button 
-            variant="outline"
+          <button 
             onClick={() => navigate("/dashboard")}
             data-testid="button-back"
-            className="bg-white hover:bg-gray-50 border-gray-300 shadow-sm px-4 py-2 rounded-lg font-medium"
+            className="group relative flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
+            <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+            <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+              Back
+            </span>
+            {/* Subtle gradient overlay on hover */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
+          </button>
           <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
             {healYourCoreProgram.level}
           </Badge>
