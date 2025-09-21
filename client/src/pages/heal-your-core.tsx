@@ -1038,8 +1038,13 @@ function CardioSection() {
                 </div>
                 <div
                   onClick={() => toggleTopic('cardio-safety')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
-                  style={{ border: 'none', outline: 'none', boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3)' }}
+                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
+                  style={{ 
+                    border: 'none !important', 
+                    outline: 'none !important', 
+                    boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3) !important',
+                    background: 'linear-gradient(to bottom right, rgb(244 114 182), rgb(219 39 119)) !important'
+                  }}
                   data-testid="button-toggle-cardio-safety"
                 >
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['cardio-safety'] ? 'rotate-180' : ''}`} />
