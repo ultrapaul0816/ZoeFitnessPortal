@@ -1021,23 +1021,23 @@ function HealSection() {
                         <div className="overflow-x-auto">
                           <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm w-full" style={{ minWidth: '1100px' }}>
                             <div className="bg-gray-100 grid text-sm font-semibold text-gray-700 border-b border-gray-300" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300 text-left">WEEK</div>
-                              <div className="p-4 border-r border-gray-300 text-left">EXERCISES</div>
-                              <div className="p-4 border-r border-gray-300 text-left">FOCUS & PURPOSE</div>
-                              <div className="p-4 text-left">NOTES</div>
+                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">WEEK</div>
+                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">EXERCISES</div>
+                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">FOCUS & PURPOSE</div>
+                              <div className="p-4 flex items-start justify-start">NOTES</div>
                             </div>
 
                             {/* Week 1-2 */}
                             <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold text-left">
+                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
                                 Week 1-2
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
-                                <div className="space-y-2">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                <div className="space-y-2 w-full">
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=B53GBfgME9E', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-360-breathing"
                                     >
                                       360° BREATHING
@@ -1047,7 +1047,7 @@ function HealSection() {
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-diaphragmatic"
                                     >
                                       SUPINE DIAPHRAGMATIC BREATHING
@@ -1056,7 +1056,7 @@ function HealSection() {
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=tCzxxPxxtjw', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-side-lying-diaphragmatic"
                                     >
                                       SIDE LYING DIAPHRAGMATIC BREATHING
@@ -1064,25 +1064,25 @@ function HealSection() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
                                 Reconnect to breath; rebuild mind-muscle connection with deep core and pelvic floor; reduce internal pressure.
                               </div>
-                              <div className="p-4 text-gray-700 text-left">
+                              <div className="p-4 text-gray-700 flex items-start justify-start">
                                 Best done lying or seated. Practice 2-3 times/day. Prioritize breath + awareness.
                               </div>
                             </div>
 
                             {/* Week 3-4 */}
                             <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold text-left">
+                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
                                 Week 3-4
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
-                                <div className="space-y-2">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                <div className="space-y-2 w-full">
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=AIEdkm2q-4k', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-heel-slides"
                                     >
                                       SUPINE HEEL SLIDES
@@ -1091,7 +1091,7 @@ function HealSection() {
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=SRoNksDTjUc', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-pelvic-tilts"
                                     >
                                       SUPINE PELVIC TILTS
@@ -1100,7 +1100,7 @@ function HealSection() {
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=fxs0SDh1s3w', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supported-glute-bridges"
                                     >
                                       SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS
@@ -1109,7 +1109,7 @@ function HealSection() {
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=_cY-rtXNPp4', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-standing-posture-reset"
                                     >
                                       STANDING POSTURE RESET
@@ -1117,25 +1117,25 @@ function HealSection() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
                                 Begin adding gentle movement to deepen core engagement. Build awareness of core activation in daily life (lifting baby, standing).
                               </div>
-                              <div className="p-4 text-gray-700 text-left">
+                              <div className="p-4 text-gray-700 flex items-start justify-start">
                                 Maintain slow tempo. Avoid doming/coning. Continue breath-coordinated movement.
                               </div>
                             </div>
 
                             {/* Week 5-6 */}
                             <div className="grid text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold text-left">
+                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
                                 Week 5-6
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
-                                <div className="space-y-2">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
+                                <div className="space-y-2 w-full">
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=GbqFe8zNQH4', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-elevated-chair-bird-dogs"
                                     >
                                       ELEVATED CHAIR BIRD DOGS
@@ -1144,7 +1144,7 @@ function HealSection() {
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=T8HHp4KXpJI', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-alt-leg-marches"
                                     >
                                       SUPINE ALT LEG MARCHES
@@ -1154,7 +1154,7 @@ function HealSection() {
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=_KMqnvDiLnk', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-mini-squats-chair"
                                     >
                                       MINI SQUATS ON CHAIR
@@ -1165,10 +1165,10 @@ function HealSection() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
                                 Train core stability in more dynamic tasks. Start integrating breath + core into real-life movements.
                               </div>
-                              <div className="p-4 text-gray-700 text-left">
+                              <div className="p-4 text-gray-700 flex items-start justify-start">
                                 Keep reps low (5-8); focus on form. Stop if there's pain, coning, or pelvic pressure.
                               </div>
                             </div>
