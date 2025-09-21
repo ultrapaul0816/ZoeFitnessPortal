@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Users, User, Settings, CheckCircle, Flame, Calendar, Menu } from "lucide-react";
+import { Bell, Users, User, Settings, CheckCircle, Flame, Calendar, Menu, BookOpen, Mail, CreditCard, LogOut } from "lucide-react";
 import ProgramCard from "@/components/program-card";
 import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
@@ -152,42 +152,47 @@ export default function Dashboard() {
                       setShowCommunity(true);
                       setShowProfileMenu(false);
                     }}
-                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center space-x-3 w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors p-2 rounded-lg hover:bg-gray-50"
                     data-testid="menu-community"
                   >
-                    Community
+                    <Users className="w-4 h-4 text-gray-600" />
+                    <span>Community</span>
                   </button>
                   <button
                     onClick={() => {
                       setLocation("/my-library");
                       setShowProfileMenu(false);
                     }}
-                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center space-x-3 w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors p-2 rounded-lg hover:bg-gray-50"
                     data-testid="menu-my-library"
                   >
-                    My Library
+                    <BookOpen className="w-4 h-4 text-gray-600" />
+                    <span>My Library</span>
                   </button>
                   <button
-                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center space-x-3 w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors p-2 rounded-lg hover:bg-gray-50"
                     data-testid="menu-email-notifications"
                   >
-                    Email notifications
+                    <Mail className="w-4 h-4 text-gray-600" />
+                    <span>Email notifications</span>
                   </button>
                   <button
-                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center space-x-3 w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors p-2 rounded-lg hover:bg-gray-50"
                     data-testid="menu-purchases"
                   >
-                    Purchases & payments
+                    <CreditCard className="w-4 h-4 text-gray-600" />
+                    <span>Purchases & payments</span>
                   </button>
                   <button
                     onClick={() => {
                       localStorage.removeItem("user");
                       setLocation("/");
                     }}
-                    className="block w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center space-x-3 w-full text-left text-base text-gray-700 hover:text-gray-900 transition-colors p-2 rounded-lg hover:bg-gray-50"
                     data-testid="menu-sign-out"
                   >
-                    Sign out
+                    <LogOut className="w-4 h-4 text-gray-600" />
+                    <span>Sign out</span>
                   </button>
                 </nav>
               </div>
