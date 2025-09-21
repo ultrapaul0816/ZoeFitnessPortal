@@ -419,17 +419,17 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     >
       <div className="w-full h-full overflow-y-auto">
         {/* Menu Items */}
-        <div className="pl-6 pr-6 pt-8 pb-6">
-          <div className="space-y-6">
+        <div className="pl-6 pr-6 pt-6 pb-6">
+          <div className="space-y-3">
             {/* Profile */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('profile');
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                 <User className="w-4 h-4 text-white" />
               </div>
               <span className="text-base font-medium text-gray-900">Profile</span>
@@ -437,13 +437,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* My Library */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 window.location.href = "/my-library";
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                 <BookOpen className="w-4 h-4 text-white" />
               </div>
               <span className="text-base font-medium text-gray-900">My Library</span>
@@ -451,13 +451,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Purchases & Payment */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('purchases');
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                 <CreditCard className="w-4 h-4 text-white" />
               </div>
               <span className="text-base font-medium text-gray-900">Purchases & Payment</span>
@@ -465,13 +465,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Notifications */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 // Handle notifications action
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                 <Bell className="w-4 h-4 text-white" />
               </div>
               <span className="text-base font-medium text-gray-900">Notifications</span>
@@ -479,13 +479,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Logout */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group p-2 rounded-lg"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 handleLogout();
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                 <LogOut className="w-4 h-4 text-white" />
               </div>
               <span className="text-base font-medium text-gray-900">Logout</span>
