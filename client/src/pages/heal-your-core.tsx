@@ -1021,18 +1021,18 @@ function HealSection() {
                         <div className="overflow-x-auto">
                           <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm w-full" style={{ minWidth: '1100px' }}>
                             <div className="bg-gray-100 grid text-sm font-semibold text-gray-700 border-b border-gray-300" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300">WEEK</div>
-                              <div className="p-4 border-r border-gray-300">EXERCISES</div>
-                              <div className="p-4 border-r border-gray-300">FOCUS & PURPOSE</div>
-                              <div className="p-4">NOTES</div>
+                              <div className="p-4 border-r border-gray-300 text-left">WEEK</div>
+                              <div className="p-4 border-r border-gray-300 text-left">EXERCISES</div>
+                              <div className="p-4 border-r border-gray-300 text-left">FOCUS & PURPOSE</div>
+                              <div className="p-4 text-left">NOTES</div>
                             </div>
 
                             {/* Week 1-2 */}
                             <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold">
+                              <div className="p-4 border-r border-gray-300 font-semibold text-left">
                                 Week 1-2
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
                                 <div className="space-y-2">
                                   <div>
                                     <button 
@@ -1064,20 +1064,20 @@ function HealSection() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
                                 Reconnect to breath; rebuild mind-muscle connection with deep core and pelvic floor; reduce internal pressure.
                               </div>
-                              <div className="p-4 text-gray-700">
+                              <div className="p-4 text-gray-700 text-left">
                                 Best done lying or seated. Practice 2-3 times/day. Prioritize breath + awareness.
                               </div>
                             </div>
 
                             {/* Week 3-4 */}
                             <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold">
+                              <div className="p-4 border-r border-gray-300 font-semibold text-left">
                                 Week 3-4
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
                                 <div className="space-y-2">
                                   <div>
                                     <button 
@@ -1117,20 +1117,20 @@ function HealSection() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
                                 Begin adding gentle movement to deepen core engagement. Build awareness of core activation in daily life (lifting baby, standing).
                               </div>
-                              <div className="p-4 text-gray-700">
+                              <div className="p-4 text-gray-700 text-left">
                                 Maintain slow tempo. Avoid doming/coning. Continue breath-coordinated movement.
                               </div>
                             </div>
 
                             {/* Week 5-6 */}
                             <div className="grid text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold">
+                              <div className="p-4 border-r border-gray-300 font-semibold text-left">
                                 Week 5-6
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
                                 <div className="space-y-2">
                                   <div>
                                     <button 
@@ -1165,10 +1165,10 @@ function HealSection() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                              <div className="p-4 border-r border-gray-300 text-gray-700 text-left">
                                 Train core stability in more dynamic tasks. Start integrating breath + core into real-life movements.
                               </div>
-                              <div className="p-4 text-gray-700">
+                              <div className="p-4 text-gray-700 text-left">
                                 Keep reps low (5-8); focus on form. Stop if there's pain, coning, or pelvic pressure.
                               </div>
                             </div>
