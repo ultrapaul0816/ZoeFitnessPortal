@@ -141,12 +141,13 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
               </Badge>
             </div>
             <Button 
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-300 ease-out hover:animate-pulse border-0 relative overflow-hidden group rounded-xl" 
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-200 ease-out border-0 relative overflow-hidden group rounded-lg hover:bg-gradient-to-l focus:ring-4 focus:ring-pink-300 active:shadow-inner" 
               data-testid={`button-start-${program.id}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <Dumbbell className="w-5 h-5 mr-2 animate-bounce group-hover:animate-pulse transition-all duration-300" />
-              <span className="relative z-10 text-lg font-semibold tracking-wide">Start Program</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+              <Dumbbell className="w-5 h-5 mr-2 animate-bounce group-hover:animate-pulse group-hover:scale-110 transition-all duration-200" />
+              <span className="relative z-10 text-lg font-semibold tracking-wide group-hover:tracking-wider transition-all duration-200">Start Program</span>
             </Button>
             <p className="text-xs text-center text-green-600 font-medium">
               ✓ You have full access to this program
