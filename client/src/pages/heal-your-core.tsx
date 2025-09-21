@@ -1038,8 +1038,12 @@ function CardioSection() {
                 </div>
                 <div
                   onClick={() => toggleTopic('cardio-safety')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
+                  className="bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200"
                   style={{ 
+                    width: '32px',
+                    height: '32px',
+                    minWidth: '32px',
+                    minHeight: '32px',
                     border: 'none !important', 
                     outline: 'none !important', 
                     boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3) !important',
