@@ -462,7 +462,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Profile */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '80ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -488,7 +488,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* My Library */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '160ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -514,7 +514,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Purchases & Payment */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '240ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -540,7 +540,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Notifications */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '320ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -566,7 +566,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Logout */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '400ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
