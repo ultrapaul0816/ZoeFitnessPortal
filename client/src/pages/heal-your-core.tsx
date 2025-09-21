@@ -1036,7 +1036,7 @@ function HealSection() {
                                 <div className="space-y-2">
                                   <div>
                                     <button 
-                                      onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=B53GBfgME9E', '_blank')}
                                       className="text-blue-600 hover:text-blue-800 underline font-semibold"
                                       data-testid="video-360-breathing"
                                     >
@@ -1090,7 +1090,7 @@ function HealSection() {
                                   </div>
                                   <div>
                                     <button 
-                                      onClick={() => window.open('https://youtu.be/OwFN9Paf26o', '_blank')}
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=SRoNksDTjUc', '_blank')}
                                       className="text-blue-600 hover:text-blue-800 underline font-semibold"
                                       data-testid="video-supine-pelvic-tilts"
                                     >
@@ -1099,7 +1099,7 @@ function HealSection() {
                                   </div>
                                   <div>
                                     <button 
-                                      onClick={() => window.open('#', '_blank')}
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=fxs0SDh1s3w', '_blank')}
                                       className="text-blue-600 hover:text-blue-800 underline font-semibold"
                                       data-testid="video-supported-glute-bridges"
                                     >
@@ -1108,7 +1108,7 @@ function HealSection() {
                                   </div>
                                   <div>
                                     <button 
-                                      onClick={() => window.open('#', '_blank')}
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=_cY-rtXNPp4', '_blank')}
                                       className="text-blue-600 hover:text-blue-800 underline font-semibold"
                                       data-testid="video-standing-posture-reset"
                                     >
@@ -1134,7 +1134,7 @@ function HealSection() {
                                 <div className="space-y-2">
                                   <div>
                                     <button 
-                                      onClick={() => window.open('#', '_blank')}
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=GbqFe8zNQH4', '_blank')}
                                       className="text-blue-600 hover:text-blue-800 underline font-semibold"
                                       data-testid="video-elevated-chair-bird-dogs"
                                     >
@@ -1143,7 +1143,7 @@ function HealSection() {
                                   </div>
                                   <div>
                                     <button 
-                                      onClick={() => window.open('#', '_blank')}
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=T8HHp4KXpJI', '_blank')}
                                       className="text-blue-600 hover:text-blue-800 underline font-semibold"
                                       data-testid="video-supine-alt-leg-marches"
                                     >
@@ -1153,7 +1153,7 @@ function HealSection() {
                                   </div>
                                   <div>
                                     <button 
-                                      onClick={() => window.open('#', '_blank')}
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=_KMqnvDiLnk', '_blank')}
                                       className="text-blue-600 hover:text-blue-800 underline font-semibold"
                                       data-testid="video-mini-squats-chair"
                                     >
