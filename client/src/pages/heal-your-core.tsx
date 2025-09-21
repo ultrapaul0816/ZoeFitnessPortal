@@ -523,6 +523,76 @@ function HealSection() {
                           </p>
                         </div>
                       </div>
+                    ) : topic.id === 'do-i-have-diastasis' ? (
+                      <div className="space-y-4 text-sm">
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-4"><span className="text-purple-400">DO I HAVE</span> DIASTASIS RECTI?</h3>
+                        </div>
+                        
+                        {/* YouTube Link Button */}
+                        <div className="flex justify-start mb-4">
+                          <a 
+                            href="https://youtu.be/zgU0svFSNRE" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                            style={{
+                              background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
+                              boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3)'
+                            }}
+                          >
+                            <Play className="w-3 h-3" />
+                            HOW TO CHECK FOR DIASTASIS RECTI
+                          </a>
+                        </div>
+
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <p className="font-semibold text-blue-800 mb-3">Lie on your back, knees bent, feet flat on the floor. Get comfortable & breathe naturally.</p>
+                          <p className="text-sm text-blue-700 mb-3">Place one hand behind your head, and the other hand across your belly, with your fingers pointing down toward your navel. Make sure your fingers are together (not spread wide).</p>
+                          
+                          <div className="space-y-3 text-sm">
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-blue-800 mt-0.5">1.</span>
+                              <p className="text-blue-700">Press your fingertips gently into your belly, just above your belly button. This is where we'll check the depth and width of any separation.</p>
+                            </div>
+                            
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-blue-800 mt-0.5">2.</span>
+                              <p className="text-blue-700">Exhale & slowly lift your head & shoulders off the floor (just a small lift - around 2-3 inches). You should feel the two sides of your abdominal wall moving toward each other.</p>
+                            </div>
+                            
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-blue-800 mt-0.5">3.</span>
+                              <p className="text-blue-700">Count how many fingers fit into the gap between your abdominal walls at the navel.</p>
+                            </div>
+                            
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-blue-800 mt-0.5">4.</span>
+                              <p className="text-blue-700">Move your fingers above and below the belly button (around 2 inches in each direction) and repeat the lift to feel if the gap is larger or smaller there.</p>
+                            </div>
+                            
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-blue-800 mt-0.5">5.</span>
+                              <p className="text-blue-700">Now test the tissue. As you do your fingers sink into your abdomen?</p>
+                            </div>
+                            
+                            <div className="space-y-1 mt-3">
+                              <p className="text-blue-700">❖ Does the tissue feel firm and springy (good tension)?</p>
+                              <p className="text-blue-700">❖ Or soft, deep, and hard to engage (poor tension)?</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+                          <p className="font-bold text-pink-700 mb-2">Sample result: <em>"2 fingers at the navel, 2 above, 1 below with moderate depth"</em></p>
+                          <p className="text-pink-600 text-sm">This is helpful to note so you can track changes as the program progresses.</p>
+                        </div>
+                        
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-300">
+                          <p className="font-semibold text-gray-800 mb-2">Disclaimer:</p>
+                          <p className="text-xs text-gray-700">If you notice a very large gap (more than 4 fingers), significant abdominal bulging, persistent pain, or feelings of instability in your core, back, or pelvis, this program alone may not be enough. Please consult a women's health physiotherapist or qualified healthcare provider before continuing. Your safety and long-term recovery come first.</p>
+                        </div>
+                      </div>
                     ) : (
                       <div className="space-y-4">
                         <Button variant="outline" className="w-full text-primary mb-4 h-auto py-3">
