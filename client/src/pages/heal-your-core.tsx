@@ -16,6 +16,11 @@ import diastasisVariationsImage from "@assets/Screenshot 2025-09-21 at 15.39.02_
 import diastasisCheckImage from "@assets/Screenshot 2025-09-21 at 15.56.11_1758450385583.png";
 import coreRehabMattersImage from "@assets/Screenshot 2025-09-21 at 15.57.47_1758450544662.png";
 import coreRehabExerciseImage from "@assets/Screenshot 2025-09-21 at 15.57.47_1758450479618.png";
+import whyCrunchesImage from "@assets/Screenshot 2025-09-21 at 16.34.42_1758452773516.png";
+import coreBreathImage from "@assets/Screenshot 2025-09-21 at 16.35.35_1758452773516.png";
+import coreBreathDiagramImage from "@assets/Screenshot 2025-09-21 at 16.35.43_1758452773516.png";
+import pressureManagementImage from "@assets/Screenshot 2025-09-21 at 16.35.50_1758452773516.png";
+import breathCoordinationImage from "@assets/Screenshot 2025-09-21 at 16.36.02_1758452773500.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -717,6 +722,108 @@ function HealSection() {
                               </ul>
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    ) : topic.id === 'why-crunches-wont-work' ? (
+                      <div className="space-y-6 text-sm">
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-4">WHY CRUNCHES <span className="text-gray-400">WON'T WORK</span></h3>
+                        </div>
+
+                        <p className="text-gray-700 mb-6">
+                          Crunches and sit-ups increase intra-abdominal pressure, which pushes outward against the separation—further stretching the Linea alba instead of healing it. These exercises load the abdominal wall before it's ready, worsening doming, coning, and core dysfunction.
+                        </p>
+
+                        <div className="flex justify-center mb-6">
+                          <img 
+                            src={whyCrunchesImage} 
+                            alt="Why crunches won't work - complete educational diagram" 
+                            className="max-w-full h-auto rounded-lg shadow-lg"
+                          />
+                        </div>
+
+                        <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-400 mb-6">
+                          <h4 className="text-center font-bold text-blue-800 text-lg mb-4">THE FOCUS NEEDS TO BE ON:</h4>
+                          
+                          <div className="grid md:grid-cols-2 gap-8">
+                            {/* Left Column - Pressure Management */}
+                            <div className="space-y-4">
+                              <div className="text-center">
+                                <h5 className="font-bold text-pink-600 text-lg mb-3">1. Pressure Management</h5>
+                                <p className="text-sm text-gray-700 mb-4">
+                                  Understanding how pressure moves through the core during breath, lifting, or movement. The goal is to avoid excess intra-abdominal pressure by coordinating breath and posture.
+                                </p>
+                              </div>
+                              
+                              <div className="flex justify-center">
+                                <img 
+                                  src={pressureManagementImage} 
+                                  alt="Pressure management exercise demonstration" 
+                                  className="max-w-full h-auto rounded-lg shadow-sm"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Right Column - Breath Coordination */}
+                            <div className="space-y-4">
+                              <div className="text-center">
+                                <h5 className="font-bold text-pink-600 text-lg mb-3">2. Breath Coordination</h5>
+                                <p className="text-sm text-gray-700 mb-4">
+                                  Practice 360° breathing where your ribs, belly, and back all expand on the inhale, and gently draw in and up on the exhale. This restores natural core function and reconnects the pelvic floor and TVA.
+                                </p>
+                              </div>
+                              
+                              <div className="flex justify-center">
+                                <img 
+                                  src={breathCoordinationImage} 
+                                  alt="Breath coordination exercise demonstration" 
+                                  className="max-w-full h-auto rounded-lg shadow-sm"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Core Breathing Diagrams */}
+                        <div className="grid md:grid-cols-2 gap-6 mb-6">
+                          <div className="text-center">
+                            <img 
+                              src={coreBreathImage} 
+                              alt="Core anatomy - diaphragm and abdominal muscles" 
+                              className="max-w-full h-auto rounded-lg shadow-sm mb-2"
+                            />
+                          </div>
+                          <div className="text-center">
+                            <img 
+                              src={coreBreathDiagramImage} 
+                              alt="Core breath diagram showing inhale and exhale mechanics" 
+                              className="max-w-full h-auto rounded-lg shadow-sm mb-2"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-8">
+                          {/* TVA Activation */}
+                          <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+                            <h5 className="font-bold text-pink-700 text-lg mb-3">3. TVA Activation</h5>
+                            <p className="text-sm text-gray-700">
+                              The transverse abdominis is like a natural corset wrapping around your spine and organs. Training it through controlled movement and breath helps flatten and support the abdominal wall from the inside out.
+                            </p>
+                          </div>
+
+                          {/* Alignment & Core-Pelvic Synergy */}
+                          <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                            <h5 className="font-bold text-purple-700 text-lg mb-3">4. Alignment & Core-Pelvic Synergy</h5>
+                            <p className="text-sm text-gray-700">
+                              Learn how your posture and rib cage position influence pressure. When your ribs are flared or your pelvis is tilted, your core system is out of sync. Restoring alignment helps all core muscles work together safely.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-300 text-center">
+                          <p className="text-sm text-yellow-800 font-medium">
+                            💡 <strong>Remember:</strong> This approach focuses on healing from the inside out, not forcing your abs to "bounce back" through traditional exercises.
+                          </p>
                         </div>
                       </div>
                     ) : (
