@@ -457,7 +457,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     >
       <div className="w-full h-full overflow-y-auto">
         {/* Menu Items */}
-        <div className="pl-6 pr-6 pt-6 pb-6">
+        <div className="pl-4 pr-6 pt-6 pb-6">
           <div className="flex flex-col space-y-3">
             {/* Profile */}
             <div className="flex justify-start">
