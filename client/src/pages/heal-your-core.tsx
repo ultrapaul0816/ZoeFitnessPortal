@@ -3600,11 +3600,11 @@ function ProgramsSection({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-lg font-bold">
-                6 WEEK
+                PROGRAM 1
               </div>
               <div>
                 <CardTitle className="text-xl text-gray-900">Postpartum Strength Recovery Program</CardTitle>
-                <CardDescription className="text-pink-600 font-semibold">Complete postnatal fitness journey</CardDescription>
+                <CardDescription className="text-pink-600 font-semibold">6-week comprehensive postnatal fitness journey</CardDescription>
               </div>
             </div>
             <div className="flex items-center gap-4">
