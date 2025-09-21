@@ -3728,40 +3728,40 @@ function ProgramsSection({
                   </div>
 
                   {/* Tips before you begin */}
-                  <div className="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-400">
-                    <h4 className="font-semibold text-purple-700 text-sm mb-2">Tips before you begin:</h4>
-                    <div className="space-y-1 text-xs text-gray-700">
+                  <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-400">
+                    <h4 className="font-semibold text-green-700 text-sm mb-2">Tips before you begin:</h4>
+                    <div className="space-y-1 text-xs text-black">
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">Breathe First, Move Second:</span> Every movement begin with deep exhale and gentle core engagement.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">Breathe First, Move Second:</span> Every movement begin with deep exhale and gentle core engagement.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">Feel, Don't Force:</span> The goal is to feel supported - not strained. If something feels off, pause, or regress.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">Feel, Don't Force:</span> The goal is to feel supported - not strained. If something feels off, pause, or regress.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">One Round Still Progress:</span> Don't skip a session just because you don't have time for all rounds.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">One Round Still Progress:</span> Don't skip a session just because you don't have time for all rounds.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">Doming, Heaviness, or Leaking?</span> Stop & regress to earlier exercises. That's your body's way of asking.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">Doming, Heaviness, or Leaking?</span> Stop & regress to earlier exercises. That's your body's way of asking.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">Stay Consistent, Not Perfect:</span> Progress comes from showing up—even imperfectly.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">Stay Consistent, Not Perfect:</span> Progress comes from showing up—even imperfectly.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">Hydrate, Rest, Nourish:</span> Give your body the care parts of your recovery too.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">Hydrate, Rest, Nourish:</span> Give your body the care parts of your recovery too.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">Avoid Overexertion:</span> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">Avoid Overexertion:</span> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-purple-600 font-bold">✧</span>
-                        <span><span className="text-purple-600 font-semibold">Consult Your Doctor:</span> Always consult with your healthcare provider before continuing with exercises.</span>
+                        <span className="text-black font-bold">✧</span>
+                        <span><span className="text-black font-semibold">Consult Your Doctor:</span> Always consult with your healthcare provider before continuing with exercises.</span>
                       </div>
                     </div>
                   </div>
