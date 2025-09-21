@@ -470,7 +470,7 @@ function WelcomeSection() {
       <Card>
         <CardContent className="p-6">
           {/* Welcome Header */}
-          <div className="mb-8">
+          <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-foreground mb-2">✨ Welcome - Start Here</h2>
             <p className="text-muted-foreground text-sm">
               Essential preparatory information for your core recovery journey
