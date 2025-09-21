@@ -1002,6 +1002,221 @@ function HealSection() {
                           </ul>
                         </div>
                       </div>
+                    ) : topic.id === 'week-by-week-reconnection' ? (
+                      <div className="space-y-6 text-sm">
+                        {/* Header */}
+                        <div className="text-center">
+                          <h3 className="text-xl font-bold mb-2">REHAB ROUTINE</h3>
+                          <h4 className="text-lg font-semibold text-pink-500 mb-4">WEEK-BY-WEEK CORE RECONNECTION</h4>
+                        </div>
+
+                        {/* Description */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                          <p className="text-gray-700 text-center">
+                            Core healing doesn't happen in a week. A routine builds over time, prioritizing breath, posture, and function. Use this checklist below to add to your warmup each week before your main workouts.
+                          </p>
+                        </div>
+
+                        {/* Week-by-Week Table with Horizontal Scroll */}
+                        <div className="overflow-x-auto">
+                          <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm" style={{ minWidth: '900px' }}>
+                            <div className="bg-gray-100 grid text-sm font-semibold text-gray-700 border-b border-gray-300" style={{ gridTemplateColumns: '100px 280px 240px 180px' }}>
+                              <div className="p-4 border-r border-gray-300">WEEK</div>
+                              <div className="p-4 border-r border-gray-300">EXERCISES</div>
+                              <div className="p-4 border-r border-gray-300">FOCUS & PURPOSE</div>
+                              <div className="p-4">NOTES</div>
+                            </div>
+
+                            {/* Week 1-2 */}
+                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '100px 280px 240px 180px' }}>
+                              <div className="p-4 border-r border-gray-300 font-semibold">
+                                Week 1-2
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                                <div className="space-y-2">
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-360-breathing"
+                                    >
+                                      360° BREATHING
+                                    </button>
+                                    <span className="text-gray-500"> (any comfortable position)</span>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-supine-diaphragmatic"
+                                    >
+                                      SUPINE DIAPHRAGMATIC BREATHING
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=tCzxxPxxtjw', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-side-lying-diaphragmatic"
+                                    >
+                                      SIDE LYING DIAPHRAGMATIC BREATHING
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                                Reconnect to breath; rebuild mind-muscle connection with deep core and pelvic floor; reduce internal pressure.
+                              </div>
+                              <div className="p-4 text-gray-700">
+                                Best done lying or seated. Practice 2-3 times/day. Prioritize breath + awareness.
+                              </div>
+                            </div>
+
+                            {/* Week 3-4 */}
+                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '100px 280px 240px 180px' }}>
+                              <div className="p-4 border-r border-gray-300 font-semibold">
+                                Week 3-4
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                                <div className="space-y-2">
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('https://www.youtube.com/watch?v=AIEdkm2q-4k', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-supine-heel-slides"
+                                    >
+                                      SUPINE HEEL SLIDES
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('https://youtu.be/OwFN9Paf26o', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-supine-pelvic-tilts"
+                                    >
+                                      SUPINE PELVIC TILTS
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('#', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-supported-glute-bridges"
+                                    >
+                                      SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('#', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-standing-posture-reset"
+                                    >
+                                      STANDING POSTURE RESET
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                                Begin adding gentle movement to deepen core engagement. Build awareness of core activation in daily life (lifting baby, standing).
+                              </div>
+                              <div className="p-4 text-gray-700">
+                                Maintain slow tempo. Avoid doming/coning. Continue breath-coordinated movement.
+                              </div>
+                            </div>
+
+                            {/* Week 5-6 */}
+                            <div className="grid text-sm" style={{ gridTemplateColumns: '100px 280px 240px 180px' }}>
+                              <div className="p-4 border-r border-gray-300 font-semibold">
+                                Week 5-6
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                                <div className="space-y-2">
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('#', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-elevated-chair-bird-dogs"
+                                    >
+                                      ELEVATED CHAIR BIRD DOGS
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('#', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-supine-alt-leg-marches"
+                                    >
+                                      SUPINE ALT LEG MARCHES
+                                    </button>
+                                    <span className="text-gray-500"> (only if no doming)</span>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => window.open('#', '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                      data-testid="video-mini-squats-chair"
+                                    >
+                                      MINI SQUATS ON CHAIR
+                                    </button>
+                                  </div>
+                                  <div className="text-gray-700">
+                                    Core-integrated Movement (exhale-to-stand, baby lifts)
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="p-4 border-r border-gray-300 text-gray-700">
+                                Train core stability in more dynamic tasks. Start integrating breath + core into real-life movements.
+                              </div>
+                              <div className="p-4 text-gray-700">
+                                Keep reps low (5-8); focus on form. Stop if there's pain, coning, or pelvic pressure.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Do Daily / Improve On Section */}
+                        <div className="bg-pink-50 border border-pink-200 rounded-lg p-6">
+                          <h4 className="font-bold text-pink-600 text-lg mb-4">Do Daily / Improve On:</h4>
+                          <ul className="space-y-2 text-sm text-gray-700">
+                            <li className="flex items-start gap-2">
+                              <span className="text-pink-500 font-bold">❖</span>
+                              <span>Breath leads movement</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-pink-500 font-bold">❖</span>
+                              <span>Pause if you see doming</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-pink-500 font-bold">❖</span>
+                              <span>Practice posture during daily tasks</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-pink-500 font-bold">❖</span>
+                              <span>5-10 min counts!</span>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Tips Section */}
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                          <h4 className="font-bold text-purple-600 text-lg mb-4">Tips:</h4>
+                          <ul className="space-y-2 text-sm text-gray-700">
+                            <li className="flex items-start gap-2">
+                              <span className="text-purple-500 font-bold">❖</span>
+                              <span>5-8 reps | 1-2 rounds | 3-5x/week</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-purple-500 font-bold">❖</span>
+                              <span>Avoid pain, doming, leaking</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-purple-500 font-bold">❖</span>
+                              <span>Rest is progress</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
                     ) : (
                       <div className="space-y-4">
                         <div className="space-y-3 text-sm">
