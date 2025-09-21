@@ -496,12 +496,6 @@ export default function Dashboard() {
                 aria-label={showProfileSettings ? "Close menu" : "Open menu"}
                 onClick={() => setShowProfileSettings(!showProfileSettings)}
               >
-                {/* Pink gradient background when menu is open */}
-                <div className={`absolute inset-0 bg-gradient-to-r from-pink-50 to-rose-50 shadow-lg shadow-pink-200/50 border border-pink-300 rounded-2xl transition-all duration-300 ${
-                  showProfileSettings 
-                    ? 'opacity-100 animate-in slide-in-from-top-2' 
-                    : 'opacity-0'
-                }`}></div>
                 <div className="relative w-6 h-6 flex items-center justify-center">
                   <div className={`absolute transition-all duration-300 transform md:group-hover:scale-110 ${
                     showProfileSettings ? 'rotate-45 translate-y-0' : 'rotate-0 -translate-y-2'
