@@ -1115,81 +1115,81 @@ function CardioSection() {
                       <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[600px]">
                         <thead>
                           <tr className="bg-pink-100">
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">WEEK</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">PROGRAM</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden md:table-cell">WEEK</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden md:table-cell">PROGRAM</th>
                             <th className="border border-gray-300 p-2 text-pink-600 font-semibold">CARDIO FOCUS</th>
                             <th className="border border-gray-300 p-2 text-pink-600 font-semibold">INTENSITY</th>
                             <th className="border border-gray-300 p-2 text-pink-600 font-semibold">DURATION</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden sm:table-cell">DAYS</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden sm:table-cell">REST</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">DAYS</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">REST</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">1</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">1</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 1</td>
                             <td className="border border-gray-300 p-2">
                               <strong>LISS:</strong> <span className="text-xs">Gentle walks, breathing flows, stroller movement. Focus on blood flow, not effort.</span>
                             </td>
                             <td className="border border-gray-300 p-2">40–50% MHR</td>
                             <td className="border border-gray-300 p-2">10–15 mins</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 4</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 6</td>
+                            <td className="border border-gray-300 p-2">Day 2, 4</td>
+                            <td className="border border-gray-300 p-2">Day 6</td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">2</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 2</td>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">2</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 2</td>
                             <td className="border border-gray-300 p-2">
                               <strong>LISS:</strong> <span className="text-xs">Brisk walks, swimming, light cycle. Maintain a steady rhythm. Use the Talk Test.</span>
                             </td>
                             <td className="border border-gray-300 p-2">50–60% MHR</td>
                             <td className="border border-gray-300 p-2">20 mins</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 6</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                            <td className="border border-gray-300 p-2">Day 2, 6</td>
+                            <td className="border border-gray-300 p-2">Day 7</td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">3</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 3</td>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">3</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 3</td>
                             <td className="border border-gray-300 p-2">
                               <strong>MISS:</strong> <span className="text-xs">Incline walk, spin bike, elliptical, or light jog. Slightly breathy but sustainable.</span>
                             </td>
                             <td className="border border-gray-300 p-2">60–70% MHR</td>
                             <td className="border border-gray-300 p-2">25–30 mins</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 1, 5</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                            <td className="border border-gray-300 p-2">Day 1, 5</td>
+                            <td className="border border-gray-300 p-2">Day 7</td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">4</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 4</td>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">4</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 4</td>
                             <td className="border border-gray-300 p-2">
                               <strong>HIIT:</strong> <span className="text-xs">20secs work : 1–2 mins recovery. Use cycling, stair tops, or fast marching.</span>
                             </td>
                             <td className="border border-gray-300 p-2">Up to 75% MHR</td>
                             <td className="border border-gray-300 p-2">10 mins total</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 6</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                            <td className="border border-gray-300 p-2">Day 2, 6</td>
+                            <td className="border border-gray-300 p-2">Day 7</td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">5</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 5</td>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">5</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 5</td>
                             <td className="border border-gray-300 p-2">
                               <strong>HIIT:</strong> <span className="text-xs">30secs intense effort (cycle) : 1–2 min recovery. Build up to 6–8 rounds max.</span>
                             </td>
                             <td className="border border-gray-300 p-2">75–80% MHR</td>
                             <td className="border border-gray-300 p-2">15–20 mins</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 1, 5</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                            <td className="border border-gray-300 p-2">Day 1, 5</td>
+                            <td className="border border-gray-300 p-2">Day 7</td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">6</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">6</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 6</td>
                             <td className="border border-gray-300 p-2">
                               <strong>HYBRID MISS + HIIT:</strong> <span className="text-xs">Start with steady cardio + finish with 2–3 short intervals. Push only if energy feels good.</span>
                             </td>
                             <td className="border border-gray-300 p-2">60–80% MHR</td>
                             <td className="border border-gray-300 p-2">20–30 mins</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 4</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 6</td>
+                            <td className="border border-gray-300 p-2">Day 2, 4</td>
+                            <td className="border border-gray-300 p-2">Day 6</td>
                           </tr>
                         </tbody>
                       </table>
