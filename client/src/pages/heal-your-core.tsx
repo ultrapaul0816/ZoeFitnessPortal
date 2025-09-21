@@ -6,7 +6,7 @@ import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_17584454
 import tvaContentImage from "@assets/Screenshot 2025-09-21 at 14.38.24_1758445791011.png";
 import tvaSkeletonImage from "@assets/Screenshot 2025-09-21 at 14.39.32_1758445791002.png";
 import coreActivationImage from "@assets/Screenshot 2025-09-21 at 14.44.00_1758446060087.png";
-import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_1758446092732.png";
+import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_1758446182185.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
