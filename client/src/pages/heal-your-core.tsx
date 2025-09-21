@@ -10,6 +10,7 @@ import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_175844618
 import coreCompressionsImage from "@assets/Screenshot 2025-09-21 at 14.49.22_1758446389051.png";
 import pelvicFloorImage from "@assets/Screenshot 2025-09-21 at 14.54.10_1758446664540.png";
 import breathingActivationImage from "@assets/Screenshot 2025-09-21 at 14.55.17_1758446754817.png";
+import domingImage from "@assets/Screenshot 2025-09-21 at 14.56.03_1758446776736.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -2169,6 +2170,18 @@ function UnderstandingYourCoreSection({
                     <div className="bg-pink-50 p-4 rounded border-l-4 border-pink-400">
                       <p className="font-semibold text-pink-700 mb-3">What is doming or coning?</p>
                       <p className="text-sm mb-3"><strong>Doming (also called coning)</strong> happens when your abdominal wall bulges outward along the midline during movement. It often shows up like a ridge or peak down the center of your belly—especially when lying down, lifting, or doing a crunch-like move.</p>
+                      
+                      {/* Doming Image */}
+                      <div className="flex justify-center my-4">
+                        <div className="bg-white p-2 rounded-lg shadow-sm border max-w-md">
+                          <img 
+                            src={domingImage} 
+                            alt="Visual example of abdominal doming - showing the bulge along the midline"
+                            className="w-full h-auto rounded"
+                            data-testid="img-doming-example"
+                          />
+                        </div>
+                      </div>
                       
                       <p className="font-semibold text-pink-700 mb-2">This means:</p>
                       <ul className="space-y-1 text-sm">
