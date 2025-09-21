@@ -3594,25 +3594,25 @@ function ProgramsSection({
       {/* 6-Week Program - Collapsible */}
       <Card className="overflow-hidden border-l-4 border-l-pink-500">
         <CardHeader 
-          className="bg-gradient-to-r from-pink-50 to-rose-50 cursor-pointer hover:from-pink-100 hover:to-rose-100 transition-all duration-200"
+          className="bg-gradient-to-r from-pink-500 to-rose-500 cursor-pointer hover:from-pink-600 hover:to-rose-600 transition-all duration-200"
           onClick={() => toggleProgram('6-week-program')}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-lg font-bold">
+              <div className="bg-white text-pink-600 px-4 py-2 rounded-lg font-bold">
                 PROGRAM 1
               </div>
               <div>
-                <CardTitle className="text-xl text-gray-900">Postpartum Strength Recovery Program</CardTitle>
-                <CardDescription className="text-pink-600 font-semibold">6-week comprehensive postnatal fitness journey</CardDescription>
+                <CardTitle className="text-xl text-white">Postpartum Strength Recovery Program</CardTitle>
+                <CardDescription className="text-pink-100 font-semibold">6-week comprehensive postnatal fitness journey</CardDescription>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <div className="text-sm text-gray-600 font-medium">COMPREHENSIVE PROGRAM</div>
-                <div className="text-sm text-gray-800">Core rehabilitation & strength building</div>
+                <div className="text-sm text-pink-100 font-medium">COMPREHENSIVE PROGRAM</div>
+                <div className="text-sm text-white">Core rehabilitation & strength building</div>
               </div>
-              <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-lg">
                 <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
               </div>
             </div>
