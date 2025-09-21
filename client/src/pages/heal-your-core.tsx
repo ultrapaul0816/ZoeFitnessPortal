@@ -14,6 +14,7 @@ import domingImage from "@assets/Screenshot 2025-09-21 at 14.56.03_1758446776736
 import diastasisAnatomyImage from "@assets/Screenshot 2025-09-21 at 15.38.53_1758449353065.png";
 import diastasisVariationsImage from "@assets/Screenshot 2025-09-21 at 15.39.02_1758449353058.png";
 import diastasisCheckImage from "@assets/Screenshot 2025-09-21 at 15.56.11_1758450385583.png";
+import coreRehabMattersImage from "@assets/Screenshot 2025-09-21 at 15.57.21_1758450453069.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -600,6 +601,118 @@ function HealSection() {
                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-300">
                           <p className="font-semibold text-gray-800 mb-2">Disclaimer:</p>
                           <p className="text-xs text-gray-700">If you notice a very large gap (more than 4 fingers), significant abdominal bulging, persistent pain, or feelings of instability in your core, back, or pelvis, this program alone may not be enough. Please consult a women's health physiotherapist or qualified healthcare provider before continuing. Your safety and long-term recovery come first.</p>
+                        </div>
+                      </div>
+                    ) : topic.id === 'why-core-rehab-matters' ? (
+                      <div className="space-y-4 text-sm">
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-4"><span className="text-pink-500">WHY CORE</span> REHAB MATTERS</h3>
+                        </div>
+                        
+                        <div className="flex justify-center my-4">
+                          <img 
+                            src={coreRehabMattersImage} 
+                            alt="Woman doing core rehabilitation exercises" 
+                            className="max-w-full h-auto rounded-lg shadow-sm"
+                          />
+                        </div>
+
+                        <p className="text-gray-700 mb-4">
+                          Even without visible DR, your core may feel disconnected, weak, or uncoordinated. That's where core rehab comes in. This isn't just about workouts—it's about making your core functional again for everything from lifting your baby to carrying groceries. The best part? You're retraining your whole body, not just your abs. <strong className="text-pink-500">IT'S NEVER TOO LATE TO HEAL ✨</strong> The core is trainable at any stage, and you are worthy of that healing. There's no expiration date on recovery. Let's start where you are.
+                        </p>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+                              <h4 className="font-bold text-pink-700 mb-3">Whether you're:</h4>
+                              <ul className="space-y-2 text-sm">
+                                <li className="flex items-start gap-2">
+                                  <span className="text-pink-600">❖</span>
+                                  <span>6 weeks postpartum</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-pink-600">❖</span>
+                                  <span>6 months into motherhood</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-pink-600">❖</span>
+                                  <span>Or even 6 years down the line</span>
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                              <h4 className="font-bold text-blue-700 mb-3">As you continue through the program, we'll work to:</h4>
+                              <ul className="space-y-2 text-sm">
+                                <li className="flex items-start gap-2">
+                                  <span className="text-blue-600">❖</span>
+                                  <span>Reduce the gap width (if present)</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-blue-600">❖</span>
+                                  <span>Improve tension & strength in the connective tissue</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-blue-600">❖</span>
+                                  <span>Enhance coordination between breath, core, and pelvic floor</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="space-y-4">
+                            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                              <h4 className="font-bold text-green-700 mb-3">Rebuilding your core helps you:</h4>
+                              <ul className="space-y-2 text-sm">
+                                <li className="flex items-start gap-2">
+                                  <span className="text-green-600">❖</span>
+                                  <span>Restore strength and stability</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-green-600">❖</span>
+                                  <span>Prevent pain or injury</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-green-600">❖</span>
+                                  <span>Improve posture and breathing</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-green-600">❖</span>
+                                  <span>Reduce pelvic floor symptoms</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-green-600">❖</span>
+                                  <span>Feel more confident and connected</span>
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                              <h4 className="font-bold text-purple-700 mb-3">Many women see noticeable improvement in:</h4>
+                              <ul className="space-y-2 text-sm">
+                                <li className="flex items-start gap-2">
+                                  <span className="text-purple-600">❖</span>
+                                  <span>Core connection</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-purple-600">❖</span>
+                                  <span>Diastasis recti</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-purple-600">❖</span>
+                                  <span>Pelvic floor symptoms</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-purple-600">❖</span>
+                                  <span>Strength and balance</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                  <span className="text-purple-600">❖</span>
+                                  <span>Confidence and energy</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ) : (
