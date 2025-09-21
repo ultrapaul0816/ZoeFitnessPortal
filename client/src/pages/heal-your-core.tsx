@@ -279,32 +279,32 @@ export default function HealYourCorePage() {
 
         {/* Navigation Tabs */}
         <Tabs defaultValue="welcome" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-7 gap-2 md:gap-3 h-auto p-2 md:p-3 bg-gray-50 rounded-xl">
-            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+          <TabsList className="flex w-full overflow-x-auto md:grid md:grid-cols-7 gap-1 md:gap-3 h-auto p-2 md:p-3 bg-gray-50 rounded-xl">
+            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Welcome</span>
             </TabsTrigger>
-            <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium text-center leading-tight">Cardio Plan</span>
             </TabsTrigger>
-            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium text-center leading-tight">Core</span>
             </TabsTrigger>
-            <TabsTrigger value="healing" data-testid="tab-healing" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Heart className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Healing</span>
             </TabsTrigger>
-            <TabsTrigger value="programs" data-testid="tab-programs" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Dumbbell className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Programs</span>
             </TabsTrigger>
-            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Next</span>
             </TabsTrigger>
-            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-sm min-h-[80px] md:min-h-[60px] flex-col p-3 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Nutrition</span>
             </TabsTrigger>
@@ -1048,44 +1048,33 @@ function CardioSection() {
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     <p className="text-sm">
-                      Adding cardio back into your routine is exciting, but it requires a careful, progressive approach to support your body's ongoing recovery.
+                      This cardio guide is designed to work for you whether you're 6 weeks postpartum, 6 months in, or 6 years down the line. The truth is—you can rebuild cardiovascular fitness at any time, and doing so can dramatically improve your stamina, mental health, and total-body strength.
                     </p>
                     
-                    <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Start Small and Listen to Your Body:</p>
-                      <ul className="space-y-2 text-sm">
+                    <p className="text-sm mt-4">
+                      If you're just returning to movement after birth (even years later), start with the LISS (Low-Intensity Steady State) options and progress only when you feel core-ready, leak-free, and stable. The weekly suggestions here are optional—but powerful. You can walk, march, spin, or simply move at a pace that feels good.
+                    </p>
+                    
+                    <div className="mt-6">
+                      <ul className="space-y-3 text-sm">
                         <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Begin with low-impact activities like walking, swimming, or stationary cycling</span>
+                          <span className="text-pink-500 font-bold text-lg">❖</span>
+                          <span><strong className="text-pink-600">Early Postpartum (6–12 weeks):</strong> Focus on gentle walks, stroller movement, breath-led cardio.</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Pay attention to your energy levels, core stability, and pelvic floor response</span>
+                          <span className="text-pink-500 font-bold text-lg">❖</span>
+                          <span><strong className="text-pink-600">Mid-Rebuild (3–6 months+):</strong> Progress to brisk walks, inclines, and low-impact rhythm-based cardio.</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Stop immediately if you experience any pressure, heaviness, or leaking</span>
+                          <span className="text-pink-500 font-bold text-lg">❖</span>
+                          <span><strong className="text-pink-600">Ready for More?</strong> See the "Return to Impact" test later in this guide before trying HIIT or plyometric.</span>
                         </li>
                       </ul>
                     </div>
                     
-                    <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Heart Rate Guidelines:</p>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Weeks 1-2:</strong> Stay in the light intensity zone (able to hold a conversation)</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Weeks 3-4:</strong> Gradually introduce moderate intensity intervals</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Weeks 5-6:</strong> Progress to longer moderate intensity sessions</span>
-                        </li>
-                      </ul>
-                    </div>
+                    <p className="text-sm mt-6 italic">
+                      There's no deadline on feeling fit. Do what feels right for your stage, energy, and healing pace.
+                    </p>
                   </div>
                 </div>
               )}
@@ -1118,48 +1107,148 @@ function CardioSection() {
               {expandedTopics['cardio-overview'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
-                    <p className="text-sm">
-                      This progressive cardio plan complements your core strengthening program, building cardiovascular fitness while supporting your recovery.
-                    </p>
-                    
-                    <div>
-                      <p className="font-semibold text-primary text-sm mb-3">6-Week Progressive Structure:</p>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Weeks 1-2:</strong> Foundation Phase - 15-20 minute light cardio sessions</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Weeks 3-4:</strong> Building Phase - 20-30 minute sessions with intervals</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Weeks 5-6:</strong> Strengthening Phase - 30-40 minute sessions</span>
-                        </li>
-                      </ul>
+                    <div className="text-center mb-6">
+                      <h4 className="text-lg font-semibold text-pink-600 mb-2">CARDIO PLAN OVERVIEW ❤️</h4>
+                      <p className="text-sm">The cardio is optional, but oh boy, will it increase your fitness, your results and overall confidence!</p>
                     </div>
                     
-                    <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Recommended Activities:</p>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Walking</em> - Perfect starting point, low impact on joints</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Swimming</em> - Excellent full-body, low-impact option</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Stationary Cycling</em> - Controlled environment, easy to modify</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Elliptical</em> - Low impact with upper body involvement</span>
-                        </li>
-                      </ul>
+                    {/* Responsive Cardio Plan Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300">
+                        <thead>
+                          <tr className="bg-pink-100">
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">WEEK</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">PROGRAM</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">CARDIO FOCUS</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">INTENSITY</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">DURATION</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden sm:table-cell">DAYS</th>
+                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden sm:table-cell">REST</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">1</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
+                            <td className="border border-gray-300 p-2">
+                              <strong>LISS:</strong> <span className="text-xs">Gentle walks, breathing flows, stroller movement. Focus on blood flow, not effort.</span>
+                            </td>
+                            <td className="border border-gray-300 p-2">40–50% MHR</td>
+                            <td className="border border-gray-300 p-2">10–15 mins</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 4</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 6</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">2</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 2</td>
+                            <td className="border border-gray-300 p-2">
+                              <strong>LISS:</strong> <span className="text-xs">Brisk walks, swimming, light cycle. Maintain a steady rhythm. Use the Talk Test.</span>
+                            </td>
+                            <td className="border border-gray-300 p-2">50–60% MHR</td>
+                            <td className="border border-gray-300 p-2">20 mins</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 6</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">3</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 3</td>
+                            <td className="border border-gray-300 p-2">
+                              <strong>MISS:</strong> <span className="text-xs">Incline walk, spin bike, elliptical, or light jog. Slightly breathy but sustainable.</span>
+                            </td>
+                            <td className="border border-gray-300 p-2">60–70% MHR</td>
+                            <td className="border border-gray-300 p-2">25–30 mins</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 1, 5</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">4</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 4</td>
+                            <td className="border border-gray-300 p-2">
+                              <strong>HIIT:</strong> <span className="text-xs">20secs work : 1–2 mins recovery. Use cycling, stair tops, or fast marching.</span>
+                            </td>
+                            <td className="border border-gray-300 p-2">Up to 75% MHR</td>
+                            <td className="border border-gray-300 p-2">10 mins total</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 6</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">5</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 5</td>
+                            <td className="border border-gray-300 p-2">
+                              <strong>HIIT:</strong> <span className="text-xs">30secs intense effort (cycle) : 1–2 min recovery. Build up to 6–8 rounds max.</span>
+                            </td>
+                            <td className="border border-gray-300 p-2">75–80% MHR</td>
+                            <td className="border border-gray-300 p-2">15–20 mins</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 1, 5</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 7</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600">6</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
+                            <td className="border border-gray-300 p-2">
+                              <strong>HYBRID MISS + HIIT:</strong> <span className="text-xs">Start with steady cardio + finish with 2–3 short intervals. Push only if energy feels good.</span>
+                            </td>
+                            <td className="border border-gray-300 p-2">60–80% MHR</td>
+                            <td className="border border-gray-300 p-2">20–30 mins</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 2, 4</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">Day 6</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <div className="mt-6 space-y-4 text-xs sm:text-sm">
+                      <div>
+                        <h5 className="font-semibold text-gray-800 mb-2">A FEW THINGS TO REMEMBER:</h5>
+                        <ul className="space-y-1">
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span><strong>MHR</strong> = Max Heart Rate (220 – your age × target % range)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Example for 30 yrs: 220–30 = 190 → 50% MHR = 95 BPM</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Rest or recovery walks can happen on any other day</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Feel free to shuffle days based on your energy and schedule, but try not to go more than 2 days without movement</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Always warm up (3–5 mins) and cool down</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span>Talk Test: You should be able to talk, not sing (LISS), or speak short phrases (MISS/HIIT)</span>
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-semibold text-gray-800 mb-2">QUICK DEFINITIONS:</h5>
+                        <ul className="space-y-1">
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span><strong className="text-pink-600">LISS:</strong> Slow & steady movement (walk, swim, light bike)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span><strong className="text-pink-600">MISS:</strong> Slightly faster, steady pace (jog, incline walk, elliptical)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span><strong className="text-pink-600">HIIT:</strong> Short bursts of effort followed by rest (30s : work / 90s : rest)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-pink-500 font-bold">❖</span>
+                            <span><strong className="text-pink-600">MHR:</strong> Max Heart Rate = 220 – your age × % intensity</span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1193,60 +1282,102 @@ function CardioSection() {
               {expandedTopics['cardio-schedule'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
-                    <p className="text-sm">
-                      Integrating cardio with your core training requires smart scheduling to maximize recovery and results.
-                    </p>
-                    
-                    <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Weekly Schedule Example:</p>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Monday:</strong> Core Training + Light Cardio (20 min)</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Tuesday:</strong> Rest or Gentle Walk</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Wednesday:</strong> Cardio Focus Day (25-30 min)</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Thursday:</strong> Core Training</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Friday:</strong> Light Cardio + Stretching</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>Weekend:</strong> Active Recovery or Rest</span>
-                        </li>
-                      </ul>
+                    <div className="text-center mb-6">
+                      <h4 className="text-lg font-semibold text-gray-800 mb-2">YOUR TRAINING SCHEDULE WITH CARDIO</h4>
+                      <p className="text-sm">A gentle weekly rhythm to rebuild strength, core connection, and confidence. You ultimately will decide on the exact schedule (days) that work best for you. If you have to stop in the middle of a program because of interruptions (work, motherhood etc.), just make sure to go back where you left off and finish the rest of the exercises before the day is over.</p>
                     </div>
                     
-                    <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Important Timing Tips:</p>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Never do intense cardio and core training on the same day initially</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Allow at least 24 hours between intense sessions</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Listen to your body - fatigue is a signal to reduce intensity</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>Adjust based on sleep quality and energy levels</span>
-                        </li>
-                      </ul>
+                    {/* Responsive Weekly Schedule Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300">
+                        <thead>
+                          <tr className="bg-gray-100">
+                            <th className="border border-gray-300 p-2 font-semibold">WEEK</th>
+                            <th className="border border-gray-300 p-2 font-semibold">DAY 1</th>
+                            <th className="border border-gray-300 p-2 font-semibold">DAY 2</th>
+                            <th className="border border-gray-300 p-2 font-semibold">DAY 3</th>
+                            <th className="border border-gray-300 p-2 font-semibold hidden sm:table-cell">DAY 4</th>
+                            <th className="border border-gray-300 p-2 font-semibold hidden sm:table-cell">DAY 5</th>
+                            <th className="border border-gray-300 p-2 font-semibold hidden sm:table-cell">DAY 6</th>
+                            <th className="border border-gray-300 p-2 font-semibold hidden md:table-cell">DAY 7</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 1</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
+                            <td className="border border-gray-300 p-2">CARDIO</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 1</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">REST</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 1</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 2</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 2</td>
+                            <td className="border border-gray-300 p-2">CARDIO</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 2</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell"></td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 2</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">REST</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 3</td>
+                            <td className="border border-gray-300 p-2">CARDIO</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 3</td>
+                            <td className="border border-gray-300 p-2"></td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 3</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 3</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">REST</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 4</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 4</td>
+                            <td className="border border-gray-300 p-2">CARDIO</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 4</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell"></td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 4</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">REST</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 5</td>
+                            <td className="border border-gray-300 p-2">CARDIO</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 5</td>
+                            <td className="border border-gray-300 p-2"></td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 5</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 5</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">REST</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 6</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
+                            <td className="border border-gray-300 p-2">CARDIO</td>
+                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 6</td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">REST</td>
+                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 6</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    {/* Mobile-friendly summary for small screens */}
+                    <div className="block sm:hidden mt-4 space-y-3 text-xs">
+                      <div className="bg-pink-50 p-3 rounded-lg">
+                        <p className="font-semibold text-pink-600 mb-2">💡 Mobile Tip:</p>
+                        <p>Scroll the table horizontally to see all 7 days, or view the pattern:</p>
+                        <ul className="mt-2 space-y-1">
+                          <li>• <strong>Program days:</strong> Core strengthening workouts</li>
+                          <li>• <strong>Cardio days:</strong> Follow the cardio plan above</li>
+                          <li>• <strong>Rest days:</strong> Recovery or gentle walks</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
