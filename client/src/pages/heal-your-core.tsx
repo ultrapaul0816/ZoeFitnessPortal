@@ -9,6 +9,7 @@ import coreActivationImage from "@assets/Screenshot 2025-09-21 at 14.47.02_17584
 import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_1758446182185.png";
 import coreCompressionsImage from "@assets/Screenshot 2025-09-21 at 14.49.22_1758446389051.png";
 import pelvicFloorImage from "@assets/Screenshot 2025-09-21 at 14.54.10_1758446664540.png";
+import breathingActivationImage from "@assets/Screenshot 2025-09-21 at 14.55.17_1758446754817.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -2097,24 +2098,93 @@ function UnderstandingYourCoreSection({
               {expandedTopics['when-to-use'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
-                    <div className="bg-primary/10 p-4 rounded text-center">
-                      <p className="font-semibold">👉 Key Principle: "Exhale on effort."</p>
-                      <p className="text-xs mt-1">When performing a hard part of any movement (like lifting, standing, pushing), breathe out while activating your core.</p>
+                    {/* Breathing + Core Activation Image */}
+                    <div className="flex justify-center my-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-4xl">
+                        <img 
+                          src={breathingActivationImage} 
+                          alt="When to use breathing and core activation - comprehensive guide with key principles and doming awareness"
+                          className="w-full h-auto rounded"
+                          data-testid="img-breathing-activation"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Key Principle */}
+                    <div className="bg-gradient-to-r from-green-50 to-yellow-50 p-4 rounded border-l-4 border-yellow-400">
+                      <p className="font-semibold text-primary mb-2">Key Principle: 👉 "Exhale on effort."</p>
+                      <p className="text-sm">When performing a hard part of any movement (like lifting, standing, pushing), breathe out while activating your core.</p>
                     </div>
                     
-                    <div>
-                      <p className="font-semibold mb-2 text-sm">Use this technique:</p>
-                      <ul className="ml-4 list-disc space-y-1 text-sm">
-                        <li>Before lifting (groceries, kids, weights).</li>
-                        <li>Before every exercise repetition (squats, lunges, rows, etc.).</li>
-                        <li>When changing positions (lying to sitting, sitting to standing).</li>
-                        <li>During pushing in labor (proper breath and core work helps massively).</li>
+                    {/* When to Use List */}
+                    <div className="space-y-3">
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary font-bold">❖</span>
+                          <span>Before lifting (groceries, kids, weights).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary font-bold">❖</span>
+                          <span>Before every exercise repetition (squats, lunges, rows, etc.).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary font-bold">❖</span>
+                          <span>When changing positions (lying to sitting, sitting to standing).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary font-bold">▶</span>
+                          <span className="font-semibold">CLICK HERE&gt; <a href="#" className="text-blue-600 underline">HOW TO GET UP CORRECTLY</a></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary font-bold">❖</span>
+                          <span>During pushing in labor (proper breath and core work helps massively).</span>
+                        </li>
                       </ul>
                     </div>
-                    
-                    <div className="bg-muted/50 p-4 rounded">
-                      <p className="font-semibold mb-1">What is doming or coning?</p>
-                      <p className="text-xs">Doming (also called coning) happens when your abdominal wall bulges outward along the midline during movement. It often shows up like a ridge or peak down the center of your belly—especially when lying down and lifting your head or doing traditional "ab" exercises. This is a sign that your deep core isn't activating properly to manage pressure, and the movement needs to be modified or paused.</p>
+
+                    {/* Common Mistakes */}
+                    <div className="bg-red-50 p-4 rounded border-l-4 border-red-400">
+                      <p className="font-semibold text-red-700 mb-3">Common Mistakes to Avoid:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-600 font-bold">❖</span>
+                          <span>Breath-holding (Valsalva maneuver) - can increase abdominal pressure dangerously.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-600 font-bold">❖</span>
+                          <span>Belly-only breathing (causes poor rib and back engagement).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-600 font-bold">❖</span>
+                          <span>Over-bracing the core (hard sucking in can actually create more pressure & instability).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-600 font-bold">❖</span>
+                          <span>Neglecting pelvic floor coordination - pelvic floor must gently lift with the deep core, not bear down.</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* What is doming or coning? */}
+                    <div className="bg-pink-50 p-4 rounded border-l-4 border-pink-400">
+                      <p className="font-semibold text-pink-700 mb-3">What is doming or coning?</p>
+                      <p className="text-sm mb-3"><strong>Doming (also called coning)</strong> happens when your abdominal wall bulges outward along the midline during movement. It often shows up like a ridge or peak down the center of your belly—especially when lying down, lifting, or doing a crunch-like move.</p>
+                      
+                      <p className="font-semibold text-pink-700 mb-2">This means:</p>
+                      <ul className="space-y-1 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-600 font-bold">❖</span>
+                          <span>Your deep core isn't managing pressure</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-600 font-bold">❖</span>
+                          <span>The movement may be too advanced for your current strength</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-600 font-bold">❖</span>
+                          <span>You need to regress the movement, breathe better, or reduce load</span>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>
