@@ -410,8 +410,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           </div>
 
           {/* Save Changes Button */}
-          <Button className="w-full bg-rose-400 hover:bg-rose-500 text-white py-3 text-lg font-medium">
-            Save Changes
+          <Button className="w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group">
+            <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Save Changes</span>
           </Button>
         </div>
       </div>
