@@ -500,85 +500,50 @@ export default function Dashboard() {
                     <Menu className="w-6 h-6 text-pink-500" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-64 p-2 bg-white/95 backdrop-blur-xl border border-gray-200/80 shadow-xl animate-in slide-in-from-top-2 duration-300">
+                <DropdownMenuContent align="start" className="w-56">
                   <DropdownMenuItem 
                     onClick={() => setShowProfileSettings(true)}
                     data-testid="menu-profile"
-                    className="group relative overflow-hidden rounded-xl p-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 hover:shadow-md transition-all duration-300 ease-out cursor-pointer border border-transparent hover:border-pink-200 animate-in fade-in-50 slide-in-from-left-1 duration-200"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-pink-100 group-hover:bg-pink-200 group-hover:scale-110 transition-all duration-300">
-                        <User className="w-4 h-4 text-pink-600 group-hover:text-pink-700 group-hover:rotate-12 transition-all duration-300" />
-                      </div>
-                      <span className="font-medium text-gray-700 group-hover:text-gray-900 group-hover:translate-x-1 transition-all duration-300">Profile</span>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/0 to-purple-400/0 group-hover:from-pink-400/10 group-hover:to-purple-400/10 transition-all duration-500"></div>
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
                   </DropdownMenuItem>
-                  
                   <DropdownMenuItem 
                     onClick={() => setShowNotificationsDialog(true)}
                     data-testid="menu-notifications"
-                    className="group relative overflow-hidden rounded-xl p-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:shadow-md transition-all duration-300 ease-out cursor-pointer border border-transparent hover:border-blue-200 animate-in fade-in-50 slide-in-from-left-1 duration-300 delay-75"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="relative p-2 rounded-lg bg-blue-100 group-hover:bg-blue-200 group-hover:scale-110 transition-all duration-300">
-                        <Bell className="w-4 h-4 text-blue-600 group-hover:text-blue-700 group-hover:animate-bounce transition-all duration-300" />
-                        {unreadCount > 0 && (
-                          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse group-hover:scale-125 transition-transform duration-300">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                          </span>
-                        )}
-                      </div>
-                      <span className="font-medium text-gray-700 group-hover:text-gray-900 group-hover:translate-x-1 transition-all duration-300">Notifications</span>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 to-indigo-400/0 group-hover:from-blue-400/10 group-hover:to-indigo-400/10 transition-all duration-500"></div>
+                    <Bell className="w-4 h-4 mr-2" />
+                    Notifications
+                    {unreadCount > 0 && (
+                      <span className="ml-auto w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
                   </DropdownMenuItem>
-                  
                   <DropdownMenuItem 
                     onClick={() => setLocation("/my-library")}
                     data-testid="menu-library"
-                    className="group relative overflow-hidden rounded-xl p-3 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:shadow-md transition-all duration-300 ease-out cursor-pointer border border-transparent hover:border-emerald-200 animate-in fade-in-50 slide-in-from-left-1 duration-400 delay-150"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 group-hover:scale-110 transition-all duration-300">
-                        <BookOpen className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 group-hover:-rotate-12 transition-all duration-300" />
-                      </div>
-                      <span className="font-medium text-gray-700 group-hover:text-gray-900 group-hover:translate-x-1 transition-all duration-300">My Library</span>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/0 to-teal-400/0 group-hover:from-emerald-400/10 group-hover:to-teal-400/10 transition-all duration-500"></div>
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    My Library
                   </DropdownMenuItem>
-                  
                   <DropdownMenuItem 
                     onClick={() => setShowPurchasesDialog(true)}
                     data-testid="menu-purchases"
-                    className="group relative overflow-hidden rounded-xl p-3 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 hover:shadow-md transition-all duration-300 ease-out cursor-pointer border border-transparent hover:border-orange-200 animate-in fade-in-50 slide-in-from-left-1 duration-500 delay-225"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-orange-100 group-hover:bg-orange-200 group-hover:scale-110 transition-all duration-300">
-                        <CreditCard className="w-4 h-4 text-orange-600 group-hover:text-orange-700 group-hover:rotate-6 transition-all duration-300" />
-                      </div>
-                      <span className="font-medium text-gray-700 group-hover:text-gray-900 group-hover:translate-x-1 transition-all duration-300">Purchases & payments</span>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-400/0 to-amber-400/0 group-hover:from-orange-400/10 group-hover:to-amber-400/10 transition-all duration-500"></div>
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Purchases & payments
                   </DropdownMenuItem>
-                  
-                  <DropdownMenuSeparator className="my-3 bg-gradient-to-r from-transparent via-gray-300 to-transparent animate-in fade-in duration-600 delay-300" />
-                  
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onClick={() => {
                       localStorage.removeItem("user");
                       setLocation("/");
                     }}
                     data-testid="menu-sign-out"
-                    className="group relative overflow-hidden rounded-xl p-3 hover:bg-gradient-to-r hover:from-red-50 hover:to-rose-50 hover:shadow-md transition-all duration-300 ease-out cursor-pointer border border-transparent hover:border-red-200 animate-in fade-in-50 slide-in-from-left-1 duration-600 delay-375"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 group-hover:scale-110 transition-all duration-300">
-                        <LogOut className="w-4 h-4 text-red-600 group-hover:text-red-700 group-hover:translate-x-1 transition-all duration-300" />
-                      </div>
-                      <span className="font-medium text-gray-700 group-hover:text-gray-900 group-hover:translate-x-1 transition-all duration-300">Sign out</span>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-red-400/0 to-rose-400/0 group-hover:from-red-400/10 group-hover:to-rose-400/10 transition-all duration-500"></div>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
