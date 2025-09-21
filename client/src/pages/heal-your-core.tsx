@@ -11,6 +11,8 @@ import coreCompressionsImage from "@assets/Screenshot 2025-09-21 at 14.49.22_175
 import pelvicFloorImage from "@assets/Screenshot 2025-09-21 at 14.54.10_1758446664540.png";
 import breathingActivationImage from "@assets/Screenshot 2025-09-21 at 14.55.17_1758446754817.png";
 import domingImage from "@assets/Screenshot 2025-09-21 at 14.56.03_1758446776736.png";
+import diastasisAnatomyImage from "@assets/Screenshot 2025-09-21 at 15.38.53_1758449353065.png";
+import diastasisVariationsImage from "@assets/Screenshot 2025-09-21 at 15.39.02_1758449353058.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -438,6 +440,14 @@ function HealSection() {
                           <h3 className="text-lg font-bold mb-2">WHAT IS <span className="text-pink-500">DIASTASIS RECTI</span></h3>
                         </div>
                         
+                        <div className="flex justify-center my-4">
+                          <img 
+                            src={diastasisAnatomyImage} 
+                            alt="Normal abdomen vs diastasis recti anatomy diagram" 
+                            className="max-w-full h-auto rounded-lg shadow-sm"
+                          />
+                        </div>
+                        
                         <p>
                           <strong className="text-pink-500">Diastasis recti (DR)</strong> is a natural separation of the abdominal muscles along the midline (Linea alba) during pregnancy to make room for your growing baby.
                         </p>
@@ -453,6 +463,15 @@ function HealSection() {
                         
                         <div className="bg-blue-50 p-4 rounded-lg">
                           <h4 className="font-semibold mb-2">Variations of Diastasis Recti</h4>
+                          
+                          <div className="flex justify-center my-3">
+                            <img 
+                              src={diastasisVariationsImage} 
+                              alt="Variations of diastasis recti diagram showing different types" 
+                              className="max-w-full h-auto rounded-lg shadow-sm"
+                            />
+                          </div>
+                          
                           <p className="text-xs mb-2">Diastasis can occur in different areas of the abdomen:</p>
                           <ul className="text-xs space-y-1">
                             <li>• <strong>Abdomen without diastasis</strong> - Normal separation</li>
