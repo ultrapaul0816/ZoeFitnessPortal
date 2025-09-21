@@ -3616,10 +3616,13 @@ function ProgramsSection({
                 </div>
               </div>
               
-              {/* Title and Description in one line */}
+              {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md">
-                  Postpartum Strength Recovery Program ✨ 6-week comprehensive postnatal fitness journey
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                  Postpartum Strength Recovery Program
+                </div>
+                <div className="text-pink-100 font-normal text-xs drop-shadow-sm">
+                  ✨ 6-week comprehensive postnatal fitness journey
                 </div>
               </div>
               
