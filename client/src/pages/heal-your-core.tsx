@@ -432,17 +432,74 @@ function HealSection() {
                       Watch: {topic.title}
                     </Button>
                     
-                    <div className="space-y-3 text-sm">
-                      <p>Educational content for {topic.title} will be added here.</p>
-                      <div className="bg-pink-50 p-4 rounded-lg">
-                        <p className="font-semibold mb-2">Key Information:</p>
-                        <ul className="space-y-1 text-xs">
-                          <li>• Detailed content coming soon</li>
-                          <li>• Educational materials</li>
-                          <li>• Step-by-step guidance</li>
-                        </ul>
+                    {topic.id === 'what-is-diastasis' ? (
+                      <div className="space-y-4 text-sm">
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-2">WHAT IS <span className="text-pink-500">DIASTASIS RECTI</span></h3>
+                        </div>
+                        
+                        <p>
+                          <strong className="text-pink-500">Diastasis recti (DR)</strong> is a natural separation of the abdominal muscles along the midline (Linea alba) during pregnancy to make room for your growing baby.
+                        </p>
+                        
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <p className="font-semibold mb-2 text-gray-800">After birth, for many women:</p>
+                          <ul className="space-y-1 text-sm text-gray-700">
+                            <li>✤ The separation may not fully close</li>
+                            <li>✤ The connective tissue may remain weak or overstretched</li>
+                            <li>✤ A feeling of "coning" or doming down the midline during effort</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2">Variations of Diastasis Recti</h4>
+                          <p className="text-xs mb-2">Diastasis can occur in different areas of the abdomen:</p>
+                          <ul className="text-xs space-y-1">
+                            <li>• <strong>Abdomen without diastasis</strong> - Normal separation</li>
+                            <li>• <strong>Diastasis around umbilicus</strong> - Around belly button area</li>
+                            <li>• <strong>Below umbilicus diastasis</strong> - Lower abdominal area</li>
+                            <li>• <strong>Above umbilicus diastasis</strong> - Upper abdominal area</li>
+                            <li>• <strong>Diastasis along full length of linea alba</strong> - Complete separation</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-yellow-50 p-4 rounded-lg">
+                          <p className="font-semibold mb-2">Common symptoms include:</p>
+                          <ul className="space-y-1 text-xs">
+                            <li>✤ A visible gap or bulge along the belly</li>
+                            <li>✤ Poor core connection or feeling "weak in the middle"</li>
+                            <li>✤ Back pain, pelvic instability, or pelvic floor symptoms</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-400">
+                          <p className="text-pink-700 font-medium mb-1">
+                            DR is common, treatable, and not your fault.
+                          </p>
+                          <p className="text-xs text-pink-600">
+                            With proper rehab, many see significant improvement in both function and appearance.
+                          </p>
+                        </div>
+                        
+                        <div className="bg-green-50 p-3 rounded-lg text-center">
+                          <p className="text-sm font-medium text-green-800">
+                            Even if you don't have a visible gap, you can still benefit from this program.
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="space-y-3 text-sm">
+                        <p>Educational content for {topic.title} will be added here.</p>
+                        <div className="bg-pink-50 p-4 rounded-lg">
+                          <p className="font-semibold mb-2">Key Information:</p>
+                          <ul className="space-y-1 text-xs">
+                            <li>• Detailed content coming soon</li>
+                            <li>• Educational materials</li>
+                            <li>• Step-by-step guidance</li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
