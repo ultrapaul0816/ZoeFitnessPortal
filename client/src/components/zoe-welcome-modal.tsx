@@ -10,18 +10,20 @@ interface ZoeWelcomeModalProps {
 }
 
 export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProps) {
-  const [dontShowAgain, setDontShowAgain] = useState(true);
+  const [hasConsented, setHasConsented] = useState(false);
 
   const handleClose = () => {
-    onClose(dontShowAgain);
+    if (hasConsented) {
+      onClose(true); // Always save that they've seen/agreed to disclaimer
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && hasConsented && handleClose()}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 bg-white">
         <DialogHeader className="sr-only">
-          <DialogTitle>Welcome to Heal Your Core</DialogTitle>
-          <DialogDescription>A personal message from Zoe</DialogDescription>
+          <DialogTitle>Important Disclaimer</DialogTitle>
+          <DialogDescription>Health and Safety Information</DialogDescription>
         </DialogHeader>
         
         {/* Header - Logo */}
@@ -33,114 +35,131 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
           />
         </div>
 
-        {/* Large Welcome Heading */}
+        {/* Large Disclaimer Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-pink-500">
-            ✨ WELCOME ✨
+          <h1 className="text-3xl font-bold text-red-600">
+            ⚠️ IMPORTANT DISCLAIMER ⚠️
           </h1>
         </div>
 
-        {/* Main Content - Two Column Layout */}
+        {/* Main Content - Single Column Layout */}
         <div className="px-8 pb-6">
-          <div className="grid md:grid-cols-2 gap-8 items-start">
-            {/* Left Column - Text Content */}
-            <div className="space-y-4 text-sm leading-relaxed text-gray-700">
-              <p>
-                <strong>Dear Mama,</strong>
-              </p>
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-6 text-sm leading-relaxed text-gray-800">
               
-              <p>
-                Welcome to <span className="text-blue-300 font-medium">Heal Your Core</span>. I'm so glad you're here. Pregnancy and birth are incredible experiences—but they also bring big changes to your body, especially your core. Whether you've had a vaginal birth or a C-section, you deserve time, space, and support to heal and rebuild your strength.
-              </p>
-              
-              <p>
-                I know this journey personally. I've had two C-sections myself and experienced both diastasis recti and deep core dysfunction. I know what it's like to feel disconnected from your body—to wonder if you'll ever feel strong and stable again. That's why I created this program: to give you a path forward that's not only effective, but compassionate, informed, and rooted in what truly helps.
-              </p>
-              
-              <p>
-                This isn't about "snapping back." It's about reconnecting with your deep core, closing the gap if you're managing diastasis recti, and restoring functional strength from the inside out. This program was created from both professional training and personal experience—gentle, empowering, and rooted in the real needs of postpartum recovery.
-              </p>
-              
-              <div className="mt-6">
-                <h3 className="font-bold text-black text-base mb-3">
-                  WHAT MAKES THIS DIFFERENT
+              {/* Medical Disclaimer */}
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                <h3 className="font-bold text-red-700 text-base mb-3">
+                  MEDICAL DISCLAIMER
                 </h3>
                 <p className="mb-3">
-                  This isn't your average core plan. It's intentionally designed with: <span className="text-yellow-500">💛</span> <strong>The Zoe Difference:</strong>
+                  <strong>This program is for educational and informational purposes only and is not intended as medical advice.</strong> The exercises, information, and recommendations provided are not intended to diagnose, treat, cure, or prevent any medical condition.
                 </p>
-                
+                <p>
+                  Before starting any exercise program, especially postpartum, you should consult with your healthcare provider. Every individual's medical situation is unique, and what works for one person may not be appropriate for another.
+                </p>
+              </div>
+
+              {/* Postpartum Specific Warnings */}
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                <h3 className="font-bold text-yellow-700 text-base mb-3">
+                  POSTPARTUM CONSIDERATIONS
+                </h3>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2">
-                    <span className="text-pink-500 mt-1">❖</span>
-                    <span><strong>Realistic Progressions</strong> – No unrealistic reps or timelines. Just thoughtful, phased rebuilding.</span>
+                    <span className="text-yellow-600 mt-1 font-bold">•</span>
+                    <span>You should have medical clearance from your healthcare provider before beginning any exercise program</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-pink-500 mt-1">❖</span>
-                    <span><strong>Education-Based Approach</strong> – You'll learn why things matter, not just what to do.</span>
+                    <span className="text-yellow-600 mt-1 font-bold">•</span>
+                    <span>This program is designed for women who are at least 6 weeks postpartum with medical clearance</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-pink-500 mt-1">❖</span>
-                    <span><strong>Whole-Body Healing</strong> – We look beyond just abs to posture, breath, and daily function.</span>
+                    <span className="text-yellow-600 mt-1 font-bold">•</span>
+                    <span>If you experience pain, dizziness, shortness of breath, or any unusual symptoms, stop exercising immediately and consult your healthcare provider</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-pink-500 mt-1">❖</span>
-                    <span><strong>Inclusive Options</strong> – For all birth paths, all body types, and all seasons of recovery.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-pink-500 mt-1">❖</span>
-                    <span>You won't find pressure here—just empowerment and encouragement.</span>
+                    <span className="text-yellow-600 mt-1 font-bold">•</span>
+                    <span>Results may vary. This program does not guarantee specific outcomes</span>
                   </li>
                 </ul>
               </div>
-              
-              <div className="mt-6 text-center">
-                <p className="text-pink-400 italic">
-                  Let's take it one breath at a time.
-                </p>
-                <p className="mt-2">
-                  With love,
-                </p>
-                <p className="font-semibold flex items-center justify-center gap-1">
-                  Zoe <Heart className="w-4 h-4 text-red-500 fill-current" />
-                </p>
-              </div>
-            </div>
 
-            {/* Right Column - Photo */}
-            <div className="flex justify-center items-start">
-              <div className="w-full max-w-sm">
-                <img 
-                  src="/assets/zoe-photo.png"
-                  alt="Zoe with her children"
-                  className="w-full h-auto object-cover rounded-lg grayscale"
-                />
+              {/* Liability Disclaimer */}
+              <div className="bg-gray-50 border-l-4 border-gray-500 p-4 rounded">
+                <h3 className="font-bold text-gray-700 text-base mb-3">
+                  ASSUMPTION OF RISK
+                </h3>
+                <p className="mb-3">
+                  By participating in this program, you acknowledge that exercise involves certain risks, including but not limited to, serious injury or death. You voluntarily assume all risks associated with your participation.
+                </p>
+                <p>
+                  <strong>You agree to use your own judgment and listen to your body.</strong> If any exercise feels uncomfortable or causes pain, discontinue immediately.
+                </p>
               </div>
+
+              {/* Professional Guidance */}
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                <h3 className="font-bold text-blue-700 text-base mb-3">
+                  WHEN TO SEEK PROFESSIONAL HELP
+                </h3>
+                <p className="mb-2">
+                  Please consult a healthcare professional if you experience:
+                </p>
+                <ul className="space-y-1">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 mt-1 font-bold">•</span>
+                    <span>Persistent pain or discomfort</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 mt-1 font-bold">•</span>
+                    <span>Diastasis recti that doesn't improve</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 mt-1 font-bold">•</span>
+                    <span>Pelvic floor dysfunction</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 mt-1 font-bold">•</span>
+                    <span>Any concerns about your recovery</span>
+                  </li>
+                </ul>
+              </div>
+
             </div>
           </div>
         </div>
 
-        {/* Don't show again option and action button */}
+        {/* Consent checkbox and action button */}
         <div className="px-6 pb-6 space-y-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="dont-show-again"
-              checked={dontShowAgain}
-              onCheckedChange={(checked) => setDontShowAgain(!!checked)}
-              data-testid="checkbox-dont-show-again"
-            />
-            <label 
-              htmlFor="dont-show-again" 
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Don't show this message again
-            </label>
+          <div className="bg-pink-50 border border-pink-200 p-4 rounded">
+            <div className="flex items-start space-x-3">
+              <Checkbox 
+                id="consent-agreement"
+                checked={hasConsented}
+                onCheckedChange={(checked) => setHasConsented(!!checked)}
+                data-testid="checkbox-consent-agreement"
+                className="mt-1"
+              />
+              <label 
+                htmlFor="consent-agreement" 
+                className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-800"
+              >
+                <strong>I acknowledge that I have read and understand the disclaimers above.</strong> I confirm that I have received medical clearance from my healthcare provider to begin exercising. I understand the risks involved and agree to use my own judgment while participating in this program. I will stop any exercise that causes discomfort or pain and consult my healthcare provider as needed.
+              </label>
+            </div>
           </div>
           <Button 
             onClick={handleClose}
-            className="w-full"
-            data-testid="button-start-journey"
+            disabled={!hasConsented}
+            className={`w-full transition-all duration-200 ${
+              hasConsented 
+                ? 'bg-pink-500 hover:bg-pink-600 text-white' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+            data-testid="button-agree-continue"
           >
-            Let's Start This Journey Together
+            {hasConsented ? 'I Agree - Continue to Program' : 'Please Read and Agree to Continue'}
           </Button>
         </div>
       </DialogContent>
