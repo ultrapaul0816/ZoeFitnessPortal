@@ -33,9 +33,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   };
 
   return (
-    <div className="fixed top-16 left-0 right-0 bottom-0 z-50 bg-white" data-testid="page-profile-settings">
+    <div 
+      className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-white animate-in slide-in-from-top-4 duration-300" 
+      data-testid="page-profile-settings"
+      onClick={onClose}
+    >
       <div className="w-full h-full overflow-y-auto">
-        {/* Empty content - click outside or press escape to close */}
+        {/* Empty content - click to close */}
       </div>
     </div>
   );

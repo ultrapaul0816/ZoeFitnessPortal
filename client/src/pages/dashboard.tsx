@@ -484,19 +484,35 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm relative z-50">
+      <header className="bg-white border-b border-gray-200 shadow-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left side navigation */}
             <div className="flex items-center">
               {/* Hamburger Menu Button */}
               <button 
-                className="p-3"
+                className="p-3 relative transition-transform duration-200 hover:scale-105"
                 data-testid="button-hamburger-menu"
-                aria-label="Open menu"
-                onClick={() => setShowProfileSettings(true)}
+                aria-label={showProfileSettings ? "Close menu" : "Open menu"}
+                onClick={() => setShowProfileSettings(!showProfileSettings)}
               >
-                <Menu className="w-6 h-6 text-gray-600" />
+                <div className="relative w-6 h-6 flex items-center justify-center">
+                  <div className={`absolute transition-all duration-300 transform ${
+                    showProfileSettings ? 'rotate-45 translate-y-0' : 'rotate-0 -translate-y-2'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gray-600 rounded"></div>
+                  </div>
+                  <div className={`absolute transition-all duration-300 ${
+                    showProfileSettings ? 'opacity-0' : 'opacity-100'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gray-600 rounded"></div>
+                  </div>
+                  <div className={`absolute transition-all duration-300 transform ${
+                    showProfileSettings ? '-rotate-45 translate-y-0' : 'rotate-0 translate-y-2'
+                  }`}>
+                    <div className="w-6 h-0.5 bg-gray-600 rounded"></div>
+                  </div>
+                </div>
               </button>
             </div>
             
