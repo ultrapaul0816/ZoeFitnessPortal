@@ -461,95 +461,95 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           <div className="space-y-3">
             {/* Profile */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
               style={{ animationDelay: '80ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('profile');
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
               <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                 <User className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
               </div>
               <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Profile</span>
-              <div className="absolute right-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300">
+              <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
                 <ChevronRight className="w-4 h-4 text-pink-500" />
               </div>
             </button>
 
             {/* My Library */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
               style={{ animationDelay: '160ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 window.location.href = "/my-library";
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
               <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                 <BookOpen className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
               </div>
               <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">My Library</span>
-              <div className="absolute right-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300">
+              <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
                 <ChevronRight className="w-4 h-4 text-pink-500" />
               </div>
             </button>
 
             {/* Purchases & Payment */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
               style={{ animationDelay: '240ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('purchases');
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
               <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                 <CreditCard className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
               </div>
               <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Purchases & Payment</span>
-              <div className="absolute right-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300">
+              <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
                 <ChevronRight className="w-4 h-4 text-pink-500" />
               </div>
             </button>
 
             {/* Notifications */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
               style={{ animationDelay: '320ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('notifications');
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
               <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                 <Bell className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
               </div>
               <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Notifications</span>
-              <div className="absolute right-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300">
+              <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
                 <ChevronRight className="w-4 h-4 text-pink-500" />
               </div>
             </button>
 
             {/* Logout */}
             <button 
-              className="relative flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+              className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
               style={{ animationDelay: '400ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleLogout();
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
               <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                 <LogOut className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
               </div>
               <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Logout</span>
-              <div className="absolute right-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300">
+              <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
                 <ChevronRight className="w-4 h-4 text-pink-500" />
               </div>
             </button>
