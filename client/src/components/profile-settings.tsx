@@ -481,8 +481,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-center my-2">
-              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
+            <div className="flex justify-start my-2 pl-4">
+              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
             {/* My Library */}
@@ -507,8 +507,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-center my-2">
-              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
+            <div className="flex justify-start my-2 pl-4">
+              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
             {/* Purchases & Payment */}
@@ -533,8 +533,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-center my-2">
-              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
+            <div className="flex justify-start my-2 pl-4">
+              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
             {/* Notifications */}
@@ -559,8 +559,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             </div>
 
             {/* Divider */}
-            <div className="flex justify-center my-2">
-              <div className="w-40 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent shadow-sm"></div>
+            <div className="flex justify-start my-2 pl-4">
+              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
             </div>
 
             {/* Logout */}
