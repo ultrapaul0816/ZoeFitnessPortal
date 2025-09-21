@@ -13,7 +13,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Info, Globe, Bell, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronDown, Info, Globe, Bell, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
 interface ProfileSettingsProps {
@@ -65,12 +65,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           {/* Back Button */}
           <button 
             onClick={() => setCurrentView('menu')}
-            className="mb-6 flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 hover:from-rose-100 hover:to-pink-100 hover:border-rose-300 transition-all duration-300 group"
+            className="group relative mb-6 flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
           >
-            <svg className="w-4 h-4 text-pink-600 group-hover:text-pink-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-pink-600 group-hover:text-pink-700 font-medium transition-colors">Back to Menu</span>
+            <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+            <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+              Back to Menu
+            </span>
+            {/* Subtle gradient overlay on hover */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
 
           {/* My Notifications */}
@@ -131,12 +133,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           {/* Back Button */}
           <button 
             onClick={() => setCurrentView('menu')}
-            className="mb-6 flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 hover:from-rose-100 hover:to-pink-100 hover:border-rose-300 transition-all duration-300 group"
+            className="group relative mb-6 flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
           >
-            <svg className="w-4 h-4 text-pink-600 group-hover:text-pink-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-pink-600 group-hover:text-pink-700 font-medium transition-colors">Back to Menu</span>
+            <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+            <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+              Back to Menu
+            </span>
+            {/* Subtle gradient overlay on hover */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
 
           {/* Payment Method */}
@@ -254,12 +258,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           {/* Back Button */}
           <button 
             onClick={() => setCurrentView('menu')}
-            className="mb-6 flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 hover:from-rose-100 hover:to-pink-100 hover:border-rose-300 transition-all duration-300 group"
+            className="group relative mb-6 flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
           >
-            <svg className="w-4 h-4 text-pink-600 group-hover:text-pink-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-pink-600 group-hover:text-pink-700 font-medium transition-colors">Back to Menu</span>
+            <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+            <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+              Back to Menu
+            </span>
+            {/* Subtle gradient overlay on hover */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
 
           {/* My Public Info */}
