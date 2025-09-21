@@ -3530,7 +3530,19 @@ function UnderstandingYourCoreSection({
           </CardContent>
         </Card>
 
-function YourSixCoreProgramsSection({ programId }: { programId: string }) {
+function YourSixCoreProgramsSection({ 
+  programId, 
+  canGoNext, 
+  canGoPrevious, 
+  navigateToNextTab, 
+  navigateToPreviousTab 
+}: { 
+  programId: string;
+  canGoNext: () => boolean;
+  canGoPrevious: () => boolean;
+  navigateToNextTab: () => void;
+  navigateToPreviousTab: () => void;
+}) {
   const programs = [
     { number: 1, title: "Reconnect & Reset", sessions: 4, description: "Foundation building and body awareness" },
     { number: 2, title: "Stability & Breathwork", sessions: 3, description: "Strengthening breath connection" },
@@ -3575,13 +3587,44 @@ function YourSixCoreProgramsSection({ programId }: { programId: string }) {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Navigation Buttons */}
+      <div className="flex justify-center pt-8">
+        <div className="flex gap-4 justify-center">
+          {canGoPrevious() && (
+            <Button
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-previous-section-programs"
+              onClick={navigateToPreviousTab}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous Section
+            </Button>
+          )}
+          {canGoNext() && (
+            <Button
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-next-section-programs"
+              onClick={navigateToNextTab}
+            >
+              Next Section
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
 // Core Program Components
 
-function TheRoleOfNutritionSection() {
+function TheRoleOfNutritionSection({ 
+  canGoNext, 
+  canGoPrevious, 
+  navigateToNextTab, 
+  navigateToPreviousTab 
+}: NavigationProps) {
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
 
   const toggleTopic = (topic: string) => {
@@ -3843,14 +3886,52 @@ function TheRoleOfNutritionSection() {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Navigation Buttons */}
+      <div className="flex justify-center pt-8">
+        <div className="flex gap-4 justify-center">
+          {canGoPrevious() && (
+            <Button
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-previous-section-nutrition"
+              onClick={navigateToPreviousTab}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous Section
+            </Button>
+          )}
+          {canGoNext() && (
+            <Button
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-next-section-nutrition"
+              onClick={navigateToNextTab}
+            >
+              Next Section
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
-function WhatComesNextSection({ userId, programId, progressEntries }: {
+function WhatComesNextSection({ 
+  userId, 
+  programId, 
+  progressEntries,
+  canGoNext, 
+  canGoPrevious, 
+  navigateToNextTab, 
+  navigateToPreviousTab 
+}: {
   userId: string;
   programId: string;
   progressEntries: Array<any>;
+  canGoNext: () => boolean;
+  canGoPrevious: () => boolean;
+  navigateToNextTab: () => void;
+  navigateToPreviousTab: () => void;
 }) {
   return (
     <div className="space-y-6">
@@ -3958,6 +4039,32 @@ function WhatComesNextSection({ userId, programId, progressEntries }: {
           </Tabs>
         </CardContent>
       </Card>
+      
+      {/* Navigation Buttons */}
+      <div className="flex justify-center pt-8">
+        <div className="flex gap-4 justify-center">
+          {canGoPrevious() && (
+            <Button
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-previous-section-next-steps"
+              onClick={navigateToPreviousTab}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous Section
+            </Button>
+          )}
+          {canGoNext() && (
+            <Button
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              data-testid="button-next-section-next-steps"
+              onClick={navigateToNextTab}
+            >
+              Next Section
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
