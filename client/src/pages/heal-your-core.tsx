@@ -339,7 +339,7 @@ export default function HealYourCorePage() {
           </TabsContent>
 
           <TabsContent value="healing">
-            <LetHealingBeginSection />
+            <HealSection />
           </TabsContent>
 
           <TabsContent value="programs">
@@ -374,6 +374,81 @@ export default function HealYourCorePage() {
           onClose={handleWelcomeClose}
         />
       </div>
+    </div>
+  );
+}
+
+function HealSection() {
+  const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
+
+  const toggleTopic = (topic: string) => {
+    setExpandedTopics(prev => ({
+      ...prev,
+      [topic]: !prev[topic]
+    }));
+  };
+
+  const topics = [
+    { id: 'what-is-diastasis', n: 1, title: 'What Is Diastasis' },
+    { id: 'do-i-have-diastasis', n: 2, title: 'Do I Have Diastasis Recti' },
+    { id: 'why-core-rehab-matters', n: 3, title: 'Why Core Rehab Matters' },
+    { id: 'why-crunches-wont-work', n: 4, title: "Why Crunches Won't Work" },
+    { id: 'let-healing-begin', n: 5, title: 'Let Healing Begin' },
+    { id: 'core-rehab-daily-practice', n: 6, title: 'Core Rehab & Daily Practice' },
+    { id: 'week-by-week-reconnection', n: 7, title: 'Rehab Routine – Week-by-Week Reconnection' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>💙 Heal</CardTitle>
+          <CardDescription>
+            Understanding diastasis recti and beginning your core rehabilitation journey
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-0 divide-y divide-gray-100">
+            {topics.map((topic) => (
+              <div key={topic.id}>
+                <div className="flex items-center justify-between py-5">
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
+                    <h3 className="text-[15px] font-semibold text-left">{topic.title}</h3>
+                  </div>
+                  <button
+                    className="shrink-0 hover:bg-gray-50 rounded-full p-1 transition-colors"
+                    onClick={() => toggleTopic(topic.id)}
+                    data-testid={`toggle-${topic.id}`}
+                  >
+                    <ChevronDown className={`w-4 h-4 text-pink-600 transition-transform duration-200 ${expandedTopics[topic.id] ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+                {expandedTopics[topic.id] && (
+                  <div className="pb-5 space-y-4" data-testid={`content-${topic.id}`}>
+                    <Button variant="outline" className="w-full text-primary mb-4 h-auto py-3">
+                      <Video className="w-4 h-4 mr-2" />
+                      Watch: {topic.title}
+                    </Button>
+                    
+                    <div className="space-y-3 text-sm">
+                      <p>Educational content for {topic.title} will be added here.</p>
+                      <div className="bg-pink-50 p-4 rounded-lg">
+                        <p className="font-semibold mb-2">Key Information:</p>
+                        <ul className="space-y-1 text-xs">
+                          <li>• Detailed content coming soon</li>
+                          <li>• Educational materials</li>
+                          <li>• Step-by-step guidance</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -2230,117 +2305,6 @@ function UnderstandingYourCoreSection({
   );
 }
 
-function LetHealingBeginSection() {
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>💙 Let Healing Begin</CardTitle>
-          <CardDescription>
-            Core rehabilitation and daily practice to kickstart your recovery journey
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Daily Reconnection Routine</CardTitle>
-            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Core Foundation</Badge>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Your daily foundation for core reconnection. These gentle exercises can be done every day to rebuild your connection with your deep core muscles.
-            </p>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card className="border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-lg font-medium">Morning Routine (5-10 mins)</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
-                    <span>360° Breathing - 10 breaths</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
-                    <span>Belly Pump - 5 reps</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
-                    <span>Pelvic Floor Release - 5 breaths</span>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-lg font-medium">Evening Routine (5-10 mins)</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
-                    <span>Pelvic Floor Release - 5 breaths</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
-                    <span>360° Breathing - 10 breaths</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
-                    <span>Gentle body scan</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-        
-        {/* Understanding Your Core & TVA Engagement */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Understanding Your Core & TVA Engagement</CardTitle>
-            <Badge variant="outline" className="mb-2 rounded-none px-4 py-2">Deep Core</Badge>
-          </CardHeader>
-          <CardContent className="text-sm space-y-3">
-            <p>Why "pull your belly in" isn't enough — and what to do instead. Before you can rebuild strength, you need to find your deep stabilizing muscles and learn how to activate them with proper breathing.</p>
-            
-            <div className="bg-muted/50 p-4 rounded">
-              <p className="font-semibold mb-2">Steps to Activate Core:</p>
-              <div className="space-y-3">
-                <div>
-                  <p className="font-semibold">1. INHALE (Prepare):</p>
-                  <p>Expand ribs, belly, and back — no engagement yet.</p>
-                </div>
-                <div>
-                  <p className="font-semibold">2. EXHALE (Activate): As you exhale:</p>
-                  <ul className="ml-4 list-disc space-y-1">
-                    <li>Gently lift the pelvic floor (imagine picking up a blueberry with your vagina or stopping gas).</li>
-                    <li>At the same time, lightly draw your lower belly (below your belly button) toward your spine.</li>
-                    <li>Keep ribs down (not flaring) and spine neutral.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold">3. HOLD GENTLE ENGAGEMENT (During the movement):</p>
-                  <p>You should still be able to breathe and talk — this is a light, supportive activation, not a hard brace.</p>
-                </div>
-                <div>
-                  <p className="font-semibold">4. RELAX Completely after the movement.</p>
-                  <p>Full relaxation is just as important to prevent over-tightening.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="text-center p-3 bg-primary/10 rounded">
-              <p className="italic text-xs">The Purposeful Exhale. As you exhale you should feel an automatic tensioning of your abdominals, the muscles of your back and pelvic floor both tightening and lifting.</p>
-            </div>
-          </CardContent>
-        </Card>
         
         {/* Foundational Core Compressions */}
         <Card>
