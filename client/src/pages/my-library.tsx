@@ -54,10 +54,17 @@ export default function MyLibrary() {
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="p-2 hover:bg-gray-100"
+                className="group relative px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95"
                 data-testid="button-back-to-dashboard"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <div className="flex items-center gap-2">
+                  <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+                    Back
+                  </span>
+                </div>
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/5 group-hover:to-pink-600/5 transition-all duration-300"></div>
               </Button>
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">My Library</h1>
