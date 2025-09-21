@@ -734,6 +734,23 @@ function HealSection() {
                           Crunches and sit-ups increase intra-abdominal pressure, which pushes outward against the separation—further stretching the Linea alba instead of healing it. These exercises load the abdominal wall before it's ready, worsening doming, coning, and core dysfunction.
                         </p>
 
+                        {/* Core Anatomy Diagrams at Top */}
+                        <div className="grid md:grid-cols-2 gap-6 mb-6">
+                          <div className="text-center">
+                            <img 
+                              src={coreBreathImage} 
+                              alt="Core anatomy - diaphragm and abdominal muscles" 
+                              className="max-w-full h-auto rounded-lg shadow-sm mb-2"
+                            />
+                          </div>
+                          <div className="text-center">
+                            <img 
+                              src={coreBreathDiagramImage} 
+                              alt="Core breath diagram showing inhale and exhale mechanics" 
+                              className="max-w-full h-auto rounded-lg shadow-sm mb-2"
+                            />
+                          </div>
+                        </div>
 
                         <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-400 mb-6">
                           <h4 className="text-center font-bold text-blue-800 text-lg mb-4">THE FOCUS NEEDS TO BE ON:</h4>
@@ -777,23 +794,6 @@ function HealSection() {
                           </div>
                         </div>
 
-                        {/* Core Breathing Diagrams */}
-                        <div className="grid md:grid-cols-2 gap-6 mb-6">
-                          <div className="text-center">
-                            <img 
-                              src={coreBreathImage} 
-                              alt="Core anatomy - diaphragm and abdominal muscles" 
-                              className="max-w-full h-auto rounded-lg shadow-sm mb-2"
-                            />
-                          </div>
-                          <div className="text-center">
-                            <img 
-                              src={coreBreathDiagramImage} 
-                              alt="Core breath diagram showing inhale and exhale mechanics" 
-                              className="max-w-full h-auto rounded-lg shadow-sm mb-2"
-                            />
-                          </div>
-                        </div>
 
                         <div className="grid md:grid-cols-2 gap-8">
                           {/* TVA Activation */}
