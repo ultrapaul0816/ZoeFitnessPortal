@@ -3592,28 +3592,43 @@ function ProgramsSection({
       </div>
 
       {/* 6-Week Program - Collapsible */}
-      <Card className="overflow-hidden border-l-4 border-l-pink-500">
+      <Card className="overflow-hidden border-l-4 border-l-pink-500 shadow-xl">
         <CardHeader 
-          className="bg-gradient-to-r from-pink-500 to-rose-500 cursor-pointer hover:from-pink-600 hover:to-rose-600 transition-all duration-200"
+          className="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600 cursor-pointer hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('6-week-program')}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-              <div className="bg-white text-pink-600 px-2 py-1 md:px-4 md:py-2 rounded-lg font-bold text-xs md:text-sm whitespace-nowrap">
-                PROGRAM 1
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-3 py-2 md:px-5 md:py-3 rounded-xl font-bold text-xs md:text-sm whitespace-nowrap shadow-lg border-2 border-pink-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                    PROGRAM 1
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1 py-2">
+                  <CardTitle className="text-base md:text-2xl text-white truncate font-bold tracking-tight drop-shadow-md">
+                    Postpartum Strength Recovery Program
+                  </CardTitle>
+                  <CardDescription className="text-pink-100 font-semibold text-xs md:text-base mt-2 drop-shadow-sm">
+                    ✨ 6-week comprehensive postnatal fitness journey
+                  </CardDescription>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <CardTitle className="text-base md:text-xl text-white truncate">Postpartum Strength Recovery Program</CardTitle>
-                <CardDescription className="text-pink-100 font-semibold text-xs md:text-sm">6-week comprehensive postnatal fitness journey</CardDescription>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 md:gap-4">
-              <div className="text-right hidden sm:block">
-                <div className="text-xs md:text-sm text-pink-100 font-medium">COMPREHENSIVE PROGRAM</div>
-                <div className="text-xs md:text-sm text-white">Core rehabilitation & strength building</div>
-              </div>
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                <ChevronDown className={`w-3 h-3 md:w-4 md:h-4 text-white transition-transform duration-200 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+              <div className="flex items-center gap-2 md:gap-4">
+                <div className="text-right hidden sm:block bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
+                  <div className="text-xs md:text-sm text-pink-100 font-bold uppercase tracking-wide">Comprehensive Program</div>
+                  <div className="text-xs md:text-sm text-white font-medium">Core rehabilitation & strength building</div>
+                </div>
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-white to-pink-100 text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+                </div>
               </div>
             </div>
           </div>
