@@ -481,6 +481,18 @@ export default function Dashboard() {
     );
   };
 
+  // If profile is open, show full screen profile instead of dashboard
+  if (showProfileSettings) {
+    return (
+      <ProfileSettings
+        isOpen={true}
+        onClose={() => setShowProfileSettings(false)}
+        user={user}
+        onUserUpdate={setUser}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
@@ -608,13 +620,6 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Profile Settings */}
-      <ProfileSettings
-        isOpen={showProfileSettings}
-        onClose={() => setShowProfileSettings(false)}
-        user={user}
-        onUserUpdate={(updatedUser) => setUser(updatedUser)}
-      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
