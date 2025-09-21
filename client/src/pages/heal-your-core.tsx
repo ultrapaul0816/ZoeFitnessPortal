@@ -1907,7 +1907,7 @@ function UnderstandingYourCoreSection({
 
                     <p className="text-sm text-primary">These are the 3 essential tools you'll use throughout your journey to connect to your deep core, support your spine, and move with intention.</p>
                     
-                    <p className="font-semibold text-base text-pink-500 text-left">Learn & Practice these 3 techniques explained below:</p>
+                    <p className="font-semibold text-base text-black text-left">Learn & Practice these 3 techniques explained below:</p>
                     
                     <div className="grid md:grid-cols-2 gap-6">
                       {/* Left Column - Belly Pump */}
