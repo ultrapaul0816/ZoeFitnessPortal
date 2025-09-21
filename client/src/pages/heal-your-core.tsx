@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_1758445266265.png";
 import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_1758445423086.png";
+import tvaContentImage from "@assets/Screenshot 2025-09-21 at 14.38.24_1758445791011.png";
+import tvaSkeletonImage from "@assets/Screenshot 2025-09-21 at 14.39.32_1758445791002.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1645,36 +1647,109 @@ function UnderstandingYourCoreSection({
               {expandedTopics['tva-engagement'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
-                    <p className="text-sm">Why "pull your belly in" isn't enough — and what to do instead. Before you can rebuild strength, you need to find your deep stabilizing muscles and learn how to activate them with proper breathing.</p>
+                    {/* YouTube Link Button */}
+                    <div className="flex justify-start mb-4">
+                      <a 
+                        href="https://www.youtube.com/watch?v=h7MxrsIGCxo" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                        style={{
+                          background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
+                          boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
+                          fontSize: '11px'
+                        }}
+                        data-testid="link-tva-engagement-video"
+                      >
+                        <Play className="w-2.5 h-2.5" />
+                        Core & TVA Engagement
+                      </a>
+                    </div>
+
+                    <p className="text-sm">Why "pull your belly in" isn't enough — and what to do instead. Before you can rebuild strength, you need to understand what you're actually connecting to. Your Transverse Abdominis (TVA) is your body's innermost abdominal muscle — often called the "corset" muscle — and it's the foundation of true core strength. Without proper TVA engagement, even "core exercises" can make things worse.</p>
                     
-                    <div className="bg-muted/50 p-4 rounded">
-                      <p className="font-semibold mb-2">Steps to Activate Core:</p>
-                      <div className="space-y-3 text-sm">
-                        <div>
-                          <p className="font-semibold">1. INHALE (Prepare):</p>
-                          <p>Expand ribs, belly, and back — no engagement yet.</p>
-                        </div>
-                        <div>
-                          <p className="font-semibold">2. EXHALE (Activate): As you exhale:</p>
-                          <ul className="ml-4 list-disc space-y-1">
-                            <li>Gently lift the pelvic floor (imagine picking up a blueberry with your vagina or stopping gas).</li>
-                            <li>At the same time, lightly draw your lower belly (below your belly button) toward your spine.</li>
-                            <li>Keep ribs down (not flaring) and spine neutral.</li>
-                          </ul>
-                        </div>
-                        <div>
-                          <p className="font-semibold">3. HOLD GENTLE ENGAGEMENT (During the movement):</p>
-                          <p>You should still be able to breathe and talk — this is a light, supportive activation, not a hard brace.</p>
-                        </div>
-                        <div>
-                          <p className="font-semibold">4. RELAX Completely after the movement.</p>
-                          <p>Full relaxation is just as important to prevent over-tightening.</p>
-                        </div>
+                    {/* Skeleton Graphics Side by Side */}
+                    <div className="flex justify-center gap-4 my-6">
+                      <div className="bg-white p-3 rounded-lg shadow-sm border max-w-xs">
+                        <img 
+                          src={tvaSkeletonImage} 
+                          alt="Skeleton showing TVA muscle anatomy and location"
+                          className="w-full h-auto rounded"
+                          data-testid="img-tva-skeleton"
+                        />
                       </div>
                     </div>
-                    
-                    <div className="text-center p-3 bg-primary/10 rounded">
-                      <p className="italic text-xs">The Purposeful Exhale. As you exhale you should feel an automatic tensioning of your abdominals, the muscles of your back and pelvic floor both tightening and lifting.</p>
+
+                    <div className="bg-muted/50 p-4 rounded">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-primary text-lg">✨</span>
+                        <p className="font-semibold text-primary">What is the TVA?</p>
+                      </div>
+                      <p className="text-sm mb-3">The <strong>TRANSVERSE ABDOMINAL MUSCLE (TVA)</strong> wraps horizontally around your entire torso, from your ribs to your pelvis, like a wide supportive belt. <strong>It attaches at your spine and wraps forward toward your belly button, stabilizing your:</strong></p>
+                      <ul className="ml-4 list-disc space-y-1 text-sm">
+                        <li>Spine</li>
+                        <li>Internal organs</li>
+                        <li>Lower back</li>
+                        <li>Pelvic floor</li>
+                        <li>Rib cage</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-muted/50 p-4 rounded">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-primary text-lg">✨</span>
+                        <p className="font-semibold text-primary">Why It Matters:</p>
+                      </div>
+                      <p className="text-sm mb-3">The TVA helps hold you together from the inside. <strong>It supports posture, protects the spine, & helps reduce or prevent:</strong></p>
+                      <ul className="ml-4 list-disc space-y-1 text-sm">
+                        <li>Diastasis recti</li>
+                        <li>Pelvic floor dysfunction</li>
+                        <li>Lower back pain</li>
+                        <li>Poor pressure management (bulging or doming of the abdomen)</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-muted/50 p-4 rounded">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-primary text-lg">✨</span>
+                        <p className="font-semibold text-primary">How to engage your TVA:</p>
+                      </div>
+                      <p className="text-sm mb-3 text-primary font-semibold">CLICK HERE: <a href="https://www.youtube.com/watch?v=h7MxrsIGCxo" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">HOW TO CONNECT TO YOUR TVA</a> (get a yoga block)</p>
+                      
+                      <p className="font-semibold text-sm mb-2">Here's how to feel your TVA working:</p>
+                      <ul className="ml-4 space-y-2 text-sm">
+                        <li><strong>❖ Sit tall or lie down, maintaining a neutral spine.</strong></li>
+                        <li><strong>❖ Inhale through your nose:</strong> feel ribs & belly gently expand in all directions (360° breath).</li>
+                        <li><strong>❖ Exhale slowly through your mouth with a soft "sss" or "shhh" —</strong> and imagine your ribs knitting in, your hip bones drawing slightly toward each other, & lower belly gently drawing back.</li>
+                        <li><strong>❖ You should feel tension around your entire waistline, like a corset tightening.</strong></li>
+                      </ul>
+                      
+                      <div className="mt-4 p-3 bg-primary/10 rounded">
+                        <p className="font-semibold text-sm mb-2">Try thinking of it as:</p>
+                        <ul className="ml-4 space-y-1 text-sm">
+                          <li><strong>❖ "Wrapping your core from the back to the front"</strong></li>
+                          <li><strong>❖ "Zipping up your lower belly from pelvis to ribs"</strong></li>
+                          <li><strong>❖ "Lifting from your pelvic floor to your ribs as you exhale"</strong></li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="bg-muted/50 p-4 rounded">
+                      <p className="font-semibold text-sm mb-2 text-primary">Cue Tips:</p>
+                      <ul className="ml-4 space-y-1 text-sm">
+                        <li><strong>❖ Avoid hard sucking or hollowing</strong> - this shuts off the core.</li>
+                        <li><strong>❖ Don't tuck your pelvis</strong> - keep a soft, natural curve in your lower back.</li>
+                        <li><strong>❖ The movement should feel subtle but not superficial or grippy.</strong></li>
+                        <li><strong>❖ Over time, this will become your core foundation during movement, lifting, and breath.</strong></li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-primary/10 p-4 rounded">
+                      <p className="font-semibold text-sm mb-2 text-primary">Final Reminder:</p>
+                      <ul className="ml-4 space-y-1 text-sm">
+                        <li><strong>❖ You don't need to brace, clench, or crunch to train your core.</strong></li>
+                        <li><strong>❖ You need connection — and that begins with your breath and TVA.</strong></li>
+                      </ul>
                     </div>
                   </div>
                 </div>
