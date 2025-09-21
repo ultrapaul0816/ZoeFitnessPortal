@@ -69,11 +69,13 @@ export default function MyLibrary() {
             
             {/* Centered Logo */}
             <div className="absolute left-1/2 transform -translate-x-1/2">
-              <img 
-                src="/assets/logo.png" 
-                alt="Studio Bloom" 
-                className="h-12 w-auto"
-              />
+              <Link to="/dashboard">
+                <img 
+                  src="/assets/logo.png" 
+                  alt="Studio Bloom" 
+                  className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                />
+              </Link>
             </div>
             
             {/* Right side spacer to maintain balance */}
