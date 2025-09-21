@@ -3715,61 +3715,61 @@ function ProgramsSection({
 
 
                   {/* How to Section */}
-                  <div className="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-                    <h4 className="font-semibold text-gray-900 text-sm mb-2">How to:</h4>
-                    <p className="text-gray-700 text-xs">
+                  <div className="bg-blue-50 p-3 md:p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-semibold text-gray-900 text-sm md:text-base mb-2">How to:</h4>
+                    <p className="text-gray-700 text-xs md:text-sm leading-relaxed">
                       All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                       <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                       playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                     </p>
-                    <p className="text-gray-700 text-xs mt-1">
+                    <p className="text-gray-700 text-xs md:text-sm mt-2">
                       <span className="font-semibold">Rest:</span> Rest a minimum of 30 secs - ONE minute between movements. Rest more if needed.
                     </p>
                   </div>
 
                   {/* Tips before you begin */}
-                  <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-400">
-                    <h4 className="font-semibold text-green-700 text-sm mb-2">Tips before you begin:</h4>
-                    <div className="space-y-1 text-xs text-black">
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                  <div className="bg-green-50 p-3 md:p-4 rounded-lg border-l-4 border-green-400">
+                    <h4 className="font-semibold text-green-700 text-sm md:text-base mb-3">Tips before you begin:</h4>
+                    <div className="space-y-2 md:space-y-1 text-xs md:text-sm text-black">
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">Breathe First, Move Second:</span> Every movement begin with deep exhale and gentle core engagement.</span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">Feel, Don't Force:</span> The goal is to feel supported - not strained. If something feels off, pause, or regress.</span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">One Round Still Progress:</span> Don't skip a session just because you don't have time for all rounds.</span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">Doming, Heaviness, or Leaking?</span> Stop & regress to earlier exercises. That's your body's way of asking.</span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">Stay Consistent, Not Perfect:</span> Progress comes from showing up—even imperfectly.</span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">Hydrate, Rest, Nourish:</span> Give your body the care parts of your recovery too.</span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">Avoid Overexertion:</span> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-black font-bold">✧</span>
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-black font-bold text-sm md:text-base">✧</span>
                         <span><span className="text-black font-semibold">Consult Your Doctor:</span> Always consult with your healthcare provider before continuing with exercises.</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Precautions */}
-                  <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-400">
-                    <h4 className="font-semibold text-red-700 text-sm mb-2">Precautions:</h4>
-                    <p className="text-gray-700 text-xs leading-relaxed">
+                  <div className="bg-red-50 p-3 md:p-4 rounded-lg border-l-4 border-red-400">
+                    <h4 className="font-semibold text-red-700 text-sm md:text-base mb-2">Precautions:</h4>
+                    <p className="text-gray-700 text-xs md:text-sm leading-relaxed">
                       <span className="font-semibold">Listen to Your Body:</span> Always pay attention to how you feel and adjust accordingly. | 
                       <span className="font-semibold">Take Options Given:</span> Utilize the modifications provided to suit your comfort level. | 
                       <span className="font-semibold">Reduce Reps/Rounds:</span> Don't hesitate to reduce the number of repetitions or rounds if needed. | 
