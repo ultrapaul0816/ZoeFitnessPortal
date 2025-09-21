@@ -2100,16 +2100,23 @@ function UnderstandingYourCoreSection({
               {expandedTopics['when-to-use'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
-                    {/* Breathing + Core Activation Image */}
-                    <div className="flex justify-center my-6">
-                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-4xl">
-                        <img 
-                          src={breathingActivationImage} 
-                          alt="When to use breathing and core activation - comprehensive guide with key principles and doming awareness"
-                          className="w-full h-auto rounded"
-                          data-testid="img-breathing-activation"
-                        />
-                      </div>
+                    {/* YouTube Link Button */}
+                    <div className="flex justify-start mb-4">
+                      <a 
+                        href="https://www.youtube.com/watch?v=IxnoXYCtnUw" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                        style={{
+                          background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
+                          boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
+                          fontSize: '11px'
+                        }}
+                        data-testid="link-breathing-activation-video"
+                      >
+                        <Play className="w-2.5 h-2.5" />
+                        When To Use Breathing + Core Activation
+                      </a>
                     </div>
 
                     {/* Key Principle */}
