@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, PlayCircle, BookOpen, CheckCircle, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Calendar, Target, Dumbbell, Star, Menu, BookOpen } from "lucide-react";
 import programCover from "@assets/program-cover.png";
 import ProfileSettings from "@/components/profile-settings";
 import type { User } from "@shared/schema";
@@ -142,72 +140,82 @@ export default function MyLibrary() {
           <h1 className="text-3xl font-bold text-gray-900">My Library</h1>
           <p className="text-gray-600 mt-2">Your purchased programs and content</p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
           {boughtPrograms.map((program) => (
             <Link key={program.id} to={program.id === "1" ? "/heal-your-core" : "/dashboard"}>
-              <Card 
-                className="hover:shadow-lg transition-shadow cursor-pointer group"
+              <div 
+                className="bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-pink-100"
                 data-testid={`program-card-${program.id}`}
               >
-                <div className="relative">
-                  {program.thumbnail ? (
-                    <img 
-                      src={program.thumbnail}
-                      alt={program.title}
-                      className="w-full h-48 object-cover rounded-t-lg"
-                    />
-                  ) : (
-                    <div className="w-full h-48 bg-gradient-to-br from-pink-100 to-pink-200 rounded-t-lg flex items-center justify-center">
-                      <BookOpen className="w-16 h-16 text-pink-400" />
+                {/* Header Section */}
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                    Your Programs
+                  </h2>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Discover personalized fitness programs designed to help you achieve your health and wellness goals
+                  </p>
+                </div>
+
+                {/* Program Image */}
+                <div className="relative mb-6 rounded-2xl overflow-hidden">
+                  <img 
+                    src={programCover}
+                    alt={program.title}
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                
+                {/* Program Title */}
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {program.title}
+                </h3>
+                
+                {/* Program Description */}
+                <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                  {program.description}
+                </p>
+                
+                {/* Program Features */}
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+                      <Calendar className="w-4 h-4 text-white" />
                     </div>
-                  )}
-                  
-                  {/* Purchased Badge */}
-                  <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 shadow-lg">
-                    <CheckCircle className="w-3 h-3" />
-                    Purchased
+                    <span className="text-gray-800 font-medium">6 Weeks</span>
                   </div>
                   
-                  {/* Play overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-t-lg flex items-center justify-center">
-                    <PlayCircle className="w-16 h-16 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+                      <Target className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-gray-800 font-medium">Postnatal level</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+                      <Dumbbell className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-gray-800 font-medium">Minimal Equipment</span>
                   </div>
                 </div>
                 
-                <CardHeader>
-                  <CardTitle 
-                    className="text-lg text-gray-900 group-hover:text-pink-600 transition-colors"
-                    data-testid={`text-program-title-${program.id}`}
-                  >
-                    {program.title}
-                  </CardTitle>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {program.description}
-                  </p>
-                  
-                  <div 
-                    className="flex items-center justify-between text-sm text-gray-500"
-                    data-testid={`text-program-stats-${program.id}`}
-                  >
-                    <span className="flex items-center gap-1">
-                      <PlayCircle className="w-4 h-4" />
-                      {program.totalVideos} videos
-                    </span>
-                    <span>{program.totalDuration}</span>
+                {/* Badges */}
+                <div className="flex gap-3 mb-4">
+                  <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                    <Star className="w-4 h-4" />
+                    Premium Access
                   </div>
-                  
-                  <Button 
-                    className="w-full bg-pink-500 hover:bg-pink-600 text-white"
-                    data-testid={`button-access-program-${program.id}`}
-                    asChild
-                  >
-                    <span>Access Program</span>
-                  </Button>
-                </CardContent>
-              </Card>
+                  <div className="bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                    Postnatal
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="w-full h-2 bg-gray-900 rounded-full">
+                  <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full w-3/4"></div>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
