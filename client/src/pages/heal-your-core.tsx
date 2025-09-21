@@ -1795,18 +1795,6 @@ function UnderstandingYourCoreSection({
                   <div className="space-y-5">
                     <p className="text-sm">Once you master 360° breathing, you can learn to add gentle core activation — especially important before and during any exercise or lifting movements.</p>
                     
-                    {/* Core Activation Graphics */}
-                    <div className="flex justify-center my-6">
-                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-2xl">
-                        <img 
-                          src={coreActivationImage} 
-                          alt="How to Engage Your Core with Breathing - Core Activation steps and anatomical diagram"
-                          className="w-full h-auto rounded"
-                          data-testid="img-core-activation"
-                        />
-                      </div>
-                    </div>
-
                     <div className="bg-muted/50 p-4 rounded">
                       <h4 className="font-semibold text-primary mb-3">Steps to Activate Core:</h4>
                       
