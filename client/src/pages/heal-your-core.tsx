@@ -1320,7 +1320,7 @@ function CardioSection() {
                             <td className="border border-gray-300 p-2">PROGRAM 2</td>
                             <td className="border border-gray-300 p-2">CARDIO</td>
                             <td className="border border-gray-300 p-2">PROGRAM 2</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell"></td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">REST</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 2</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
                             <td className="border border-gray-300 p-2 hidden md:table-cell">REST</td>
@@ -1329,7 +1329,7 @@ function CardioSection() {
                             <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 3</td>
                             <td className="border border-gray-300 p-2">CARDIO</td>
                             <td className="border border-gray-300 p-2">PROGRAM 3</td>
-                            <td className="border border-gray-300 p-2"></td>
+                            <td className="border border-gray-300 p-2">REST</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 3</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 3</td>
@@ -1340,7 +1340,7 @@ function CardioSection() {
                             <td className="border border-gray-300 p-2">PROGRAM 4</td>
                             <td className="border border-gray-300 p-2">CARDIO</td>
                             <td className="border border-gray-300 p-2">PROGRAM 4</td>
-                            <td className="border border-gray-300 p-2 hidden sm:table-cell"></td>
+                            <td className="border border-gray-300 p-2 hidden sm:table-cell">REST</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 4</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
                             <td className="border border-gray-300 p-2 hidden md:table-cell">REST</td>
@@ -1349,7 +1349,7 @@ function CardioSection() {
                             <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 5</td>
                             <td className="border border-gray-300 p-2">CARDIO</td>
                             <td className="border border-gray-300 p-2">PROGRAM 5</td>
-                            <td className="border border-gray-300 p-2"></td>
+                            <td className="border border-gray-300 p-2">REST</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 5</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">CARDIO</td>
                             <td className="border border-gray-300 p-2 hidden sm:table-cell">PROGRAM 5</td>
