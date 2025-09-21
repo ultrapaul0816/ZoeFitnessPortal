@@ -324,6 +324,17 @@ export default function HealYourCorePage() {
             </TabsTrigger>
             </TabsList>
           </div>
+          
+          {/* Medical Disclaimer Moving Bar */}
+          <div className="bg-gray-100 border-y border-gray-200 py-2 overflow-hidden">
+            <div className="whitespace-nowrap animate-pulse">
+              <div className="inline-block animate-[scroll_20s_linear_infinite]">
+                <span className="text-xs text-gray-600 font-medium px-4">
+                  <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill. It's not intended to replace professional medical advice, diagnosis, or treatment.
+                </span>
+              </div>
+            </div>
+          </div>
 
           <TabsContent value="welcome">
             <WelcomeSection />
