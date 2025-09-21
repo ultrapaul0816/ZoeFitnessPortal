@@ -1,40 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { ArrowLeft, Calendar, Target, Dumbbell, Star, Menu, BookOpen } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import programCover from "@assets/program-cover.png";
 import ProfileSettings from "@/components/profile-settings";
-import type { User } from "@shared/schema";
-
-interface Program {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  totalVideos: number;
-  totalDuration: string;
-}
+import type { User, MemberProgram } from "@shared/schema";
 
 export default function MyLibrary() {
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [boughtPrograms] = useState<Program[]>([
-    {
-      id: "1",
-      title: "Your Postpartum Strength Recovery Program",
-      description: "A comprehensive 6-week postnatal fitness program for mothers 6 weeks to 6 years postpartum",
-      thumbnail: programCover,
-      totalVideos: 24,
-      totalDuration: "4h 30m"
-    },
-    {
-      id: "2",
-      title: "The Mama Summit",
-      description: "Expert talks and guidance for new mothers covering relationships, birth, sleep, and more",
-      thumbnail: "",
-      totalVideos: 15,
-      totalDuration: "8h 15m"
-    }
-  ]);
+  
+  // Fetch user's purchased programs
+  const { data: memberPrograms = [], isLoading } = useQuery({
+    queryKey: ['/api/member-programs', user?.id],
+    enabled: !!user?.id,
+  });
 
   // Get user from localStorage on component mount
   useEffect(() => {
@@ -140,88 +120,102 @@ export default function MyLibrary() {
           <h1 className="text-3xl font-bold text-gray-900">My Library</h1>
           <p className="text-gray-600 mt-2">Your purchased programs and content</p>
         </div>
-        <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
-          {boughtPrograms.map((program) => (
-            <Link key={program.id} to={program.id === "1" ? "/heal-your-core" : "/dashboard"}>
-              <div 
-                className="bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-pink-100"
-                data-testid={`program-card-${program.id}`}
-              >
-                {/* Header Section */}
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-3">
-                    Your Programs
-                  </h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    Discover personalized fitness programs designed to help you achieve your health and wellness goals
-                  </p>
-                </div>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+            <p className="text-gray-600 mt-4">Loading your programs...</p>
+          </div>
+        )}
 
-                {/* Program Image */}
-                <div className="relative mb-6 rounded-2xl overflow-hidden">
-                  <img 
-                    src={programCover}
-                    alt={program.title}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                
-                {/* Program Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {program.title}
-                </h3>
-                
-                {/* Program Description */}
-                <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-                  {program.description}
-                </p>
-                
-                {/* Program Features */}
-                <div className="space-y-4 mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
-                      <Calendar className="w-4 h-4 text-white" />
+        {/* Programs Grid */}
+        {!isLoading && memberPrograms.length > 0 && (
+          <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
+            {memberPrograms.map((memberProgram) => {
+              const program = memberProgram.program;
+              return (
+                <Link key={program.id} to={program.name.includes("Postpartum") ? "/heal-your-core" : "/dashboard"}>
+                  <div 
+                    className="bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-pink-100"
+                    data-testid={`program-card-${program.id}`}
+                  >
+                    {/* Header Section */}
+                    <div className="text-center mb-6">
+                      <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                        Your Programs
+                      </h2>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        Discover personalized fitness programs designed to help you achieve your health and wellness goals
+                      </p>
                     </div>
-                    <span className="text-gray-800 font-medium">6 Weeks</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
-                      <Target className="w-4 h-4 text-white" />
+
+                    {/* Program Image */}
+                    <div className="relative mb-6 rounded-2xl overflow-hidden">
+                      <img 
+                        src={program.imageUrl || programCover}
+                        alt={program.name}
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
-                    <span className="text-gray-800 font-medium">Postnatal level</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
-                      <Dumbbell className="w-4 h-4 text-white" />
+                    
+                    {/* Program Title */}
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                      {program.name}
+                    </h3>
+                    
+                    {/* Program Description */}
+                    <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                      {program.description}
+                    </p>
+                    
+                    {/* Program Features */}
+                    <div className="space-y-4 mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-gray-800 font-medium">{program.duration}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+                          <Target className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-gray-800 font-medium">{program.level}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+                          <Dumbbell className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-gray-800 font-medium">{program.equipment}</span>
+                      </div>
                     </div>
-                    <span className="text-gray-800 font-medium">Minimal Equipment</span>
+                    
+                    {/* Badges */}
+                    <div className="flex gap-3 mb-4">
+                      <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                        <Star className="w-4 h-4" />
+                        Premium Access
+                      </div>
+                      <div className="bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                        {program.level}
+                      </div>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="w-full h-2 bg-gray-900 rounded-full">
+                      <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full" style={{width: `${(memberProgram.progress / program.workoutCount) * 100}%`}}></div>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Badges */}
-                <div className="flex gap-3 mb-4">
-                  <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-                    <Star className="w-4 h-4" />
-                    Premium Access
-                  </div>
-                  <div className="bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                    Postnatal
-                  </div>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="w-full h-2 bg-gray-900 rounded-full">
-                  <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full w-3/4"></div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
         {/* Empty state if no programs */}
-        {boughtPrograms.length === 0 && (
+        {!isLoading && memberPrograms.length === 0 && (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <BookOpen className="w-12 h-12 text-gray-400" />
