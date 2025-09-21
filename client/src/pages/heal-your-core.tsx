@@ -279,7 +279,8 @@ export default function HealYourCorePage() {
 
         {/* Navigation Tabs */}
         <Tabs defaultValue="welcome" className="space-y-6">
-          <TabsList className="flex w-full overflow-x-auto md:grid md:grid-cols-7 gap-1 md:gap-3 h-auto p-2 md:p-3 bg-gray-50 rounded-xl">
+          <div className="overflow-x-auto">
+            <TabsList className="flex w-full md:grid md:grid-cols-7 gap-1 md:gap-3 h-auto p-2 md:p-3 bg-gray-50 rounded-xl min-w-max md:min-w-0">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-sm hover:shadow-md border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Welcome</span>
@@ -308,7 +309,8 @@ export default function HealYourCorePage() {
               <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Nutrition</span>
             </TabsTrigger>
-          </TabsList>
+            </TabsList>
+          </div>
 
           <TabsContent value="welcome">
             <WelcomeSection />
@@ -394,7 +396,7 @@ function WelcomeSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
+                  <div className="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-semibold text-sm shrink-0">1</div>
                   <h3 className="text-[15px] font-semibold text-left">Welcome from Zoe</h3>
                 </div>
                 <Button
