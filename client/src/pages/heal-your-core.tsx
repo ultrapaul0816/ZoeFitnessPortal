@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_1758445266265.png";
+import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_1758445423086.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1545,6 +1546,22 @@ function UnderstandingYourCoreSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     <p className="text-sm">360° breathing is a deep, diaphragmatic breathing technique that encourages expansion in all directions — front, sides, and back — rather than just the chest or belly.</p>
+                    
+                    {/* Breathing Diagram */}
+                    <div className="flex justify-center my-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-md">
+                        <img 
+                          src={breathingDiagram} 
+                          alt="Core Breath diagram showing inhale and exhale patterns with 360 degree expansion"
+                          className="w-full h-auto rounded"
+                          style={{
+                            filter: 'contrast(1.1) brightness(1.05)',
+                            mixBlendMode: 'multiply'
+                          }}
+                          data-testid="img-breathing-diagram"
+                        />
+                      </div>
+                    </div>
                     
                     <div className="bg-muted/50 p-4 rounded">
                       <p className="font-semibold mb-2">Steps to Practice 360° Breathing:</p>
