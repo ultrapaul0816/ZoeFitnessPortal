@@ -1909,7 +1909,6 @@ function UnderstandingYourCoreSection({
                     
                     <div className="bg-primary/10 p-4 rounded">
                       <p className="font-semibold text-primary mb-2">Learn & Practice these!</p>
-                      <p className="text-sm">CLICK HERE: <a href="https://youtube.com/watch?v=h_S_tq0-Pv0&feature=youtu.be" className="text-blue-600 underline font-semibold" target="_blank" rel="noopener noreferrer">CORE COMPRESSIONS - BELLY PUMP / DEEP CORE HOLD / AB WRAPS</a></p>
                     </div>
 
                     <p className="font-semibold text-sm">The 3 techniques explained below:</p>
