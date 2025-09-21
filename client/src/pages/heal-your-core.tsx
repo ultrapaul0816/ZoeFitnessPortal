@@ -1019,8 +1019,8 @@ function HealSection() {
 
                         {/* Week-by-Week Table with Horizontal Scroll */}
                         <div className="overflow-x-auto">
-                          <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm w-full" style={{ minWidth: '1020px' }}>
-                            <div className="bg-gray-100 grid text-sm font-semibold text-gray-700 border-b border-gray-300" style={{ gridTemplateColumns: '120px 340px 280px 160px' }}>
+                          <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm w-full" style={{ minWidth: '1080px' }}>
+                            <div className="bg-gray-100 grid text-sm font-semibold text-gray-700 border-b border-gray-300" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
                               <div className="p-4 border-r border-gray-300 flex items-start justify-start">WEEK</div>
                               <div className="p-4 border-r border-gray-300 flex items-start justify-start">EXERCISES</div>
                               <div className="p-4 border-r border-gray-300 flex items-start justify-start">FOCUS & PURPOSE</div>
@@ -1028,7 +1028,7 @@ function HealSection() {
                             </div>
 
                             {/* Week 1-2 */}
-                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 160px' }}>
+                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
                               <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
                                 Week 1-2
                               </div>
@@ -1073,7 +1073,7 @@ function HealSection() {
                             </div>
 
                             {/* Week 3-4 */}
-                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 160px' }}>
+                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
                               <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
                                 Week 3-4
                               </div>
@@ -1126,7 +1126,7 @@ function HealSection() {
                             </div>
 
                             {/* Week 5-6 */}
-                            <div className="grid text-sm" style={{ gridTemplateColumns: '120px 340px 280px 160px' }}>
+                            <div className="grid text-sm" style={{ gridTemplateColumns: '120px 340px 280px 220px' }}>
                               <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
                                 Week 5-6
                               </div>
