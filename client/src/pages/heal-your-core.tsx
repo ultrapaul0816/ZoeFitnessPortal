@@ -1033,7 +1033,7 @@ function CardioSection() {
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-semibold text-sm shrink-0">1</div>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
                   <h3 className="text-[15px] font-semibold text-left">How to Include Cardio – Safely & Strategically</h3>
                 </div>
                 <Button
@@ -1115,8 +1115,8 @@ function CardioSection() {
                     </div>
                     
                     {/* Responsive Cardio Plan Table */}
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300">
+                    <div className="overflow-x-auto -mx-6 px-6">
+                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[600px]">
                         <thead>
                           <tr className="bg-pink-100">
                             <th className="border border-gray-300 p-2 text-pink-600 font-semibold">WEEK</th>
@@ -1290,8 +1290,8 @@ function CardioSection() {
                     </div>
                     
                     {/* Responsive Weekly Schedule Table */}
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300">
+                    <div className="overflow-x-auto -mx-6 px-6">
+                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[500px]">
                         <thead>
                           <tr className="bg-gray-100">
                             <th className="border border-gray-300 p-2 font-semibold">WEEK</th>
