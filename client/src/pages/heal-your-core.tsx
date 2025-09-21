@@ -325,13 +325,13 @@ export default function HealYourCorePage() {
               <Dumbbell className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Programs</span>
             </TabsTrigger>
-            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
-              <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium">Next</span>
-            </TabsTrigger>
             <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
               <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Nutrition</span>
+            </TabsTrigger>
+            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300">
+              <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+              <span className="font-medium">What's Next</span>
             </TabsTrigger>
             </TabsList>
           </div>
@@ -381,16 +381,16 @@ export default function HealYourCorePage() {
             <YourSixCoreProgramsSection programId={programId} />
           </TabsContent>
 
+          <TabsContent value="nutrition">
+            <TheRoleOfNutritionSection />
+          </TabsContent>
+
           <TabsContent value="next-steps">
             <WhatComesNextSection 
               userId={user.id} 
               programId={programId} 
               progressEntries={Array.isArray(progressEntries) ? progressEntries : []} 
             />
-          </TabsContent>
-
-          <TabsContent value="nutrition">
-            <TheRoleOfNutritionSection />
           </TabsContent>
         </Tabs>
 
