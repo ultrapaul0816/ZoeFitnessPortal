@@ -3731,43 +3731,6 @@ function ProgramsSection({
                 </CardContent>
               </Card>
 
-              {/* Program 2-6 Placeholders */}
-              {[
-                { week: 2, program: 2, title: "BUILD ENDURANCE", phase: "Building Phase" },
-                { week: 3, program: 3, title: "STRENGTH FOUNDATION", phase: "Strength Phase" },
-                { week: 4, program: 4, title: "POWER DEVELOPMENT", phase: "Power Phase" },
-                { week: 5, program: 5, title: "INTEGRATION & FLOW", phase: "Integration Phase" },
-                { week: 6, program: 6, title: "MASTERY & MAINTENANCE", phase: "Mastery Phase" }
-              ].map((prog) => (
-                <Card key={prog.week} className="overflow-hidden border-l-4 border-l-gray-300 opacity-75">
-                  <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-1 rounded font-semibold text-sm">
-                          WEEK {prog.week}
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg text-gray-600">PROGRAM {prog.program} - {prog.title}</CardTitle>
-                          <CardDescription className="text-gray-500 font-semibold">Workout Schedule: 4x per week</CardDescription>
-                          <p className="text-xs text-gray-500 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs text-gray-500 font-medium">COMING SOON</div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <div className="text-center py-4">
-                      <h3 className="text-lg font-bold text-gray-600 mb-2">{prog.phase}</h3>
-                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                        <span className="text-gray-600 text-xs font-medium">Unlock by completing previous weeks</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
             </div>
           </CardContent>
         )}
