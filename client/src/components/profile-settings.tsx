@@ -33,16 +33,16 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-white w-screen h-screen" data-testid="page-profile-settings">
-      <div className="w-full h-full min-h-screen overflow-y-auto">
-        {/* Header with back button */}
+    <div className="fixed top-16 left-0 right-0 bottom-0 z-50 bg-white" data-testid="page-profile-settings">
+      <div className="w-full h-full overflow-y-auto">
+        {/* Close Button */}
         <div className="bg-white border-b border-gray-200 px-6 py-4 w-full">
           <button 
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900 transition-colors"
-            data-testid="button-back-to-dashboard"
+            data-testid="button-close-overlay"
           >
-            ← Back
+            ✕ Close
           </button>
         </div>
 

@@ -501,20 +501,15 @@ export default function Dashboard() {
           <div className="flex items-center justify-between h-16">
             {/* Left side navigation */}
             <div className="flex items-center">
-              {/* Profile Dropdown Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button 
-                    className="p-3"
-                    data-testid="button-hamburger-menu"
-                    aria-label="Open profile menu"
-                  >
-                    <Menu className="w-6 h-6 text-gray-600" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Hamburger Menu Button */}
+              <button 
+                className="p-3"
+                data-testid="button-hamburger-menu"
+                aria-label="Open menu"
+                onClick={() => setShowProfileSettings(true)}
+              >
+                <Menu className="w-6 h-6 text-gray-600" />
+              </button>
             </div>
             
             {/* Centered Logo */}
