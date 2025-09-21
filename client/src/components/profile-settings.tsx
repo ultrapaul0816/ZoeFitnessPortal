@@ -423,72 +423,77 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           <div className="space-y-3">
             {/* Profile */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500"
+              style={{ animationDelay: '100ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('profile');
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-200">
                 <User className="w-4 h-4 text-white" />
               </div>
-              <span className="text-base font-medium text-gray-900">Profile</span>
+              <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 transition-colors duration-300">Profile</span>
             </button>
 
             {/* My Library */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500"
+              style={{ animationDelay: '200ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 window.location.href = "/my-library";
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-200">
                 <BookOpen className="w-4 h-4 text-white" />
               </div>
-              <span className="text-base font-medium text-gray-900">My Library</span>
+              <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 transition-colors duration-300">My Library</span>
             </button>
 
             {/* Purchases & Payment */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500"
+              style={{ animationDelay: '300ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentView('purchases');
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-200">
                 <CreditCard className="w-4 h-4 text-white" />
               </div>
-              <span className="text-base font-medium text-gray-900">Purchases & Payment</span>
+              <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 transition-colors duration-300">Purchases & Payment</span>
             </button>
 
             {/* Notifications */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500"
+              style={{ animationDelay: '400ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 // Handle notifications action
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-200">
                 <Bell className="w-4 h-4 text-white" />
               </div>
-              <span className="text-base font-medium text-gray-900">Notifications</span>
+              <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 transition-colors duration-300">Notifications</span>
             </button>
 
             {/* Logout */}
             <button 
-              className="flex items-center space-x-3 hover:bg-gray-50 transition-colors group py-3 px-2 rounded-lg w-full"
+              className="flex items-center space-x-3 hover:bg-gray-50 transition-all duration-300 group py-3 px-2 rounded-lg w-full animate-in slide-in-from-left-4 fade-in-0 duration-500"
+              style={{ animationDelay: '500ms' }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleLogout();
               }}
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-200">
                 <LogOut className="w-4 h-4 text-white" />
               </div>
-              <span className="text-base font-medium text-gray-900">Logout</span>
+              <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 transition-colors duration-300">Logout</span>
             </button>
           </div>
         </div>
