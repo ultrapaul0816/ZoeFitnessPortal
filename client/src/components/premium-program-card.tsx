@@ -73,14 +73,24 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
       data-testid={`card-program-${program.id}`}
     >
       <div className="relative">
-        <iframe
-          src="https://www.youtube.com/embed/62Qht8GVfPE"
-          title={`${program.name} program`}
-          className="w-full h-48"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+        {/* YouTube Video */}
+        <div className="w-full mb-4">
+          <iframe
+            src="https://www.youtube.com/embed/62Qht8GVfPE"
+            title={`${program.name} program video`}
+            className="w-full h-48 rounded-lg"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+        
+        {/* Program Cover Image */}
+        <img
+          src={program.imageUrl}
+          alt={`${program.name} program`}
+          className="w-full h-48 object-cover"
+        />
         {!hasAccess && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <div className="text-center text-white">
