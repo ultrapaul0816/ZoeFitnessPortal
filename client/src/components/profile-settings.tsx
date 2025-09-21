@@ -133,6 +133,16 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
                 <Info className="w-4 h-4 text-gray-400" />
               </div>
             </div>
+
+            {/* Save Button */}
+            <div className="mt-8 flex justify-center">
+              <Button 
+                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium px-8 py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+                data-testid="button-save-notifications"
+              >
+                Save Changes
+              </Button>
+            </div>
           </div>
         </div>
       </div>
