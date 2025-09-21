@@ -208,7 +208,7 @@ export default function HealYourCorePage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <Badge className="bg-gradient-to-r from-pink-400 to-pink-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
+          <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
             {healYourCoreProgram.level}
           </Badge>
         </div>
