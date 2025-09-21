@@ -462,14 +462,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Profile */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '80ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentView('profile');
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl"></div>
                 <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                   <User className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
@@ -488,14 +488,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* My Library */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '160ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   window.location.href = "/my-library";
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl"></div>
                 <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                   <BookOpen className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
@@ -514,14 +514,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Purchases & Payment */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '240ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentView('purchases');
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl"></div>
                 <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                   <CreditCard className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
@@ -540,14 +540,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Notifications */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '320ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentView('notifications');
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl"></div>
                 <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                   <Bell className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
@@ -566,14 +566,14 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Logout */}
             <div className="flex justify-start">
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-lg animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 transition-all duration-300 group py-3 px-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
                 style={{ animationDelay: '400ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLogout();
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl"></div>
                 <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                   <LogOut className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
