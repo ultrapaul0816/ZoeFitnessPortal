@@ -87,17 +87,21 @@ export default function Dashboard() {
             <div className="flex items-center">
               {/* Hamburger Menu */}
               <button 
-                className="p-3 hover:bg-gray-100 transition-colors rounded-lg"
+                className="p-3 hover:bg-pink-50 hover:scale-105 active:scale-95 transition-all duration-300 rounded-lg group"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 data-testid="button-hamburger-menu"
               >
-                {showProfileMenu ? (
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <Menu className="w-6 h-6 text-gray-600" />
-                )}
+                <div className="w-6 h-6 relative flex flex-col justify-center items-center">
+                  <div className={`w-5 h-0.5 bg-pink-500 transition-all duration-300 ease-in-out ${
+                    showProfileMenu ? 'rotate-45 translate-y-0.5' : ''
+                  }`}></div>
+                  <div className={`w-5 h-0.5 bg-pink-500 my-1 transition-all duration-300 ease-in-out ${
+                    showProfileMenu ? 'opacity-0 scale-0' : ''
+                  }`}></div>
+                  <div className={`w-5 h-0.5 bg-pink-500 transition-all duration-300 ease-in-out ${
+                    showProfileMenu ? '-rotate-45 -translate-y-0.5' : ''
+                  }`}></div>
+                </div>
               </button>
             </div>
             
