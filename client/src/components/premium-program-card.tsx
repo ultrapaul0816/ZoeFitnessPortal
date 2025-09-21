@@ -72,20 +72,20 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
       onClick={handleCardClick}
       data-testid={`card-program-${program.id}`}
     >
+      {/* YouTube Video */}
+      <div className="w-full mb-4">
+        <iframe
+          src="https://www.youtube.com/embed/62Qht8GVfPE"
+          title={`${program.name} program video`}
+          className="w-full h-48 rounded-lg"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+      
+      {/* Program Cover Image with Tags */}
       <div className="relative">
-        {/* YouTube Video */}
-        <div className="w-full mb-4">
-          <iframe
-            src="https://www.youtube.com/embed/62Qht8GVfPE"
-            title={`${program.name} program video`}
-            className="w-full h-48 rounded-lg"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-        
-        {/* Program Cover Image */}
         <img
           src={program.imageUrl}
           alt={`${program.name} program`}
