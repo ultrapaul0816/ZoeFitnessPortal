@@ -3713,21 +3713,6 @@ function ProgramsSection({
                     </div>
                   </div>
 
-                  {/* Introduction Video */}
-                  <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-3 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="text-white font-semibold text-sm mb-1">Program Introduction</h4>
-                        <p className="text-pink-100 text-xs">Watch this before starting</p>
-                      </div>
-                      <Button className="bg-white text-pink-600 hover:bg-pink-50 px-3 py-1 rounded text-xs font-semibold flex items-center gap-1">
-                        <Play className="w-3 h-3" />
-                        <a href="https://www.youtube.com/watch?v=B53GBfgME9E&feature=youtu.be" target="_blank" rel="noopener noreferrer">
-                          Watch Video
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
 
                   {/* How to Section */}
                   <div className="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
@@ -3743,40 +3728,40 @@ function ProgramsSection({
                   </div>
 
                   {/* Tips before you begin */}
-                  <div className="bg-pink-50 p-3 rounded-lg border-l-4 border-pink-400">
-                    <h4 className="font-semibold text-pink-700 text-sm mb-2">Tips before you begin:</h4>
-                    <div className="space-y-1 text-xs text-gray-700">
+                  <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-3 rounded-lg">
+                    <h4 className="font-semibold text-white text-sm mb-2">Tips before you begin:</h4>
+                    <div className="space-y-1 text-xs text-white">
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">Breathe First, Move Second:</span> Every movement begin with deep exhale and gentle core engagement.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">Breathe First, Move Second:</span> Every movement begin with deep exhale and gentle core engagement.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">Feel, Don't Force:</span> The goal is to feel supported - not strained. If something feels off, pause, or regress.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">Feel, Don't Force:</span> The goal is to feel supported - not strained. If something feels off, pause, or regress.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">One Round Still Progress:</span> Don't skip a session just because you don't have time for all rounds.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">One Round Still Progress:</span> Don't skip a session just because you don't have time for all rounds.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">Doming, Heaviness, or Leaking?</span> Stop & regress to earlier exercises. That's your body's way of asking.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">Doming, Heaviness, or Leaking?</span> Stop & regress to earlier exercises. That's your body's way of asking.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">Stay Consistent, Not Perfect:</span> Progress comes from showing up—even imperfectly.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">Stay Consistent, Not Perfect:</span> Progress comes from showing up—even imperfectly.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">Hydrate, Rest, Nourish:</span> Give your body the care parts of your recovery too.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">Hydrate, Rest, Nourish:</span> Give your body the care parts of your recovery too.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">Avoid Overexertion:</span> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">Avoid Overexertion:</span> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-blue-400 font-bold">✧</span>
-                        <span><span className="text-blue-400 font-semibold">Consult Your Doctor:</span> Always consult with your healthcare provider before continuing with exercises.</span>
+                        <span className="text-pink-100 font-bold">✧</span>
+                        <span><span className="text-pink-100 font-semibold">Consult Your Doctor:</span> Always consult with your healthcare provider before continuing with exercises.</span>
                       </div>
                     </div>
                   </div>
