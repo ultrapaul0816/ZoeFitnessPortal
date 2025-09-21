@@ -47,83 +47,54 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
           <div className="max-w-4xl mx-auto">
             <div className="space-y-6 text-sm leading-relaxed text-gray-800">
               
-              {/* Medical Disclaimer */}
+              {/* General Disclaimer */}
               <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
                 <h3 className="font-bold text-red-700 text-base mb-3">
-                  MEDICAL DISCLAIMER
+                  General Disclaimer:
                 </h3>
-                <p className="mb-3">
-                  <strong>This program is for educational and informational purposes only and is not intended as medical advice.</strong> The exercises, information, and recommendations provided are not intended to diagnose, treat, cure, or prevent any medical condition.
-                </p>
                 <p>
-                  Before starting any exercise program, especially postpartum, you should consult with your healthcare provider. Every individual's medical situation is unique, and what works for one person may not be appropriate for another.
+                  "Stronger with Zoe – Postnatal Health & Fitness Bible" is designed to provide general information and support for postpartum women on their recovery, health, and fitness journey. The information and exercises provided are for educational purposes only and are not intended to replace professional medical advice, diagnosis, or treatment from a qualified healthcare provider. Always consult with your physician, physiotherapist, or other qualified health provider regarding any medical condition, postpartum recovery concerns, or exercise regimen.
                 </p>
               </div>
 
-              {/* Postpartum Specific Warnings */}
+              {/* Participant Responsibility */}
               <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
                 <h3 className="font-bold text-yellow-700 text-base mb-3">
-                  POSTPARTUM CONSIDERATIONS
+                  Participant Responsibility:
                 </h3>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600 mt-1 font-bold">•</span>
-                    <span>You should have medical clearance from your healthcare provider before beginning any exercise program</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600 mt-1 font-bold">•</span>
-                    <span>This program is designed for women who are at least 6 weeks postpartum with medical clearance</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600 mt-1 font-bold">•</span>
-                    <span>If you experience pain, dizziness, shortness of breath, or any unusual symptoms, stop exercising immediately and consult your healthcare provider</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600 mt-1 font-bold">•</span>
-                    <span>Results may vary. This program does not guarantee specific outcomes</span>
-                  </li>
-                </ul>
+                <p>
+                  Participation in any postnatal exercise program carries inherent risks, particularly following childbirth. It is the responsibility of each participant to consult with a healthcare provider before beginning this or any other exercise program. By using "Stronger with Zoe – Postnatal Health & Fitness Bible", you acknowledge that you have been cleared by your healthcare provider to engage in postpartum physical activities. You voluntarily assume all risks associated with participation and accept full responsibility for any potential injury, discomfort, or health complications that may arise.
+                </p>
               </div>
 
-              {/* Liability Disclaimer */}
+              {/* Limitation of Liability */}
               <div className="bg-gray-50 border-l-4 border-gray-500 p-4 rounded">
                 <h3 className="font-bold text-gray-700 text-base mb-3">
-                  ASSUMPTION OF RISK
+                  Limitation of Liability:
                 </h3>
-                <p className="mb-3">
-                  By participating in this program, you acknowledge that exercise involves certain risks, including but not limited to, serious injury or death. You voluntarily assume all risks associated with your participation.
-                </p>
                 <p>
-                  <strong>You agree to use your own judgment and listen to your body.</strong> If any exercise feels uncomfortable or causes pain, discontinue immediately.
+                  Zoe Modgill and "Stronger with Zoe" shall not be liable for any claims, demands, injuries, damages, actions, or cause of action that arise in connection with, or as a result of, the postnatal program, workouts, or any recommendations provided therein. Participants agree to release and hold harmless Zoe Modgill and any affiliated entities from and against any claims arising from their participation in the program.
                 </p>
               </div>
 
-              {/* Professional Guidance */}
+              {/* Accuracy of Information */}
               <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
                 <h3 className="font-bold text-blue-700 text-base mb-3">
-                  WHEN TO SEEK PROFESSIONAL HELP
+                  Accuracy of Information:
                 </h3>
-                <p className="mb-2">
-                  Please consult a healthcare professional if you experience:
+                <p>
+                  While every effort is made to ensure the accuracy of the information presented in this guide, "Stronger with Zoe" cannot guarantee that all information is up-to-date, accurate, or complete at all times. Health and fitness recommendations evolve, and individual needs may vary. Any reliance you place on the information in this guide is strictly at your own risk.
                 </p>
-                <ul className="space-y-1">
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-1 font-bold">•</span>
-                    <span>Persistent pain or discomfort</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-1 font-bold">•</span>
-                    <span>Diastasis recti that doesn't improve</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-1 font-bold">•</span>
-                    <span>Pelvic floor dysfunction</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-1 font-bold">•</span>
-                    <span>Any concerns about your recovery</span>
-                  </li>
-                </ul>
+              </div>
+
+              {/* Privacy */}
+              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                <h3 className="font-bold text-green-700 text-base mb-3">
+                  Privacy:
+                </h3>
+                <p>
+                  Your privacy is of utmost importance. Any personal information you choose to share within "Stronger with Zoe" communities, coaching sessions, or discussions will be treated with confidentiality and will not be disclosed to any third party without your explicit consent, except as required by law.
+                </p>
               </div>
 
             </div>
