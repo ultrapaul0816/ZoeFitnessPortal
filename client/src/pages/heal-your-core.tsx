@@ -5,7 +5,7 @@ import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_175844526626
 import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_1758445423086.png";
 import tvaContentImage from "@assets/Screenshot 2025-09-21 at 14.38.24_1758445791011.png";
 import tvaSkeletonImage from "@assets/Screenshot 2025-09-21 at 14.39.32_1758445791002.png";
-import coreActivationImage from "@assets/Screenshot 2025-09-21 at 14.44.00_1758446060087.png";
+import coreActivationImage from "@assets/Screenshot 2025-09-21 at 14.47.02_1758446239897.png";
 import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_1758446182185.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
