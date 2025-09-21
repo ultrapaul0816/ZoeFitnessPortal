@@ -8,6 +8,7 @@ import tvaSkeletonImage from "@assets/Screenshot 2025-09-21 at 14.39.32_17584457
 import coreActivationImage from "@assets/Screenshot 2025-09-21 at 14.47.02_1758446239897.png";
 import breathCoreImage from "@assets/Screenshot 2025-09-21 at 14.44.45_1758446182185.png";
 import coreCompressionsImage from "@assets/Screenshot 2025-09-21 at 14.49.22_1758446389051.png";
+import pelvicFloorImage from "@assets/Screenshot 2025-09-21 at 14.54.10_1758446664540.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -2002,6 +2003,18 @@ function UnderstandingYourCoreSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     <p className="text-sm"><strong>Why this matters?</strong> Your pelvic floor is a key part of your core canister. It's not just about squeezing; it's about balance: knowing how to lift and how to let go.</p>
+                    
+                    {/* Pelvic Floor Image */}
+                    <div className="flex justify-center my-6">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border max-w-2xl">
+                        <img 
+                          src={pelvicFloorImage} 
+                          alt="Pelvic floor release position - woman sitting with proper posture"
+                          className="w-full h-auto rounded"
+                          data-testid="img-pelvic-floor"
+                        />
+                      </div>
+                    </div>
                     
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="bg-muted/50 p-4 rounded">
