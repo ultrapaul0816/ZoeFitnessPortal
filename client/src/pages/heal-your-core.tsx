@@ -3636,12 +3636,12 @@ function ProgramsSection({
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="text-xs text-gray-600 font-medium">EQUIPMENT NEEDED</div>
-                      <div className="flex flex-wrap gap-1 lg:justify-end">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Mini band</span>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Small Pilates ball</span>
-                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">Mat</span>
+                    <div className="flex flex-col gap-3">
+                      <div className="text-xs text-gray-600 font-medium uppercase tracking-wide">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-2 lg:justify-end">
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini band</span>
+                        <span className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Small Pilates ball</span>
+                        <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
                       </div>
                     </div>
                   </div>
