@@ -58,7 +58,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   if (currentView === 'notifications') {
     return (
       <div 
-        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in slide-in-from-top-4 duration-300" 
+        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
         data-testid="page-notifications-settings"
       >
         <div className="w-full h-full overflow-y-auto p-6">
@@ -126,7 +126,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   if (currentView === 'purchases') {
     return (
       <div 
-        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in slide-in-from-top-4 duration-300" 
+        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
         data-testid="page-purchases-settings"
       >
         <div className="w-full h-full overflow-y-auto p-6">
@@ -251,7 +251,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
   if (currentView === 'profile') {
     return (
       <div 
-        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in slide-in-from-top-4 duration-300" 
+        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
         data-testid="page-profile-settings"
       >
         <div className="w-full h-full overflow-y-auto p-6">
