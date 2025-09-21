@@ -1114,7 +1114,7 @@ function CardioSection() {
                     
                     {/* Responsive Cardio Plan Table */}
                     <div className="overflow-x-auto -mx-6 px-6">
-                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[600px]">
+                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[800px]">
                         <thead>
                           <tr className="bg-pink-100">
                             <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden md:table-cell">WEEK</th>
@@ -1288,7 +1288,7 @@ function CardioSection() {
                     
                     {/* Responsive Weekly Schedule Table */}
                     <div className="overflow-x-auto -mx-6 px-6">
-                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[500px]">
+                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[700px]">
                         <thead>
                           <tr className="bg-gray-100">
                             <th className="border border-gray-300 p-2 font-semibold">WEEK</th>
