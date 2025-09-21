@@ -2513,49 +2513,6 @@ function YouTubeModal({
 // Main export is at the top of the file (line 38)
 
 // End of file - all component functions are complete
-                    </td>
-                    <td className="border border-gray-300 p-3 text-xs">
-                      Keep reps low (5-8), focus on form. Stop if there's pain, coning, or pelvic pressure.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
-            <div className="mt-6 grid md:grid-cols-2 gap-6">
-              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-primary">
-                <h4 className="font-semibold text-sm mb-3 text-primary">Do Daily / Improve On:</h4>
-                <ul className="text-xs space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-pink-500 font-bold">❖</span>
-                    <span>Breath leads movement</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-pink-500 font-bold">❖</span>
-                    <span>Pause if you see doming</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-pink-500 font-bold">❖</span>
-                    <span>Practice posture during daily tasks</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-pink-500 font-bold">❖</span>
-                    <span>5-10 min counts!</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="p-4 bg-pink-50 rounded-lg border-l-4 border-primary">
-                <h4 className="font-semibold text-sm mb-3 text-primary">Tips:</h4>
-                <ul className="text-xs space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-pink-500 font-bold">❖</span>
-                    <span>5-8 reps | 1-2 rounds | 3-5x/week</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-pink-500 font-bold">❖</span>
-                    <span>Avoid pain, doming, leaking</span>
-                  </li>
                   <li className="flex items-start gap-2">
                     <span className="text-pink-500 font-bold">❖</span>
                     <span>Rest is progress</span>
