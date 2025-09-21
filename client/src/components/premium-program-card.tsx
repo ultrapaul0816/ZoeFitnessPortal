@@ -143,11 +143,11 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
               </div>
             </div>
             <Button 
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-300 ease-out hover:animate-pulse border-0 relative overflow-hidden group" 
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-300 ease-out hover:animate-pulse border-0 relative overflow-hidden group rounded-xl" 
               data-testid={`button-start-${program.id}`}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <Star className="w-5 h-5 mr-2 animate-spin group-hover:animate-none transition-all duration-300" />
+              <Dumbbell className="w-5 h-5 mr-2 animate-bounce group-hover:animate-pulse transition-all duration-300" />
               <span className="relative z-10 text-lg font-semibold tracking-wide">Start Program</span>
             </Button>
             <p className="text-xs text-center text-green-600 font-medium">
