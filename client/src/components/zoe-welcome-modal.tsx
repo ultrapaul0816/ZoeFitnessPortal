@@ -20,59 +20,46 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && hasConsented && handleClose()}>
-      <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[95vh] overflow-hidden p-0 bg-gradient-to-br from-white via-pink-50/30 to-rose-50/50 backdrop-blur-xl border border-pink-200/50 shadow-2xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[95vh] overflow-hidden p-0 bg-white border border-gray-200/50 shadow-2xl">
         <DialogHeader className="sr-only">
           <DialogTitle>Important Disclaimer</DialogTitle>
           <DialogDescription>Health and Safety Information</DialogDescription>
         </DialogHeader>
-        
-        {/* Custom close button */}
-        <button
-          onClick={() => hasConsented && handleClose()}
-          className="absolute right-4 top-4 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm border border-pink-200/50 hover:bg-pink-50 transition-all duration-200 flex items-center justify-center group"
-        >
-          <X className="w-4 h-4 text-gray-500 group-hover:text-pink-600 transition-colors" />
-        </button>
 
-        {/* Scrollable content container */}
-        <div className="overflow-y-auto max-h-[95vh]">
-          {/* Header Section */}
-          <div className="relative px-6 pt-8 pb-6 text-center bg-gradient-to-r from-pink-500/10 via-rose-500/5 to-pink-600/10">
-            {/* Decorative background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 via-transparent to-rose-400/20"></div>
+        {/* Single unified container */}
+        <div className="overflow-y-auto max-h-[95vh] bg-white">
+          {/* Header Section - Now white background */}
+          <div className="px-6 pt-8 pb-6 text-center bg-white border-b border-gray-100">
+            <img 
+              src="/assets/Screenshot 2025-09-20 at 21.18.10_1758383297530.png"
+              alt="Postnatal Pregnancy with Zoe Logo"
+              className="mx-auto h-20 w-auto mb-4 drop-shadow-lg"
+            />
             
-            <div className="relative z-10">
-              <img 
-                src="/assets/Screenshot 2025-09-20 at 21.18.10_1758383297530.png"
-                alt="Postnatal Pregnancy with Zoe Logo"
-                className="mx-auto h-20 w-auto mb-4 drop-shadow-lg"
-              />
-              
-              {/* Modern disclaimer heading */}
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-                  <AlertTriangle className="w-5 h-5 text-white" />
-                </div>
-                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent">
-                  IMPORTANT DISCLAIMER
-                </h1>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-                  <AlertTriangle className="w-5 h-5 text-white" />
-                </div>
+            {/* Modern disclaimer heading */}
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <AlertTriangle className="w-5 h-5 text-white" />
               </div>
-              
-              <p className="text-sm text-gray-600 font-medium">
-                Please read carefully before continuing
-              </p>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent">
+                IMPORTANT DISCLAIMER
+              </h1>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <AlertTriangle className="w-5 h-5 text-white" />
+              </div>
             </div>
+            
+            <p className="text-sm text-gray-600 font-medium">
+              Please read carefully before continuing
+            </p>
           </div>
 
           {/* Main Content */}
-          <div className="px-4 sm:px-6 pb-6">
+          <div className="px-4 sm:px-6 py-6">
             <div className="space-y-4">
               
               {/* General Disclaimer */}
-              <div className="group relative bg-white/60 backdrop-blur-sm border border-pink-200/50 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-pink-300/70">
+              <div className="group relative bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:border-pink-300/70">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
                     <Shield className="w-5 h-5 text-white" />
@@ -89,7 +76,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
               </div>
 
               {/* Participant Responsibility */}
-              <div className="group relative bg-white/60 backdrop-blur-sm border border-pink-200/50 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-pink-300/70">
+              <div className="group relative bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:border-pink-300/70">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
                     <Users className="w-5 h-5 text-white" />
@@ -106,7 +93,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
               </div>
 
               {/* Limitation of Liability */}
-              <div className="group relative bg-white/60 backdrop-blur-sm border border-pink-200/50 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-pink-300/70">
+              <div className="group relative bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:border-pink-300/70">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-gray-500 to-slate-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
                     <FileText className="w-5 h-5 text-white" />
@@ -123,7 +110,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
               </div>
 
               {/* Accuracy of Information */}
-              <div className="group relative bg-white/60 backdrop-blur-sm border border-pink-200/50 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-pink-300/70">
+              <div className="group relative bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:border-pink-300/70">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
                     <AlertTriangle className="w-5 h-5 text-white" />
@@ -140,7 +127,7 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
               </div>
 
               {/* Privacy */}
-              <div className="group relative bg-white/60 backdrop-blur-sm border border-pink-200/50 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-pink-300/70">
+              <div className="group relative bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:border-pink-300/70">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
                     <Lock className="w-5 h-5 text-white" />
@@ -156,13 +143,11 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Consent Section */}
-          <div className="sticky bottom-0 px-4 sm:px-6 py-6 bg-gradient-to-t from-white via-white/95 to-white/80 backdrop-blur-xl border-t border-pink-200/50">
-            <div className="space-y-4">
+            {/* Consent Section - Integrated into main container */}
+            <div className="mt-6 space-y-4">
               {/* Consent checkbox */}
-              <div className="relative bg-white/80 backdrop-blur-sm border border-pink-200/60 rounded-2xl p-5 shadow-lg">
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5">
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0 mt-1">
                     <Checkbox 
