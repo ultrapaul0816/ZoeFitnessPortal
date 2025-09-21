@@ -4528,9 +4528,180 @@ function WhatComesNextSection({
           </CardContent>
         </Card>
 
-        {/* Program 2-6 Placeholders */}
+        {/* Program 2 - Week 2 */}
+        <Card className="overflow-hidden border-l-4 border-l-blue-400">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+            {/* Mobile Layout */}
+            <div className="block lg:hidden">
+              {/* Week Badge */}
+              <div className="mb-4">
+                <div className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                  WEEK 2
+                </div>
+              </div>
+              
+              {/* Program Title */}
+              <div className="mb-3">
+                <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 2 - STABILITY & BREATHWORK</CardTitle>
+                <CardDescription className="text-blue-600 font-semibold text-sm">Workout Schedule: Day 1, 3, 5</CardDescription>
+                <p className="text-xs text-gray-600 mt-1">Move slowly, focus on quality, stay aware of your body's signals</p>
+              </div>
+              
+              {/* Equipment Section */}
+              <div>
+                <div className="text-xs text-gray-700 font-bold uppercase tracking-wide mb-2">Equipment Needed</div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
+                  <span className="bg-gray-100 text-gray-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Your breath</span>
+                  <span className="bg-pink-100 text-pink-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Patience</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
+                  WEEK 2
+                </div>
+                <div className="min-w-0">
+                  <CardTitle className="text-lg text-gray-900">PROGRAM 2 - STABILITY & BREATHWORK</CardTitle>
+                  <CardDescription className="text-blue-600 font-semibold text-sm">Workout Schedule: Day 1, 3, 5</CardDescription>
+                  <p className="text-xs text-gray-600 mt-1">Move slowly, focus on quality, stay aware of your body's signals</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3">
+                <div className="text-xs text-gray-600 font-medium uppercase tracking-wide">Equipment Needed</div>
+                <div className="flex flex-wrap gap-2 justify-end">
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
+                  <span className="bg-gray-100 text-gray-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Your breath</span>
+                  <span className="bg-pink-100 text-pink-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Patience</span>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="mb-4">
+              <div className="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-400 shadow-sm">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-blue-700 font-bold text-sm uppercase tracking-wide">Coach's Note</span>
+                  </div>
+                  <p className="text-gray-700 text-sm leading-relaxed pl-4">
+                    Now that you've laid the foundation, we begin layering in simple movements with control. Move slowly, focus on quality, and stay aware of your body's signals.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* How To & Rest Instructions */}
+            <div className="mb-6 space-y-3">
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <p className="text-blue-800 text-sm">
+                  <strong>How to:</strong> All blue underlined text is clickable and will open a video link. PLAY ALL indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
+                </p>
+              </div>
+              <div className="bg-orange-100 p-3 rounded-lg">
+                <p className="text-orange-800 text-sm">
+                  <strong>Rest:</strong> Rest a minimum of 30 secs - ONE minute between movements. Rest more if needed.
+                </p>
+              </div>
+            </div>
+
+            {/* Part 1: Core & Breath Reset */}
+            <div className="mb-6">
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-3 rounded-t-lg">
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-bold text-lg">▶</span>
+                  <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can be performed in multiple positions</h4>
+                </div>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-b-lg border border-blue-200">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <span className="text-blue-800 font-semibold underline cursor-pointer text-sm">
+                    <a href="https://www.youtube.com/watch?v=SrEKb2TMLzA" target="_blank" rel="noopener noreferrer">
+                      3 Part Core & Breath Reset Flow
+                    </a>
+                  </span>
+                  <span className="text-blue-700 font-bold text-sm bg-blue-100 px-3 py-1 rounded-full">10 breaths each</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Part 2: Main Workout */}
+            <div className="mb-6">
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-3 rounded-t-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-bold text-lg">▶</span>
+                    <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout</h4>
+                  </div>
+                  <Button className="bg-white text-blue-600 hover:bg-blue-50 px-3 py-1 rounded text-xs font-semibold">
+                    <a href="https://www.youtube.com/playlist?list=PLlZC5Vz4VnBQt0XPv_nXdA-vFisde58u1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+                      <Play className="w-3 h-3" />
+                      PLAY ALL
+                    </a>
+                  </Button>
+                </div>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-b-lg border border-blue-200">
+                <div className="mb-2">
+                  <span className="text-blue-700 font-semibold text-sm uppercase tracking-wide">Perform 3 rounds of the following:</span>
+                  <div className="float-right text-blue-600 font-bold text-sm bg-blue-100 px-2 py-1 rounded-full">× 3</div>
+                </div>
+                <div className="space-y-2 mt-4">
+                  <div className="flex justify-between items-center p-2 bg-white rounded border">
+                    <span className="text-sm">
+                      <strong>1.</strong> <a href="https://www.youtube.com/watch?v=T8HHp4KXpJI" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Supine Alt Leg Marches</a>
+                    </span>
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">10 reps</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-white rounded border">
+                    <span className="text-sm">
+                      <strong>2.</strong> <a href="https://www.youtube.com/watch?v=AyVuVB0oneo" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Supine Cross Lateral Knee Presses</a>
+                    </span>
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">10 reps</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-white rounded border">
+                    <span className="text-sm">
+                      <strong>3.</strong> <a href="https://www.youtube.com/watch?v=iKrou6hSgmg" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Deadbug Leg March Arm Extensions</a>
+                    </span>
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">10 reps</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-white rounded border">
+                    <span className="text-sm">
+                      <strong>4.</strong> <a href="https://www.youtube.com/watch?v=zaOToxvSk6g" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Elbow Knee Side Plank Lifts</a>
+                    </span>
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">10 reps</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-white rounded border">
+                    <span className="text-sm">
+                      <strong>5.</strong> <a href="https://www.youtube.com/watch?v=Pd2le_I4bFE" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Wishbone Stretch</a>
+                    </span>
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">30 secs each side</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Precautions */}
+            <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+              <h4 className="font-semibold text-yellow-800 mb-2">Precautions</h4>
+              <div className="text-sm text-yellow-700 space-y-1">
+                <p><strong>Listen to Your Body:</strong> Always pay attention to how you feel and adjust accordingly.</p>
+                <p><strong>Take Options Given:</strong> Utilize the modifications provided to suit your comfort level.</p>
+                <p><strong>Reduce Reps or Rounds:</strong> Don't hesitate to reduce the number of repetitions or rounds if needed.</p>
+                <p><strong>Stay Hydrated:</strong> Keep plenty of water close by and drink frequently to stay hydrated.</p>
+                <p><strong>Avoid Overexertion:</strong> Stop immediately if you feel dizzy, nauseous, or overly fatigued.</p>
+                <p><strong>Consult Your Doctor:</strong> Always consult your healthcare provider before continuing with the exercises.</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Program 3-6 Placeholders */}
         {[
-          { week: 2, program: 2, days: "DAY 1, 3, 5, 7", title: "BUILD ENDURANCE", phase: "Building Phase" },
           { week: 3, program: 3, days: "DAY 1, 3, 5, 7", title: "STRENGTH FOUNDATION", phase: "Strength Phase" },
           { week: 4, program: 4, days: "DAY 1, 3, 5, 7", title: "POWER DEVELOPMENT", phase: "Power Phase" },
           { week: 5, program: 5, days: "DAY 1, 3, 5, 7", title: "INTEGRATION & FLOW", phase: "Integration Phase" },
