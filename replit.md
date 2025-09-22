@@ -108,6 +108,12 @@ Each program follows this standardized structure for consistency:
     - Equipment section with organized badges and proper spacing
   - **Desktop Week Layout Pattern**: Side-by-side structure with badge, content, and equipment aligned horizontally
 - **Equipment Badge System**: Consistent color-coded badges (blue for bands, green for Pilates ball, purple for mat) with proper wrapping
+- **Enhanced Equipment Section**: 
+  - **Real Equipment Images**: Replaced emoji icons with actual equipment images imported using @assets syntax for professional display
+  - **Square Containers**: Equipment items displayed in perfect square containers using aspect-square for uniform layout
+  - **Larger Images**: Increased from 128x128px to 160x160px (w-40 h-40) for maximum prominence and clarity
+  - **Spacious Design**: Enhanced padding (p-10) and larger containers for more prominent equipment display
+  - **Premium Visual Effects**: Enhanced shadows, hover scaling, rounded corners, and color-coded gradient backgrounds for each equipment type
 - **Pink Brand Theme**: Cohesive #EC4899 color scheme with gradient effects and shadows
 - **Professional Layout**: Premium visual appeal with rounded corners (rounded-2xl), gradient dividers, and contained hover effects
 

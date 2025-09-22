@@ -2137,11 +2137,11 @@ function WelcomeSection({
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                       {/* Row 1 */}
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-pink-200">
+                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-pink-200">
                           <img 
                             src={yogaMatImage} 
                             alt="Pink yoga mat" 
-                            className="w-32 h-32 object-contain filter drop-shadow-lg"
+                            className="w-40 h-40 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Yoga Mat</p>
@@ -2149,11 +2149,11 @@ function WelcomeSection({
                       </div>
                       
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-purple-200">
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-purple-200">
                           <img 
                             src={yogaBlocksImage} 
                             alt="Pink yoga blocks" 
-                            className="w-32 h-32 object-contain filter drop-shadow-lg"
+                            className="w-40 h-40 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Yoga Blocks</p>
@@ -2161,11 +2161,11 @@ function WelcomeSection({
                       </div>
                       
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-rose-200">
+                        <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-rose-200">
                           <img 
                             src={miniResistanceBandsImage} 
                             alt="Mini resistance bands" 
-                            className="w-32 h-32 object-contain filter drop-shadow-lg"
+                            className="w-40 h-40 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Mini Resistance Bands</p>
@@ -2174,11 +2174,11 @@ function WelcomeSection({
                       
                       {/* Row 2 */}
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-blue-200">
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-blue-200">
                           <img 
                             src={miniPilatesBallImage} 
                             alt="Mini Pilates ball" 
-                            className="w-32 h-32 object-contain filter drop-shadow-lg"
+                            className="w-40 h-40 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Mini Pilates Ball</p>
@@ -2186,11 +2186,11 @@ function WelcomeSection({
                       </div>
                       
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-indigo-200">
+                        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-indigo-200">
                           <img 
                             src={longResistanceBandImage} 
                             alt="Long resistance band" 
-                            className="w-32 h-32 object-contain filter drop-shadow-lg"
+                            className="w-40 h-40 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Pilates Theraband</p>
@@ -2198,11 +2198,11 @@ function WelcomeSection({
                       </div>
                       
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-200">
+                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-200">
                           <img 
                             src={swissBallImage} 
                             alt="Medium Swiss ball" 
-                            className="w-32 h-32 object-contain filter drop-shadow-lg"
+                            className="w-40 h-40 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Medium Swiss Ball</p>
@@ -2211,11 +2211,11 @@ function WelcomeSection({
                       
                       {/* Row 3 - Foam Roller centered */}
                       <div className="text-center group md:col-span-2 lg:col-span-1 lg:col-start-2">
-                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-slate-200">
+                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-slate-200">
                           <img 
                             src={foamRollerImage} 
                             alt="Foam roller" 
-                            className="w-32 h-32 object-contain filter drop-shadow-lg"
+                            className="w-40 h-40 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Foam Roller</p>
