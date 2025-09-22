@@ -6323,157 +6323,157 @@ function TheRoleOfNutritionSection({
                         <div className="grid gap-6">
                           {/* Collagen Support */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #f2038b 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">COLLAGEN SUPPORT</h4>
-                              <p className="text-pink-100 text-sm mt-1">Provides amino acids for rebuilding fascia and soft tissue</p>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #f8d7da 50%, #f3a8cb 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>COLLAGEN SUPPORT</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Provides amino acids for rebuilding fascia and soft tissue</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#f2038b'}}>Bone Broth (Mutton/Chicken)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#f2038b'}}>Homemade Soups</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#f2038b'}}>Haldi-doodh (Turmeric Milk)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#f2038b'}}>Collagen Powders</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#8b1538'}}>Bone Broth (Mutton/Chicken)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#8b1538'}}>Homemade Soups</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#8b1538'}}>Haldi-doodh (Turmeric Milk)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f3a8cb', color: '#8b1538'}}>Collagen Powders</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Anti-inflammatory Foods */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#c2b9a1'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #c2b9a1 0%, #b3a892 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">ANTI-INFLAMMATORY FOODS</h4>
-                              <p className="text-white opacity-90 text-sm mt-1">Reduces swelling and pain, supports tissue healing</p>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #c2b9a1 0%, #d4cbb4 50%, #c2b9a1 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>ANTI-INFLAMMATORY FOODS</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Reduces swelling and pain, supports tissue healing</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Turmeric</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Ginger</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Tulsi Tea (Holy Basil)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Ajwain Water</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Soaked Almonds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Walnuts</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Fatty Fish</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#b3a892'}}>Sardines</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Turmeric</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Ginger</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Tulsi Tea (Holy Basil)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Ajwain Water</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Soaked Almonds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Walnuts</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Fatty Fish</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#c2b9a1', color: '#5d5347'}}>Sardines</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Adequate Protein */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #9aafdc 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">ADEQUATE PROTEIN</h4>
-                              <p className="text-white opacity-90 text-sm mt-1">Helps repair muscles, ligaments & improves strength</p>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #c8d0ea 50%, #b3c0e4 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>ADEQUATE PROTEIN</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Helps repair muscles, ligaments & improves strength</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>2 Eggs</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>Cottage Cheese (Paneer)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>Yoghurt</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>Lentils</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>Fish</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>Grilled Chicken</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>Chana (Chickpeas)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#9aafdc'}}>Tofu</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>2 Eggs</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>Cottage Cheese (Paneer)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>Yoghurt</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>Lentils</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>Fish</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>Grilled Chicken</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>Chana (Chickpeas)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3c0e4', color: '#3d4f7a'}}>Tofu</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Low-GI Carbs */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #cbde9a 0%, #b8d082 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">LOW-GI CARBS</h4>
-                              <p className="text-white opacity-90 text-sm mt-1">Prevents blood sugar spikes, improves hormone balance</p>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #cbde9a 0%, #d6e4b0 50%, #cbde9a 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>LOW-GI CARBS</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Prevents blood sugar spikes, improves hormone balance</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#b8d082'}}>Sweet Potato</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#b8d082'}}>Bajra (Pearl Millet)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#b8d082'}}>Jowar (Sorghum)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#b8d082'}}>Rolled Oats</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#b8d082'}}>Whole Wheat Roti</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#b8d082'}}>Red Rice</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#b8d082'}}>Poha With Veggies</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#4a5c2a'}}>Sweet Potato</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#4a5c2a'}}>Bajra (Pearl Millet)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#4a5c2a'}}>Jowar (Sorghum)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#4a5c2a'}}>Rolled Oats</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#4a5c2a'}}>Whole Wheat Roti</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#4a5c2a'}}>Red Rice</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#cbde9a', color: '#4a5c2a'}}>Poha With Veggies</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Hydration & Electrolytes */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#8199d4'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #9aafdc 0%, #8199d4 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">HYDRATION & ELECTROLYTES</h4>
-                              <p className="text-white opacity-90 text-sm mt-1">Keeps fascia elastic and supports nutrient delivery</p>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#9aafdc'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #9aafdc 0%, #afc0e1 50%, #9aafdc 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>HYDRATION & ELECTROLYTES</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Keeps fascia elastic and supports nutrient delivery</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#8199d4'}}>Jeera Water (Cumin)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#8199d4'}}>Coconut Water</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#8199d4'}}>Nimbu-paani (Lime Water)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#8199d4'}}>ORS</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#8199d4'}}>Salted Chaas (Buttermilk)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#8199d4'}}>8–10 Glasses Of Water</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#2c4066'}}>Jeera Water (Cumin)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#2c4066'}}>Coconut Water</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#2c4066'}}>Nimbu-paani (Lime Water)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#2c4066'}}>ORS</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#2c4066'}}>Salted Chaas (Buttermilk)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#9aafdc', color: '#2c4066'}}>8–10 Glasses Of Water</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Healthy Fats */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#a5c26a'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b8d082 0%, #a5c26a 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">HEALTHY FATS</h4>
-                              <p className="text-white opacity-90 text-sm mt-1">Supports hormones and tissue elasticity</p>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b8d082'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b8d082 0%, #c4d698 50%, #b8d082 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>HEALTHY FATS</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Supports hormones and tissue elasticity</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#a5c26a'}}>Ghee (Small Amounts)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#a5c26a'}}>Sesame Seeds (Til)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#a5c26a'}}>Coconut</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#a5c26a'}}>Soaked Almonds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#a5c26a'}}>Flaxseeds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#a5c26a'}}>Groundnut Chutney</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#3f5421'}}>Ghee (Small Amounts)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#3f5421'}}>Sesame Seeds (Til)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#3f5421'}}>Coconut</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#3f5421'}}>Soaked Almonds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#3f5421'}}>Flaxseeds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b8d082', color: '#3f5421'}}>Groundnut Chutney</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Complex Carbs */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#a49783'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b3a892 0%, #a49783 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">COMPLEX CARBS</h4>
-                              <p className="text-white opacity-90 text-sm mt-1">Balances blood sugar, supports energy + digestion</p>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3a892'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b3a892 0%, #c0b5a4 50%, #b3a892 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>COMPLEX CARBS</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Balances blood sugar, supports energy + digestion</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#a49783'}}>Bajra (Pearl Millet)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#a49783'}}>Jowar (Sorghum)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#a49783'}}>Red Rice</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#a49783'}}>Oats</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#a49783'}}>Poha With Veggies</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#a49783'}}>Sabudana (Sago)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#a49783'}}>Sweet Potato</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#4a3f36'}}>Bajra (Pearl Millet)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#4a3f36'}}>Jowar (Sorghum)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#4a3f36'}}>Red Rice</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#4a3f36'}}>Oats</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#4a3f36'}}>Poha With Veggies</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#4a3f36'}}>Sabudana (Sago)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#b3a892', color: '#4a3f36'}}>Sweet Potato</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Micronutrients */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f2038b 0%, #e80274 100%)'}}>
-                              <h4 className="font-bold text-white text-lg">MICRONUTRIENTS</h4>
-                              <p className="text-pink-100 text-sm mt-1">Supports wound healing and replenishes lost iron/zinc</p>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f2038b 0%, #f551a3 50%, #f2038b 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>MICRONUTRIENTS</h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3)'}}>Supports wound healing and replenishes lost iron/zinc</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: '#e80274'}}>Beetroot</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: '#e80274'}}>Leafy Greens</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: '#e80274'}}>Citrus Fruits</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: '#e80274'}}>Jaggery</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: '#e80274'}}>Sesame Seeds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: '#e80274'}}>Methi (Fenugreek)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: '#e80274'}}>Sabzis With Haldi + Jeera</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: 'white'}}>Beetroot</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: 'white'}}>Leafy Greens</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: 'white'}}>Citrus Fruits</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: 'white'}}>Jaggery</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: 'white'}}>Sesame Seeds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: 'white'}}>Methi (Fenugreek)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium" style={{backgroundColor: '#f2038b', color: 'white'}}>Sabzis With Haldi + Jeera</span>
                               </div>
                             </div>
                           </div>
