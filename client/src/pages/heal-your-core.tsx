@@ -487,14 +487,28 @@ export default function HealYourCorePage() {
                 
                 {/* Active progress line */}
                 <div 
-                  className={`absolute top-1/2 h-0.5 sm:h-1 rounded-full -translate-y-1/2 transition-all duration-700 ease-out progress-${activeTab.replace('-', '')}`}
+                  className="absolute top-1/2 h-0.5 sm:h-1 rounded-full -translate-y-1/2 transition-all duration-700 ease-out"
                   style={{
                     left: '0%',
                     width: `${(() => {
                       const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
                       const currentIndex = tabOrder.indexOf(activeTab);
                       return (currentIndex / (tabOrder.length - 1)) * 100;
-                    })()}%`
+                    })()}%`,
+                    background: (() => {
+                      const colors = [
+                        'linear-gradient(135deg, #f3a8cb 0%, #ec4899 100%)', // Welcome - Light pink
+                        'linear-gradient(135deg, #b3c0e4 0%, #3b82f6 100%)', // Understanding - Light blue  
+                        'linear-gradient(135deg, #cbde9a 0%, #10b981 100%)', // Healing - Light green
+                        'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', // Programs - Orange
+                        'linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)', // Nutrition - Teal
+                        'linear-gradient(135deg, #c2b9a1 0%, #6366f1 100%)', // Next Steps - Light brown to indigo
+                        'linear-gradient(135deg, #8b5cf6 0%, #ef4444 100%)'  // FAQs - Purple to red
+                      ];
+                      const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                      const currentIndex = tabOrder.indexOf(activeTab);
+                      return colors[currentIndex] || colors[0];
+                    })()
                   }}
                 />
                 
@@ -502,7 +516,15 @@ export default function HealYourCorePage() {
                 {(() => {
                   const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
                   const currentIndex = tabOrder.indexOf(activeTab);
-                  const colors = ['bg-pink-500', 'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-orange-500', 'bg-teal-500', 'bg-indigo-500', 'bg-red-500'];
+                  const colors = [
+                    '#f3a8cb', // Welcome - Light pink
+                    '#b3c0e4', // Understanding - Light blue
+                    '#cbde9a', // Healing - Light green
+                    '#f59e0b', // Programs - Orange
+                    '#14b8a6', // Nutrition - Teal
+                    '#c2b9a1', // Next Steps - Light brown
+                    '#8b5cf6'  // FAQs - Purple
+                  ];
                   
                   return tabOrder.map((tab, index) => {
                     const isUnlocked = index <= currentIndex;
@@ -514,7 +536,7 @@ export default function HealYourCorePage() {
                         key={tab}
                         className={`relative w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 md:border-3 flex items-center justify-center text-xs sm:text-sm font-bold z-10 transition-all duration-500 ${
                           isUnlocked 
-                            ? `${colors[index]} text-white border-white shadow-lg` 
+                            ? 'text-white border-white shadow-lg' 
                             : 'bg-gray-300 text-gray-500 border-gray-200'
                         } ${
                           isAnimating 
@@ -526,6 +548,7 @@ export default function HealYourCorePage() {
                             : ''
                         }`}
                         style={{
+                          backgroundColor: isUnlocked ? colors[index] : undefined,
                           transform: isAnimating ? 'scale(1.4)' : 'scale(1)',
                           transition: 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
                         }}
