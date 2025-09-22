@@ -81,10 +81,9 @@ Each program follows this standardized structure for consistency:
 ## UI/UX Improvements
 - **Consistent Navigation**: Clickable logo across all pages (Dashboard, My Library, Heal Your Core) with proper hover effects
 - **Advanced Tab Navigation System**:
-  - **Meaningful Progress Icons**: Each tab features descriptive icons (Star for Welcome, Heart for Cardio, Brain for Core, Sprout for Heal, Dumbbell for Programs, Apple for Nutrition, Target for What's Next, HelpCircle for FAQs)
+  - **Meaningful Icons**: Each tab features descriptive icons (BookOpen for Welcome, Activity for Cardio, Brain for Core, Heart for Heal, Dumbbell for Programs, Apple for Nutrition, ChartBar for What's Next, HelpCircle for FAQs)
   - **Visual Flow Lines**: Gradient connecting lines create seamless journey progression across tabs
-  - **Dynamic Progress Badges**: Color-coded circular badges with hover animations and pulsing effects for active tabs
-  - **Step-by-Step Guidance**: Visual cues help users understand the recommended learning sequence
+  - **Clean Interface**: Streamlined design without distracting notification-style badges
   - **8-Tab Navigation**: Complete learning journey from Welcome through FAQs with proper progression flow
   - **Responsive Design**: Mobile and desktop optimized layouts with proper z-indexing and positioning
 - **Comprehensive FAQ Section**: 

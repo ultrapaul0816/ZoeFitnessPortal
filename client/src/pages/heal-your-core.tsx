@@ -414,59 +414,35 @@ export default function HealYourCorePage() {
           <div className="overflow-x-auto px-0 shadow-xl rounded-lg">
             <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-3 md:p-4 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-1 ${activeTab === 'welcome' ? 'progress-current' : ''}`}>
-                <Star className="w-3 h-3" />
-              </div>
               <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Welcome</span>
             </TabsTrigger>
             <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-2 ${activeTab === 'cardio' ? 'progress-current' : ''}`}>
-                <Heart className="w-3 h-3" />
-              </div>
               <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium text-center leading-tight">Cardio Plan</span>
             </TabsTrigger>
             <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-3 ${activeTab === 'understanding' ? 'progress-current' : ''}`}>
-                <Brain className="w-3 h-3" />
-              </div>
               <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium text-center leading-tight">Core</span>
             </TabsTrigger>
             <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-4 ${activeTab === 'healing' ? 'progress-current' : ''}`}>
-                <Sprout className="w-3 h-3" />
-              </div>
               <Heart className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Heal</span>
             </TabsTrigger>
             <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-5 ${activeTab === 'programs' ? 'progress-current' : ''}`}>
-                <Dumbbell className="w-3 h-3" />
-              </div>
               <Dumbbell className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Programs</span>
             </TabsTrigger>
             <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-6 ${activeTab === 'nutrition' ? 'progress-current' : ''}`}>
-                <Apple className="w-3 h-3" />
-              </div>
               <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Nutrition</span>
             </TabsTrigger>
             <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-7 ${activeTab === 'next-steps' ? 'progress-current' : ''}`}>
-                <Target className="w-3 h-3" />
-              </div>
               <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">What's Next</span>
             </TabsTrigger>
             
             <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className={`progress-badge progress-step-8 ${activeTab === 'faqs' ? 'progress-current' : ''}`}>
-                <HelpCircle className="w-3 h-3" />
-              </div>
               <HelpCircle className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">FAQs</span>
             </TabsTrigger>
