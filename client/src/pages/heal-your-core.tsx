@@ -6319,126 +6319,161 @@ function TheRoleOfNutritionSection({
                           tissue, muscles, and energy levels.
                         </p>
                         
-                        {/* Nutrition Strategy Table */}
-                        <div className="overflow-x-auto">
-                          <div className="min-w-full">
-                            {/* Header */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 bg-green-100 rounded-t-lg">
-                              <div className="p-3 font-semibold text-gray-800 border-b md:border-b-0 md:border-r border-green-200">
-                                Strategy/Nutrient
-                              </div>
-                              <div className="p-3 font-semibold text-gray-800 border-b md:border-b-0 md:border-r border-green-200">
-                                Why It Helps
-                              </div>
-                              <div className="p-3 font-semibold text-gray-800">
-                                Foods & Actions
+                        {/* Nutrition Strategy Cards */}
+                        <div className="grid gap-6">
+                          {/* Collagen Support */}
+                          <div className="bg-white border border-pink-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-4">
+                              <h4 className="font-bold text-white text-lg">COLLAGEN SUPPORT</h4>
+                              <p className="text-pink-100 text-sm mt-1">Provides amino acids for rebuilding fascia and soft tissue</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-pink-50 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">Bone Broth (Mutton/Chicken)</span>
+                                <span className="bg-pink-50 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">Homemade Soups</span>
+                                <span className="bg-pink-50 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">Haldi-doodh (Turmeric Milk)</span>
+                                <span className="bg-pink-50 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">Collagen Powders</span>
                               </div>
                             </div>
-                            
-                            {/* Rows */}
-                            <div className="border border-gray-200 rounded-b-lg overflow-hidden">
-                              {/* Collagen Support */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  COLLAGEN SUPPORT
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Provides amino acids for rebuilding fascia and soft tissue
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  Bone Broth (Mutton/Chicken), Homemade Soups, Haldi-doodh (Turmeric Milk), Collagen Powders
-                                </div>
+                          </div>
+
+                          {/* Anti-inflammatory Foods */}
+                          <div className="bg-white border border-orange-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-4">
+                              <h4 className="font-bold text-white text-lg">ANTI-INFLAMMATORY FOODS</h4>
+                              <p className="text-orange-100 text-sm mt-1">Reduces swelling and pain, supports tissue healing</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Turmeric</span>
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Ginger</span>
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Tulsi Tea (Holy Basil)</span>
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Ajwain Water</span>
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Soaked Almonds</span>
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Walnuts</span>
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Fatty Fish</span>
+                                <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">Sardines</span>
                               </div>
-                              
-                              {/* Anti-inflammatory Foods */}
-                              <div className="grid grid-cols-1 md:grid-cols-3">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  ANTI-INFLAMMATORY FOODS
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Reduces swelling and pain, supports tissue healing
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  Turmeric, Ginger, Tulsi Tea (Holy Basil), Ajwain Water (Carom Seed Water), Soaked Almonds, Walnuts, Fatty Fish, Sardines
-                                </div>
+                            </div>
+                          </div>
+
+                          {/* Adequate Protein */}
+                          <div className="bg-white border border-blue-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-4">
+                              <h4 className="font-bold text-white text-lg">ADEQUATE PROTEIN</h4>
+                              <p className="text-blue-100 text-sm mt-1">Helps repair muscles, ligaments & improves strength</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">2 Eggs</span>
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">Cottage Cheese (Paneer)</span>
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">Yoghurt</span>
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">Lentils</span>
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">Fish</span>
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">Grilled Chicken</span>
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">Chana (Chickpeas)</span>
+                                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">Tofu</span>
                               </div>
-                              
-                              {/* Adequate Protein */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  ADEQUATE PROTEIN
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Helps repair muscles, ligaments & improves strength
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  2 Eggs, Cottage Cheese (Paneer), Yoghurt, Lentils, Fish, Grilled Chicken, Chana (Chickpeas), Tofu
-                                </div>
+                            </div>
+                          </div>
+
+                          {/* Low-GI Carbs */}
+                          <div className="bg-white border border-green-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-4">
+                              <h4 className="font-bold text-white text-lg">LOW-GI CARBS</h4>
+                              <p className="text-green-100 text-sm mt-1">Prevents blood sugar spikes, improves hormone balance</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Sweet Potato</span>
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Bajra (Pearl Millet)</span>
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Jowar (Sorghum)</span>
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Rolled Oats</span>
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Whole Wheat Roti</span>
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Red Rice</span>
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">Poha With Veggies</span>
                               </div>
-                              
-                              {/* Low-GI Carbs */}
-                              <div className="grid grid-cols-1 md:grid-cols-3">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  LOW-GI CARBS
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Prevents blood sugar spikes, improves hormone balance
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  Sweet Potato, Bajra (Pearl Millet), Jowar (Sorghum), Rolled Oats, Whole Wheat Roti, Red Rice, Poha (Flattened Rice) With Veggies
-                                </div>
+                            </div>
+                          </div>
+
+                          {/* Hydration & Electrolytes */}
+                          <div className="bg-white border border-cyan-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-cyan-500 to-teal-500 p-4">
+                              <h4 className="font-bold text-white text-lg">HYDRATION & ELECTROLYTES</h4>
+                              <p className="text-cyan-100 text-sm mt-1">Keeps fascia elastic and supports nutrient delivery</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium">Jeera Water (Cumin)</span>
+                                <span className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium">Coconut Water</span>
+                                <span className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium">Nimbu-paani (Lime Water)</span>
+                                <span className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium">ORS</span>
+                                <span className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium">Salted Chaas (Buttermilk)</span>
+                                <span className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium">8–10 Glasses Of Water</span>
                               </div>
-                              
-                              {/* Hydration & Electrolytes */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  HYDRATION & ELECTROLYTES
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Keeps fascia elastic and supports nutrient delivery
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  Jeera Water (Cumin), Coconut Water, Nimbu-paani (Lime Water), ORS, Salted Chaas (Buttermilk), 8–10 Glasses Of Water
-                                </div>
+                            </div>
+                          </div>
+
+                          {/* Healthy Fats */}
+                          <div className="bg-white border border-purple-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-purple-500 to-violet-500 p-4">
+                              <h4 className="font-bold text-white text-lg">HEALTHY FATS</h4>
+                              <p className="text-purple-100 text-sm mt-1">Supports hormones and tissue elasticity</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">Ghee (Small Amounts)</span>
+                                <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">Sesame Seeds (Til)</span>
+                                <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">Coconut</span>
+                                <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">Soaked Almonds</span>
+                                <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">Flaxseeds</span>
+                                <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">Groundnut Chutney</span>
                               </div>
-                              
-                              {/* Healthy Fats */}
-                              <div className="grid grid-cols-1 md:grid-cols-3">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  HEALTHY FATS
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Supports hormones and tissue elasticity
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  Ghee (Small Amounts), Sesame Seeds (Til), Coconut, Soaked Almonds, Flaxseeds, Groundnut Chutney
-                                </div>
+                            </div>
+                          </div>
+
+                          {/* Complex Carbs */}
+                          <div className="bg-white border border-amber-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-amber-500 to-yellow-500 p-4">
+                              <h4 className="font-bold text-white text-lg">COMPLEX CARBS</h4>
+                              <p className="text-amber-100 text-sm mt-1">Balances blood sugar, supports energy + digestion</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">Bajra (Pearl Millet)</span>
+                                <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">Jowar (Sorghum)</span>
+                                <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">Red Rice</span>
+                                <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">Oats</span>
+                                <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">Poha With Veggies</span>
+                                <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">Sabudana (Sago)</span>
+                                <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">Sweet Potato</span>
                               </div>
-                              
-                              {/* Complex Carbs */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  COMPLEX CARBS
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Balances blood sugar, supports energy + digestion
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  Bajra (Pearl Millet), Jowar (Sorghum), Red Rice, Oats, Poha (flattened rice) With Veggies, Sabudana (Sago), Sweet Potato
-                                </div>
-                              </div>
-                              
-                              {/* Micronutrients */}
-                              <div className="grid grid-cols-1 md:grid-cols-3">
-                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
-                                  MICRONUTRIENTS
-                                </div>
-                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
-                                  Supports wound healing and replenishes lost iron/zinc
-                                </div>
-                                <div className="p-3 text-gray-700">
-                                  Beetroot, Leafy Greens, Citrus Fruits, Jaggery, Sesame seeds, Methi (Fenugreek), Sabzis (vegetables) With Haldi + Jeera (Turmeric + Cumin)
-                                </div>
+                            </div>
+                          </div>
+
+                          {/* Micronutrients */}
+                          <div className="bg-white border border-rose-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div className="bg-gradient-to-r from-rose-500 to-pink-500 p-4">
+                              <h4 className="font-bold text-white text-lg">MICRONUTRIENTS</h4>
+                              <p className="text-rose-100 text-sm mt-1">Supports wound healing and replenishes lost iron/zinc</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-medium">Beetroot</span>
+                                <span className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-medium">Leafy Greens</span>
+                                <span className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-medium">Citrus Fruits</span>
+                                <span className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-medium">Jaggery</span>
+                                <span className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-medium">Sesame Seeds</span>
+                                <span className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-medium">Methi (Fenugreek)</span>
+                                <span className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-medium">Sabzis With Haldi + Jeera</span>
                               </div>
                             </div>
                           </div>
