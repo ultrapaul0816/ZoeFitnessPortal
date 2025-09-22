@@ -3767,6 +3767,16 @@ function ProgramsSection({
 
   return (
     <div className="space-y-6">
+      {/* Programs Section Title */}
+      <div className="mb-8 text-left">
+        <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
+          Programs
+        </h2>
+        <p className="text-base font-medium text-gray-600 border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-2">
+          Your comprehensive six week postnatal fitness journey programs
+        </p>
+      </div>
+      
       {/* 6-Week Program - Collapsible */}
       <Card className="overflow-hidden border-l-4 border-program-1 shadow-xl">
         <CardHeader 
@@ -5791,6 +5801,16 @@ function WhatComesNextSection({
 }) {
   return (
     <div className="space-y-6">
+      {/* What's Next Section Title */}
+      <div className="mb-8 text-left">
+        <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
+          What's Next
+        </h2>
+        <p className="text-base font-medium text-gray-600 border-l-4 border-indigo-400 pl-4 bg-gradient-to-r from-indigo-50 to-transparent py-2">
+          Your roadmap for continued progress and empowerment
+        </p>
+      </div>
+      
       {/* Navigation Buttons */}
       <div className="flex justify-center pt-8">
         <div className="flex gap-4 justify-center">
