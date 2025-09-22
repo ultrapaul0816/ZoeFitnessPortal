@@ -6516,7 +6516,7 @@ function TheRoleOfNutritionSection({
 
                         {/* Hand Portion Guide */}
                         <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
-                          <div className="p-4" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #cbde9a 100%)'}}>
+                          <div className="p-4" style={{backgroundColor: '#b3c0e4'}}>
                             <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>YOUR HANDS = YOUR BUILT-IN PORTION GUIDE</h4>
                             <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.2)'}}>Using your hands makes portioning simple and personal to your body</p>
                           </div>
@@ -6534,14 +6534,14 @@ function TheRoleOfNutritionSection({
                         {/* Main Meals Guide */}
                         <div className="space-y-4">
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #9aafdc 100%)'}}>
+                            <div className="p-4" style={{backgroundColor: '#f3a8cb'}}>
                               <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>FOR EACH MAIN MEAL (3x/day), AIM FOR:</h4>
                             </div>
                           </div>
 
                           {/* Palm-sized Protein */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f2038b 0%, #b8d082 100%)'}}>
+                            <div className="p-4" style={{backgroundColor: '#f2038b'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>🤚</span> PALM-SIZED PROTEIN
                               </h4>
@@ -6562,7 +6562,7 @@ function TheRoleOfNutritionSection({
 
                           {/* Fist-sized Veggies */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #cbde9a 0%, #c2b9a1 100%)'}}>
+                            <div className="p-4" style={{backgroundColor: '#cbde9a'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>✊</span> FIST-SIZED VEGGIES
                               </h4>
@@ -6581,7 +6581,7 @@ function TheRoleOfNutritionSection({
 
                           {/* Cupped-hand Complex Carbs */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b8d082'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b8d082 0%, #f3a8cb 100%)'}}>
+                            <div className="p-4" style={{backgroundColor: '#b8d082'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>🤲</span> CUPPED-HAND COMPLEX CARBS
                               </h4>
@@ -6601,7 +6601,7 @@ function TheRoleOfNutritionSection({
 
                           {/* Thumb of Healthy Fat */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#9aafdc'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #9aafdc 0%, #b3a892 100%)'}}>
+                            <div className="p-4" style={{backgroundColor: '#9aafdc'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>👍</span> THUMB OF HEALTHY FAT
                               </h4>
@@ -6620,7 +6620,7 @@ function TheRoleOfNutritionSection({
 
                           {/* Plus Extra If Breastfeeding */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#c2b9a1'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #c2b9a1 0%, #f2038b 100())'}}>
+                            <div className="p-4" style={{backgroundColor: '#c2b9a1'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>🤱</span> PLUS EXTRA IF BREASTFEEDING
                               </h4>
@@ -6641,7 +6641,7 @@ function TheRoleOfNutritionSection({
                         <div className="grid md:grid-cols-2 gap-6">
                           {/* How Often To Eat */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3a892'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b3a892 0%, #9aafdc 100%)'}}>
+                            <div className="p-4" style={{backgroundColor: '#b3a892'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>🕐</span> HOW OFTEN TO EAT
                               </h4>
@@ -6673,7 +6673,7 @@ function TheRoleOfNutritionSection({
 
                           {/* Remember */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
-                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #cbde9a 100%)'}}>
+                            <div className="p-4" style={{backgroundColor: '#f3a8cb'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>💝</span> REMEMBER
                               </h4>
