@@ -2790,7 +2790,8 @@ function WelcomeSection({
                               <h4 className="font-bold text-lg mt-1">Foundation Building</h4>
                             </div>
                             <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
-                              3 Programs • 2 Cardio • 1 Rest
+                              <span className="block md:hidden">3P • 2C • 1R</span>
+                              <span className="hidden md:block">3 Programs • 2 Cardio • 1 Rest</span>
                             </div>
                           </div>
                         </div>
@@ -2858,7 +2859,8 @@ function WelcomeSection({
                               <h4 className="font-bold text-lg mt-1">Stability Focus</h4>
                             </div>
                             <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
-                              3 Programs • 2 Cardio • 2 Rest
+                              <span className="block md:hidden">3P • 2C • 2R</span>
+                              <span className="hidden md:block">3 Programs • 2 Cardio • 2 Rest</span>
                             </div>
                           </div>
                         </div>
@@ -2926,7 +2928,8 @@ function WelcomeSection({
                               <h4 className="font-bold text-lg mt-1">Control & Awareness</h4>
                             </div>
                             <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
-                              3 Programs • 2 Cardio • 2 Rest
+                              <span className="block md:hidden">3P • 2C • 2R</span>
+                              <span className="hidden md:block">3 Programs • 2 Cardio • 2 Rest</span>
                             </div>
                           </div>
                         </div>
@@ -2994,7 +2997,8 @@ function WelcomeSection({
                               <h4 className="font-bold text-lg mt-1">Align & Activate</h4>
                             </div>
                             <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
-                              3 Programs • 2 Cardio • 2 Rest
+                              <span className="block md:hidden">3P • 2C • 2R</span>
+                              <span className="hidden md:block">3 Programs • 2 Cardio • 2 Rest</span>
                             </div>
                           </div>
                         </div>
@@ -3062,7 +3066,8 @@ function WelcomeSection({
                               <h4 className="font-bold text-lg mt-1">Functional Core Flow</h4>
                             </div>
                             <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
-                              3 Programs • 2 Cardio • 2 Rest
+                              <span className="block md:hidden">3P • 2C • 2R</span>
+                              <span className="hidden md:block">3 Programs • 2 Cardio • 2 Rest</span>
                             </div>
                           </div>
                         </div>
@@ -3130,7 +3135,8 @@ function WelcomeSection({
                               <h4 className="font-bold text-lg mt-1">Foundational Strength</h4>
                             </div>
                             <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
-                              4 Programs • 2 Cardio • 1 Rest
+                              <span className="block md:hidden">4P • 2C • 1R</span>
+                              <span className="hidden md:block">4 Programs • 2 Cardio • 1 Rest</span>
                             </div>
                           </div>
                         </div>
