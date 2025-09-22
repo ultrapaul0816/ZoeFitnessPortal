@@ -43,6 +43,12 @@ Preferred communication style: Simple, everyday language.
   - Equipment requirements (mini bands, mat, yoga block or Pilates ball, long resistance band, stool or chair)
   - Coach's notes and safety precautions
   - Teal/indigo gradient color scheme for visual differentiation
+- **Program 6 (Week 6) Complete**: Foundational Strength Program with:
+  - FOUNDATIONAL STRENGTH phase with capacity, endurance and resilience focus
+  - 90 90 Box Breathing + 6 main exercises with YouTube video links
+  - Equipment requirements (Swiss ball, small Pilates ball, mat)
+  - Coach's notes and safety precautions
+  - Orange/amber gradient color scheme for visual differentiation
 - **Program Structure Format**: Established collapsible program series pattern for future expansion
 
 ## Program Series Format Template
