@@ -876,10 +876,10 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
 
   const topics = [
     { id: 'what-is-diastasis', n: 1, title: 'What Is Diastasis' },
-    { id: 'core-rehab-daily-practice', n: 2, title: 'Core Rehab & Daily Practice' },
-    { id: 'do-i-have-diastasis', n: 3, title: 'Do I Have Diastasis Recti' },
-    { id: 'why-core-rehab-matters', n: 4, title: 'Why Core Rehab Matters' },
-    { id: 'why-crunches-wont-work', n: 5, title: "Why Crunches Won't Work" },
+    { id: 'do-i-have-diastasis', n: 2, title: 'Do I Have Diastasis Recti' },
+    { id: 'why-core-rehab-matters', n: 3, title: 'Why Core Rehab Matters' },
+    { id: 'why-crunches-wont-work', n: 4, title: "Why Crunches Won't Work" },
+    { id: 'core-rehab-daily-practice', n: 5, title: 'Core Rehab & Daily Practice' },
     { id: 'week-by-week-reconnection', n: 6, title: 'Rehab Routine – Week-by-Week Reconnection' },
   ];
 
@@ -1815,72 +1815,128 @@ function WelcomeSection({
               </div>
             </div>
 
-            {/* Topic 2: When to Start This Program */}
+            {/* Topic 2: How to Use This Guide */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">2</span>
-                  <h3 className="text-[15px] font-semibold text-left">When to Start This Program</h3>
+                  <h3 className="text-[15px] font-semibold text-left">How to Use This Guide</h3>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleTopic('when-start')}
+                  onClick={() => toggleTopic('how-to-use')}
                   className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-when-start"
+                  data-testid="button-toggle-how-to-use"
                 >
-                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['when-start'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['how-to-use'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
-              {expandedTopics['when-start'] && (
+              {expandedTopics['how-to-use'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     <p className="text-sm">
-                      You can begin this program anytime from 6 weeks postpartum with a vaginal delivery and 8-10 weeks post a C-section (or once cleared by your healthcare provider). However, it is highly recommended to start breath work and gentle reconnection much earlier. This is safe for both vaginal and C-section recoveries, take notes and modifications where needed.
+                      This guide is your companion through rebuilding your core strength, reconnecting with your body, and feeling more confident in movement again.
                     </p>
                     
                     <div>
-                      <p className="font-semibold text-primary text-sm mb-3">This program is suitable whether you're:</p>
+                      <p className="font-semibold text-primary text-sm mb-3">Tune In Weekly:</p>
+                      <p className="text-sm">
+                        Assess how you feel. Did you sleep well? Are you feeling sore or energized? Are you holding tension from feeding or carrying your baby? Adjust the plan based on energy levels, core connection, and overall recovery.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Your program is divided into 6 weekly phases, each with:</p>
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>6 weeks, 6 months, or even 6 years postpartum</span>
+                          <span>A <em>Core Strength Program</em> (Program 1 to 6)</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>Managing diastasis recti or just looking to feel strong again</span>
+                          <span>A <em>suggested Cardio Plan</em> for that week</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>Starting fresh after a break or following your initial rehab phase</span>
+                          <span><em>Built-in Rest Days</em></span>
                         </li>
                       </ul>
                     </div>
                     
-                    <p className="text-sm">
-                      If you've had complications or are unsure where to begin, please consult your doctor or pelvic health physiotherapist first.
-                    </p>
-                    
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                      <div className="flex items-center gap-2 mb-3">
-                        <p className="font-semibold text-primary text-sm">Important notes before you begin</p>
-                      </div>
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">How to view the videos of the exercises:</p>
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>This is not a "no pain, no gain" plan. Your healing journey is valid no matter the pace.</span>
+                          <span><em>All blue underlined text is clickable and will open a video link.</em></span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>Listen to your body: if something feels off, pause and consult your provider.</span>
+                          <span><strong>PLAY ALL</strong> <em>indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</em></span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">How to schedule your week:</p>
+                      <p className="text-sm mb-2">Each week follows a 7-day rhythm, with a mix of:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Core Training Days</em> (2–4 sessions depending on the week)</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>You do not need a flat stomach or a perfect gap to be strong or functional.</span>
+                          <span><em>Optional Cardio Days</em> (1–3 light/moderate intensity sessions)</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>Give yourself permission to begin again—this is about building trust with your body.</span>
+                          <span><em>At least 1 full Rest Day</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>You'll see suggestions like "Day 1, Day 3, Day 5" - these refer to days of your week, so you can fit the workouts to your schedule flexibly.</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Move at your own pace:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>You can stay on a week for longer if needed — don't feel rushed to move forward.</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>If you feel fatigued, emotional, or life just gets full… that's OK. Pause, rest, and return.</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Progress isn't linear — even one session a week is a win.</em></span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Final tips:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Begin each session with your breath</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>End with a moment of stillness or gratitude</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>Don't skip rest- it's just as important as movement</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>You're not just rebuilding your core- you're rebuilding trust in your body</em></span>
                         </li>
                       </ul>
                     </div>
@@ -1896,24 +1952,24 @@ function WelcomeSection({
               </div>
             </div>
 
-            {/* Topic 3: Safety & Mindset Shifts */}
+            {/* Topic 3: When to Start This Program */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">3</span>
-                  <h3 className="text-[15px] font-semibold text-left">Safety & Mindset Shifts</h3>
+                  <h3 className="text-[15px] font-semibold text-left">When to Start This Program</h3>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleTopic('safety-mindset')}
+                  onClick={() => toggleTopic('when-start')}
                   className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-safety-mindset"
+                  data-testid="button-toggle-when-start"
                 >
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['safety-mindset'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
-              {expandedTopics['safety-mindset'] && (
+              {expandedTopics['when-start'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-6">
                     <p className="text-sm text-center">
@@ -1984,24 +2040,24 @@ function WelcomeSection({
               </div>
             </div>
 
-            {/* Topic 4: Special Considerations for Each Delivery Type */}
+            {/* Topic 4: Safety & Mindset Shifts */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3 flex-1">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">4</span>
-                  <h3 className="text-[15px] font-semibold text-left leading-tight">Special Considerations for<br />Each Delivery Type</h3>
+                  <h3 className="text-[15px] font-semibold text-left leading-tight">Safety & Mindset Shifts</h3>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleTopic('delivery-type')}
+                  onClick={() => toggleTopic('safety-mindset')}
                   className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-delivery-type"
+                  data-testid="button-toggle-safety-mindset"
                 >
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['delivery-type'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
-              {expandedTopics['delivery-type'] && (
+              {expandedTopics['safety-mindset'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-6">
                     <div>
@@ -2051,24 +2107,24 @@ function WelcomeSection({
               </div>
             </div>
 
-            {/* Topic 5: How to Use This Guide */}
+            {/* Topic 5: Special Considerations for Each Delivery Type */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">5</span>
-                  <h3 className="text-[15px] font-semibold text-left">How to Use This Guide</h3>
+                  <h3 className="text-[15px] font-semibold text-left leading-tight">Special Considerations for<br />Each Delivery Type</h3>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleTopic('how-to-use')}
+                  onClick={() => toggleTopic('delivery-type')}
                   className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-how-to-use"
+                  data-testid="button-toggle-delivery-type"
                 >
-                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['how-to-use'] ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['delivery-type'] ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
-              {expandedTopics['how-to-use'] && (
+              {expandedTopics['delivery-type'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     <p className="text-sm">
