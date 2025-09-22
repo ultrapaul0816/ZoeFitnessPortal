@@ -2141,21 +2141,33 @@ function WelcomeSection({
                       {/* Row 1 */}
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
-                          <span className="text-3xl">🧘‍♀️</span>
+                          <img 
+                            src="@assets/Screenshot 2025-09-22 at 13.29.38_1758528078678.png" 
+                            alt="Pink yoga mat" 
+                            className="w-20 h-20 object-contain"
+                          />
                         </div>
                         <p className="font-medium">Yoga Mat</p>
                       </div>
                       
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
-                          <span className="text-3xl">🟣</span>
+                          <img 
+                            src="@assets/Screenshot 2025-09-22 at 13.29.49_1758528078677.png" 
+                            alt="Pink yoga blocks" 
+                            className="w-20 h-20 object-contain"
+                          />
                         </div>
                         <p className="font-medium">Yoga Blocks</p>
                       </div>
                       
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
-                          <span className="text-3xl">🎀</span>
+                          <img 
+                            src="@assets/Screenshot 2025-09-22 at 13.29.57_1758528078677.png" 
+                            alt="Mini resistance bands" 
+                            className="w-20 h-20 object-contain"
+                          />
                         </div>
                         <p className="font-medium">Mini Resistance Bands</p>
                       </div>
@@ -2163,21 +2175,33 @@ function WelcomeSection({
                       {/* Row 2 */}
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
-                          <span className="text-3xl">⚪</span>
+                          <img 
+                            src="@assets/Screenshot 2025-09-22 at 13.30.04_1758528078677.png" 
+                            alt="Mini Pilates ball" 
+                            className="w-20 h-20 object-contain"
+                          />
                         </div>
                         <p className="font-medium">Mini Pilates Ball</p>
                       </div>
                       
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
-                          <span className="text-3xl">🏃‍♀️</span>
+                          <img 
+                            src="@assets/Screenshot 2025-09-22 at 13.30.13_1758528078677.png" 
+                            alt="Long resistance band" 
+                            className="w-20 h-20 object-contain"
+                          />
                         </div>
                         <p className="font-medium">Pilates Theraband Or<br />Long Resistance Band</p>
                       </div>
                       
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
-                          <span className="text-3xl">⚫</span>
+                          <img 
+                            src="@assets/Screenshot 2025-09-22 at 13.30.19_1758528078676.png" 
+                            alt="Medium Swiss ball" 
+                            className="w-20 h-20 object-contain"
+                          />
                         </div>
                         <p className="font-medium">Medium Swiss Ball</p>
                       </div>
@@ -2185,7 +2209,11 @@ function WelcomeSection({
                       {/* Row 3 - Foam Roller centered */}
                       <div className="text-center md:col-start-2">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
-                          <span className="text-3xl">🏋️</span>
+                          <img 
+                            src="@assets/Screenshot 2025-09-22 at 13.30.27_1758528078676.png" 
+                            alt="Foam roller" 
+                            className="w-20 h-20 object-contain"
+                          />
                         </div>
                         <p className="font-medium">Foam Roller</p>
                       </div>
