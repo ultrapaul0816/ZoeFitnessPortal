@@ -322,6 +322,80 @@
   }
 }
 
+/* Tab Flow Connection Lines */
+.tab-flow-container {
+  position: relative;
+}
+
+.tab-flow-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 10%,
+    rgba(236, 72, 153, 0.3) 15%,
+    rgba(236, 72, 153, 0.5) 50%,
+    rgba(236, 72, 153, 0.3) 85%,
+    transparent 90%
+  );
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Progress Badge Styles */
+.progress-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.progress-badge:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Individual tab progress colors */
+.progress-step-1 { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+.progress-step-2 { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+.progress-step-3 { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+.progress-step-4 { background: linear-gradient(135deg, #10b981, #059669); }
+.progress-step-5 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.progress-step-6 { background: linear-gradient(135deg, #14b8a6, #0891b2); }
+.progress-step-7 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+/* Pulse animation for current step */
+.progress-current {
+  animation: progress-pulse 2s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4);
+  }
+}
+
 /* Marquee animation for disclaimer */
 @keyframes marquee {
   0% {
