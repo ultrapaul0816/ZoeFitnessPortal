@@ -3,18 +3,50 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Heart, Shield, AlertTriangle, FileText, Lock, Users, X } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface ZoeWelcomeModalProps {
   isOpen: boolean;
   onClose: (dontShowAgain: boolean) => void;
+  userId: string;
 }
 
-export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProps) {
+export default function ZoeWelcomeModal({ isOpen, onClose, userId }: ZoeWelcomeModalProps) {
   const [hasConsented, setHasConsented] = useState(false);
+  const { toast } = useToast();
+
+  const acceptDisclaimerMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/auth/accept-disclaimer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to accept disclaimer");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Disclaimer Accepted",
+        description: "Thank you for reviewing our safety information!",
+      });
+      onClose(true);
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save disclaimer acceptance. Please try again.",
+      });
+    },
+  });
 
   const handleClose = () => {
     if (hasConsented) {
-      onClose(true); // Always save that they've seen/agreed to disclaimer
+      acceptDisclaimerMutation.mutate();
     }
   };
 
@@ -164,17 +196,22 @@ export default function ZoeWelcomeModal({ isOpen, onClose }: ZoeWelcomeModalProp
               {/* Action button */}
               <button
                 onClick={handleClose}
-                disabled={!hasConsented}
+                disabled={!hasConsented || acceptDisclaimerMutation.isPending}
                 className={`w-full py-4 rounded-2xl font-semibold text-base transition-all duration-300 shadow-lg ${
-                  hasConsented 
+                  hasConsented && !acceptDisclaimerMutation.isPending
                     ? 'bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-pink-500/25 hover:shadow-pink-500/40 hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]' 
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-gray-200/50'
                 }`}
                 data-testid="button-agree-continue"
               >
                 <div className="flex items-center justify-center gap-2">
-                  {hasConsented && <Heart className="w-5 h-5" />}
-                  {hasConsented ? 'I Agree - Continue to Program' : 'Please Read and Agree to Continue'}
+                  {hasConsented && !acceptDisclaimerMutation.isPending && <Heart className="w-5 h-5" />}
+                  {acceptDisclaimerMutation.isPending 
+                    ? 'Saving...' 
+                    : hasConsented 
+                      ? 'I Agree - Continue to Program' 
+                      : 'Please Read and Agree to Continue'
+                  }
                 </div>
               </button>
             </div>

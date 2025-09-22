@@ -325,6 +325,8 @@ export default function Admin() {
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Member</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Role</th>
+                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Terms Accepted</th>
+                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Disclaimer Accepted</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Joined</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Actions</th>
                 </tr>
@@ -356,6 +358,34 @@ export default function Admin() {
                       <Badge variant={member.isAdmin ? "destructive" : "outline"} className="rounded-none px-4 py-2">
                         {member.isAdmin ? "Admin" : "Member"}
                       </Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="text-xs">
+                        {member.termsAcceptedAt ? (
+                          <div className="flex flex-col">
+                            <span className="text-green-600 font-medium">✓ Accepted</span>
+                            <span className="text-muted-foreground">
+                              {new Date(member.termsAcceptedAt).toLocaleDateString()} {new Date(member.termsAcceptedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-red-500">Not accepted</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="text-xs">
+                        {member.disclaimerAcceptedAt ? (
+                          <div className="flex flex-col">
+                            <span className="text-green-600 font-medium">✓ Accepted</span>
+                            <span className="text-muted-foreground">
+                              {new Date(member.disclaimerAcceptedAt).toLocaleDateString()} {new Date(member.disclaimerAcceptedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-red-500">Not accepted</span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3 px-4">
                       <span className="text-foreground">
@@ -409,7 +439,7 @@ export default function Admin() {
                         <div>
                           <h3 className="font-semibold text-foreground">{program.name}</h3>
                           <p className="text-sm text-muted-foreground">{program.level} • {program.duration}</p>
-                          <p className="text-sm text-primary font-medium">₹{program.price}</p>
+                          <p className="text-sm text-primary font-medium">₹{(program.price / 100).toFixed(2)}</p>
                         </div>
                       </div>
                       <Button 

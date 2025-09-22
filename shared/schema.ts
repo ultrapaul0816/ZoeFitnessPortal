@@ -14,6 +14,8 @@ export const users = pgTable("users", {
   isAdmin: boolean("is_admin").default(false),
   termsAccepted: boolean("terms_accepted").default(false),
   termsAcceptedAt: timestamp("terms_accepted_at"),
+  disclaimerAccepted: boolean("disclaimer_accepted").default(false),
+  disclaimerAcceptedAt: timestamp("disclaimer_accepted_at"),
   validFrom: timestamp("valid_from").default(sql`now()`),
   validUntil: timestamp("valid_until").default(sql`now() + interval '1 year'`),
   createdAt: timestamp("created_at").default(sql`now()`),

@@ -849,10 +849,13 @@ export default function HealYourCorePage() {
         )}
         
         {/* Zoe Welcome Modal */}
-        <ZoeWelcomeModal 
-          isOpen={showWelcomeModal}
-          onClose={handleWelcomeClose}
-        />
+        {user && (
+          <ZoeWelcomeModal 
+            isOpen={showWelcomeModal}
+            onClose={handleWelcomeClose}
+            userId={user.id}
+          />
+        )}
       </div>
     </div>
   );

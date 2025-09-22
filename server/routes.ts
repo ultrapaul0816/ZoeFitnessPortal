@@ -77,6 +77,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/auth/accept-disclaimer", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      const updatedUser = await storage.updateUser(userId, {
+        disclaimerAccepted: true,
+        disclaimerAcceptedAt: new Date(),
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to accept disclaimer" });
+    }
+  });
+
   // Update user profile
   app.patch("/api/users/:id/profile", async (req, res) => {
     try {
