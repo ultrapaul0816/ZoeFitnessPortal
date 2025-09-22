@@ -1748,7 +1748,7 @@ function WelcomeSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -1830,7 +1830,7 @@ function WelcomeSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -1918,7 +1918,7 @@ function WelcomeSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -1985,7 +1985,7 @@ function WelcomeSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -2122,7 +2122,7 @@ function WelcomeSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -2462,7 +2462,7 @@ function CardioSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -2636,7 +2636,7 @@ function CardioSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -2897,7 +2897,7 @@ function UnderstandingYourCoreSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -2997,7 +2997,7 @@ function UnderstandingYourCoreSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -3140,7 +3140,7 @@ function UnderstandingYourCoreSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -3228,7 +3228,7 @@ function UnderstandingYourCoreSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -3342,7 +3342,7 @@ function UnderstandingYourCoreSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
@@ -3437,7 +3437,7 @@ function UnderstandingYourCoreSection({
               {/* Line Divider with Shadow */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 shadow-sm"></div>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
                 </div>
               </div>
             </div>
