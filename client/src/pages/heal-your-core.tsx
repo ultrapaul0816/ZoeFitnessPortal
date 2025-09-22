@@ -454,6 +454,20 @@ export default function HealYourCorePage() {
               <span className="font-medium">FAQs</span>
             </TabsTrigger>
             </TabsList>
+            
+            {/* Journey Progress Bar */}
+            <div className="journey-progress-container">
+              <div 
+                className={`journey-progress-bar progress-${activeTab.replace('-', '')}`}
+                style={{
+                  width: `${(() => {
+                    const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                    const currentIndex = tabOrder.indexOf(activeTab);
+                    return ((currentIndex + 1) / tabOrder.length) * 100;
+                  })()}%`
+                }}
+              />
+            </div>
           </div>
           
           {/* Medical Disclaimer Moving Bar */}

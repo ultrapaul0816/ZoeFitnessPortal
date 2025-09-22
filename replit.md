@@ -82,7 +82,10 @@ Each program follows this standardized structure for consistency:
 - **Consistent Navigation**: Clickable logo across all pages (Dashboard, My Library, Heal Your Core) with proper hover effects
 - **Advanced Tab Navigation System**:
   - **Meaningful Icons**: Each tab features descriptive icons (BookOpen for Welcome, Activity for Cardio, Brain for Core, Heart for Heal, Dumbbell for Programs, Apple for Nutrition, ChartBar for What's Next, HelpCircle for FAQs)
-  - **Visual Flow Lines**: Gradient connecting lines create seamless journey progression across tabs
+  - **Animated Journey Progress Bar**: Dynamic progress indicator showing user's current position in their learning journey
+  - **Color-Changing Progress**: Progress bar changes colors based on current tab (pink for Welcome, blue for Cardio, purple for Core, green for Heal, orange for Programs, teal for Nutrition, indigo for What's Next, red for FAQs)
+  - **Shimmer Animation**: Subtle shimmer effect moves across the progress bar for premium visual appeal
+  - **Smooth Transitions**: Progress bar animates smoothly between tabs with cubic-bezier easing
   - **Clean Interface**: Streamlined design without distracting notification-style badges
   - **8-Tab Navigation**: Complete learning journey from Welcome through FAQs with proper progression flow
   - **Responsive Design**: Mobile and desktop optimized layouts with proper z-indexing and positioning

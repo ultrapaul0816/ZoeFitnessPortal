@@ -327,24 +327,83 @@
   position: relative;
 }
 
-.tab-flow-container::before {
+/* Progress Bar Styles */
+.journey-progress-container {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 3px;
+  margin-top: 16px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.journey-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-progress-bar::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(
     90deg,
-    transparent 10%,
-    rgba(236, 72, 153, 0.3) 15%,
-    rgba(236, 72, 153, 0.5) 50%,
-    rgba(236, 72, 153, 0.3) 85%,
-    transparent 90%
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
   );
-  transform: translateY(-50%);
-  z-index: 0;
-  pointer-events: none;
+  animation: progress-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes progress-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Progress Colors for Different Stages */
+.progress-welcome {
+  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+}
+
+.progress-cardio {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+}
+
+.progress-understanding {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+}
+
+.progress-healing {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.progress-programs {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.progress-nutrition {
+  background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
+}
+
+.progress-nextsteps {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.progress-faqs {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
 }
 
 /* Progress Badge Styles */
