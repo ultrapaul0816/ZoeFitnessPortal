@@ -37,6 +37,12 @@ Preferred communication style: Simple, everyday language.
   - Equipment requirements (small Pilates ball, chair or stool, resistance band, mat)
   - Coach's notes and safety precautions
   - Purple/violet gradient color scheme for visual differentiation
+- **Program 5 (Week 5) Complete**: Functional Core Flow Program with:
+  - FUNCTIONAL CORE FLOW phase with real-life movement focus
+  - Breathing exercises (supine diaphragmatic + side lying thoracic rotations) + 6 main exercises with YouTube video links
+  - Equipment requirements (mini bands, mat, yoga block or Pilates ball, long resistance band, stool or chair)
+  - Coach's notes and safety precautions
+  - Teal/indigo gradient color scheme for visual differentiation
 - **Program Structure Format**: Established collapsible program series pattern for future expansion
 
 ## Program Series Format Template
