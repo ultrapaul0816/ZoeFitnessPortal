@@ -2141,7 +2141,7 @@ function WelcomeSection({
                           <img 
                             src={yogaMatImage} 
                             alt="Pink yoga mat" 
-                            className="w-40 h-40 object-contain filter drop-shadow-lg"
+                            className="w-52 h-52 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Yoga Mat</p>
@@ -2153,7 +2153,7 @@ function WelcomeSection({
                           <img 
                             src={yogaBlocksImage} 
                             alt="Pink yoga blocks" 
-                            className="w-40 h-40 object-contain filter drop-shadow-lg"
+                            className="w-52 h-52 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Yoga Blocks</p>
@@ -2165,7 +2165,7 @@ function WelcomeSection({
                           <img 
                             src={miniResistanceBandsImage} 
                             alt="Mini resistance bands" 
-                            className="w-40 h-40 object-contain filter drop-shadow-lg"
+                            className="w-52 h-52 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Mini Resistance Bands</p>
@@ -2178,7 +2178,7 @@ function WelcomeSection({
                           <img 
                             src={miniPilatesBallImage} 
                             alt="Mini Pilates ball" 
-                            className="w-40 h-40 object-contain filter drop-shadow-lg"
+                            className="w-52 h-52 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Mini Pilates Ball</p>
@@ -2190,7 +2190,7 @@ function WelcomeSection({
                           <img 
                             src={longResistanceBandImage} 
                             alt="Long resistance band" 
-                            className="w-40 h-40 object-contain filter drop-shadow-lg"
+                            className="w-52 h-52 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Pilates Theraband</p>
@@ -2202,7 +2202,7 @@ function WelcomeSection({
                           <img 
                             src={swissBallImage} 
                             alt="Medium Swiss ball" 
-                            className="w-40 h-40 object-contain filter drop-shadow-lg"
+                            className="w-52 h-52 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Medium Swiss Ball</p>
@@ -2215,7 +2215,7 @@ function WelcomeSection({
                           <img 
                             src={foamRollerImage} 
                             alt="Foam roller" 
-                            className="w-40 h-40 object-contain filter drop-shadow-lg"
+                            className="w-52 h-52 object-contain filter drop-shadow-lg"
                           />
                         </div>
                         <p className="font-semibold text-lg text-gray-800">Foam Roller</p>
