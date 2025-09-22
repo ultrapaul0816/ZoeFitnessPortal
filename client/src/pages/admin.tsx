@@ -9,9 +9,19 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, Calendar, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen } from "lucide-react";
-import type { User, Program } from "@shared/schema";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import type { User, Program, AdminCreateUser } from "@shared/schema";
+import { adminCreateUserSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function Admin() {
@@ -20,7 +30,21 @@ export default function Admin() {
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [assetDisplayNames, setAssetDisplayNames] = useState<{[key: string]: string}>({});
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [newUserData, setNewUserData] = useState<{user: any, password: string} | null>(null);
   const { toast } = useToast();
+
+  const addUserForm = useForm<AdminCreateUser>({
+    resolver: zodResolver(adminCreateUserSchema),
+    defaultValues: {
+      email: "",
+      firstName: "",
+      lastName: "",
+      isAdmin: false,
+      validFrom: undefined,
+      validUntil: undefined,
+    },
+  });
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -111,6 +135,38 @@ export default function Admin() {
     },
   });
 
+  const createUserMutation = useMutation({
+    mutationFn: async (userData: AdminCreateUser) => {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create user');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setNewUserData(data);
+      addUserForm.reset();
+      toast({
+        title: "Success",
+        description: `User ${data.user.firstName} ${data.user.lastName} created successfully`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to create user",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleUpdateProgram = (updatedProgram: Program) => {
     updateProgramMutation.mutate(updatedProgram);
   };
@@ -122,6 +178,16 @@ export default function Admin() {
   const handleEditAsset = (filename: string, currentDisplayName: string) => {
     setEditingAsset(filename);
     setAssetDisplayNames({ [filename]: currentDisplayName });
+  };
+
+  const handleCreateUser = (userData: AdminCreateUser) => {
+    createUserMutation.mutate(userData);
+  };
+
+  const closeAddUserModal = () => {
+    setIsAddUserModalOpen(false);
+    setNewUserData(null);
+    addUserForm.reset();
   };
 
   if (!user?.isAdmin) return null;
@@ -232,7 +298,21 @@ export default function Admin() {
                   className="w-64"
                   data-testid="input-search-members"
                 />
-                <Button data-testid="button-add-member">Add Member</Button>
+                <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button data-testid="button-add-member">
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Add Member
+                    </Button>
+                  </DialogTrigger>
+                  <AddUserModal 
+                    form={addUserForm}
+                    onSubmit={handleCreateUser}
+                    isLoading={createUserMutation.isPending}
+                    onClose={closeAddUserModal}
+                    newUserData={newUserData}
+                  />
+                </Dialog>
               </div>
             </div>
           </div>
@@ -488,5 +568,289 @@ export default function Admin() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+// Add User Modal Component
+interface AddUserModalProps {
+  form: any;
+  onSubmit: (data: AdminCreateUser) => void;
+  isLoading: boolean;
+  onClose: () => void;
+  newUserData: { user: any; password: string } | null;
+}
+
+function AddUserModal({ form, onSubmit, isLoading, onClose, newUserData }: AddUserModalProps) {
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  if (newUserData) {
+    // Show success modal with user credentials
+    return (
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <UserPlus className="w-5 h-5 text-green-600" />
+            User Created Successfully
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+            <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">
+              Account Created for {newUserData.user.firstName} {newUserData.user.lastName}
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-green-700 dark:text-green-300">Email:</span>
+                <code className="bg-white dark:bg-green-900 px-2 py-1 rounded border text-green-800 dark:text-green-200">
+                  {newUserData.user.email}
+                </code>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-green-700 dark:text-green-300">Password:</span>
+                <div className="flex items-center gap-2">
+                  <code className="bg-white dark:bg-green-900 px-2 py-1 rounded border text-green-800 dark:text-green-200 font-mono">
+                    {newUserData.password}
+                  </code>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard(newUserData.password)}
+                    className="h-7 w-7 p-0"
+                  >
+                    📋
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Email Template</h4>
+            <textarea
+              className="w-full h-32 p-3 text-sm border rounded resize-none bg-white dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+              readOnly
+              value={`Subject: Welcome to Your Postpartum Strength Recovery Program
+
+Dear ${newUserData.user.firstName},
+
+Welcome to Your Postpartum Strength Recovery Program! Your account has been created successfully.
+
+Login Details:
+Email: ${newUserData.user.email}
+Password: ${newUserData.password}
+
+Please login at your earliest convenience and change your password for security.
+
+Best regards,
+The Stronger With Zoe Team`}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={() => copyToClipboard(`Subject: Welcome to Your Postpartum Strength Recovery Program
+
+Dear ${newUserData.user.firstName},
+
+Welcome to Your Postpartum Strength Recovery Program! Your account has been created successfully.
+
+Login Details:
+Email: ${newUserData.user.email}
+Password: ${newUserData.password}
+
+Please login at your earliest convenience and change your password for security.
+
+Best regards,
+The Stronger With Zoe Team`)}
+            >
+              📋 Copy Email Template
+            </Button>
+          </div>
+          
+          <div className="flex justify-end">
+            <Button onClick={onClose}>Close</Button>
+          </div>
+        </div>
+      </DialogContent>
+    );
+  }
+
+  // Show form modal
+  return (
+    <DialogContent className="sm:max-w-lg">
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <UserPlus className="w-5 h-5" />
+          Add New User
+        </DialogTitle>
+      </DialogHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter first name" data-testid="input-first-name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter last name" data-testid="input-last-name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} type="email" placeholder="Enter email address" data-testid="input-email" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="validFrom"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Valid From</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                          data-testid="button-valid-from"
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="validUntil"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Valid Until</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                          data-testid="button-valid-until"
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <FormField
+            control={form.control}
+            name="isAdmin"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value} 
+                    onCheckedChange={field.onChange}
+                    data-testid="checkbox-is-admin"
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Administrator Privileges</FormLabel>
+                  <p className="text-xs text-muted-foreground">
+                    Grant admin access to manage users and content
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
+          
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading} data-testid="button-create-user">
+              {isLoading ? "Creating..." : "Create User"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </DialogContent>
   );
 }
