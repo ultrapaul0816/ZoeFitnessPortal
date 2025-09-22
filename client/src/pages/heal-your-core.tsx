@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_1758445266265.png";
@@ -73,6 +73,29 @@ export default function HealYourCorePage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [isProgressExpanded, setIsProgressExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("welcome");
+  const [animatingNumber, setAnimatingNumber] = useState<number | null>(null);
+  const prevActiveTabRef = useRef(activeTab);
+
+  // Trigger animation when advancing to a new section
+  useEffect(() => {
+    const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    const prevIndex = tabOrder.indexOf(prevActiveTabRef.current);
+    
+    // Only animate when moving forward to a new section
+    if (currentIndex > prevIndex) {
+      setAnimatingNumber(currentIndex);
+      
+      // Remove animation after completion
+      const timer = setTimeout(() => {
+        setAnimatingNumber(null);
+      }, 1200); // Animation duration
+      
+      return () => clearTimeout(timer);
+    }
+    
+    prevActiveTabRef.current = activeTab;
+  }, [activeTab]);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
 
   // Tab navigation helpers
@@ -484,17 +507,40 @@ export default function HealYourCorePage() {
                   
                   return tabOrder.map((tab, index) => {
                     const isUnlocked = index <= currentIndex;
+                    const isAnimating = animatingNumber === index;
+                    const isCurrentStep = index === currentIndex;
                     
                     return (
                       <div 
                         key={tab}
-                        className={`relative w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 md:border-3 flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-500 z-10 ${
+                        className={`relative w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 md:border-3 flex items-center justify-center text-xs sm:text-sm font-bold z-10 transition-all duration-500 ${
                           isUnlocked 
                             ? `${colors[index]} text-white border-white shadow-lg` 
                             : 'bg-gray-300 text-gray-500 border-gray-200'
+                        } ${
+                          isAnimating 
+                            ? 'animate-bounce-pop scale-125 shadow-2xl' 
+                            : ''
+                        } ${
+                          isCurrentStep && isUnlocked
+                            ? 'ring-4 ring-white ring-opacity-50 animate-pulse-glow'
+                            : ''
                         }`}
+                        style={{
+                          transform: isAnimating ? 'scale(1.4)' : 'scale(1)',
+                          transition: 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+                        }}
                       >
                         {index + 1}
+                        {isCurrentStep && isUnlocked && (
+                          <div className="absolute inset-0 rounded-full bg-white opacity-20 animate-ping"></div>
+                        )}
+                        {isAnimating && (
+                          <>
+                            <div className="absolute inset-0 rounded-full bg-white opacity-30 animate-ping"></div>
+                            <div className="absolute inset-0 rounded-full border-2 border-white animate-ping" style={{ animationDelay: '0.2s' }}></div>
+                          </>
+                        )}
                       </div>
                     );
                   });
