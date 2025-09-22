@@ -6616,6 +6616,217 @@ function TheRoleOfNutritionSection({
                           </p>
                         </div>
                       </div>
+                    ) : topic.id === 'portion-quantity-guidance' ? (
+                      <div className="space-y-6 text-sm">
+                        <div className="text-center mb-6">
+                          <h3 className="text-xl font-bold mb-4">PORTION & <span className="text-pink-500">QUANTITY GUIDANCE</span></h3>
+                          <p className="text-gray-700 leading-relaxed">
+                            A flexible way to fuel healing without counting or obsessing. You don't need to track macros or 
+                            calories to support your recovery. But it is helpful to have a general guide for how much your body 
+                            may need — especially as you rebuild strength, support your core, and possibly breastfeed.
+                          </p>
+                        </div>
+
+                        {/* Hand Portion Guide */}
+                        <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
+                          <div className="p-4" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #cbde9a 100%)'}}>
+                            <h4 className="font-bold text-white text-lg" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>YOUR HANDS = YOUR BUILT-IN PORTION GUIDE</h4>
+                            <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Using your hands makes portioning simple and personal to your body</p>
+                          </div>
+                          <div className="p-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                              <div className="space-y-2">
+                                <div className="text-4xl">🤚</div>
+                                <div className="font-semibold text-sm">A serving of protein</div>
+                                <div className="text-xs text-gray-600">= 1 palm</div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="text-4xl">✊</div>
+                                <div className="font-semibold text-sm">A serving of vegetables</div>
+                                <div className="text-xs text-gray-600">= 1 fist</div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="text-4xl">🤲</div>
+                                <div className="font-semibold text-sm">A serving of carbs</div>
+                                <div className="text-xs text-gray-600">= 1 cupped hand</div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="text-4xl">👍</div>
+                                <div className="font-semibold text-sm">A serving of fats</div>
+                                <div className="text-xs text-gray-600">= 1 thumb</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Main Meals Guide */}
+                        <div className="space-y-4">
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #9aafdc 100%)'}}>
+                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>FOR EACH MAIN MEAL (3x/day), AIM FOR:</h4>
+                            </div>
+                          </div>
+
+                          {/* Palm-sized Protein */}
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f2038b 0%, #b8d082 100%)'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                                <span>🤚</span> PALM-SIZED PROTEIN
+                              </h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>1 palm = about 20–30g protein</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f2038b'}}>Chicken</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f2038b'}}>Fish</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f2038b'}}>Tofu</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f2038b'}}>Eggs</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f2038b'}}>Beans</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f2038b'}}>Lentils</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Fist-sized Veggies */}
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #cbde9a 0%, #c2b9a1 100%)'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                                <span>✊</span> FIST-SIZED VEGGIES
+                              </h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Go for variety & fiber to support digestion</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Cooked Vegetables</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Raw Vegetables</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>All Colors</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Leafy Greens</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Cupped-hand Complex Carbs */}
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b8d082'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b8d082 0%, #f3a8cb 100%)'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                                <span>🤲</span> CUPPED-HAND COMPLEX CARBS
+                              </h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Adjust depending on activity and energy</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Oats</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Quinoa</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Sweet Potato</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Rice</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Fruit</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Thumb of Healthy Fat */}
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#9aafdc'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #9aafdc 0%, #b3a892 100%)'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                                <span>👍</span> THUMB OF HEALTHY FAT
+                              </h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Adjust depending on activity and energy</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Nut Butters</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Oils</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Avocado</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Seeds</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Plus Extra If Breastfeeding */}
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#c2b9a1'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #c2b9a1 0%, #f2038b 100())'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                                <span>🤱</span> PLUS EXTRA IF BREASTFEEDING
+                              </h4>
+                              <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Add another ½—1 palm of carbs or fat</p>
+                            </div>
+                            <div className="p-5">
+                              <h5 className="font-semibold text-gray-800 mb-3">Add Between Meals:</h5>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#c2b9a1'}}>Eggs</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#c2b9a1'}}>Greek Yogurt</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#c2b9a1'}}>Trail Mix</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom Info Cards */}
+                        <div className="grid md:grid-cols-2 gap-6">
+                          {/* How Often To Eat */}
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3a892'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #b3a892 0%, #9aafdc 100())'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                                <span>🕐</span> HOW OFTEN TO EAT
+                              </h4>
+                            </div>
+                            <div className="p-5">
+                              <div className="space-y-3 text-sm">
+                                <p className="font-semibold text-gray-800">Try to eat every 3–4 hours to:</p>
+                                <ul className="space-y-2 text-gray-700">
+                                  <li className="flex items-start">
+                                    <span className="text-pink-500 mr-2">✓</span>
+                                    <span>Keep blood sugar stable</span>
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-pink-500 mr-2">✓</span>
+                                    <span>Support steady milk supply</span>
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-pink-500 mr-2">✓</span>
+                                    <span>Avoid energy crashes or overeating later</span>
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-pink-500 mr-2">✓</span>
+                                    <span>If you're hungrier more often — eat. Your healing body knows what it needs.</span>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Remember */}
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
+                            <div className="p-4" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #cbde9a 100())'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                                <span>💝</span> REMEMBER
+                              </h4>
+                            </div>
+                            <div className="p-5">
+                              <div className="space-y-3 text-sm">
+                                <ul className="space-y-2 text-gray-700">
+                                  <li className="flex items-start">
+                                    <span className="text-pink-500 mr-2">✓</span>
+                                    <span>You're not "eating too much" — you're eating enough to heal & function</span>
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-pink-500 mr-2">✓</span>
+                                    <span>Don't under fuel and then expect energy or results — your body is your teammate</span>
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-pink-500 mr-2">✓</span>
+                                    <span>Stay hydrated! Often, fatigue is just low fluid intake</span>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     ) : null}
                   </div>
                 )}
