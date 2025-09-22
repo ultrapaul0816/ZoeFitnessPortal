@@ -525,6 +525,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Temporary admin endpoint to update user passwords (for testing only)
+  app.patch("/api/admin/users/:id/password", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { password } = req.body;
+      
+      if (!password) {
+        return res.status(400).json({ message: "Password is required" });
+      }
+      
+      const updatedUser = await storage.updateUser(id, { password });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Password update error:", error);
+      res.status(500).json({ message: "Failed to update password" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
