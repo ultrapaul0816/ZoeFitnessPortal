@@ -6912,67 +6912,70 @@ function WhatComesNextSection({
                       </div>
                     </div>
                   ) : topic.id === 'red-flag-movements' ? (
-                    <div className="space-y-4 text-sm">
+                    <div className="space-y-6 text-sm">
                       <div className="text-center mb-6">
-                        <h3 className="text-xl font-bold mb-4">RED FLAG <span className="text-red-500">MOVEMENTS TO AVOID</span></h3>
-                        <p className="text-gray-700 leading-relaxed">
-                          Certain exercises can worsen diastasis recti or cause injury. Avoid these movements until you're fully healed.
-                        </p>
+                        <h3 className="text-xl font-bold mb-4">RED FLAG <span className="text-pink-500">MOVEMENTS TO AVOID</span></h3>
+                        <div className="space-y-4 text-gray-700 leading-relaxed">
+                          <p>
+                            Even if you feel eager to get back into workouts, certain movements can delay healing and 
+                            worsen core and pelvic floor dysfunction. These exercises increase intra-abdominal pressure, 
+                            strain weak tissue, and risk injury if introduced too soon.
+                          </p>
+                          <p>
+                            Avoid these until you've built a strong foundation of breath control, core engagement, and 
+                            pelvic floor support—and have no signs of coning, bulging, or discomfort during movement.
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 p-5 rounded-lg" style={{borderColor: '#f2038b'}}>
-                          <h4 className="font-bold mb-3 text-red-600 text-base">🚫 High-Risk Core Exercises</h4>
-                          <div className="space-y-2 text-gray-700">
-                            <div className="flex items-start">
-                              <span className="text-red-500 mr-2">✗</span>
-                              <span><strong>Traditional crunches or sit-ups:</strong> Increase intra-abdominal pressure</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-red-500 mr-2">✗</span>
-                              <span><strong>Russian twists:</strong> Rotational stress on healing tissue</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-red-500 mr-2">✗</span>
-                              <span><strong>Bicycle crunches:</strong> Combined flexion and rotation</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-red-500 mr-2">✗</span>
-                              <span><strong>Full planks (initially):</strong> Too much load on the linea alba</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-red-500 mr-2">✗</span>
-                              <span><strong>Mountain climbers:</strong> Dynamic pressure on the core</span>
-                            </div>
+                      <div className="space-y-6">
+                        {/* Red Flag Movements Table */}
+                        <div className="bg-white border-2 rounded-lg overflow-hidden" style={{borderColor: '#f2038b'}}>
+                          <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4">
+                            <h4 className="font-bold text-red-600 text-base">🚫 Red Flag Movements</h4>
+                          </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="bg-gray-50">
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Avoid These Movements</th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Why They're Risky Postpartum</th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white divide-y divide-gray-200">
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Crunches or sit-ups</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Load the rectus abdominis too early, increasing pressure on the linea alba and worsening diastasis recti</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Front-loaded planks (high/low)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Put intense strain on the abdominal wall, often causing doming or bulging</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Twisting under load (e.g., Russian twists)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Involves forceful rotation on weakened tissue; can deepen separation</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Deep backbends or unsupported extensions</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Hyperextend the spine and stretch the healing core and pelvic floor</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Jumping, running, or impact exercises</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Increase pelvic floor pressure and can cause leaks, heaviness, or prolapse risk</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Any movement that causes doming, bulging, pain, or leakage</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>These are your body's signals to pause & regress the movement for now</em></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3a892'}}>
-                          <h4 className="font-bold mb-3 text-yellow-600 text-base">⚠️ Movements Requiring Caution</h4>
-                          <div className="space-y-2 text-gray-700">
-                            <div className="flex items-start">
-                              <span className="text-yellow-500 mr-2">!</span>
-                              <span><strong>Heavy lifting:</strong> Avoid until core is fully functional</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-yellow-500 mr-2">!</span>
-                              <span><strong>High-intensity interval training:</strong> Too much stress too soon</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-yellow-500 mr-2">!</span>
-                              <span><strong>Running/jumping:</strong> Wait until core and pelvic floor are strong</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-yellow-500 mr-2">!</span>
-                              <span><strong>Backbends/deep twists:</strong> Can overstretch healing tissue</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 p-5 rounded-r-lg">
+                        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-400 p-5 rounded-r-lg">
                           <p className="text-gray-700 leading-relaxed flex items-start">
-                            <span className="text-blue-500 mr-2 mt-1">💡</span>
-                            <span><strong>Key Rule:</strong> If any exercise causes doming, coning, or pressure symptoms, stop immediately and return to easier modifications.</span>
+                            <span className="text-orange-500 mr-2 mt-1">⚠️</span>
+                            <span><strong>Remember:</strong> Your body will tell you when it's ready. Pay attention to these signals and prioritize healing over intensity. There's no rush—building a strong foundation now prevents setbacks later.</span>
                           </p>
                         </div>
                       </div>
