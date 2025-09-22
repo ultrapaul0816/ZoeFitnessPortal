@@ -23,8 +23,10 @@ export default function MyLibrary() {
   const { data: memberPrograms = [], isLoading, error } = useQuery<MemberProgram[]>({
     queryKey: ['/api/member-programs', user?.id],
     enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    staleTime: 10 * 60 * 1000, // Cache for 10 minutes
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
+    refetchOnMount: false, // Don't refetch on component remount if data exists
   });
 
   const handleUserUpdate = (updatedUser: User) => {
@@ -152,85 +154,67 @@ export default function MyLibrary() {
           </div>
         )}
 
-        {/* Programs Grid */}
+        {/* Programs Grid - Simplified for performance */}
         {!isLoading && memberPrograms.length > 0 && (
-          <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
             {memberPrograms.map((memberProgram: any) => {
               const program = memberProgram.program;
               if (!program) return null;
               return (
                 <Link key={program.id} to={program.name.includes("Postpartum") ? "/heal-your-core" : "/dashboard"}>
                   <div 
-                    className="bg-gradient-to-br from-pink-50 to-rose-100 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-pink-100"
+                    className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-200"
                     data-testid={`program-card-${program.id}`}
                   >
-                    {/* Header Section */}
-                    <div className="text-center mb-6">
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-3">
-                        Your Programs
-                      </h2>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Discover personalized fitness programs designed to help you achieve your health and wellness goals
-                      </p>
-                    </div>
-
                     {/* Program Image */}
-                    <div className="relative mb-6 rounded-2xl overflow-hidden">
+                    <div className="mb-4 rounded-lg overflow-hidden">
                       <img 
                         src={program.imageUrl || programCover}
                         alt={program.name}
-                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-48 object-cover"
                       />
                     </div>
                     
                     {/* Program Title */}
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
                       {program.name}
                     </h3>
                     
                     {/* Program Description */}
-                    <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                    <p className="text-gray-600 text-sm mb-4">
                       {program.description}
                     </p>
                     
                     {/* Program Features */}
-                    <div className="space-y-4 mb-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-gray-800 font-medium">{program.duration}</span>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="w-4 h-4 text-pink-500" />
+                        <span>{program.duration}</span>
                       </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
-                          <Target className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-gray-800 font-medium">{program.level}</span>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Target className="w-4 h-4 text-pink-500" />
+                        <span>{program.level}</span>
                       </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
-                          <Dumbbell className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-gray-800 font-medium">{program.equipment}</span>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Dumbbell className="w-4 h-4 text-pink-500" />
+                        <span>{program.equipment}</span>
                       </div>
                     </div>
                     
-                    {/* Badges */}
-                    <div className="flex gap-3 mb-4">
-                      <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-                        <Star className="w-4 h-4" />
+                    {/* Badge */}
+                    <div className="mb-3">
+                      <div className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        <Star className="w-3 h-3" />
                         Premium Access
-                      </div>
-                      <div className="bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                        {program.level}
                       </div>
                     </div>
                     
                     {/* Progress Bar */}
-                    <div className="w-full h-2 bg-gray-900 rounded-full">
-                      <div className="h-full bg-gradient-to-r from-pink-500 to-purple-600 rounded-full" style={{width: `${((memberProgram.progress || 0) / (program.workoutCount || 1)) * 100}%`}}></div>
+                    <div className="w-full h-2 bg-gray-200 rounded-full">
+                      <div 
+                        className="h-full bg-pink-500 rounded-full" 
+                        style={{width: `${((memberProgram.progress || 0) / (program.workoutCount || 1)) * 100}%`}}
+                      />
                     </div>
                   </div>
                 </Link>
