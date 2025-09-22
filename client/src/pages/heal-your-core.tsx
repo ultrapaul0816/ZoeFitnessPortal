@@ -419,7 +419,7 @@ export default function HealYourCorePage() {
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="overflow-x-auto px-0 shadow-xl rounded-lg">
-            <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-3 md:p-4 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
+            <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
               <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Welcome</span>
@@ -456,19 +456,20 @@ export default function HealYourCorePage() {
             </TabsList>
             
             {/* Game-like Journey Progress Bar */}
-            <div className="relative mt-4 px-8">
+            <div className="relative mt-6 px-12 py-4">
               <div className="flex items-center justify-between relative">
                 {/* Background connecting line */}
                 <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
                 
                 {/* Active progress line */}
                 <div 
-                  className={`absolute top-1/2 left-0 h-1 rounded-full -translate-y-1/2 transition-all duration-700 ease-out progress-${activeTab.replace('-', '')}`}
+                  className={`absolute top-1/2 h-1 rounded-full -translate-y-1/2 transition-all duration-700 ease-out progress-${activeTab.replace('-', '')}`}
                   style={{
+                    left: '0%',
                     width: `${(() => {
                       const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
                       const currentIndex = tabOrder.indexOf(activeTab);
-                      return ((currentIndex + 1) / tabOrder.length) * 100;
+                      return (currentIndex / (tabOrder.length - 1)) * 100;
                     })()}%`
                   }}
                 />
@@ -481,21 +482,17 @@ export default function HealYourCorePage() {
                   
                   return tabOrder.map((tab, index) => {
                     const isUnlocked = index <= currentIndex;
-                    const isActive = index === currentIndex;
                     
                     return (
                       <div 
                         key={tab}
-                        className={`relative w-8 h-8 rounded-full border-3 flex items-center justify-center text-sm font-bold transition-all duration-500 z-10 ${
+                        className={`relative w-10 h-10 rounded-full border-3 flex items-center justify-center text-sm font-bold transition-all duration-500 z-10 ${
                           isUnlocked 
-                            ? `${colors[index]} text-white border-white shadow-lg transform scale-110` 
+                            ? `${colors[index]} text-white border-white shadow-lg` 
                             : 'bg-gray-300 text-gray-500 border-gray-200'
-                        } ${isActive ? 'animate-pulse shadow-xl' : ''}`}
+                        }`}
                       >
                         {index + 1}
-                        {isActive && (
-                          <div className="absolute inset-0 rounded-full bg-white opacity-25 animate-ping"></div>
-                        )}
                       </div>
                     );
                   });
