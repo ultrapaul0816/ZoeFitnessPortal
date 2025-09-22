@@ -14,6 +14,8 @@ export const users = pgTable("users", {
   isAdmin: boolean("is_admin").default(false),
   termsAccepted: boolean("terms_accepted").default(false),
   termsAcceptedAt: timestamp("terms_accepted_at"),
+  validFrom: timestamp("valid_from").default(sql`now()`),
+  validUntil: timestamp("valid_until").default(sql`now() + interval '1 year'`),
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
@@ -239,6 +241,24 @@ export const updateUserProfileSchema = z.object({
   profilePictureUrl: z.string().url("Please enter a valid URL").optional(),
 });
 
+// Admin create user schema
+export const adminCreateUserSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  isAdmin: z.boolean().default(false),
+  validFrom: z.date().optional(),
+  validUntil: z.date().optional(),
+}).refine((data) => {
+  if (data.validFrom && data.validUntil) {
+    return data.validFrom < data.validUntil;
+  }
+  return true;
+}, {
+  message: "Valid from date must be before valid until date",
+  path: ["validUntil"],
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -269,6 +289,7 @@ export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Terms = typeof terms.$inferSelect;
 export type InsertTerms = z.infer<typeof insertTermsSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
+export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 
 // Login schema
 export const loginSchema = z.object({
