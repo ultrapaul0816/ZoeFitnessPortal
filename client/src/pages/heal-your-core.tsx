@@ -3046,34 +3046,55 @@ function WelcomeSection({
                           </div>
                         </div>
                         <div className="p-4">
-                          <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                          <div className="grid grid-cols-7 gap-1 md:gap-2 text-center text-xs">
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-500">MON</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                              <div className="font-semibold text-gray-500 text-[10px] md:text-xs">MON</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                                <span className="block md:hidden">C</span>
+                                <span className="hidden md:block">CARDIO</span>
+                              </div>
                             </div>
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-500">TUE</div>
-                              <div className="bg-indigo-100 text-indigo-700 py-2 px-1 rounded font-medium">PROGRAM 5</div>
+                              <div className="font-semibold text-gray-500 text-[10px] md:text-xs">TUE</div>
+                              <div className="bg-indigo-100 text-indigo-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                                <span className="block md:hidden">P5</span>
+                                <span className="hidden md:block">PROGRAM 5</span>
+                              </div>
                             </div>
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-500">WED</div>
-                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                              <div className="font-semibold text-gray-500 text-[10px] md:text-xs">WED</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                                <span className="block md:hidden">R</span>
+                                <span className="hidden md:block">REST</span>
+                              </div>
                             </div>
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-500">THU</div>
-                              <div className="bg-indigo-100 text-indigo-700 py-2 px-1 rounded font-medium">PROGRAM 5</div>
+                              <div className="font-semibold text-gray-500 text-[10px] md:text-xs">THU</div>
+                              <div className="bg-indigo-100 text-indigo-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                                <span className="block md:hidden">P5</span>
+                                <span className="hidden md:block">PROGRAM 5</span>
+                              </div>
                             </div>
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-500">FRI</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                              <div className="font-semibold text-gray-500 text-[10px] md:text-xs">FRI</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                                <span className="block md:hidden">C</span>
+                                <span className="hidden md:block">CARDIO</span>
+                              </div>
                             </div>
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-500">SAT</div>
-                              <div className="bg-indigo-100 text-indigo-700 py-2 px-1 rounded font-medium">PROGRAM 5</div>
+                              <div className="font-semibold text-gray-500 text-[10px] md:text-xs">SAT</div>
+                              <div className="bg-indigo-100 text-indigo-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                                <span className="block md:hidden">P5</span>
+                                <span className="hidden md:block">PROGRAM 5</span>
+                              </div>
                             </div>
                             <div className="space-y-1">
-                              <div className="font-semibold text-gray-500">SUN</div>
-                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                              <div className="font-semibold text-gray-500 text-[10px] md:text-xs">SUN</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                                <span className="block md:hidden">R</span>
+                                <span className="hidden md:block">REST</span>
+                              </div>
                             </div>
                           </div>
                         </div>
