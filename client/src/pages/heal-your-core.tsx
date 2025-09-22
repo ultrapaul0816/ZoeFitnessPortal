@@ -52,7 +52,8 @@ import {
   Activity,
   Menu,
   Star,
-  Sprout
+  Sprout,
+  HelpCircle
 } from "lucide-react";
 import ProfileSettings from "@/components/profile-settings";
 import type { User } from "@shared/schema";
@@ -411,7 +412,7 @@ export default function HealYourCorePage() {
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="overflow-x-auto px-0 shadow-xl rounded-lg">
-            <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-7 gap-2 md:gap-4 h-auto p-3 md:p-4 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
+            <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-3 md:p-4 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
               <div className={`progress-badge progress-step-1 ${activeTab === 'welcome' ? 'progress-current' : ''}`}>
                 <Star className="w-3 h-3" />
@@ -460,6 +461,14 @@ export default function HealYourCorePage() {
               </div>
               <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">What's Next</span>
+            </TabsTrigger>
+            
+            <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+              <div className={`progress-badge progress-step-8 ${activeTab === 'faqs' ? 'progress-current' : ''}`}>
+                <HelpCircle className="w-3 h-3" />
+              </div>
+              <HelpCircle className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+              <span className="font-medium">FAQs</span>
             </TabsTrigger>
             </TabsList>
           </div>
@@ -552,6 +561,151 @@ export default function HealYourCorePage() {
               navigateToNextTab={navigateToNextTab}
               navigateToPreviousTab={navigateToPreviousTab}
             />
+          </TabsContent>
+
+          <TabsContent value="faqs" className="mt-6 space-y-6" data-testid="content-faqs">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                FAQS
+              </h1>
+              <p className="text-lg text-gray-600 font-medium">
+                REAL QUESTIONS, HONEST ANSWERS—BECAUSE YOU DESERVE CLARITY, NOT CONFUSION.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <Accordion type="multiple" className="w-full space-y-4">
+                
+                <AccordionItem value="faq-1" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">What if I still see doming or coning in Week 3 or 4?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    That's okay. Healing isn't linear. If you notice doming during movements, pause, scale back to earlier exercises, and revisit the breakdown and core connection cues. It's not about pushing harder—it's about moving smarter.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-2" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">Can I do this program if I'm more than a year postpartum?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    Absolutely. Whether you're 6 weeks or 6 years postpartum, core rehab is always relevant. This program supports healing, building strength, and reconnection at any stage.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-3" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">What if I had a C-section? Will this still help me?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    Yes! The program includes specific modifications and cautions for C-section recovery. Always listen to your body around the scar site and reduce or pause movements that feel too intense.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-4" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">I don't have diastasis recti—should I still do this program?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    Yes! This program helps you rebuild deep core strength, improve posture, and reconnect with your body—even if you don't have a visible gap. It's for any mom who feels weak, unsupported, or unsure how to engage her core safely.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-5" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">Can I combine this program with other workouts?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    If you're cleared for movement and feel strong during this program, you may add light walks or low-impact movement on alternate days. Avoid high-intensity workouts until you've progressed through the rehab without symptoms.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-6" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">How do I know if I'm ready to move to the next week?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600 space-y-2">
+                    <p>Use your body as a guide. Signs you're ready:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>No doming, leaking, or heaviness during the exercises</li>
+                      <li>Core engagement feels reflexive, not forced</li>
+                      <li>Posture and breath feel more natural</li>
+                      <li>If unsure, stay another week in the same phase—there's no rush.</li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-7" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">Can I repeat the program again?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    Yes, and it's encouraged. The second round often brings even deeper awareness and strength. It's also a great reset if life got in the way the first time.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-8" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">What if I missed a full week or more?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    Just start again where you left off. There's no failure here. This program is designed to work with your real life.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-9" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">Can I do this if I had vaginal birth with tearing or stitches?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    Yes, once cleared by your healthcare provider. Go slow, listen to your pelvic floor, and avoid any movement that increases discomfort, heaviness, or pressure.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-10" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">Should I wear a postpartum belt while doing these exercises?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    You can if it offers support or makes you feel more stable, especially in early weeks. But it's not mandatory. Use your breath and TVA engagement as your primary "belt" over time.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-11" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">I feel emotional or frustrated doing core work—is that normal?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    Totally normal. Your core is deeply tied to your sense of safety, confidence, and identity. Be gentle with yourself. This is physical work and emotional work.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faq-12" className="border border-pink-200 rounded-lg bg-white shadow-sm">
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+                    <span className="font-semibold text-gray-800">How long will it take to heal my core completely?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-600">
+                    There's no fixed timeline. Everybody heals differently. Some women feel great in 6 weeks, others in 6 months. Your consistency and patience matter more than speed.
+                  </AccordionContent>
+                </AccordionItem>
+
+              </Accordion>
+            </div>
+            
+            {/* Navigation Buttons */}
+            <div className="flex justify-center pt-8">
+              <div className="flex gap-4 justify-center">
+                <Button
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                  data-testid="button-previous-section-faqs"
+                  onClick={() => setActiveTab('next-steps')}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Prev
+                </Button>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
 

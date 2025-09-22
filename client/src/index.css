@@ -379,6 +379,7 @@
 .progress-step-5 { background: linear-gradient(135deg, #f59e0b, #d97706); }
 .progress-step-6 { background: linear-gradient(135deg, #14b8a6, #0891b2); }
 .progress-step-7 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.progress-step-8 { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
 /* Pulse animation for current step */
 .progress-current {
