@@ -29,6 +29,8 @@ import miniPilatesBallImage from "@assets/Screenshot 2025-09-22 at 13.30.04_1758
 import longResistanceBandImage from "@assets/Screenshot 2025-09-22 at 13.30.13_1758528078677.png";
 import swissBallImage from "@assets/Screenshot 2025-09-22 at 13.30.19_1758528078676.png";
 import foamRollerImage from "@assets/Screenshot 2025-09-22 at 13.30.27_1758528078676.png";
+import nutritionBowlImage from "@assets/Screenshot 2025-09-22 at 21.26.02_1758556777492.png";
+import vegetableStackImage from "@assets/Screenshot 2025-09-22 at 21.29.28_1758556777510.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6217,7 +6219,7 @@ function TheRoleOfNutritionSection({
                         <div className="text-center mb-6">
                           <div className="relative mb-4">
                             <img 
-                              src="/attached_assets/Screenshot 2025-09-22 at 21.26.02_1758556777492.png" 
+                              src={nutritionBowlImage} 
                               alt="The Role of Nutrition - Healthy salad with grilled chicken and vegetables"
                               className="w-full h-64 object-cover rounded-lg shadow-lg"
                             />
@@ -6302,7 +6304,7 @@ function TheRoleOfNutritionSection({
                             </div>
                             <div className="md:w-32 w-full flex justify-center">
                               <img 
-                                src="/attached_assets/Screenshot 2025-09-22 at 21.29.28_1758556777510.png" 
+                                src={vegetableStackImage} 
                                 alt="Colorful vegetables stack - cucumber, bell pepper, avocado, carrot, beets"
                                 className="w-24 h-auto object-contain"
                               />
