@@ -2758,6 +2758,27 @@ function WelcomeSection({
                       </div>
                     </div>
 
+                    {/* Mobile Legend - Only visible on mobile */}
+                    <div className="block md:hidden mb-6">
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h5 className="font-semibold text-gray-700 mb-3 text-sm">📱 Mobile Quick Reference</h5>
+                        <div className="grid grid-cols-3 gap-3 text-xs">
+                          <div className="text-center">
+                            <div className="bg-pink-100 text-pink-700 py-1 px-2 rounded font-medium mb-1">P1-P6</div>
+                            <p className="text-gray-600">Program 1-6</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="bg-blue-100 text-blue-700 py-1 px-2 rounded font-medium mb-1">C</div>
+                            <p className="text-gray-600">Cardio</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="bg-emerald-100 text-emerald-700 py-1 px-2 rounded font-medium mb-1">R</div>
+                            <p className="text-gray-600">Rest</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Weekly Schedules */}
                     <div className="space-y-4">
                       {/* Week 1 */}
