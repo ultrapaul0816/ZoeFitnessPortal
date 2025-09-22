@@ -6213,41 +6213,89 @@ function TheRoleOfNutritionSection({
                 {expandedTopics[topic.id] && (
                   <div className="pb-5 space-y-4" data-testid={`content-${topic.id}`}>
                     {topic.id === 'a-note-on-nutrition' ? (
-                      <div className="space-y-4 text-sm">
-                        <div className="text-center">
-                          <h3 className="text-lg font-bold mb-2">A NOTE ON <span className="text-pink-500">NUTRITION</span></h3>
+                      <div className="space-y-6 text-sm">
+                        <div className="text-center mb-6">
+                          <h3 className="text-xl font-bold mb-4">A NOTE ON <span className="text-pink-500">NUTRITION</span></h3>
                         </div>
                         
-                        <p>
-                          Proper nutrition plays a crucial role in your postpartum recovery and core rehabilitation journey. The foods you eat provide the building blocks for tissue repair, muscle recovery, and overall healing.
+                        <p className="text-gray-700 leading-relaxed">
+                          Movement alone isn't enough to rebuild and restore. You're showing up for your recovery with 
+                          commitment — but your body also needs nourishment to rebuild muscle, support healing, and 
+                          bring your strength back from the inside out.
                         </p>
                         
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-blue-800">Why Nutrition Matters for Core Recovery</h4>
-                          <ul className="space-y-1 text-sm text-blue-700">
-                            <li>• Supports connective tissue repair and strengthening</li>
-                            <li>• Provides essential nutrients for muscle recovery</li>
-                            <li>• Reduces inflammation that can hinder healing</li>
-                            <li>• Optimizes energy levels for consistent exercise</li>
-                            <li>• Supports hormonal balance during postpartum period</li>
+                        <p className="text-gray-700 leading-relaxed">
+                          This isn't about diets or calorie-counting. It's about fueling your recovery with food that supports 
+                          your energy, hormones, and deep-core healing, especially during the postpartum phase.
+                        </p>
+                        
+                        <div className="bg-pink-50 border-l-4 border-pink-400 p-5 rounded-r-lg">
+                          <h4 className="font-bold mb-3 text-pink-600 text-base">Why nutrition matters for core healing:</h4>
+                          <ul className="space-y-2 text-gray-700">
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span>Helps rebuild stretched fascia (like your Linea alba)</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span>Supports muscle repair + connective tissue strength</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span>Reduces inflammation and bloating</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span>Keeps your energy and mood stable through the day</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span>Improves digestion — key for core and pelvic pressure</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span>Supports pelvic floor healing + postpartum recovery</span>
+                            </li>
                           </ul>
                         </div>
                         
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-green-800">Key Principles</h4>
-                          <ul className="space-y-1 text-sm text-green-700">
-                            <li>• Focus on whole, unprocessed foods</li>
-                            <li>• Prioritize adequate protein intake</li>
-                            <li>• Include anti-inflammatory foods</li>
-                            <li>• Stay well-hydrated throughout the day</li>
-                            <li>• Eat regularly to maintain energy levels</li>
-                          </ul>
+                        <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-pink-600 text-base">Daily checklist</h4>
+                          <p className="text-gray-600 mb-3 text-sm">
+                            Use this as a gentle reminder — not for perfection, but for consistent nourishment.
+                          </p>
+                          <div className="space-y-2">
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                              <span className="text-gray-700">Bone broth or warm protein-rich soup</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                              <span className="text-gray-700">3 protein-rich servings (dal/lentils, curd/yogurt, chicken, etc.)</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                              <span className="text-gray-700">2+ complex carb servings (bajra, quinoa/pearl millet flatbread, oats, sweet potato)</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                              <span className="text-gray-700">1–2 healthy fat sources (ghee/clarified butter, nuts, coconut)</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                              <span className="text-gray-700">2+ anti-inflammatory ingredients (Haldi/turmeric, ginger, soaked nuts)</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                              <span className="text-gray-700">8–10 cups fluid (water, chaas/buttermilk, ORS, nimbu-paani/lime water)</span>
+                            </label>
+                          </div>
                         </div>
                         
-                        <div className="bg-purple-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-purple-800">Remember</h4>
-                          <p className="text-sm text-purple-700">
-                            This is not about restriction or weight loss. It's about nourishing your body to heal optimally and support your core recovery journey. Small, consistent changes make the biggest difference.
+                        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-400 p-5 rounded-r-lg">
+                          <p className="text-gray-700 leading-relaxed flex items-start">
+                            <span className="text-orange-500 mr-2 mt-1">🧡</span>
+                            <span>Let your plate reflect warmth, recovery, and self-care. Home-cooked meals are powerful postpartum medicine.</span>
                           </p>
                         </div>
                       </div>
