@@ -2134,85 +2134,92 @@ function WelcomeSection({
                       <h4 className="font-semibold text-primary text-lg mb-4 text-center">✨ WHAT EQUIPMENT DO YOU NEED ✨</h4>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                       {/* Row 1 */}
-                      <div className="text-center">
-                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-pink-200">
                           <img 
                             src={yogaMatImage} 
                             alt="Pink yoga mat" 
-                            className="w-20 h-20 object-contain"
+                            className="w-32 h-32 object-contain filter drop-shadow-lg"
                           />
                         </div>
-                        <p className="font-medium">Yoga Mat</p>
+                        <p className="font-semibold text-lg text-gray-800">Yoga Mat</p>
+                        <p className="text-sm text-gray-600 mt-1">Essential for floor exercises</p>
                       </div>
                       
-                      <div className="text-center">
-                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-purple-200">
                           <img 
                             src={yogaBlocksImage} 
                             alt="Pink yoga blocks" 
-                            className="w-20 h-20 object-contain"
+                            className="w-32 h-32 object-contain filter drop-shadow-lg"
                           />
                         </div>
-                        <p className="font-medium">Yoga Blocks</p>
+                        <p className="font-semibold text-lg text-gray-800">Yoga Blocks</p>
+                        <p className="text-sm text-gray-600 mt-1">Support and alignment</p>
                       </div>
                       
-                      <div className="text-center">
-                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-rose-200">
                           <img 
                             src={miniResistanceBandsImage} 
                             alt="Mini resistance bands" 
-                            className="w-20 h-20 object-contain"
+                            className="w-32 h-32 object-contain filter drop-shadow-lg"
                           />
                         </div>
-                        <p className="font-medium">Mini Resistance Bands</p>
+                        <p className="font-semibold text-lg text-gray-800">Mini Resistance Bands</p>
+                        <p className="text-sm text-gray-600 mt-1">Light resistance training</p>
                       </div>
                       
                       {/* Row 2 */}
-                      <div className="text-center">
-                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-blue-200">
                           <img 
                             src={miniPilatesBallImage} 
                             alt="Mini Pilates ball" 
-                            className="w-20 h-20 object-contain"
+                            className="w-32 h-32 object-contain filter drop-shadow-lg"
                           />
                         </div>
-                        <p className="font-medium">Mini Pilates Ball</p>
+                        <p className="font-semibold text-lg text-gray-800">Mini Pilates Ball</p>
+                        <p className="text-sm text-gray-600 mt-1">Core stability and support</p>
                       </div>
                       
-                      <div className="text-center">
-                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-indigo-200">
                           <img 
                             src={longResistanceBandImage} 
                             alt="Long resistance band" 
-                            className="w-20 h-20 object-contain"
+                            className="w-32 h-32 object-contain filter drop-shadow-lg"
                           />
                         </div>
-                        <p className="font-medium">Pilates Theraband Or<br />Long Resistance Band</p>
+                        <p className="font-semibold text-lg text-gray-800">Pilates Theraband</p>
+                        <p className="text-sm text-gray-600 mt-1">Full-body resistance training</p>
                       </div>
                       
-                      <div className="text-center">
-                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-200">
                           <img 
                             src={swissBallImage} 
                             alt="Medium Swiss ball" 
-                            className="w-20 h-20 object-contain"
+                            className="w-32 h-32 object-contain filter drop-shadow-lg"
                           />
                         </div>
-                        <p className="font-medium">Medium Swiss Ball</p>
+                        <p className="font-semibold text-lg text-gray-800">Medium Swiss Ball</p>
+                        <p className="text-sm text-gray-600 mt-1">Balance and stability work</p>
                       </div>
                       
                       {/* Row 3 - Foam Roller centered */}
-                      <div className="text-center md:col-start-2">
-                        <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
+                      <div className="text-center group md:col-span-2 lg:col-span-1 lg:col-start-2">
+                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-8 mb-4 h-48 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-slate-200">
                           <img 
                             src={foamRollerImage} 
                             alt="Foam roller" 
-                            className="w-20 h-20 object-contain"
+                            className="w-32 h-32 object-contain filter drop-shadow-lg"
                           />
                         </div>
-                        <p className="font-medium">Foam Roller</p>
+                        <p className="font-semibold text-lg text-gray-800">Foam Roller</p>
+                        <p className="text-sm text-gray-600 mt-1">Muscle recovery and release</p>
                       </div>
                     </div>
                     
