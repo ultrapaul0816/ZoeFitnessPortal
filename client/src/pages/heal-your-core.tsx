@@ -654,11 +654,11 @@ export default function HealYourCorePage() {
 
           <TabsContent value="faqs" className="mt-6 space-y-6" data-testid="content-faqs">
             <div className="text-left mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-violet-600 via-purple-500 to-fuchsia-600 bg-clip-text text-transparent drop-shadow-lg">
-                FAQS
+              <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-violet-600 via-purple-500 to-fuchsia-600 bg-clip-text text-transparent drop-shadow-sm">
+                Frequently Asked Questions
               </h1>
-              <p className="text-lg text-gray-600 font-semibold border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-3">
-                REAL QUESTIONS, HONEST ANSWERS—BECAUSE YOU DESERVE CLARITY, NOT CONFUSION.
+              <p className="text-base font-medium text-gray-600 border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-2">
+                Real questions, honest answers because you deserve clarity, not confusion
               </p>
             </div>
 
@@ -847,10 +847,10 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
     <div className="space-y-6">
       <Card>
         <CardHeader className="text-left">
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
             Heal
           </CardTitle>
-          <CardDescription className="text-gray-600 font-medium border-l-4 border-emerald-400 pl-4 bg-gradient-to-r from-emerald-50 to-transparent py-2">
+          <CardDescription className="text-base font-medium text-gray-600 border-l-4 border-emerald-400 pl-4 bg-gradient-to-r from-emerald-50 to-transparent py-2">
             Understanding diastasis recti and beginning your core rehabilitation journey
           </CardDescription>
         </CardHeader>
@@ -1714,7 +1714,7 @@ function WelcomeSection({
             <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
               Welcome - Start Here
             </h2>
-            <p className="text-gray-600 text-base font-medium border-l-4 border-pink-400 pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
+            <p className="text-base font-medium text-gray-600 border-l-4 border-pink-400 pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
               Essential preparatory information for your core recovery journey
             </p>
           </div>
@@ -2711,11 +2711,11 @@ function UnderstandingYourCoreSection({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-left bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+          <CardTitle className="text-3xl font-bold text-left bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
             Understanding Your Core
           </CardTitle>
-          <CardDescription className="text-left text-gray-600 font-medium border-l-4 border-blue-400 pl-4 bg-gradient-to-r from-blue-50 to-transparent py-2">
-            Educational foundation to empower you with understanding the "why" behind your recovery
+          <CardDescription className="text-base font-medium text-left text-gray-600 border-l-4 border-blue-400 pl-4 bg-gradient-to-r from-blue-50 to-transparent py-2">
+            Educational foundation to empower you with understanding the why behind your recovery
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -4108,8 +4108,8 @@ function ProgramsSection({
                 <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Advanced Strength & Conditioning Program
                 </div>
-                <div className="text-blue-100 font-semibold text-sm drop-shadow-sm bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
-                  6-week advanced postnatal fitness journey
+                <div className="text-base font-medium text-blue-100 drop-shadow-sm">
+                  Six Week Advanced Postnatal Fitness Journey
                 </div>
               </div>
               
@@ -4138,8 +4138,8 @@ function ProgramsSection({
                   <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                     Advanced Strength & Conditioning Program
                   </CardTitle>
-                  <CardDescription className="text-blue-100 font-bold text-base mt-2 drop-shadow-md leading-tight bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
-                    6-week advanced postnatal fitness journey
+                  <CardDescription className="text-base font-medium text-blue-100 mt-2 drop-shadow-sm leading-tight">
+                    Six Week Advanced Postnatal Fitness Journey
                   </CardDescription>
                 </div>
               </div>
@@ -4375,8 +4375,8 @@ function ProgramsSection({
                 <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Control & Awareness Program
                 </div>
-                <div className="text-green-100 font-semibold text-sm drop-shadow-sm bg-gradient-to-r from-emerald-200 to-green-200 bg-clip-text text-transparent">
-                  6-week control and awareness fitness journey
+                <div className="text-base font-medium text-green-100 drop-shadow-sm">
+                  Six Week Control And Awareness Fitness Journey
                 </div>
               </div>
               
@@ -4405,8 +4405,8 @@ function ProgramsSection({
                   <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                     Control & Awareness Program
                   </CardTitle>
-                  <CardDescription className="text-green-100 font-bold text-base mt-2 drop-shadow-md leading-tight bg-gradient-to-r from-emerald-200 to-green-200 bg-clip-text text-transparent">
-                    6-week control and awareness fitness journey
+                  <CardDescription className="text-base font-medium text-green-100 mt-2 drop-shadow-sm leading-tight">
+                    Six Week Control And Awareness Fitness Journey
                   </CardDescription>
                 </div>
               </div>
@@ -4651,8 +4651,8 @@ function ProgramsSection({
                 <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Align & Activate Program
                 </div>
-                <div className="text-purple-100 font-semibold text-sm drop-shadow-sm bg-gradient-to-r from-purple-200 to-violet-200 bg-clip-text text-transparent">
-                  6-week alignment and activation fitness journey
+                <div className="text-base font-medium text-purple-100 drop-shadow-sm">
+                  Six Week Alignment And Activation Fitness Journey
                 </div>
               </div>
               
@@ -4681,8 +4681,8 @@ function ProgramsSection({
                   <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                     Align & Activate Program
                   </CardTitle>
-                  <CardDescription className="text-purple-100 font-bold text-base mt-2 drop-shadow-md leading-tight bg-gradient-to-r from-purple-200 to-violet-200 bg-clip-text text-transparent">
-                    6-week alignment and activation fitness journey
+                  <CardDescription className="text-base font-medium text-purple-100 mt-2 drop-shadow-sm leading-tight">
+                    Six Week Alignment And Activation Fitness Journey
                   </CardDescription>
                 </div>
               </div>
@@ -4921,8 +4921,8 @@ function ProgramsSection({
                 <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Functional Core Flow Program
                 </div>
-                <div className="text-teal-100 font-semibold text-sm drop-shadow-sm bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
-                  6-week functional core movement fitness journey
+                <div className="text-base font-medium text-teal-100 drop-shadow-sm">
+                  Six Week Functional Core Movement Fitness Journey
                 </div>
               </div>
               
@@ -4951,8 +4951,8 @@ function ProgramsSection({
                   <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                     Functional Core Flow Program
                   </CardTitle>
-                  <CardDescription className="text-teal-100 font-bold text-base mt-2 drop-shadow-md leading-tight bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
-                    6-week functional core movement fitness journey
+                  <CardDescription className="text-base font-medium text-teal-100 mt-2 drop-shadow-sm leading-tight">
+                    Six Week Functional Core Movement Fitness Journey
                   </CardDescription>
                 </div>
               </div>
@@ -5202,8 +5202,8 @@ function ProgramsSection({
                 <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Foundational Strength Program
                 </div>
-                <div className="text-orange-100 font-semibold text-sm drop-shadow-sm bg-gradient-to-r from-orange-200 to-amber-200 bg-clip-text text-transparent">
-                  6-week foundational strength fitness journey
+                <div className="text-base font-medium text-orange-100 drop-shadow-sm">
+                  Six Week Foundational Strength Fitness Journey
                 </div>
               </div>
               
@@ -5232,8 +5232,8 @@ function ProgramsSection({
                   <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                     Foundational Strength Program
                   </CardTitle>
-                  <CardDescription className="text-orange-100 font-bold text-base mt-2 drop-shadow-md leading-tight bg-gradient-to-r from-orange-200 to-amber-200 bg-clip-text text-transparent">
-                    6-week foundational strength fitness journey
+                  <CardDescription className="text-base font-medium text-orange-100 mt-2 drop-shadow-sm leading-tight">
+                    Six Week Foundational Strength Fitness Journey
                   </CardDescription>
                 </div>
               </div>
@@ -5495,10 +5495,10 @@ function TheRoleOfNutritionSection({
     <div className="space-y-6">
       <Card>
         <CardHeader className="text-left">
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent drop-shadow-sm">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent drop-shadow-sm">
             The Role of Nutrition
           </CardTitle>
-          <CardDescription className="text-gray-600 font-medium border-l-4 border-orange-400 pl-4 bg-gradient-to-r from-orange-50 to-transparent py-2">
+          <CardDescription className="text-base font-medium text-gray-600 border-l-4 border-orange-400 pl-4 bg-gradient-to-r from-orange-50 to-transparent py-2">
             Nutritional guidance giving the importance it deserves for your core recovery
           </CardDescription>
         </CardHeader>
