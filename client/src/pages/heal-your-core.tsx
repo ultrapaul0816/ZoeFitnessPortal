@@ -6421,7 +6421,7 @@ function TheRoleOfNutritionSection({
                           </div>
 
                           {/* Healthy Fats */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b8d082'}}>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
                             <div className="p-4" style={{backgroundColor: '#f2038b'}}>
                               <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>HEALTHY FATS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Supports hormones and tissue elasticity</p>
@@ -6440,7 +6440,7 @@ function TheRoleOfNutritionSection({
                           </div>
 
                           {/* Complex Carbs */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3a892'}}>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
                             <div className="p-4" style={{backgroundColor: '#b3c0e4'}}>
                               <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>COMPLEX CARBS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Balances blood sugar, supports energy + digestion</p>
@@ -6460,7 +6460,7 @@ function TheRoleOfNutritionSection({
                           </div>
 
                           {/* Micronutrients */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
                             <div className="p-4" style={{backgroundColor: '#cbde9a'}}>
                               <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>MICRONUTRIENTS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Supports wound healing and replenishes lost iron/zinc</p>
