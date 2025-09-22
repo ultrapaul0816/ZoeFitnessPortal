@@ -843,9 +843,12 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-0 divide-y divide-gray-100">
-            {topics.map((topic) => (
+          <div className="space-y-0">
+            {topics.map((topic, index) => (
               <div key={topic.id}>
+                {index > 0 && (
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30 my-2"></div>
+                )}
                 <div className="flex items-center justify-between py-5">
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
@@ -5612,9 +5615,12 @@ function TheRoleOfNutritionSection({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-0 divide-y divide-gray-100">
-            {topics.map((topic) => (
+          <div className="space-y-0">
+            {topics.map((topic, index) => (
               <div key={topic.id}>
+                {index > 0 && (
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30 my-2"></div>
+                )}
                 <div className="flex items-center justify-between py-5">
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
