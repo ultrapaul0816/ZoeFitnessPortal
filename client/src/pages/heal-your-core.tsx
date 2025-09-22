@@ -2399,7 +2399,7 @@ function WelcomeSection({
               </div>
             </div>
 
-            {/* Topic 8: Cardio Plan Overview */}
+            {/* Topic 8: Cardio Plan Overview - Redesigned */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
@@ -2417,148 +2417,288 @@ function WelcomeSection({
               </div>
               {expandedTopics['cardio-overview'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
-                  <div className="space-y-5">
+                  <div className="space-y-6">
+                    {/* Header Section */}
                     <div className="text-center mb-6">
-                      <h4 className="text-lg font-semibold text-pink-600 mb-2">CARDIO PLAN OVERVIEW ❤️</h4>
-                      <p className="text-sm">The cardio is optional, but oh boy, will it increase your fitness, your results and overall confidence!</p>
+                      <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+                        Cardio Plan Overview
+                      </h4>
+                      <p className="text-sm font-medium text-gray-600 border-l-4 border-pink-400 pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
+                        The cardio is optional, but oh boy, will it increase your fitness, your results and overall confidence!
+                      </p>
                     </div>
-                    
-                    {/* Responsive Cardio Plan Table */}
-                    <div className="overflow-x-auto -mx-6 px-6">
-                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[1000px]">
-                        <thead>
-                          <tr className="bg-pink-100">
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden md:table-cell">WEEK</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold hidden md:table-cell">PROGRAM</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">CARDIO FOCUS</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">INTENSITY</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">DURATION</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">DAYS</th>
-                            <th className="border border-gray-300 p-2 text-pink-600 font-semibold">REST</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">1</td>
-                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 1</td>
-                            <td className="border border-gray-300 p-2">
-                              <strong>LISS:</strong> <span className="text-xs">Gentle walks, breathing flows, stroller movement. Focus on blood flow, not effort.</span>
-                            </td>
-                            <td className="border border-gray-300 p-2">40–50% MHR</td>
-                            <td className="border border-gray-300 p-2">10–15 mins</td>
-                            <td className="border border-gray-300 p-2">Day 2, 4</td>
-                            <td className="border border-gray-300 p-2">Day 6</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">2</td>
-                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 2</td>
-                            <td className="border border-gray-300 p-2">
-                              <strong>LISS:</strong> <span className="text-xs">Brisk walks, swimming, light cycle. Maintain a steady rhythm. Use the Talk Test.</span>
-                            </td>
-                            <td className="border border-gray-300 p-2">50–60% MHR</td>
-                            <td className="border border-gray-300 p-2">20 mins</td>
-                            <td className="border border-gray-300 p-2">Day 2, 6</td>
-                            <td className="border border-gray-300 p-2">Day 7</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">3</td>
-                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 3</td>
-                            <td className="border border-gray-300 p-2">
-                              <strong>MISS:</strong> <span className="text-xs">Incline walk, spin bike, elliptical, or light jog. Slightly breathy but sustainable.</span>
-                            </td>
-                            <td className="border border-gray-300 p-2">60–70% MHR</td>
-                            <td className="border border-gray-300 p-2">25–30 mins</td>
-                            <td className="border border-gray-300 p-2">Day 1, 5</td>
-                            <td className="border border-gray-300 p-2">Day 7</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">4</td>
-                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 4</td>
-                            <td className="border border-gray-300 p-2">
-                              <strong>HIIT:</strong> <span className="text-xs">20secs work : 1–2 mins recovery. Use cycling, stair tops, or fast marching.</span>
-                            </td>
-                            <td className="border border-gray-300 p-2">Up to 75% MHR</td>
-                            <td className="border border-gray-300 p-2">10 mins total</td>
-                            <td className="border border-gray-300 p-2">Day 2, 6</td>
-                            <td className="border border-gray-300 p-2">Day 7</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">5</td>
-                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 5</td>
-                            <td className="border border-gray-300 p-2">
-                              <strong>HIIT:</strong> <span className="text-xs">30secs intense effort (cycle) : 1–2 min recovery. Build up to 6–8 rounds max.</span>
-                            </td>
-                            <td className="border border-gray-300 p-2">75–80% MHR</td>
-                            <td className="border border-gray-300 p-2">15–20 mins</td>
-                            <td className="border border-gray-300 p-2">Day 1, 5</td>
-                            <td className="border border-gray-300 p-2">Day 7</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-50 font-semibold text-pink-600 hidden md:table-cell">6</td>
-                            <td className="border border-gray-300 p-2 hidden md:table-cell">PROGRAM 6</td>
-                            <td className="border border-gray-300 p-2">
-                              <strong>HYBRID MISS + HIIT:</strong> <span className="text-xs">Start with steady cardio + finish with 2–3 short intervals. Push only if energy feels good.</span>
-                            </td>
-                            <td className="border border-gray-300 p-2">60–80% MHR</td>
-                            <td className="border border-gray-300 p-2">20–30 mins</td>
-                            <td className="border border-gray-300 p-2">Day 2, 4</td>
-                            <td className="border border-gray-300 p-2">Day 6</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    
-                    <div className="mt-6 space-y-4 text-xs sm:text-sm">
-                      <div>
-                        <h5 className="font-semibold text-gray-800 mb-2">A FEW THINGS TO REMEMBER:</h5>
-                        <ul className="space-y-1">
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span><strong>MHR</strong> = Max Heart Rate (220 – your age × target % range)</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span>Example for 30 yrs: 220–30 = 190 → 50% MHR = 95 BPM</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span>Rest or recovery walks can happen on any other day</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span>Feel free to shuffle days based on your energy and schedule, but try not to go more than 2 days without movement</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span>Always warm up (3–5 mins) and cool down</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span>Talk Test: You should be able to talk, not sing (LISS), or speak short phrases (MISS/HIIT)</span>
-                          </li>
-                        </ul>
+
+                    {/* Cardio Types Legend */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                      <div className="bg-green-100 p-3 rounded-lg border-l-4 border-green-400">
+                        <h5 className="font-semibold text-green-700 text-sm mb-1">LISS</h5>
+                        <p className="text-xs text-green-600">Slow & steady movement (walk, swim, light bike)</p>
                       </div>
-                      
-                      <div>
-                        <h5 className="font-semibold text-gray-800 mb-2">QUICK DEFINITIONS:</h5>
-                        <ul className="space-y-1">
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span><strong className="text-pink-600">LISS:</strong> Slow & steady movement (walk, swim, light bike)</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span><strong className="text-pink-600">MISS:</strong> Slightly faster, steady pace (jog, incline walk, elliptical)</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span><strong className="text-pink-600">HIIT:</strong> Short bursts of effort followed by rest (30s : work / 90s : rest)</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-pink-500 font-bold">❖</span>
-                            <span><strong className="text-pink-600">MHR:</strong> Max Heart Rate = 220 – your age × % intensity</span>
-                          </li>
-                        </ul>
+                      <div className="bg-orange-100 p-3 rounded-lg border-l-4 border-orange-400">
+                        <h5 className="font-semibold text-orange-700 text-sm mb-1">MISS</h5>
+                        <p className="text-xs text-orange-600">Slightly faster, steady pace (jog, incline walk, elliptical)</p>
+                      </div>
+                      <div className="bg-red-100 p-3 rounded-lg border-l-4 border-red-400">
+                        <h5 className="font-semibold text-red-700 text-sm mb-1">HIIT</h5>
+                        <p className="text-xs text-red-600">Short bursts of effort followed by rest (30s work / 90s rest)</p>
+                      </div>
+                    </div>
+
+                    {/* Week by Week Cardio Plans */}
+                    <div className="space-y-4">
+                      {/* Week 1 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-pink-400 to-rose-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 1</span>
+                              <h4 className="font-bold text-lg mt-1">Gentle Foundation</h4>
+                            </div>
+                            <div className="bg-green-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">LISS</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">40-50% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">10-15 mins</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 2, 4</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 6</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> Gentle walks, breathing flows, stroller movement. Focus on blood flow, not effort.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Week 2 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-blue-400 to-cyan-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 2</span>
+                              <h4 className="font-bold text-lg mt-1">Building Rhythm</h4>
+                            </div>
+                            <div className="bg-green-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">LISS</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">50-60% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">20 mins</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 2, 6</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 7</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> Brisk walks, swimming, light cycle. Maintain a steady rhythm. Use the Talk Test.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Week 3 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-emerald-400 to-teal-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 3</span>
+                              <h4 className="font-bold text-lg mt-1">Moderate Challenge</h4>
+                            </div>
+                            <div className="bg-orange-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">MISS</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">60-70% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">25-30 mins</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 1, 5</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 7</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-orange-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> Incline walk, spin bike, elliptical, or light jog. Slightly breathy but sustainable.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Week 4 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-purple-400 to-violet-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 4</span>
+                              <h4 className="font-bold text-lg mt-1">Intensity Introduction</h4>
+                            </div>
+                            <div className="bg-red-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">HIIT</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">Up to 75% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">10 mins total</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 2, 6</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 7</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-red-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> 20secs work : 1-2 mins recovery. Use cycling, stair tops, or fast marching.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Week 5 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-indigo-400 to-blue-500 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 5</span>
+                              <h4 className="font-bold text-lg mt-1">Advanced Intervals</h4>
+                            </div>
+                            <div className="bg-red-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">HIIT</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">75-80% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">15-20 mins</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 1, 5</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 7</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-red-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> 30secs intense effort (cycle) : 1-2 min recovery. Build up to 6-8 rounds max.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Week 6 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-amber-400 to-orange-500 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 6</span>
+                              <h4 className="font-bold text-lg mt-1">Hybrid Power</h4>
+                            </div>
+                            <div className="bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">HYBRID</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">60-80% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">20-30 mins</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 2, 4</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 6</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-gradient-to-r from-orange-50 to-red-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> Start with steady cardio + finish with 2-3 short intervals. Push only if energy feels good.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Important Tips Section */}
+                    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
+                      <h5 className="font-semibold text-pink-700 mb-3">Important Guidelines</h5>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>MHR Formula:</strong> Max Heart Rate = 220 - your age × target % range</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Example:</strong> 30 years old → 220-30 = 190 → 50% MHR = 95 BPM</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Always warm up (3-5 mins) and cool down after each session</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Talk Test:</strong> You should be able to talk, not sing (LISS), or speak short phrases (MISS/HIIT)</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span>Feel free to shuffle days based on your energy and schedule</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2573,7 +2713,7 @@ function WelcomeSection({
               </div>
             </div>
 
-            {/* Topic 9: Your Training Schedule With Cardio */}
+            {/* Topic 9: Your Training Schedule With Cardio - Redesigned */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
@@ -2591,102 +2731,342 @@ function WelcomeSection({
               </div>
               {expandedTopics['cardio-schedule'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
-                  <div className="space-y-5">
+                  <div className="space-y-6">
+                    {/* Header Section */}
                     <div className="text-center mb-6">
-                      <h4 className="text-lg font-semibold text-gray-800 mb-2">YOUR TRAINING SCHEDULE WITH CARDIO</h4>
-                      <p className="text-sm">A gentle weekly rhythm to rebuild strength, core connection, and confidence. You ultimately will decide on the exact schedule (days) that work best for you. If you have to stop in the middle of a program because of interruptions (work, motherhood etc.), just make sure to go back where you left off and finish the rest of the exercises before the day is over.</p>
+                      <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
+                        Your Training Schedule With Cardio
+                      </h4>
+                      <p className="text-sm font-medium text-gray-600 border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-2">
+                        A gentle weekly rhythm to rebuild strength, core connection, and confidence. You decide the exact schedule that works best for you.
+                      </p>
                     </div>
-                    
-                    {/* Responsive Weekly Schedule Table */}
-                    <div className="overflow-x-auto -mx-6 px-6">
-                      <table className="w-full text-xs sm:text-sm border-collapse border border-gray-300 min-w-[900px]">
-                        <thead>
-                          <tr className="bg-gray-100">
-                            <th className="border border-gray-300 p-2 font-semibold">WEEK</th>
-                            <th className="border border-gray-300 p-2 font-semibold">DAY 1</th>
-                            <th className="border border-gray-300 p-2 font-semibold">DAY 2</th>
-                            <th className="border border-gray-300 p-2 font-semibold">DAY 3</th>
-                            <th className="border border-gray-300 p-2 font-semibold">DAY 4</th>
-                            <th className="border border-gray-300 p-2 font-semibold">DAY 5</th>
-                            <th className="border border-gray-300 p-2 font-semibold">DAY 6</th>
-                            <th className="border border-gray-300 p-2 font-semibold">DAY 7</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 1</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 1</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 2</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 2</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 2</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 2</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 3</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 3</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 3</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 3</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 4</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 4</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 4</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 4</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 5</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 5</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 5</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 5</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-pink-100 font-semibold text-pink-600">WEEK 6</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
-                            <td className="border border-gray-300 p-2">CARDIO</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
-                            <td className="border border-gray-300 p-2">REST</td>
-                            <td className="border border-gray-300 p-2">PROGRAM 6</td>
-                          </tr>
-                        </tbody>
-                      </table>
+
+                    {/* Activity Legend */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                      <div className="bg-pink-100 p-3 rounded-lg border-l-4 border-pink-400">
+                        <h5 className="font-semibold text-pink-700 text-sm mb-1">💪 PROGRAM</h5>
+                        <p className="text-xs text-pink-600">Core strengthening workouts from your 6-week plan</p>
+                      </div>
+                      <div className="bg-blue-100 p-3 rounded-lg border-l-4 border-blue-400">
+                        <h5 className="font-semibold text-blue-700 text-sm mb-1">❤️ CARDIO</h5>
+                        <p className="text-xs text-blue-600">Follow the cardio plan from Topic 8 above</p>
+                      </div>
+                      <div className="bg-emerald-100 p-3 rounded-lg border-l-4 border-emerald-400">
+                        <h5 className="font-semibold text-emerald-700 text-sm mb-1">🌱 REST</h5>
+                        <p className="text-xs text-emerald-600">Recovery days with gentle walks or complete rest</p>
+                      </div>
                     </div>
-                    
-                    {/* Mobile-friendly summary for small screens */}
-                    <div className="block sm:hidden mt-4 space-y-3 text-xs">
-                      <div className="bg-pink-50 p-3 rounded-lg">
-                        <p className="font-semibold text-pink-600 mb-2">💡 Mobile Tip:</p>
-                        <p>Scroll the table horizontally to see all 7 days, or view the pattern:</p>
-                        <ul className="mt-2 space-y-1">
-                          <li>• <strong>Program days:</strong> Core strengthening workouts</li>
-                          <li>• <strong>Cardio days:</strong> Follow the cardio plan above</li>
-                          <li>• <strong>Rest days:</strong> Recovery or gentle walks</li>
-                        </ul>
+
+                    {/* Weekly Schedules */}
+                    <div className="space-y-4">
+                      {/* Week 1 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-pink-400 to-rose-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 1</span>
+                              <h4 className="font-bold text-lg mt-1">Foundation Building</h4>
+                            </div>
+                            <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                              3 Programs • 2 Cardio • 1 Rest
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">MON</div>
+                              <div className="bg-pink-100 text-pink-700 py-2 px-1 rounded font-medium">PROGRAM 1</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">TUE</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">WED</div>
+                              <div className="bg-pink-100 text-pink-700 py-2 px-1 rounded font-medium">PROGRAM 1</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">THU</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">FRI</div>
+                              <div className="bg-pink-100 text-pink-700 py-2 px-1 rounded font-medium">PROGRAM 1</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SAT</div>
+                              <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SUN</div>
+                              <div className="bg-pink-100 text-pink-700 py-2 px-1 rounded font-medium">PROGRAM 1</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Week 2 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-blue-400 to-cyan-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 2</span>
+                              <h4 className="font-bold text-lg mt-1">Stability Focus</h4>
+                            </div>
+                            <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                              3 Programs • 2 Cardio • 2 Rest
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">MON</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">PROGRAM 2</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">TUE</div>
+                              <div className="bg-cyan-100 text-cyan-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">WED</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">PROGRAM 2</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">THU</div>
+                              <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">FRI</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">PROGRAM 2</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SAT</div>
+                              <div className="bg-cyan-100 text-cyan-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SUN</div>
+                              <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Week 3 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-emerald-400 to-teal-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 3</span>
+                              <h4 className="font-bold text-lg mt-1">Control & Awareness</h4>
+                            </div>
+                            <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                              3 Programs • 2 Cardio • 2 Rest
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">MON</div>
+                              <div className="bg-teal-100 text-teal-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">TUE</div>
+                              <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded font-medium">PROGRAM 3</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">WED</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">THU</div>
+                              <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded font-medium">PROGRAM 3</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">FRI</div>
+                              <div className="bg-teal-100 text-teal-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SAT</div>
+                              <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded font-medium">PROGRAM 3</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SUN</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Week 4 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-purple-400 to-violet-400 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 4</span>
+                              <h4 className="font-bold text-lg mt-1">Align & Activate</h4>
+                            </div>
+                            <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                              3 Programs • 2 Cardio • 2 Rest
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">MON</div>
+                              <div className="bg-purple-100 text-purple-700 py-2 px-1 rounded font-medium">PROGRAM 4</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">TUE</div>
+                              <div className="bg-violet-100 text-violet-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">WED</div>
+                              <div className="bg-purple-100 text-purple-700 py-2 px-1 rounded font-medium">PROGRAM 4</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">THU</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">FRI</div>
+                              <div className="bg-purple-100 text-purple-700 py-2 px-1 rounded font-medium">PROGRAM 4</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SAT</div>
+                              <div className="bg-violet-100 text-violet-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SUN</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Week 5 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-indigo-400 to-blue-500 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 5</span>
+                              <h4 className="font-bold text-lg mt-1">Functional Core Flow</h4>
+                            </div>
+                            <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                              3 Programs • 2 Cardio • 2 Rest
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">MON</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">TUE</div>
+                              <div className="bg-indigo-100 text-indigo-700 py-2 px-1 rounded font-medium">PROGRAM 5</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">WED</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">THU</div>
+                              <div className="bg-indigo-100 text-indigo-700 py-2 px-1 rounded font-medium">PROGRAM 5</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">FRI</div>
+                              <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SAT</div>
+                              <div className="bg-indigo-100 text-indigo-700 py-2 px-1 rounded font-medium">PROGRAM 5</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SUN</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Week 6 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="bg-gradient-to-r from-amber-400 to-orange-500 p-4 text-white">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 6</span>
+                              <h4 className="font-bold text-lg mt-1">Foundational Strength</h4>
+                            </div>
+                            <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                              4 Programs • 2 Cardio • 1 Rest
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="grid grid-cols-7 gap-2 text-center text-xs">
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">MON</div>
+                              <div className="bg-amber-100 text-amber-700 py-2 px-1 rounded font-medium">PROGRAM 6</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">TUE</div>
+                              <div className="bg-orange-100 text-orange-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">WED</div>
+                              <div className="bg-amber-100 text-amber-700 py-2 px-1 rounded font-medium">PROGRAM 6</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">THU</div>
+                              <div className="bg-orange-100 text-orange-700 py-2 px-1 rounded font-medium">CARDIO</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">FRI</div>
+                              <div className="bg-amber-100 text-amber-700 py-2 px-1 rounded font-medium">PROGRAM 6</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SAT</div>
+                              <div className="bg-gray-100 text-gray-700 py-2 px-1 rounded font-medium">REST</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="font-semibold text-gray-500">SUN</div>
+                              <div className="bg-amber-100 text-amber-700 py-2 px-1 rounded font-medium">PROGRAM 6</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Important Flexibility Tips */}
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                      <h5 className="font-semibold text-purple-700 mb-3">💡 Scheduling Flexibility</h5>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">❖</span>
+                          <span>Feel free to shuffle days based on your energy and schedule</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">❖</span>
+                          <span>If interrupted during a workout, continue where you left off later that day</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">❖</span>
+                          <span>Try not to go more than 2 days without movement</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">❖</span>
+                          <span>Rest days can include gentle walks if you feel like moving</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">❖</span>
+                          <span>Listen to your body - this is YOUR recovery journey</span>
+                        </div>
                       </div>
                     </div>
                   </div>

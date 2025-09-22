@@ -1,152 +1,31 @@
 # Overview
 
-This is a fitness application called "Your Postpartum Strength Recovery Program" - a comprehensive 6-week postnatal fitness web application specifically designed for mothers 6 weeks to 6 years postpartum. The application features a complete core rehabilitation program with educational content, structured workout plans, YouTube video integration, progress tracking, and admin panel functionality. The platform uses a cohesive pink brand color scheme (#EC4899) with mobile-responsive design and premium visual appeal, focusing on consistent navigation across all pages and proper UI alignment.
+This project is a 6-week postnatal fitness web application, "Your Postpartum Strength Recovery Program," designed for mothers 6 weeks to 6 years postpartum. It offers a comprehensive core rehabilitation program with educational content, structured workout plans, YouTube video integration, progress tracking, and administrative functionalities. The application features a cohesive pink brand color scheme, mobile-responsive design, and a premium visual aesthetic focusing on consistent navigation and UI alignment. The business vision is to provide a supportive and effective platform for postpartum recovery, tapping into the market for specialized women's health and fitness.
 
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
 
-# Recent Changes (September 2025)
-
-## Major Program Implementation
-- **Comprehensive 6-Week Program Structure**: Implemented complete postnatal fitness program with detailed exercise tables, coach notes, safety tips, and progressive unlock system
-- **YouTube Video Integration**: All exercise videos properly linked with clickable buttons and playlist functionality for seamless workout experience
-- **Program Organization**: Successfully moved 6-week program content from "What's Next" tab to dedicated "Programs" tab for better user experience
-- **Program 1 (Week 1) Complete**: Detailed program structure with:
-  - RECONNECT & RESET phase with breathing exercises and core rehabilitation
-  - 5 structured exercises with YouTube video links and proper repetition guidance
-  - Equipment requirements (mini band, small Pilates ball, mat)
-  - Coach's notes and safety precautions
-  - Program introduction video integration
-  - Pink gradient color scheme for visual identity
-- **Program 2 (Week 2) Complete**: Advanced Strength & Conditioning Program with:
-  - STABILITY & BREATHWORK phase with controlled movement focus
-  - Core & Breath Reset Flow + 5 main exercises with YouTube video links
-  - Equipment requirements (mat, breath work, patience)
-  - Coach's notes and safety precautions
-  - Blue/cyan gradient color scheme for visual differentiation
-- **Program 3 (Week 3) Complete**: Control & Awareness Program with:
-  - CONTROL & AWARENESS phase with balance and posture focus
-  - Breathing exercises (supine + side lying diaphragmatic) + 6 main exercises with YouTube video links
-  - Equipment requirements (resistance band light, mat, optional yoga block)
-  - Coach's notes and safety precautions  
-  - Green/emerald gradient color scheme for visual differentiation
-- **Program 4 (Week 4) Complete**: Align & Activate Program with:
-  - ALIGN & ACTIVATE phase with coordination and activation focus
-  - 90 90 Box Breathing + 6 main exercises with YouTube video links
-  - Equipment requirements (small Pilates ball, chair or stool, resistance band, mat)
-  - Coach's notes and safety precautions
-  - Purple/violet gradient color scheme for visual differentiation
-- **Program 5 (Week 5) Complete**: Functional Core Flow Program with:
-  - FUNCTIONAL CORE FLOW phase with real-life movement focus
-  - Breathing exercises (supine diaphragmatic + side lying thoracic rotations) + 6 main exercises with YouTube video links
-  - Equipment requirements (mini bands, mat, yoga block or Pilates ball, long resistance band, stool or chair)
-  - Coach's notes and safety precautions
-  - Teal/indigo gradient color scheme for visual differentiation
-- **Program 6 (Week 6) Complete**: Foundational Strength Program with:
-  - FOUNDATIONAL STRENGTH phase with capacity, endurance and resilience focus
-  - 90 90 Box Breathing + 6 main exercises with YouTube video links
-  - Equipment requirements (Swiss ball, small Pilates ball, mat)
-  - Coach's notes and safety precautions
-  - Orange/amber gradient color scheme for visual differentiation
-- **Program Structure Format**: Established collapsible program series pattern for future expansion
-
-## Program Series Format Template
-Each program follows this standardized structure for consistency:
-
-### Program Header Structure:
-- **Mobile Layout**: Badge → Title/Description → Info Box + Dropdown Arrow
-- **Desktop Layout**: Badge + Title/Description + Info Box + Dropdown Arrow (horizontal)
-- **Color Schemes**: Each program uses distinct gradient colors (Program 1: pink, Program 2: blue/cyan)
-- **Collapsible State**: Managed by `expandedPrograms[program-id]` with smooth transitions
-
-### Program Content Structure:
-- **Week Badge**: Gradient colored with week number
-- **Program Title**: Phase name with workout schedule details  
-- **Equipment Section**: Color-coded badges for required equipment
-- **Coach's Notes**: Highlighted section with program-specific guidance
-- **Exercise Sections**: 
-  - Part 1: Breathing/warm-up exercises with rep counts
-  - Part 2: Main workout with "PLAY ALL" playlist button and individual exercise links
-- **How To Use**: Instructions for video links and playlist functionality
-- **Safety Precautions**: Important safety guidelines and warnings
-
-### Technical Implementation Pattern:
-- **Responsive Design**: Separate mobile (`block lg:hidden`) and desktop (`hidden lg:flex`) layouts
-- **State Management**: `useState` for collapse/expand functionality per program
-- **Video Integration**: YouTube links with `target="_blank" rel="noopener noreferrer"`
-- **Equipment Badges**: Consistent color coding across all programs
-- **Gradient Themes**: Each program maintains visual differentiation through color schemes
-
-## UI/UX Improvements
-- **Consistent Navigation**: Clickable logo across all pages (Dashboard, My Library, Heal Your Core) with proper hover effects
-- **Advanced Tab Navigation System**:
-  - **Meaningful Icons**: Each tab features descriptive icons (BookOpen for Welcome, Activity for Cardio, Brain for Core, Heart for Heal, Dumbbell for Programs, Apple for Nutrition, ChartBar for What's Next, HelpCircle for FAQs)
-  - **Game-like Progression System**: Interactive progress bar with numbered indicators that unlock as users advance through their journey
-  - **Locked/Unlocked States**: Numbers appear in grey (locked) until users reach that section, then turn to vibrant colors (pink, blue, purple, green, orange, teal, indigo, red)
-  - **Connecting Progress Line**: Dynamic connecting line that fills as users progress through sections, creating visual continuity
-  - **Dynamic Pop Animations**: Numbers smoothly scale up with bounce effect when unlocked, then return to original size with elastic easing
-  - **Celebration Effects**: Multi-layered ping animations with rotating bounce effects when advancing to new sections
-  - **Current Step Glow**: Active step pulses with ring effects and subtle ping animations for clear visual feedback
-  - **Color-Changing Progress**: Progress bar changes colors based on current tab matching the numbered indicator colors
-  - **Smooth Transitions**: Progress bar and numbers animate smoothly between tabs with 700ms duration easing
-  - **Gaming Psychology**: Progression system designed like video games to encourage completion and provide satisfaction
-  - **8-Stage Journey**: Complete learning pathway from Welcome (1) through FAQs (8) with clear visual progression
-  - **Responsive Design**: Mobile and desktop optimized layouts with proper spacing and positioning
-  - **Fixed Mobile Progress**: Progress bar remains stationary while tabs scroll horizontally on mobile devices
-- **Comprehensive FAQ Section**: 
-  - **12 Numbered Questions**: Complete FAQ system with sequentially numbered questions for easy reference
-  - **Collapsible Accordion Interface**: Clean, organized presentation using shadcn/ui Accordion components
-  - **Professional Styling**: Consistent pink border theme with proper spacing and typography
-  - **Practical Content**: Addresses C-sections, diastasis recti, emotional aspects, timeline expectations, and safety concerns
-  - **Expert Answers**: Honest, supportive responses focusing on individual healing journeys
-- **Enhanced Program Header Design**: 
-  - **Title/Description Separation**: Main program title and description are now properly separated with distinct styling (bold title + light subtitle)
-  - **Gradient Headers**: Pink gradient backgrounds with decorative elements and premium visual appeal
-  - **Mobile Header Optimization**: Responsive title and description layout with proper text hierarchy
-- **Mobile-Responsive Week Section Design**: 
-  - **Dual Layout System**: Separate mobile (`block lg:hidden`) and desktop (`hidden lg:flex`) layouts for optimal experience
-  - **Mobile Week Layout Pattern**:
-    - Week badge at top with enhanced styling (`bg-gradient-to-r from-pink-400 to-rose-400`)
-    - Program title with proper hierarchy (`text-base font-bold mb-2`)
-    - Schedule info clearly formatted (`text-pink-600 font-semibold`)
-    - Equipment section with organized badges and proper spacing
-  - **Desktop Week Layout Pattern**: Side-by-side structure with badge, content, and equipment aligned horizontally
-- **Equipment Badge System**: Consistent color-coded badges (blue for bands, green for Pilates ball, purple for mat) with proper wrapping
-- **Enhanced Equipment Section**: 
-  - **Real Equipment Images**: Replaced emoji icons with actual equipment images imported using @assets syntax for professional display
-  - **Square Containers**: Equipment items displayed in perfect square containers using aspect-square for uniform layout
-  - **Larger Images**: Increased from 128x128px to 224x224px (w-56 h-56) for maximum prominence and clarity
-  - **Spacious Design**: Enhanced padding (p-10) and larger containers for more prominent equipment display
-  - **Premium Visual Effects**: Enhanced shadows, hover scaling, rounded corners, and color-coded gradient backgrounds for each equipment type
-- **Pink Brand Theme**: Cohesive #EC4899 color scheme with gradient effects and shadows
-- **Professional Layout**: Premium visual appeal with rounded corners (rounded-2xl), gradient dividers, and contained hover effects
-
-## Technical Fixes
-- **JSX Structure**: Resolved syntax errors and duplicate content issues that were preventing application loading
-- **Link Component Integration**: Fixed import errors and navigation functionality across all pages
-- **API Integration**: My Library now uses real API endpoints (/api/member-programs/:userId) instead of static mock data
-- **Code Organization**: Removed unused components and streamlined codebase structure
-
-## Current Status
-- **Application**: Successfully running on port 5000 with no critical errors
-- **Database**: PostgreSQL integration working with proper user authentication and progress tracking
-- **Navigation**: Seamless flow between all tabs and sections
-- **Program Access**: Real-time program enrollment and progress tracking functionality
-
 # System Architecture
 
 ## Frontend Architecture
-The client-side is built with **React** and **TypeScript**, using **Vite** as the build tool and development server. The UI is constructed with **shadcn/ui** components based on **Radix UI** primitives, styled with **TailwindCSS** for consistent design. State management is handled through **TanStack Query** (React Query) for server state and API data fetching. Routing is implemented using **wouter** for lightweight client-side navigation. Form handling uses **React Hook Form** with **Zod** validation schemas.
+The frontend is built with React and TypeScript, using Vite for development and bundling. UI components leverage shadcn/ui (based on Radix UI) and are styled with TailwindCSS. State management for server data uses TanStack Query, while client-side routing is handled by wouter. Form management is implemented with React Hook Form and Zod for validation. The UI/UX prioritizes a premium visual appeal with a consistent pink brand theme, gradient effects, rounded corners, and mobile-responsive layouts. Key features include an advanced tab navigation system with game-like progression, a comprehensive FAQ section, and enhanced program headers and equipment displays.
 
-## Backend Architecture  
-The server is built with **Express.js** and **TypeScript**, following a RESTful API design pattern. The application uses a modular route structure with centralized error handling middleware. Session management is implemented for user authentication, with role-based access control distinguishing between regular users and administrators. The server includes request logging middleware for API monitoring and debugging.
+## Backend Architecture
+The backend is an Express.js and TypeScript RESTful API. It uses a modular route structure, centralized error handling, and request logging. Authentication is session-based, with role-based access control for users and administrators.
 
 ## Data Storage Solutions
-The application uses **PostgreSQL** as the primary database, accessed through **Drizzle ORM** for type-safe database operations. Database schemas are defined in a shared module to ensure consistency between client and server. The data model includes users, fitness programs, workouts, member enrollments, community posts, notifications, and terms/conditions. Database migrations are managed through Drizzle Kit.
+PostgreSQL serves as the primary database, accessed via Drizzle ORM for type-safe operations. The data model includes users, fitness programs, workouts, member enrollments, community posts, notifications, and terms/conditions. Database migrations are managed with Drizzle Kit.
 
 ## Authentication and Authorization
-Authentication is implemented with a simple session-based approach where user credentials are validated against the database. The system includes role-based access control with admin and regular user roles. New users must accept terms and conditions before accessing the platform. User sessions are managed server-side with appropriate middleware for protecting routes.
+Authentication uses a session-based approach, validating user credentials against the database. Role-based access control differentiates between regular users and administrators. New users must accept terms and conditions upon registration.
 
-## External Service Integrations
-The application integrates with **Neon Database** as the managed PostgreSQL provider using the `@neondatabase/serverless` driver. The platform is configured for deployment on **Replit** with specific development tooling and error overlays. Google Fonts integration provides custom typography options for the user interface.
+## Technical Implementations
+The application features a comprehensive 6-week program structure with detailed exercises, coach notes, and safety tips. YouTube videos are integrated for exercises, with clickable buttons and playlist functionality. Content is organized into collapsible sections with distinct gradient color themes for each week, enhancing visual differentiation and user experience. Responsive design is a core principle, with separate mobile and desktop layouts for optimal viewing.
+
+# External Dependencies
+
+- **Database**: PostgreSQL (managed by Neon Database via `@neondatabase/serverless` driver)
+- **Deployment Platform**: Replit
+- **Typography**: Google Fonts
+- **Video Integration**: YouTube API (for embedding and linking workout videos)
