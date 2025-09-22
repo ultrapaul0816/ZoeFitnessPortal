@@ -3582,15 +3582,6 @@ function ProgramsSection({
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
-          Your Programs
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Access your personalized fitness programs and track your progress
-        </p>
-      </div>
-
       {/* 6-Week Program - Collapsible */}
       <Card className="overflow-hidden border-l-4 border-program-1 shadow-xl">
         <CardHeader 
