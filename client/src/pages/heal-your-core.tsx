@@ -148,7 +148,7 @@ export default function HealYourCorePage() {
       const nextTab = tabOrder[currentIndex + 1];
       return `Continue to ${getTabName(nextTab)}`;
     }
-    return direction === 'prev' ? 'Previous' : 'Next';
+    return direction === 'prev' ? 'Go Back' : 'Continue';
   };
 
   useEffect(() => {
