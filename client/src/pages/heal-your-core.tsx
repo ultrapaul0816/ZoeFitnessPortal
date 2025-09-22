@@ -3531,7 +3531,7 @@ function UnderstandingYourCoreSection({
                 onClick={navigateToPreviousTab}
               >
                 <ChevronLeft className="w-4 h-4" />
-                Prev
+                {getNavigationText('prev')}
               </Button>
             )}
             {canGoNext() && (
@@ -3540,7 +3540,7 @@ function UnderstandingYourCoreSection({
                 data-testid="button-next-section-core"
                 onClick={navigateToNextTab}
               >
-                Next
+                {getNavigationText('next')}
                 <ChevronRight className="w-4 h-4" />
               </Button>
             )}
