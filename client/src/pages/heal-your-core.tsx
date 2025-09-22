@@ -481,7 +481,10 @@ export default function HealYourCorePage() {
             </div>
             
             {/* Game-like Journey Progress Bar - Fixed Position */}
-            <div className="relative mb-6 px-4 sm:px-8 md:px-12 py-4 sm:py-6 bg-white border-t border-pink-200">
+            <div className="relative mb-6 px-4 sm:px-8 md:px-12 py-4 sm:py-6 bg-white border border-pink-200 rounded-lg" style={{
+              background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #f9a8d4, #ec4899, #f9a8d4) border-box',
+              border: '1px solid transparent'
+            }}>
               <div className="flex items-center justify-between relative">
                 {/* Background connecting line */}
                 <div className="absolute top-1/2 left-0 right-0 h-0.5 sm:h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
