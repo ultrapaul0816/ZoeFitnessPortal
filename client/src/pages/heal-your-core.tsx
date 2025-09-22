@@ -876,10 +876,10 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
 
   const topics = [
     { id: 'what-is-diastasis', n: 1, title: 'What Is Diastasis' },
-    { id: 'do-i-have-diastasis', n: 2, title: 'Do I Have Diastasis Recti' },
-    { id: 'why-core-rehab-matters', n: 3, title: 'Why Core Rehab Matters' },
-    { id: 'why-crunches-wont-work', n: 4, title: "Why Crunches Won't Work" },
-    { id: 'core-rehab-daily-practice', n: 5, title: 'Core Rehab & Daily Practice' },
+    { id: 'core-rehab-daily-practice', n: 2, title: 'Core Rehab & Daily Practice' },
+    { id: 'do-i-have-diastasis', n: 3, title: 'Do I Have Diastasis Recti' },
+    { id: 'why-core-rehab-matters', n: 4, title: 'Why Core Rehab Matters' },
+    { id: 'why-crunches-wont-work', n: 5, title: "Why Crunches Won't Work" },
     { id: 'week-by-week-reconnection', n: 6, title: 'Rehab Routine – Week-by-Week Reconnection' },
   ];
 
