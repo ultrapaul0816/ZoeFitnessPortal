@@ -6308,59 +6308,163 @@ function TheRoleOfNutritionSection({
                         </div>
                       </div>
                     ) : topic.id === 'supporting-diastasis-core-repair' ? (
-                      <div className="space-y-4 text-sm">
-                        <div className="text-center">
-                          <h3 className="text-lg font-bold mb-2">SUPPORTING <span className="text-pink-500">DIASTASIS & CORE REPAIR</span> WITH NUTRITION</h3>
+                      <div className="space-y-6 text-sm">
+                        <div className="text-center mb-6">
+                          <h3 className="text-xl font-bold mb-4">SUPPORTING <span className="text-pink-500">DIASTASIS & CORE REPAIR</span> WITH NUTRITION</h3>
                         </div>
                         
-                        <p>
-                          Specific nutrients play vital roles in connective tissue repair, muscle recovery, and reducing inflammation - all essential for diastasis recti healing.
+                        <p className="text-gray-700 leading-relaxed mb-6">
+                          The right foods can speed up healing and help you reconnect with your core. After pregnancy, your 
+                          body needs more than movement — it needs repair nutrients to support your fascia, connective 
+                          tissue, muscles, and energy levels.
                         </p>
                         
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-blue-800">Protein for Tissue Repair</h4>
-                          <p className="text-sm text-blue-700 mb-2">
-                            <strong>Aim for 1.2-1.6g per kg body weight daily</strong>
-                          </p>
-                          <ul className="space-y-1 text-sm text-blue-700">
-                            <li>• Lean meats, poultry, fish</li>
-                            <li>• Eggs and dairy products</li>
-                            <li>• Legumes, beans, lentils</li>
-                            <li>• Quinoa, hemp seeds, chia seeds</li>
-                            <li>• Greek yogurt, cottage cheese</li>
-                          </ul>
+                        {/* Nutrition Strategy Table */}
+                        <div className="overflow-x-auto">
+                          <div className="min-w-full">
+                            {/* Header */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 bg-green-100 rounded-t-lg">
+                              <div className="p-3 font-semibold text-gray-800 border-b md:border-b-0 md:border-r border-green-200">
+                                Strategy/Nutrient
+                              </div>
+                              <div className="p-3 font-semibold text-gray-800 border-b md:border-b-0 md:border-r border-green-200">
+                                Why It Helps
+                              </div>
+                              <div className="p-3 font-semibold text-gray-800">
+                                Foods & Actions
+                              </div>
+                            </div>
+                            
+                            {/* Rows */}
+                            <div className="border border-gray-200 rounded-b-lg overflow-hidden">
+                              {/* Collagen Support */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  COLLAGEN SUPPORT
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Provides amino acids for rebuilding fascia and soft tissue
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  Bone Broth (Mutton/Chicken), Homemade Soups, Haldi-doodh (Turmeric Milk), Collagen Powders
+                                </div>
+                              </div>
+                              
+                              {/* Anti-inflammatory Foods */}
+                              <div className="grid grid-cols-1 md:grid-cols-3">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  ANTI-INFLAMMATORY FOODS
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Reduces swelling and pain, supports tissue healing
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  Turmeric, Ginger, Tulsi Tea (Holy Basil), Ajwain Water (Carom Seed Water), Soaked Almonds, Walnuts, Fatty Fish, Sardines
+                                </div>
+                              </div>
+                              
+                              {/* Adequate Protein */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  ADEQUATE PROTEIN
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Helps repair muscles, ligaments & improves strength
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  2 Eggs, Cottage Cheese (Paneer), Yoghurt, Lentils, Fish, Grilled Chicken, Chana (Chickpeas), Tofu
+                                </div>
+                              </div>
+                              
+                              {/* Low-GI Carbs */}
+                              <div className="grid grid-cols-1 md:grid-cols-3">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  LOW-GI CARBS
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Prevents blood sugar spikes, improves hormone balance
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  Sweet Potato, Bajra (Pearl Millet), Jowar (Sorghum), Rolled Oats, Whole Wheat Roti, Red Rice, Poha (Flattened Rice) With Veggies
+                                </div>
+                              </div>
+                              
+                              {/* Hydration & Electrolytes */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  HYDRATION & ELECTROLYTES
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Keeps fascia elastic and supports nutrient delivery
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  Jeera Water (Cumin), Coconut Water, Nimbu-paani (Lime Water), ORS, Salted Chaas (Buttermilk), 8–10 Glasses Of Water
+                                </div>
+                              </div>
+                              
+                              {/* Healthy Fats */}
+                              <div className="grid grid-cols-1 md:grid-cols-3">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  HEALTHY FATS
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Supports hormones and tissue elasticity
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  Ghee (Small Amounts), Sesame Seeds (Til), Coconut, Soaked Almonds, Flaxseeds, Groundnut Chutney
+                                </div>
+                              </div>
+                              
+                              {/* Complex Carbs */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 bg-gray-50">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  COMPLEX CARBS
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Balances blood sugar, supports energy + digestion
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  Bajra (Pearl Millet), Jowar (Sorghum), Red Rice, Oats, Poha (flattened rice) With Veggies, Sabudana (Sago), Sweet Potato
+                                </div>
+                              </div>
+                              
+                              {/* Micronutrients */}
+                              <div className="grid grid-cols-1 md:grid-cols-3">
+                                <div className="p-3 font-medium text-gray-800 bg-gray-100 border-b md:border-b-0 md:border-r border-gray-200">
+                                  MICRONUTRIENTS
+                                </div>
+                                <div className="p-3 text-gray-700 border-b md:border-b-0 md:border-r border-gray-200">
+                                  Supports wound healing and replenishes lost iron/zinc
+                                </div>
+                                <div className="p-3 text-gray-700">
+                                  Beetroot, Leafy Greens, Citrus Fruits, Jaggery, Sesame seeds, Methi (Fenugreek), Sabzis (vegetables) With Haldi + Jeera (Turmeric + Cumin)
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-green-800">Collagen Support Nutrients</h4>
-                          <ul className="space-y-1 text-sm text-green-700">
-                            <li>• <strong>Vitamin C:</strong> Citrus fruits, berries, bell peppers, broccoli</li>
-                            <li>• <strong>Zinc:</strong> Pumpkin seeds, seafood, lean meats</li>
-                            <li>• <strong>Copper:</strong> Nuts, seeds, leafy greens</li>
-                            <li>• <strong>Bone broth:</strong> Natural collagen source</li>
-                            <li>• <strong>Gelatin:</strong> Supports connective tissue</li>
-                          </ul>
-                        </div>
-                        
-                        <div className="bg-purple-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-purple-800">Anti-Inflammatory Foods</h4>
-                          <ul className="space-y-1 text-sm text-purple-700">
-                            <li>• <strong>Omega-3 rich fish:</strong> Salmon, sardines, mackerel</li>
-                            <li>• <strong>Colorful vegetables:</strong> Leafy greens, beets, sweet potatoes</li>
-                            <li>• <strong>Berries:</strong> Blueberries, cherries, pomegranate</li>
-                            <li>• <strong>Healthy fats:</strong> Avocado, olive oil, nuts</li>
-                            <li>• <strong>Spices:</strong> Turmeric, ginger, garlic</li>
-                          </ul>
-                        </div>
-                        
-                        <div className="bg-teal-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-teal-800">Hydration for Healing</h4>
-                          <ul className="space-y-1 text-sm text-teal-700">
-                            <li>• Aim for 8-10 glasses of water daily</li>
-                            <li>• Add extra if breastfeeding</li>
-                            <li>• Include herbal teas and broths</li>
-                            <li>• Limit dehydrating beverages</li>
-                          </ul>
+                        {/* Bonus Recovery Tips */}
+                        <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 p-5 rounded-lg mt-6">
+                          <h4 className="font-bold mb-3 text-pink-600 text-base">BONUS RECOVERY TIPS</h4>
+                          <div className="space-y-2 text-gray-700">
+                            <div className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span><strong>Iron-Rich Add-ons:</strong> supports postpartum blood levels</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span><strong>Healthy Fats:</strong> for hormone tissue repair and hormonal support</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span><strong>Timing Matters:</strong> Eat within an hour of waking and don't skip meals — it keeps your body in healing mode</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
+                              <span><strong>Homemade First:</strong> Home-cooked (with minimal refined oil or sugar) are ideal — they're familiar, balanced, and warm.</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ) : topic.id === 'portion-quantity-guidance' ? (
