@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { loginSchema, insertWorkoutCompletionSchema, updateUserProfileSchema } from "@shared/schema";
+import { loginSchema, insertWorkoutCompletionSchema, updateUserProfileSchema, adminCreateUserSchema } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
@@ -441,6 +441,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ filename, displayName, message: "Asset display name updated successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to update asset display name" });
+    }
+  });
+
+  // Create new user (admin only)
+  app.post("/api/admin/users", async (req, res) => {
+    try {
+      const userData = adminCreateUserSchema.parse(req.body);
+      
+      // Generate 6-digit password
+      const password = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Set default validity dates if not provided
+      const now = new Date();
+      const oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(now.getFullYear() + 1);
+      
+      const newUser = await storage.createUser({
+        email: userData.email,
+        password: password,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        isAdmin: userData.isAdmin || false,
+        phone: null,
+        profilePictureUrl: null,
+        termsAccepted: false,
+        termsAcceptedAt: null,
+        validFrom: userData.validFrom || now,
+        validUntil: userData.validUntil || oneYearFromNow,
+      });
+
+      // Return user data with password for email template
+      res.json({
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          isAdmin: newUser.isAdmin,
+          validFrom: newUser.validFrom,
+          validUntil: newUser.validUntil,
+        },
+        password: password,
+        message: "User created successfully"
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      console.error("User creation error:", error);
+      res.status(500).json({ message: "Failed to create user" });
     }
   });
 
