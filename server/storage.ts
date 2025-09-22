@@ -131,6 +131,10 @@ export class MemStorage implements IStorage {
       isAdmin: true,
       termsAccepted: true,
       termsAcceptedAt: new Date(),
+      disclaimerAccepted: true,
+      disclaimerAcceptedAt: new Date(),
+      validFrom: new Date(),
+      validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       createdAt: new Date(),
     };
     this.users.set(adminId, admin);
@@ -148,6 +152,10 @@ export class MemStorage implements IStorage {
       isAdmin: false,
       termsAccepted: true,
       termsAcceptedAt: new Date(),
+      disclaimerAccepted: false,
+      disclaimerAcceptedAt: null,
+      validFrom: new Date(),
+      validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       createdAt: new Date(),
     };
     this.users.set(userId, user);
@@ -377,6 +385,10 @@ export class MemStorage implements IStorage {
       isAdmin: insertUser.isAdmin ?? false,
       termsAccepted: insertUser.termsAccepted ?? false,
       termsAcceptedAt: insertUser.termsAcceptedAt ?? null,
+      disclaimerAccepted: insertUser.disclaimerAccepted ?? false,
+      disclaimerAcceptedAt: insertUser.disclaimerAcceptedAt ?? null,
+      validFrom: insertUser.validFrom ?? new Date(),
+      validUntil: insertUser.validUntil ?? new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       createdAt: new Date(),
     };
     this.users.set(id, user);
