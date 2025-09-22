@@ -447,7 +447,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create new user (admin only)
   app.post("/api/admin/users", async (req, res) => {
     try {
-      const userData = adminCreateUserSchema.parse(req.body);
+      // Convert date strings to Date objects before validation
+      const requestData = { ...req.body };
+      if (requestData.validFrom && typeof requestData.validFrom === 'string') {
+        requestData.validFrom = new Date(requestData.validFrom);
+      }
+      if (requestData.validUntil && typeof requestData.validUntil === 'string') {
+        requestData.validUntil = new Date(requestData.validUntil);
+      }
+      
+      const userData = adminCreateUserSchema.parse(requestData);
       
       // Generate 6-digit password
       const password = Math.floor(100000 + Math.random() * 900000).toString();
