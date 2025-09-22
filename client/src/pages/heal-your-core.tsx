@@ -3608,7 +3608,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-pink-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-pink-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></div>
                     PROGRAM 1
@@ -3618,10 +3618,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Postpartum Strength Recovery Program
                 </div>
-                <div className="program-info-text font-normal text-xs">
+                <div className="text-pink-100 font-normal text-xs drop-shadow-sm">
                   ✨ 6-week comprehensive postnatal fitness journey
                 </div>
               </div>
@@ -3629,8 +3629,8 @@ function ProgramsSection({
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
                 <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
-                  <div className="text-xs program-info-text font-bold uppercase tracking-wide">Comprehensive Program</div>
-                  <div className="text-xs program-info-text font-medium">Core rehabilitation & strength building</div>
+                  <div className="text-xs text-pink-100 font-bold uppercase tracking-wide">Comprehensive Program</div>
+                  <div className="text-xs text-white font-medium">Core rehabilitation & strength building</div>
                 </div>
                 <div className="w-8 h-8 bg-gradient-to-br from-white to-pink-100 text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
@@ -3658,8 +3658,8 @@ function ProgramsSection({
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-sm program-info-text font-bold uppercase tracking-wide">Comprehensive Program</div>
-                  <div className="text-sm program-info-text font-medium">Core rehabilitation & strength building</div>
+                  <div className="text-sm text-pink-100 font-bold uppercase tracking-wide">Comprehensive Program</div>
+                  <div className="text-sm text-white font-medium">Core rehabilitation & strength building</div>
                 </div>
                 <div className="w-10 h-10 bg-gradient-to-br from-white to-pink-100 text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
@@ -3686,8 +3686,8 @@ function ProgramsSection({
                     
                     {/* Program Title */}
                     <div className="mb-3">
-                      <CardTitle className="text-base program-header-text font-bold mb-2">PROGRAM 1 - RECONNECT & RESET</CardTitle>
-                      <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
+                      <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 1 - RECONNECT & RESET</CardTitle>
+                      <CardDescription className="text-pink-600 font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
                       <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                     </div>
                     
@@ -3709,8 +3709,8 @@ function ProgramsSection({
                         WEEK 1
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-lg program-header-text">PROGRAM 1 - RECONNECT & RESET</CardTitle>
-                        <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 1 - RECONNECT & RESET</CardTitle>
+                        <CardDescription className="text-pink-600 font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                       </div>
                     </div>
@@ -3919,7 +3919,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-blue-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-blue-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-blue-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
                     PROGRAM 2
@@ -3929,10 +3929,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Advanced Strength & Conditioning Program
                 </div>
-                <div className="program-info-text font-normal text-xs">
+                <div className="text-blue-100 font-normal text-xs drop-shadow-sm">
                   🚀 6-week advanced postnatal fitness journey
                 </div>
               </div>
@@ -3940,8 +3940,8 @@ function ProgramsSection({
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
                 <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
-                  <div className="text-xs program-info-text font-bold uppercase tracking-wide">Advanced Program</div>
-                  <div className="text-xs program-info-text font-medium">Strength building & conditioning</div>
+                  <div className="text-xs text-blue-100 font-bold uppercase tracking-wide">Advanced Program</div>
+                  <div className="text-xs text-white font-medium">Strength building & conditioning</div>
                 </div>
                 <div className="w-8 h-8 bg-gradient-to-br from-white to-blue-100 text-blue-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['advanced-program'] ? 'rotate-180' : ''}`} />
@@ -3969,8 +3969,8 @@ function ProgramsSection({
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-sm program-info-text font-bold uppercase tracking-wide">Advanced Program</div>
-                  <div className="text-sm program-info-text font-medium">Strength building & conditioning</div>
+                  <div className="text-sm text-blue-100 font-bold uppercase tracking-wide">Advanced Program</div>
+                  <div className="text-sm text-white font-medium">Strength building & conditioning</div>
                 </div>
                 <div className="w-10 h-10 bg-gradient-to-br from-white to-blue-100 text-blue-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['advanced-program'] ? 'rotate-180' : ''}`} />
@@ -3997,8 +3997,8 @@ function ProgramsSection({
                     
                     {/* Program Title */}
                     <div className="mb-3">
-                      <CardTitle className="text-base program-header-text font-bold mb-2">PROGRAM 2 - STABILITY & BREATHWORK</CardTitle>
-                      <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                      <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 2 - STABILITY & BREATHWORK</CardTitle>
+                      <CardDescription className="text-cyan-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                       <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, and 5 of each week</p>
                     </div>
                     
@@ -4020,8 +4020,8 @@ function ProgramsSection({
                         WEEK 2
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-lg program-header-text">PROGRAM 2 - STABILITY & BREATHWORK</CardTitle>
-                        <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 2 - STABILITY & BREATHWORK</CardTitle>
+                        <CardDescription className="text-cyan-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, and 5 of each week</p>
                       </div>
                     </div>
@@ -4186,7 +4186,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     PROGRAM 3
@@ -4196,10 +4196,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Control & Awareness Program
                 </div>
-                <div className="program-info-text font-normal text-xs">
+                <div className="text-green-100 font-normal text-xs drop-shadow-sm">
                   💪 6-week control and awareness fitness journey
                 </div>
               </div>
@@ -4207,8 +4207,8 @@ function ProgramsSection({
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
                 <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
-                  <div className="text-xs program-info-text font-bold uppercase tracking-wide">Control Program</div>
-                  <div className="text-xs program-info-text font-medium">Balance & core awareness</div>
+                  <div className="text-xs text-green-100 font-bold uppercase tracking-wide">Control Program</div>
+                  <div className="text-xs text-white font-medium">Balance & core awareness</div>
                 </div>
                 <div className="w-8 h-8 bg-gradient-to-br from-white to-green-100 text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['control-awareness-program'] ? 'rotate-180' : ''}`} />
@@ -4236,8 +4236,8 @@ function ProgramsSection({
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-sm program-info-text font-bold uppercase tracking-wide">Control Program</div>
-                  <div className="text-sm program-info-text font-medium">Balance & core awareness</div>
+                  <div className="text-sm text-green-100 font-bold uppercase tracking-wide">Control Program</div>
+                  <div className="text-sm text-white font-medium">Balance & core awareness</div>
                 </div>
                 <div className="w-10 h-10 bg-gradient-to-br from-white to-green-100 text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['control-awareness-program'] ? 'rotate-180' : ''}`} />
@@ -4264,8 +4264,8 @@ function ProgramsSection({
                     
                     {/* Program Title */}
                     <div className="mb-3">
-                      <CardTitle className="text-base program-header-text font-bold mb-2">PROGRAM 3 - CONTROL & AWARENESS</CardTitle>
-                      <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                      <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 3 - CONTROL & AWARENESS</CardTitle>
+                      <CardDescription className="text-emerald-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                       <p className="text-xs text-gray-600 mt-1">Complete on Days 2, 4, and 6 of each week</p>
                     </div>
                     
@@ -4287,8 +4287,8 @@ function ProgramsSection({
                         WEEK 3
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-lg program-header-text">PROGRAM 3 - CONTROL & AWARENESS</CardTitle>
-                        <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 3 - CONTROL & AWARENESS</CardTitle>
+                        <CardDescription className="text-emerald-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 2, 4, and 6 of each week</p>
                       </div>
                     </div>
@@ -4462,7 +4462,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-purple-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-purple-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-purple-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></div>
                     PROGRAM 4
@@ -4472,10 +4472,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Align & Activate Program
                 </div>
-                <div className="program-info-text font-normal text-xs">
+                <div className="text-purple-100 font-normal text-xs drop-shadow-sm">
                   🎯 6-week alignment and activation fitness journey
                 </div>
               </div>
@@ -4483,8 +4483,8 @@ function ProgramsSection({
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
                 <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
-                  <div className="text-xs program-info-text font-bold uppercase tracking-wide">Align Program</div>
-                  <div className="text-xs program-info-text font-medium">Coordination & activation</div>
+                  <div className="text-xs text-purple-100 font-bold uppercase tracking-wide">Align Program</div>
+                  <div className="text-xs text-white font-medium">Coordination & activation</div>
                 </div>
                 <div className="w-8 h-8 bg-gradient-to-br from-white to-purple-100 text-purple-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['align-activate-program'] ? 'rotate-180' : ''}`} />
@@ -4512,8 +4512,8 @@ function ProgramsSection({
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-sm program-info-text font-bold uppercase tracking-wide">Align Program</div>
-                  <div className="text-sm program-info-text font-medium">Coordination & activation</div>
+                  <div className="text-sm text-purple-100 font-bold uppercase tracking-wide">Align Program</div>
+                  <div className="text-sm text-white font-medium">Coordination & activation</div>
                 </div>
                 <div className="w-10 h-10 bg-gradient-to-br from-white to-purple-100 text-purple-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['align-activate-program'] ? 'rotate-180' : ''}`} />
@@ -4540,8 +4540,8 @@ function ProgramsSection({
                     
                     {/* Program Title */}
                     <div className="mb-3">
-                      <CardTitle className="text-base program-header-text font-bold mb-2">PROGRAM 4 - ALIGN & ACTIVATE</CardTitle>
-                      <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                      <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 4 - ALIGN & ACTIVATE</CardTitle>
+                      <CardDescription className="text-violet-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                       <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, and 5 of each week</p>
                     </div>
                     
@@ -4564,8 +4564,8 @@ function ProgramsSection({
                         WEEK 4
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-lg program-header-text">PROGRAM 4 - ALIGN & ACTIVATE</CardTitle>
-                        <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 4 - ALIGN & ACTIVATE</CardTitle>
+                        <CardDescription className="text-violet-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, and 5 of each week</p>
                       </div>
                     </div>
@@ -4732,7 +4732,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-teal-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-teal-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-teal-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></div>
                     PROGRAM 5
@@ -4742,10 +4742,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Functional Core Flow Program
                 </div>
-                <div className="program-info-text font-normal text-xs">
+                <div className="text-teal-100 font-normal text-xs drop-shadow-sm">
                   💫 6-week functional core movement fitness journey
                 </div>
               </div>
@@ -4753,8 +4753,8 @@ function ProgramsSection({
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
                 <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
-                  <div className="text-xs program-info-text font-bold uppercase tracking-wide">Functional Program</div>
-                  <div className="text-xs program-info-text font-medium">Real-life movement & empowerment</div>
+                  <div className="text-xs text-teal-100 font-bold uppercase tracking-wide">Functional Program</div>
+                  <div className="text-xs text-white font-medium">Real-life movement & empowerment</div>
                 </div>
                 <div className="w-8 h-8 bg-gradient-to-br from-white to-teal-100 text-teal-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['functional-core-program'] ? 'rotate-180' : ''}`} />
@@ -4782,8 +4782,8 @@ function ProgramsSection({
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-sm program-info-text font-bold uppercase tracking-wide">Functional Program</div>
-                  <div className="text-sm program-info-text font-medium">Real-life movement & empowerment</div>
+                  <div className="text-sm text-teal-100 font-bold uppercase tracking-wide">Functional Program</div>
+                  <div className="text-sm text-white font-medium">Real-life movement & empowerment</div>
                 </div>
                 <div className="w-10 h-10 bg-gradient-to-br from-white to-teal-100 text-teal-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['functional-core-program'] ? 'rotate-180' : ''}`} />
@@ -4810,8 +4810,8 @@ function ProgramsSection({
                     
                     {/* Program Title */}
                     <div className="mb-3">
-                      <CardTitle className="text-base program-header-text font-bold mb-2">PROGRAM 5 - FUNCTIONAL CORE FLOW</CardTitle>
-                      <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                      <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 5 - FUNCTIONAL CORE FLOW</CardTitle>
+                      <CardDescription className="text-indigo-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                       <p className="text-xs text-gray-600 mt-1">Complete on Days 2, 4, and 6 of each week</p>
                     </div>
                     
@@ -4835,8 +4835,8 @@ function ProgramsSection({
                         WEEK 5
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-lg program-header-text">PROGRAM 5 - FUNCTIONAL CORE FLOW</CardTitle>
-                        <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 5 - FUNCTIONAL CORE FLOW</CardTitle>
+                        <CardDescription className="text-indigo-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 2, 4, and 6 of each week</p>
                       </div>
                     </div>
@@ -5013,7 +5013,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-orange-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-orange-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-orange-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
                     PROGRAM 6
@@ -5023,10 +5023,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Foundational Strength Program
                 </div>
-                <div className="program-info-text font-normal text-xs">
+                <div className="text-orange-100 font-normal text-xs drop-shadow-sm">
                   🔥 6-week foundational strength fitness journey
                 </div>
               </div>
@@ -5034,8 +5034,8 @@ function ProgramsSection({
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
                 <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
-                  <div className="text-xs program-info-text font-bold uppercase tracking-wide">Foundational Program</div>
-                  <div className="text-xs program-info-text font-medium">Capacity, endurance & resilience</div>
+                  <div className="text-xs text-orange-100 font-bold uppercase tracking-wide">Foundational Program</div>
+                  <div className="text-xs text-white font-medium">Capacity, endurance & resilience</div>
                 </div>
                 <div className="w-8 h-8 bg-gradient-to-br from-white to-orange-100 text-orange-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['foundational-strength-program'] ? 'rotate-180' : ''}`} />
@@ -5063,8 +5063,8 @@ function ProgramsSection({
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-sm program-info-text font-bold uppercase tracking-wide">Foundational Program</div>
-                  <div className="text-sm program-info-text font-medium">Capacity, endurance & resilience</div>
+                  <div className="text-sm text-orange-100 font-bold uppercase tracking-wide">Foundational Program</div>
+                  <div className="text-sm text-white font-medium">Capacity, endurance & resilience</div>
                 </div>
                 <div className="w-10 h-10 bg-gradient-to-br from-white to-orange-100 text-orange-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['foundational-strength-program'] ? 'rotate-180' : ''}`} />
@@ -5091,8 +5091,8 @@ function ProgramsSection({
                     
                     {/* Program Title */}
                     <div className="mb-3">
-                      <CardTitle className="text-base program-header-text font-bold mb-2">PROGRAM 6 - FOUNDATIONAL STRENGTH</CardTitle>
-                      <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
+                      <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 6 - FOUNDATIONAL STRENGTH</CardTitle>
+                      <CardDescription className="text-amber-600 font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
                       <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                     </div>
                     
@@ -5114,8 +5114,8 @@ function ProgramsSection({
                         WEEK 6
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-lg program-header-text">PROGRAM 6 - FOUNDATIONAL STRENGTH</CardTitle>
-                        <CardDescription className="program-info-text font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
+                        <CardTitle className="text-lg text-gray-900">PROGRAM 6 - FOUNDATIONAL STRENGTH</CardTitle>
+                        <CardDescription className="text-amber-600 font-semibold text-sm">Workout Schedule: 4x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, 5, and 7 of each week</p>
                       </div>
                     </div>
