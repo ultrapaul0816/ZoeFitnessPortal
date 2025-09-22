@@ -6981,78 +6981,67 @@ function WhatComesNextSection({
                       </div>
                     </div>
                   ) : topic.id === 'impact-readiness-test' ? (
-                    <div className="space-y-4 text-sm">
+                    <div className="space-y-6 text-sm">
                       <div className="text-center mb-6">
-                        <h3 className="text-xl font-bold mb-4">RETURN TO <span className="text-purple-500">IMPACT READINESS TEST</span></h3>
+                        <h3 className="text-xl font-bold mb-4">🏃‍♀️ RETURN TO <span className="text-pink-500">IMPACT</span> READINESS TEST</h3>
                         <p className="text-gray-700 leading-relaxed">
-                          Before returning to running, jumping, or high-impact activities, complete this comprehensive readiness assessment.
+                          Not sure if you're ready for running, jumping, or HIIT? Use this self-check protocol to assess your 
+                          core + pelvic floor readiness for high-impact movement.
                         </p>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-purple-50 to-violet-50 border-2 p-5 rounded-lg" style={{borderColor: '#f3a8cb'}}>
-                          <h4 className="font-bold mb-3 text-purple-600 text-base">📋 Core Function Assessment</h4>
-                          <div className="space-y-3">
-                            <div className="space-y-2">
-                              <p className="font-semibold text-gray-800">1. Single-leg stand (30 seconds each leg)</p>
-                              <div className="flex items-center space-x-3">
-                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
-                                <span className="text-gray-700">No wobbling or core instability</span>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <p className="font-semibold text-gray-800">2. Modified plank (hold for 60 seconds)</p>
-                              <div className="flex items-center space-x-3">
-                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
-                                <span className="text-gray-700">No doming, sagging, or breath-holding</span>
-                              </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <p className="font-semibold text-gray-800">3. Marching in place (30 steps)</p>
-                              <div className="flex items-center space-x-3">
-                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
-                                <span className="text-gray-700">Core stays engaged, no compensation patterns</span>
-                              </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <p className="font-semibold text-gray-800">4. Jump preparation (gentle bouncing)</p>
-                              <div className="flex items-center space-x-3">
-                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
-                                <span className="text-gray-700">No pelvic floor symptoms or core instability</span>
-                              </div>
-                            </div>
+                      <div className="space-y-6">
+                        {/* Impact Readiness Test Table */}
+                        <div className="bg-white border-2 rounded-lg overflow-hidden" style={{borderColor: '#f3a8cb'}}>
+                          <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-4">
+                            <h4 className="font-bold text-pink-600 text-base">🏃‍♀️ Impact Readiness Assessment</h4>
                           </div>
-                        </div>
-
-                        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border-2 p-5 rounded-lg" style={{borderColor: '#cbde9a'}}>
-                          <h4 className="font-bold mb-3 text-teal-600 text-base">🏃‍♀️ Graduated Return Protocol</h4>
-                          <div className="space-y-2 text-gray-700">
-                            <div className="flex items-start">
-                              <span className="text-teal-500 mr-2 font-bold">Week 1:</span>
-                              <span>Walking with occasional 30-second jogs</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-teal-500 mr-2 font-bold">Week 2:</span>
-                              <span>5-minute jogging intervals with walking recovery</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-teal-500 mr-2 font-bold">Week 3:</span>
-                              <span>15-20 minutes continuous light jogging</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-teal-500 mr-2 font-bold">Week 4+:</span>
-                              <span>Gradually increase intensity and duration</span>
-                            </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="bg-gradient-to-r from-green-100 to-emerald-100">
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b border-gray-200 font-bold">TEST</th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b border-gray-200 font-bold">PASS CRITERIA</th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white divide-y divide-gray-200">
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">CORE BREATH ACTIVATION TEST</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Can exhale + engage without bearing down</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">SINGLE LEG STAND (30S PER LEG)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Stable, no wobbles, no pelvic symptoms</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">SINGLE LEG GLUTE BRIDGE (10 PER SIDE)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>No doming or pressure</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">FAST SIT-TO-STAND (10 REPS)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>No leaking or heaviness</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">FORWARD HOP (LANDING SOFT)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Core feels engaged, no pressure</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">JOG ON SPOT (30 SECONDS)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>No heaviness, pain, or leakage</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-gray-50">JUMPING JACKS (10 REPS)</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>No leaks, no bulging</em></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
 
                         <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 p-5 rounded-r-lg">
                           <p className="text-gray-700 leading-relaxed flex items-start">
-                            <span className="text-amber-500 mr-2 mt-1">⚠️</span>
-                            <span><strong>Stop Signs:</strong> Pelvic pressure, leaking, back pain, or any doming means you need more time. Return to core strengthening for 2-4 weeks before retesting.</span>
+                            <span className="text-amber-500 mr-2 mt-1">💡</span>
+                            <span><strong>If you feel unsure, unstable, or symptomatic</strong> — revisit core drills, glute strength, and breathwork. You'll get there.</span>
                           </p>
                         </div>
                       </div>
