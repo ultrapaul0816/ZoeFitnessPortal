@@ -456,14 +456,14 @@ export default function HealYourCorePage() {
             </TabsList>
             
             {/* Game-like Journey Progress Bar */}
-            <div className="relative my-6 px-12 py-6">
+            <div className="relative my-6 px-4 sm:px-8 md:px-12 py-4 sm:py-6">
               <div className="flex items-center justify-between relative">
                 {/* Background connecting line */}
-                <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 sm:h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
                 
                 {/* Active progress line */}
                 <div 
-                  className={`absolute top-1/2 h-1 rounded-full -translate-y-1/2 transition-all duration-700 ease-out progress-${activeTab.replace('-', '')}`}
+                  className={`absolute top-1/2 h-0.5 sm:h-1 rounded-full -translate-y-1/2 transition-all duration-700 ease-out progress-${activeTab.replace('-', '')}`}
                   style={{
                     left: '0%',
                     width: `${(() => {
@@ -486,7 +486,7 @@ export default function HealYourCorePage() {
                     return (
                       <div 
                         key={tab}
-                        className={`relative w-10 h-10 rounded-full border-3 flex items-center justify-center text-sm font-bold transition-all duration-500 z-10 ${
+                        className={`relative w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 md:border-3 flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-500 z-10 ${
                           isUnlocked 
                             ? `${colors[index]} text-white border-white shadow-lg` 
                             : 'bg-gray-300 text-gray-500 border-gray-200'
