@@ -654,10 +654,10 @@ export default function HealYourCorePage() {
 
           <TabsContent value="faqs" className="mt-6 space-y-6" data-testid="content-faqs">
             <div className="text-left mb-8">
-              <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-violet-600 via-purple-500 to-fuchsia-600 bg-clip-text text-transparent drop-shadow-sm">
+              <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-violet-600 via-purple-500 to-fuchsia-600 bg-clip-text text-transparent drop-shadow-sm">
                 Frequently Asked Questions
               </h1>
-              <p className="text-base font-medium text-gray-600 border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-2">
+              <p className="text-sm font-medium text-gray-600 border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-2">
                 Real questions, honest answers because you deserve clarity, not confusion
               </p>
             </div>
@@ -847,10 +847,10 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
     <div className="space-y-6">
       <Card>
         <CardHeader className="text-left">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
             Heal
           </CardTitle>
-          <CardDescription className="text-base font-medium text-gray-600 border-l-4 border-emerald-400 pl-4 bg-gradient-to-r from-emerald-50 to-transparent py-2">
+          <CardDescription className="text-sm font-medium text-gray-600 border-l-4 border-emerald-400 pl-4 bg-gradient-to-r from-emerald-50 to-transparent py-2">
             Understanding diastasis recti and beginning your core rehabilitation journey
           </CardDescription>
         </CardHeader>
@@ -1711,10 +1711,10 @@ function WelcomeSection({
         <CardContent className="p-6">
           {/* Welcome Header */}
           <div className="mb-8 text-left">
-            <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+            <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
               Welcome - Start Here
             </h2>
-            <p className="text-base font-medium text-gray-600 border-l-4 border-pink-400 pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
+            <p className="text-sm font-medium text-gray-600 border-l-4 border-pink-400 pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
               Essential preparatory information for your core recovery journey
             </p>
           </div>
@@ -2711,10 +2711,10 @@ function UnderstandingYourCoreSection({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-left bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+          <CardTitle className="text-2xl font-bold text-left bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
             Understanding Your Core
           </CardTitle>
-          <CardDescription className="text-base font-medium text-left text-gray-600 border-l-4 border-blue-400 pl-4 bg-gradient-to-r from-blue-50 to-transparent py-2">
+          <CardDescription className="text-sm font-medium text-left text-gray-600 border-l-4 border-blue-400 pl-4 bg-gradient-to-r from-blue-50 to-transparent py-2">
             Educational foundation to empower you with understanding the why behind your recovery
           </CardDescription>
         </CardHeader>
@@ -3769,10 +3769,10 @@ function ProgramsSection({
     <div className="space-y-6">
       {/* Programs Section Title */}
       <div className="mb-8 text-left">
-        <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
+        <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
           Programs
         </h2>
-        <p className="text-base font-medium text-gray-600 border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-2">
+        <p className="text-sm font-medium text-gray-600 border-l-4 border-purple-400 pl-4 bg-gradient-to-r from-purple-50 to-transparent py-2">
           Your comprehensive six week postnatal fitness journey programs
         </p>
       </div>
@@ -5505,10 +5505,10 @@ function TheRoleOfNutritionSection({
     <div className="space-y-6">
       <Card>
         <CardHeader className="text-left">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent drop-shadow-sm">
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent drop-shadow-sm">
             The Role of Nutrition
           </CardTitle>
-          <CardDescription className="text-base font-medium text-gray-600 border-l-4 border-orange-400 pl-4 bg-gradient-to-r from-orange-50 to-transparent py-2">
+          <CardDescription className="text-sm font-medium text-gray-600 border-l-4 border-orange-400 pl-4 bg-gradient-to-r from-orange-50 to-transparent py-2">
             Nutritional guidance giving the importance it deserves for your core recovery
           </CardDescription>
         </CardHeader>
@@ -5803,10 +5803,10 @@ function WhatComesNextSection({
     <div className="space-y-6">
       {/* What's Next Section Title */}
       <div className="mb-8 text-left">
-        <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
+        <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
           What's Next
         </h2>
-        <p className="text-base font-medium text-gray-600 border-l-4 border-indigo-400 pl-4 bg-gradient-to-r from-indigo-50 to-transparent py-2">
+        <p className="text-sm font-medium text-gray-600 border-l-4 border-indigo-400 pl-4 bg-gradient-to-r from-indigo-50 to-transparent py-2">
           Your roadmap for continued progress and empowerment
         </p>
       </div>
