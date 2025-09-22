@@ -554,7 +554,7 @@ export default function HealYourCorePage() {
                 
                 <AccordionItem value="faq-1" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">What if I still see doming or coning in Week 3 or 4?</span>
+                    <span className="font-semibold text-gray-800">1. What if I still see doming or coning in Week 3 or 4?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     That's okay. Healing isn't linear. If you notice doming during movements, pause, scale back to earlier exercises, and revisit the breakdown and core connection cues. It's not about pushing harder—it's about moving smarter.
@@ -563,7 +563,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-2" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">Can I do this program if I'm more than a year postpartum?</span>
+                    <span className="font-semibold text-gray-800">2. Can I do this program if I'm more than a year postpartum?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     Absolutely. Whether you're 6 weeks or 6 years postpartum, core rehab is always relevant. This program supports healing, building strength, and reconnection at any stage.
@@ -572,7 +572,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-3" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">What if I had a C-section? Will this still help me?</span>
+                    <span className="font-semibold text-gray-800">3. What if I had a C-section? Will this still help me?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     Yes! The program includes specific modifications and cautions for C-section recovery. Always listen to your body around the scar site and reduce or pause movements that feel too intense.
@@ -581,7 +581,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-4" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">I don't have diastasis recti—should I still do this program?</span>
+                    <span className="font-semibold text-gray-800">4. I don't have diastasis recti—should I still do this program?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     Yes! This program helps you rebuild deep core strength, improve posture, and reconnect with your body—even if you don't have a visible gap. It's for any mom who feels weak, unsupported, or unsure how to engage her core safely.
@@ -590,7 +590,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-5" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">Can I combine this program with other workouts?</span>
+                    <span className="font-semibold text-gray-800">5. Can I combine this program with other workouts?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     If you're cleared for movement and feel strong during this program, you may add light walks or low-impact movement on alternate days. Avoid high-intensity workouts until you've progressed through the rehab without symptoms.
@@ -599,7 +599,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-6" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">How do I know if I'm ready to move to the next week?</span>
+                    <span className="font-semibold text-gray-800">6. How do I know if I'm ready to move to the next week?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600 space-y-2">
                     <p>Use your body as a guide. Signs you're ready:</p>
@@ -614,7 +614,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-7" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">Can I repeat the program again?</span>
+                    <span className="font-semibold text-gray-800">7. Can I repeat the program again?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     Yes, and it's encouraged. The second round often brings even deeper awareness and strength. It's also a great reset if life got in the way the first time.
@@ -623,7 +623,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-8" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">What if I missed a full week or more?</span>
+                    <span className="font-semibold text-gray-800">8. What if I missed a full week or more?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     Just start again where you left off. There's no failure here. This program is designed to work with your real life.
@@ -632,7 +632,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-9" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">Can I do this if I had vaginal birth with tearing or stitches?</span>
+                    <span className="font-semibold text-gray-800">9. Can I do this if I had vaginal birth with tearing or stitches?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     Yes, once cleared by your healthcare provider. Go slow, listen to your pelvic floor, and avoid any movement that increases discomfort, heaviness, or pressure.
@@ -641,7 +641,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-10" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">Should I wear a postpartum belt while doing these exercises?</span>
+                    <span className="font-semibold text-gray-800">10. Should I wear a postpartum belt while doing these exercises?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     You can if it offers support or makes you feel more stable, especially in early weeks. But it's not mandatory. Use your breath and TVA engagement as your primary "belt" over time.
@@ -650,7 +650,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-11" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">I feel emotional or frustrated doing core work—is that normal?</span>
+                    <span className="font-semibold text-gray-800">11. I feel emotional or frustrated doing core work—is that normal?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     Totally normal. Your core is deeply tied to your sense of safety, confidence, and identity. Be gentle with yourself. This is physical work and emotional work.
@@ -659,7 +659,7 @@ export default function HealYourCorePage() {
 
                 <AccordionItem value="faq-12" className="border border-pink-200 rounded-lg bg-white shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <span className="font-semibold text-gray-800">How long will it take to heal my core completely?</span>
+                    <span className="font-semibold text-gray-800">12. How long will it take to heal my core completely?</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-600">
                     There's no fixed timeline. Everybody heals differently. Some women feel great in 6 weeks, others in 6 months. Your consistency and patience matter more than speed.

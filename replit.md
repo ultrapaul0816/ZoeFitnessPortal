@@ -87,7 +87,7 @@ Each program follows this standardized structure for consistency:
   - **8-Tab Navigation**: Complete learning journey from Welcome through FAQs with proper progression flow
   - **Responsive Design**: Mobile and desktop optimized layouts with proper z-indexing and positioning
 - **Comprehensive FAQ Section**: 
-  - **12 Real-World Questions**: Complete FAQ system with actual user questions about postpartum fitness
+  - **12 Numbered Questions**: Complete FAQ system with sequentially numbered questions for easy reference
   - **Collapsible Accordion Interface**: Clean, organized presentation using shadcn/ui Accordion components
   - **Professional Styling**: Consistent pink border theme with proper spacing and typography
   - **Practical Content**: Addresses C-sections, diastasis recti, emotional aspects, timeline expectations, and safety concerns
