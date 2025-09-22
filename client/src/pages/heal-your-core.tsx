@@ -6822,7 +6822,7 @@ function WhatComesNextSection({
                       </div>
                       
                       <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 p-5 rounded-lg" style={{borderColor: '#cbde9a'}}>
                           <h4 className="font-bold mb-3 text-green-600 text-base">✅ Signs You're Ready to Progress</h4>
                           <div className="space-y-2 text-gray-700">
                             <div className="flex items-start">
@@ -6848,7 +6848,7 @@ function WhatComesNextSection({
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-blue-50 to-sky-50 border border-blue-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-blue-50 to-sky-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3c0e4'}}>
                           <h4 className="font-bold mb-3 text-blue-600 text-base">🎯 Your Next Exercise Options</h4>
                           <div className="space-y-2 text-gray-700">
                             <div className="flex items-start">
@@ -6888,7 +6888,7 @@ function WhatComesNextSection({
                       </div>
 
                       <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 p-5 rounded-lg" style={{borderColor: '#f2038b'}}>
                           <h4 className="font-bold mb-3 text-red-600 text-base">🚫 High-Risk Core Exercises</h4>
                           <div className="space-y-2 text-gray-700">
                             <div className="flex items-start">
@@ -6914,7 +6914,7 @@ function WhatComesNextSection({
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3a892'}}>
                           <h4 className="font-bold mb-3 text-yellow-600 text-base">⚠️ Movements Requiring Caution</h4>
                           <div className="space-y-2 text-gray-700">
                             <div className="flex items-start">
@@ -6954,7 +6954,7 @@ function WhatComesNextSection({
                       </div>
 
                       <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-purple-50 to-violet-50 border-2 p-5 rounded-lg" style={{borderColor: '#f3a8cb'}}>
                           <h4 className="font-bold mb-3 text-purple-600 text-base">📋 Core Function Assessment</h4>
                           <div className="space-y-3">
                             <div className="space-y-2">
@@ -6991,7 +6991,7 @@ function WhatComesNextSection({
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border-2 p-5 rounded-lg" style={{borderColor: '#cbde9a'}}>
                           <h4 className="font-bold mb-3 text-teal-600 text-base">🏃‍♀️ Graduated Return Protocol</h4>
                           <div className="space-y-2 text-gray-700">
                             <div className="flex items-start">
@@ -7031,7 +7031,7 @@ function WhatComesNextSection({
                       </div>
 
                       <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3c0e4'}}>
                           <h4 className="font-bold mb-3 text-indigo-600 text-base">📊 Weekly Measurements</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-3">
@@ -7074,7 +7074,7 @@ function WhatComesNextSection({
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-5 rounded-lg">
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3a892'}}>
                           <h4 className="font-bold mb-3 text-green-600 text-base">✅ Milestone Tracker</h4>
                           <div className="space-y-2">
                             <label className="flex items-center space-x-3 cursor-pointer">
