@@ -136,7 +136,10 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
               {!isVideoPlaying ? (
                 <div 
                   className="relative cursor-pointer group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => setIsVideoPlaying(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsVideoPlaying(true);
+                  }}
                   data-testid="video-thumbnail-welcome"
                 >
                   <img
@@ -145,8 +148,8 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
+                    <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Play className="w-3 h-3 text-white ml-0.5" fill="currentColor" />
                     </div>
                   </div>
                 </div>
