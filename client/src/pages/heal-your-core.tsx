@@ -6795,7 +6795,10 @@ function WhatComesNextSection({
       <Card>
         <div className="p-6 space-y-1">
           {topics.map((topic, index) => (
-            <div key={topic.id} className="border-b border-gray-100 last:border-b-0">
+            <div key={topic.id}>
+              {index > 0 && (
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30 my-2"></div>
+              )}
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
@@ -7145,7 +7148,7 @@ function WhatComesNextSection({
                   ) : null}
                 </div>
               )}
-            </div>
+              </div>
           ))}
         </div>
       </Card>
