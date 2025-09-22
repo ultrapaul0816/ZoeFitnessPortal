@@ -2486,7 +2486,7 @@ function WelcomeSection({
 
                       {/* Week 2 */}
                       <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
-                        <div className="bg-gradient-to-r from-blue-400 to-cyan-400 p-4 text-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #9aafdc 100%)'}}>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 2</span>
@@ -2783,7 +2783,7 @@ function WelcomeSection({
                     <div className="space-y-4">
                       {/* Week 1 */}
                       <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
-                        <div className="bg-gradient-to-r from-pink-400 to-rose-400 p-4 text-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #f2038b 100%)'}}>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 1</span>
@@ -2852,7 +2852,7 @@ function WelcomeSection({
 
                       {/* Week 2 */}
                       <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
-                        <div className="bg-gradient-to-r from-blue-400 to-cyan-400 p-4 text-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #9aafdc 100%)'}}>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 2</span>
@@ -2921,7 +2921,7 @@ function WelcomeSection({
 
                       {/* Week 3 */}
                       <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
-                        <div className="bg-gradient-to-r from-emerald-400 to-teal-400 p-4 text-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #cbde9a 0%, #b8d082 100%)'}}>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 3</span>
@@ -2990,7 +2990,7 @@ function WelcomeSection({
 
                       {/* Week 4 */}
                       <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
-                        <div className="bg-gradient-to-r from-purple-400 to-violet-400 p-4 text-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #c2b9a1 0%, #b3a892 100%)'}}>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 4</span>
@@ -3059,7 +3059,7 @@ function WelcomeSection({
 
                       {/* Week 5 */}
                       <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
-                        <div className="bg-gradient-to-r from-indigo-400 to-blue-500 p-4 text-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #cbde9a 100%)'}}>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 5</span>
@@ -3128,7 +3128,7 @@ function WelcomeSection({
 
                       {/* Week 6 */}
                       <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
-                        <div className="bg-gradient-to-r from-amber-400 to-orange-500 p-4 text-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #c2b9a1 100%)'}}>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 6</span>
