@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Lock, Star, Calendar, Target, Dumbbell, Baby } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import zoeLogoImage from "@assets/Screenshot_2025-09-22_at_13.03.07-removebg-preview_1758527068639.png";
 
 interface PremiumProgramCardProps {
   program: any;
@@ -124,9 +125,13 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
                 <Star className="w-3 h-3 mr-1" />
                 Premium Access
               </Badge>
-              <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 text-xs font-semibold shadow-lg border-0">
-                {program.level}
-              </Badge>
+              <div className="relative">
+                <img 
+                  src={zoeLogoImage} 
+                  alt="Pregnancy with Zoe" 
+                  className="w-20 h-12 object-contain opacity-80 hover:opacity-100 transition-opacity duration-200 filter drop-shadow-sm"
+                />
+              </div>
             </div>
             
             {/* YouTube Video */}
