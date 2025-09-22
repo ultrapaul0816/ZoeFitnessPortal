@@ -1836,107 +1836,133 @@ function WelcomeSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     <p className="text-sm">
-                      This guide is your companion through rebuilding your core strength, reconnecting with your body, and feeling more confident in movement again.
+                      Welcome to your interactive postpartum strength recovery program! This guide is designed to be your comprehensive companion through rebuilding your core strength, reconnecting with your body, and feeling more confident in movement again.
                     </p>
                     
                     <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Tune In Weekly:</p>
-                      <p className="text-sm">
-                        Assess how you feel. Did you sleep well? Are you feeling sore or energized? Are you holding tension from feeding or carrying your baby? Adjust the plan based on energy levels, core connection, and overall recovery.
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Your program is divided into 6 weekly phases, each with:</p>
+                      <p className="font-semibold text-primary text-sm mb-3">Navigate Your Journey with 7 Main Sections:</p>
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>A <em>Core Strength Program</em> (Program 1 to 6)</span>
+                          <span><strong>Start Here</strong> - Essential preparation and safety guidelines</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span>A <em>suggested Cardio Plan</em> for that week</span>
+                          <span><strong>Core Knowledge</strong> - Educational foundation about diastasis recti and core health</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Built-in Rest Days</em></span>
+                          <span><strong>Healing</strong> - Your complete 6-topic healing curriculum with daily practices</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Programs</strong> - Six progressive workout programs with video demonstrations</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Nutrition</strong> - Supportive nutritional guidance for recovery</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>What's Next</strong> - Your roadmap for continued progress</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>FAQs</strong> - Comprehensive answers to common questions</span>
                         </li>
                       </ul>
                     </div>
                     
                     <div>
-                      <p className="font-semibold text-primary text-sm mb-3">How to view the videos of the exercises:</p>
+                      <p className="font-semibold text-primary text-sm mb-3">Your Complete 6-Week Program Structure:</p>
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>All blue underlined text is clickable and will open a video link.</em></span>
+                          <span><strong>6 Progressive Programs</strong> - Each with distinct color themes and increasing difficulty</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><strong>PLAY ALL</strong> <em>indicates that the following workout can be played as a single playlist containing all the exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</em></span>
+                          <span><strong>Integrated Cardio Plans</strong> - Optional weekly cardio schedules that complement your core work</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Weekly Training Schedules</strong> - Clear day-by-day guidance with mobile-friendly abbreviations</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><strong>Built-in Rest Days</strong> - Strategic recovery periods for optimal healing</span>
                         </li>
                       </ul>
                     </div>
                     
                     <div>
-                      <p className="font-semibold text-primary text-sm mb-3">How to schedule your week:</p>
-                      <p className="text-sm mb-2">Each week follows a 7-day rhythm, with a mix of:</p>
+                      <p className="font-semibold text-primary text-sm mb-3">Interactive Video System:</p>
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Core Training Days</em> (2–4 sessions depending on the week)</span>
+                          <span><strong>Clickable Exercise Names</strong> - All blue underlined exercise names link directly to video demonstrations</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Optional Cardio Days</em> (1–3 light/moderate intensity sessions)</span>
+                          <span><strong>Video Thumbnails</strong> - Visual previews with play buttons for easy access</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>At least 1 full Rest Day</em></span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-pink-500 font-bold">❖</span>
-                          <span>You'll see suggestions like "Day 1, Day 3, Day 5" - these refer to days of your week, so you can fit the workouts to your schedule flexibly.</span>
+                          <span><strong>PLAY ALL Playlists</strong> - Complete workout playlists for seamless flow-through sessions</span>
                         </li>
                       </ul>
                     </div>
                     
                     <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Move at your own pace:</p>
+                      <p className="font-semibold text-primary text-sm mb-3">Mobile-Optimized Experience:</p>
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>You can stay on a week for longer if needed — don't feel rushed to move forward.</em></span>
+                          <span><strong>Smart Abbreviations</strong> - P1-P6 (Programs), C (Cardio), R (Rest) for compact mobile viewing</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>If you feel fatigued, emotional, or life just gets full… that's OK. Pause, rest, and return.</em></span>
+                          <span><strong>Summary Badges</strong> - Quick weekly overviews like "3P • 2C • 1R" for easy planning</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Progress isn't linear — even one session a week is a win.</em></span>
+                          <span><strong>Reference Legends</strong> - Clear explanations of all abbreviations and symbols</span>
                         </li>
                       </ul>
                     </div>
                     
                     <div>
-                      <p className="font-semibold text-primary text-sm mb-3">Final tips:</p>
+                      <p className="font-semibold text-primary text-sm mb-3">Track Your Progress:</p>
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Begin each session with your breath</em></span>
+                          <span><strong>Progress Bar</strong> - Visual tracking of your journey completion</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>End with a moment of stillness or gratitude</em></span>
+                          <span><strong>Tab Navigation</strong> - Move through sections at your own pace</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>Don't skip rest- it's just as important as movement</em></span>
+                          <span><strong>Flexible Scheduling</strong> - Adapt the program to fit your life and energy levels</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <p className="font-semibold text-primary text-sm mb-3">Remember:</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>This is your journey - move through the sections in the order that feels right for you</em></span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>You're not just rebuilding your core- you're rebuilding trust in your body</em></span>
+                          <span><em>Each section can be revisited anytime - there's no expiration on healing</em></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-pink-500 font-bold">❖</span>
+                          <span><em>You're not just rebuilding your core - you're rebuilding trust in your body</em></span>
                         </li>
                       </ul>
                     </div>
