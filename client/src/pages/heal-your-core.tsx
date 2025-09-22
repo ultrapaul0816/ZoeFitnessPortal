@@ -820,9 +820,9 @@ export default function HealYourCorePage() {
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
                 <p className="text-sm text-gray-600">Navigate through your recovery program</p>
               </div>
-              <div className="flex gap-6 justify-center">
+              <div className="flex justify-center">
                 <Button
-                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto max-w-xs"
                   data-testid="button-previous-section-faqs"
                   onClick={() => setActiveTab('next-steps')}
                 >
@@ -1701,10 +1701,10 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
           <p className="text-sm text-gray-600">Navigate through your recovery program</p>
         </div>
-        <div className="flex gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center">
           {canGoPrevious() && (
             <Button
-              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-previous-section-heal"
               onClick={navigateToPreviousTab}
             >
@@ -1714,7 +1714,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
           )}
           {canGoNext() && (
             <Button
-              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-next-section-heal"
               onClick={navigateToNextTab}
             >
@@ -3316,10 +3316,10 @@ function WelcomeSection({
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
               <p className="text-sm text-gray-600">Navigate through your recovery program</p>
             </div>
-            <div className="flex gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center">
               {canGoPrevious() && (
                 <Button
-                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm sm:text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
                   data-testid="button-previous-section"
                   onClick={navigateToPreviousTab}
                 >
@@ -3329,7 +3329,7 @@ function WelcomeSection({
               )}
               {canGoNext() && (
                 <Button
-                  className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+                  className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm sm:text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
                   data-testid="button-next-section"
                   onClick={navigateToNextTab}
                 >
@@ -6126,10 +6126,10 @@ function ProgramsSection({
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
           <p className="text-sm text-gray-600">Navigate through your recovery program</p>
         </div>
-        <div className="flex gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center">
           {canGoPrevious() && (
             <Button
-              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-previous-section-programs"
               onClick={navigateToPreviousTab}
             >
@@ -6139,7 +6139,7 @@ function ProgramsSection({
           )}
           {canGoNext() && (
             <Button
-              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-next-section-programs"
               onClick={navigateToNextTab}
             >
@@ -6436,10 +6436,10 @@ function TheRoleOfNutritionSection({
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
           <p className="text-sm text-gray-600">Navigate through your recovery program</p>
         </div>
-        <div className="flex gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center">
           {canGoPrevious() && (
             <Button
-              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-previous-section-nutrition"
               onClick={navigateToPreviousTab}
             >
@@ -6449,7 +6449,7 @@ function TheRoleOfNutritionSection({
           )}
           {canGoNext() && (
             <Button
-              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-next-section-nutrition"
               onClick={navigateToNextTab}
             >
@@ -6503,10 +6503,10 @@ function WhatComesNextSection({
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
           <p className="text-sm text-gray-600">Navigate through your recovery program</p>
         </div>
-        <div className="flex gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center">
           {canGoPrevious() && (
             <Button
-              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-previous-section-next-steps"
               onClick={navigateToPreviousTab}
             >
@@ -6516,7 +6516,7 @@ function WhatComesNextSection({
           )}
           {canGoNext() && (
             <Button
-              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-8 py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
               data-testid="button-next-section-next-steps"
               onClick={navigateToNextTab}
             >
