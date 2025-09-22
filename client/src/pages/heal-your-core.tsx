@@ -6525,7 +6525,7 @@ function TheRoleOfNutritionSection({
                               <img 
                                 src={handPortionsImage} 
                                 alt="Hand portion guide showing protein (palm), vegetables (fist), carbs (cupped hand), and fats (thumb)"
-                                className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
+                                className="w-full max-w-2xl mx-auto rounded-lg"
                               />
                             </div>
                           </div>
