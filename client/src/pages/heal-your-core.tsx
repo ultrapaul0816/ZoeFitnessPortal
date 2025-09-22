@@ -30,6 +30,7 @@ import longResistanceBandImage from "@assets/Screenshot 2025-09-22 at 13.30.13_1
 import swissBallImage from "@assets/Screenshot 2025-09-22 at 13.30.19_1758528078676.png";
 import foamRollerImage from "@assets/Screenshot 2025-09-22 at 13.30.27_1758528078676.png";
 import nutritionBowlImage from "@assets/Screenshot 2025-09-22 at 21.26.02_1758556777492.png";
+import handPortionsImage from "@assets/Screenshot 2025-09-22 at 21.52.32_1758558163929.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6503,120 +6504,6 @@ function TheRoleOfNutritionSection({
                         </div>
                       </div>
                     ) : topic.id === 'portion-quantity-guidance' ? (
-                      <div className="space-y-4 text-sm">
-                        <div className="text-center">
-                          <h3 className="text-lg font-bold mb-2">PORTION & <span className="text-pink-500">QUANTITY GUIDANCE</span></h3>
-                        </div>
-                        
-                        <p>
-                          Practical portion guidance to ensure you're getting adequate nutrition without overwhelm. Focus on balance and consistency rather than perfection.
-                        </p>
-                        
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-blue-800">Daily Meal Structure</h4>
-                          <ul className="space-y-1 text-sm text-blue-700">
-                            <li>• <strong>3 main meals</strong> + 2-3 small snacks</li>
-                            <li>• Include protein at every meal and snack</li>
-                            <li>• Eat every 3-4 hours to maintain energy</li>
-                            <li>• Don't skip meals - your body needs fuel to heal</li>
-                          </ul>
-                        </div>
-                        
-                        {/* Portion Guide Table */}
-                        <div className="overflow-x-auto">
-                          <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm w-full" style={{ minWidth: '800px' }} data-testid="table-portions">
-                            <div className="bg-gray-100 grid text-sm font-semibold text-gray-700 border-b border-gray-300" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
-                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">FOOD GROUP</div>
-                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">PORTION SIZE</div>
-                              <div className="p-4 border-r border-gray-300 flex items-start justify-start">EXAMPLES</div>
-                              <div className="p-4 flex items-start justify-start">FREQUENCY</div>
-                            </div>
-
-                            {/* Protein */}
-                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
-                                Protein
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                Palm-sized portion (20-30g)
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                Chicken breast, salmon, eggs, Greek yogurt, lentils, tofu
-                              </div>
-                              <div className="p-4 text-gray-700 flex items-start justify-start">
-                                Every meal + snacks
-                              </div>
-                            </div>
-
-                            {/* Vegetables */}
-                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
-                                Vegetables
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                2 cupped handfuls
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                Leafy greens, broccoli, bell peppers, carrots, zucchini
-                              </div>
-                              <div className="p-4 text-gray-700 flex items-start justify-start">
-                                Most meals
-                              </div>
-                            </div>
-
-                            {/* Healthy Fats */}
-                            <div className="grid border-b border-gray-200 text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
-                                Healthy Fats
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                Thumb-sized portion
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                Avocado, nuts, seeds, olive oil, nut butters
-                              </div>
-                              <div className="p-4 text-gray-700 flex items-start justify-start">
-                                Most meals
-                              </div>
-                            </div>
-
-                            {/* Complex Carbs */}
-                            <div className="grid text-sm" style={{ gridTemplateColumns: '200px 150px 300px 150px' }}>
-                              <div className="p-4 border-r border-gray-300 font-semibold flex items-start justify-start">
-                                Complex Carbs
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                Cupped handful
-                              </div>
-                              <div className="p-4 border-r border-gray-300 text-gray-700 flex items-start justify-start">
-                                Quinoa, sweet potato, oats, brown rice, whole grains
-                              </div>
-                              <div className="p-4 text-gray-700 flex items-start justify-start">
-                                Most meals
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-green-800">Quick Snack Ideas</h4>
-                          <ul className="space-y-1 text-sm text-green-700">
-                            <li>• Greek yogurt + berries + nuts</li>
-                            <li>• Apple slices + almond butter</li>
-                            <li>• Hard-boiled eggs + vegetables</li>
-                            <li>• Hummus + veggie sticks</li>
-                            <li>• Protein smoothie with greens</li>
-                          </ul>
-                        </div>
-                        
-                        <div className="bg-teal-50 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-2 text-teal-800">Listen to Your Body</h4>
-                          <p className="text-sm text-teal-700">
-                            These are guidelines, not rules. Adjust portions based on your hunger, energy levels, activity, and whether you're breastfeeding. Focus on nourishing your body consistently.
-                          </p>
-                        </div>
-                      </div>
-                    ) : topic.id === 'portion-quantity-guidance' ? (
                       <div className="space-y-6 text-sm">
                         <div className="text-center mb-6">
                           <h3 className="text-xl font-bold mb-4">PORTION & <span className="text-pink-500">QUANTITY GUIDANCE</span></h3>
@@ -6634,27 +6521,12 @@ function TheRoleOfNutritionSection({
                             <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Using your hands makes portioning simple and personal to your body</p>
                           </div>
                           <div className="p-6">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                              <div className="space-y-2">
-                                <div className="text-4xl">🤚</div>
-                                <div className="font-semibold text-sm">A serving of protein</div>
-                                <div className="text-xs text-gray-600">= 1 palm</div>
-                              </div>
-                              <div className="space-y-2">
-                                <div className="text-4xl">✊</div>
-                                <div className="font-semibold text-sm">A serving of vegetables</div>
-                                <div className="text-xs text-gray-600">= 1 fist</div>
-                              </div>
-                              <div className="space-y-2">
-                                <div className="text-4xl">🤲</div>
-                                <div className="font-semibold text-sm">A serving of carbs</div>
-                                <div className="text-xs text-gray-600">= 1 cupped hand</div>
-                              </div>
-                              <div className="space-y-2">
-                                <div className="text-4xl">👍</div>
-                                <div className="font-semibold text-sm">A serving of fats</div>
-                                <div className="text-xs text-gray-600">= 1 thumb</div>
-                              </div>
+                            <div className="text-center mb-4">
+                              <img 
+                                src={handPortionsImage} 
+                                alt="Hand portion guide showing protein (palm), vegetables (fist), carbs (cupped hand), and fats (thumb)"
+                                className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
+                              />
                             </div>
                           </div>
                         </div>
