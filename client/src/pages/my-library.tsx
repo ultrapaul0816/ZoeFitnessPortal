@@ -125,11 +125,30 @@ export default function MyLibrary() {
           <h1 className="text-3xl font-bold text-gray-900">My Library</h1>
           <p className="text-gray-600 mt-2">Your purchased programs and content</p>
         </div>
-        {/* Loading State */}
-        {isLoading && (
+        {/* Loading State with better UX */}
+        {isLoading && user?.id && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-pink-500 mx-auto"></div>
+            <p className="text-gray-600 mt-3 text-sm">Loading your programs...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-12 px-4">
+            <div className="text-red-500 mb-2">⚠️</div>
+            <p className="text-red-600 text-sm">Unable to load your programs. Please try refreshing the page.</p>
+          </div>
+        )}
+
+        {/* No User State */}
+        {!user && (
           <div className="text-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading your programs...</p>
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Please sign in</h3>
+            <p className="text-gray-500">Sign in to view your programs.</p>
           </div>
         )}
 
