@@ -30,7 +30,7 @@ import longResistanceBandImage from "@assets/Screenshot 2025-09-22 at 13.30.13_1
 import swissBallImage from "@assets/Screenshot 2025-09-22 at 13.30.19_1758528078676.png";
 import foamRollerImage from "@assets/Screenshot 2025-09-22 at 13.30.27_1758528078676.png";
 import nutritionBowlImage from "@assets/Screenshot 2025-09-22 at 21.26.02_1758556777492.png";
-import handPortionsImage from "@assets/Screenshot 2025-09-22 at 21.52.32_1758558729387.png";
+import handPortionsImage from "@assets/Screenshot_2025-09-22_at_21.52.32-removebg-preview_1758558857702.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
