@@ -3594,7 +3594,7 @@ function ProgramsSection({
       {/* 6-Week Program - Collapsible */}
       <Card className="overflow-hidden border-l-4 border-l-pink-500 shadow-xl">
         <CardHeader 
-          className="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600 cursor-pointer hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 transition-all duration-300 relative overflow-hidden"
+          className="bg-gradient-to-br from-rose-200 via-pink-200 to-rose-300 cursor-pointer hover:from-rose-300 hover:via-pink-300 hover:to-rose-400 transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('6-week-program')}
         >
           {/* Decorative background pattern */}
@@ -3679,7 +3679,7 @@ function ProgramsSection({
                   <div className="block lg:hidden">
                     {/* Week Badge */}
                     <div className="mb-4">
-                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                      <div className="bg-gradient-to-r from-rose-300 to-pink-300 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
                         WEEK 1
                       </div>
                     </div>
@@ -3705,7 +3705,7 @@ function ProgramsSection({
                   {/* Desktop Layout */}
                   <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
+                      <div className="bg-gradient-to-r from-rose-300 to-pink-300 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
                         WEEK 1
                       </div>
                       <div className="min-w-0">
@@ -3741,7 +3741,7 @@ function ProgramsSection({
 
                   {/* Part 1: Breathing */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-rose-300 to-pink-300 p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">▶</span>
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: 360° Breathing</h4>
@@ -3757,7 +3757,7 @@ function ProgramsSection({
 
                   {/* Part 2: Main Workout */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-rose-300 to-pink-300 p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-bold text-lg">▶</span>
@@ -3905,7 +3905,7 @@ function ProgramsSection({
       {/* Program 2 - Advanced Strength & Conditioning */}
       <Card className="overflow-hidden border-l-4 border-l-blue-500 shadow-xl">
         <CardHeader 
-          className="bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 cursor-pointer hover:from-blue-600 hover:via-cyan-600 hover:to-blue-700 transition-all duration-300 relative overflow-hidden"
+          className="bg-gradient-to-br from-sky-200 via-blue-200 to-sky-300 cursor-pointer hover:from-sky-300 hover:via-blue-300 hover:to-sky-400 transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('advanced-program')}
         >
           {/* Decorative background pattern */}
@@ -3990,7 +3990,7 @@ function ProgramsSection({
                   <div className="block lg:hidden">
                     {/* Week Badge */}
                     <div className="mb-4">
-                      <div className="bg-gradient-to-r from-cyan-400 to-blue-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                      <div className="bg-gradient-to-r from-sky-300 to-blue-300 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
                         WEEK 2
                       </div>
                     </div>
@@ -4016,7 +4016,7 @@ function ProgramsSection({
                   {/* Desktop Layout */}
                   <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-r from-cyan-400 to-blue-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
+                      <div className="bg-gradient-to-r from-sky-300 to-blue-300 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
                         WEEK 2
                       </div>
                       <div className="min-w-0">
@@ -4052,7 +4052,7 @@ function ProgramsSection({
 
                   {/* Part 1: Core & Breath Reset */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-sky-300 to-blue-300 p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">▶</span>
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Core & Breath Reset Flow</h4>
@@ -4072,7 +4072,7 @@ function ProgramsSection({
 
                   {/* Part 2: Main Workout */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-sky-300 to-blue-300 p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-bold text-lg">▶</span>
@@ -4172,7 +4172,7 @@ function ProgramsSection({
       {/* Program 3 - Control & Awareness */}
       <Card className="overflow-hidden border-l-4 border-l-green-500 shadow-xl">
         <CardHeader 
-          className="bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 cursor-pointer hover:from-green-600 hover:via-emerald-600 hover:to-green-700 transition-all duration-300 relative overflow-hidden"
+          className="bg-gradient-to-br from-green-200 via-emerald-200 to-green-300 cursor-pointer hover:from-green-300 hover:via-emerald-300 hover:to-green-400 transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('control-awareness-program')}
         >
           {/* Decorative background pattern */}
@@ -4257,7 +4257,7 @@ function ProgramsSection({
                   <div className="block lg:hidden">
                     {/* Week Badge */}
                     <div className="mb-4">
-                      <div className="bg-gradient-to-r from-emerald-400 to-green-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                      <div className="bg-gradient-to-r from-green-300 to-emerald-300 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
                         WEEK 3
                       </div>
                     </div>
@@ -4283,7 +4283,7 @@ function ProgramsSection({
                   {/* Desktop Layout */}
                   <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-r from-emerald-400 to-green-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
+                      <div className="bg-gradient-to-r from-green-300 to-emerald-300 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
                         WEEK 3
                       </div>
                       <div className="min-w-0">
@@ -4319,7 +4319,7 @@ function ProgramsSection({
 
                   {/* Part 1: Breathing Exercises */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-emerald-500 to-green-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-green-300 to-emerald-300 p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">▶</span>
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
@@ -4347,7 +4347,7 @@ function ProgramsSection({
 
                   {/* Part 2: Main Workout */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-emerald-500 to-green-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-green-300 to-emerald-300 p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-bold text-lg">▶</span>
@@ -4448,7 +4448,7 @@ function ProgramsSection({
       {/* Program 4 - Align & Activate */}
       <Card className="overflow-hidden border-l-4 border-l-purple-500 shadow-xl">
         <CardHeader 
-          className="bg-gradient-to-br from-purple-500 via-violet-500 to-purple-600 cursor-pointer hover:from-purple-600 hover:via-violet-600 hover:to-purple-700 transition-all duration-300 relative overflow-hidden"
+          className="bg-gradient-to-br from-purple-200 via-violet-200 to-purple-300 cursor-pointer hover:from-purple-300 hover:via-violet-300 hover:to-purple-400 transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('align-activate-program')}
         >
           {/* Decorative background pattern */}
@@ -4533,7 +4533,7 @@ function ProgramsSection({
                   <div className="block lg:hidden">
                     {/* Week Badge */}
                     <div className="mb-4">
-                      <div className="bg-gradient-to-r from-violet-400 to-purple-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                      <div className="bg-gradient-to-r from-purple-300 to-violet-300 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
                         WEEK 4
                       </div>
                     </div>
@@ -4560,7 +4560,7 @@ function ProgramsSection({
                   {/* Desktop Layout */}
                   <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-r from-violet-400 to-purple-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
+                      <div className="bg-gradient-to-r from-purple-300 to-violet-300 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
                         WEEK 4
                       </div>
                       <div className="min-w-0">
@@ -4597,7 +4597,7 @@ function ProgramsSection({
 
                   {/* Part 1: Breathing Exercise */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-violet-500 to-purple-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-purple-300 to-violet-300 p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">▶</span>
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
@@ -4617,7 +4617,7 @@ function ProgramsSection({
 
                   {/* Part 2: Main Workout */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-violet-500 to-purple-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-purple-300 to-violet-300 p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-bold text-lg">▶</span>
@@ -4718,7 +4718,7 @@ function ProgramsSection({
       {/* Program 5 - Functional Core Flow */}
       <Card className="overflow-hidden border-l-4 border-l-teal-500 shadow-xl">
         <CardHeader 
-          className="bg-gradient-to-br from-teal-500 via-indigo-500 to-teal-600 cursor-pointer hover:from-teal-600 hover:via-indigo-600 hover:to-teal-700 transition-all duration-300 relative overflow-hidden"
+          className="bg-gradient-to-br from-teal-200 via-cyan-200 to-teal-300 cursor-pointer hover:from-teal-300 hover:via-cyan-300 hover:to-teal-400 transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('functional-core-program')}
         >
           {/* Decorative background pattern */}
@@ -4803,7 +4803,7 @@ function ProgramsSection({
                   <div className="block lg:hidden">
                     {/* Week Badge */}
                     <div className="mb-4">
-                      <div className="bg-gradient-to-r from-indigo-400 to-teal-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                      <div className="bg-gradient-to-r from-teal-300 to-cyan-300 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
                         WEEK 5
                       </div>
                     </div>
@@ -4831,7 +4831,7 @@ function ProgramsSection({
                   {/* Desktop Layout */}
                   <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-r from-indigo-400 to-teal-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
+                      <div className="bg-gradient-to-r from-teal-300 to-cyan-300 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
                         WEEK 5
                       </div>
                       <div className="min-w-0">
@@ -4869,7 +4869,7 @@ function ProgramsSection({
 
                   {/* Part 1: Breathing Exercises */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-indigo-500 to-teal-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-teal-300 to-cyan-300 p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">▶</span>
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
@@ -4897,7 +4897,7 @@ function ProgramsSection({
 
                   {/* Part 2: Main Workout */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-indigo-500 to-teal-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-teal-300 to-cyan-300 p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-bold text-lg">▶</span>
@@ -4999,7 +4999,7 @@ function ProgramsSection({
       {/* Program 6 - Foundational Strength */}
       <Card className="overflow-hidden border-l-4 border-l-orange-500 shadow-xl">
         <CardHeader 
-          className="bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 cursor-pointer hover:from-orange-600 hover:via-amber-600 hover:to-orange-700 transition-all duration-300 relative overflow-hidden"
+          className="bg-gradient-to-br from-orange-200 via-amber-200 to-orange-300 cursor-pointer hover:from-orange-300 hover:via-amber-300 hover:to-orange-400 transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('foundational-strength-program')}
         >
           {/* Decorative background pattern */}
@@ -5084,7 +5084,7 @@ function ProgramsSection({
                   <div className="block lg:hidden">
                     {/* Week Badge */}
                     <div className="mb-4">
-                      <div className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
+                      <div className="bg-gradient-to-r from-orange-300 to-amber-300 text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg">
                         WEEK 6
                       </div>
                     </div>
@@ -5110,7 +5110,7 @@ function ProgramsSection({
                   {/* Desktop Layout */}
                   <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
+                      <div className="bg-gradient-to-r from-orange-300 to-amber-300 text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap">
                         WEEK 6
                       </div>
                       <div className="min-w-0">
@@ -5146,7 +5146,7 @@ function ProgramsSection({
 
                   {/* Part 1: Breathing Exercise */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-orange-300 to-amber-300 p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-bold text-lg">▶</span>
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
@@ -5166,7 +5166,7 @@ function ProgramsSection({
 
                   {/* Part 2: Main Workout */}
                   <div className="mb-6">
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-3 rounded-t-lg">
+                    <div className="bg-gradient-to-r from-orange-300 to-amber-300 p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-bold text-lg">▶</span>
