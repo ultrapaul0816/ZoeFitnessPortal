@@ -1,5 +1,9 @@
 import { type User, type InsertUser, type Program, type InsertProgram, type MemberProgram, type InsertMemberProgram, type Workout, type InsertWorkout, type WorkoutCompletion, type InsertWorkoutCompletion, type SavedWorkout, type InsertSavedWorkout, type CommunityPost, type InsertCommunityPost, type Notification, type InsertNotification, type Terms, type InsertTerms, type ProgramPurchase, type InsertProgramPurchase, type ProgressTracking, type InsertProgressTracking, type KnowledgeArticle, type InsertKnowledgeArticle, type Exercise, type InsertExercise, type WeeklyWorkout, type InsertWeeklyWorkout } from "@shared/schema";
+import { users, programs, memberPrograms, workouts, workoutCompletions, savedWorkouts, communityPosts, notifications, terms, programPurchases, progressTracking, knowledgeArticles, exercises, weeklyWorkouts } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -753,4 +757,172 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database Storage Implementation using PostgreSQL
+class DatabaseStorage implements IStorage {
+  private db;
+  private static instance: DatabaseStorage;
+  public assetDisplayNames: Map<string, string> = new Map();
+
+  constructor() {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error("DATABASE_URL environment variable is required");
+    }
+    const sql = neon(connectionString);
+    this.db = drizzle(sql);
+  }
+
+  static getInstance(): DatabaseStorage {
+    if (!DatabaseStorage.instance) {
+      DatabaseStorage.instance = new DatabaseStorage();
+    }
+    return DatabaseStorage.instance;
+  }
+
+  // Users
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await this.db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const result = await this.db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return result[0];
+  }
+
+  // Admin functions
+  async getAllUsers(): Promise<User[]> {
+    return await this.db.select().from(users);
+  }
+
+  async getUserStats(): Promise<{
+    totalMembers: number;
+    activeMembers: number;
+    expiringSoon: number;
+  }> {
+    const allUsers = await this.getAllUsers();
+    const now = new Date();
+    const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+    return {
+      totalMembers: allUsers.length,
+      activeMembers: allUsers.filter(u => !u.isAdmin && u.validUntil && u.validUntil > now).length,
+      expiringSoon: allUsers.filter(u => !u.isAdmin && u.validUntil && u.validUntil > now && u.validUntil <= oneWeekFromNow).length,
+    };
+  }
+
+  // Programs
+  async getPrograms(): Promise<Program[]> {
+    return await this.db.select().from(programs);
+  }
+
+  async getProgram(id: string): Promise<Program | undefined> {
+    const result = await this.db.select().from(programs).where(eq(programs.id, id)).limit(1);
+    return result[0];
+  }
+
+  async createProgram(insertProgram: InsertProgram): Promise<Program> {
+    const result = await this.db.insert(programs).values(insertProgram).returning();
+    return result[0];
+  }
+
+  // Member Programs
+  async getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]> {
+    const result = await this.db
+      .select()
+      .from(memberPrograms)
+      .innerJoin(programs, eq(memberPrograms.programId, programs.id))
+      .where(eq(memberPrograms.userId, userId));
+    
+    return result.map(row => ({
+      ...row.member_programs,
+      program: row.programs
+    }));
+  }
+
+  async createMemberProgram(memberProgram: InsertMemberProgram): Promise<MemberProgram> {
+    const result = await this.db.insert(memberPrograms).values(memberProgram).returning();
+    return result[0];
+  }
+
+  // Placeholder implementations for other methods - can be implemented as needed
+  async getWorkoutsByProgram(programId: string): Promise<Workout[]> { return []; }
+  async getWorkout(id: string): Promise<Workout | undefined> { return undefined; }
+  async createWorkout(workout: InsertWorkout): Promise<Workout> { 
+    const result = await this.db.insert(workouts).values(workout).returning();
+    return result[0];
+  }
+  async getWorkoutCompletions(userId: string): Promise<WorkoutCompletion[]> { return []; }
+  async createWorkoutCompletion(completion: InsertWorkoutCompletion): Promise<WorkoutCompletion> {
+    const result = await this.db.insert(workoutCompletions).values(completion).returning();
+    return result[0];
+  }
+  async getSavedWorkouts(userId: string): Promise<(SavedWorkout & { workout: Workout })[]> { return []; }
+  async createSavedWorkout(savedWorkout: InsertSavedWorkout): Promise<SavedWorkout> {
+    const result = await this.db.insert(savedWorkouts).values(savedWorkout).returning();
+    return result[0];
+  }
+  async deleteSavedWorkout(userId: string, workoutId: string): Promise<boolean> { return false; }
+  async getCommunityPosts(channel?: string): Promise<(CommunityPost & { user: Pick<User, 'firstName' | 'lastName'> })[]> { return []; }
+  async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
+    const result = await this.db.insert(communityPosts).values(post).returning();
+    return result[0];
+  }
+  async getUserNotifications(userId: string): Promise<Notification[]> { return []; }
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const result = await this.db.insert(notifications).values(notification).returning();
+    return result[0];
+  }
+  async markNotificationRead(id: string): Promise<boolean> { return false; }
+  async getActiveTerms(): Promise<Terms | undefined> { return undefined; }
+  async createTerms(termsData: InsertTerms): Promise<Terms> {
+    const result = await this.db.insert(terms).values(termsData).returning();
+    return result[0];
+  }
+  async createProgramPurchase(purchase: InsertProgramPurchase): Promise<ProgramPurchase> {
+    const result = await this.db.insert(programPurchases).values(purchase).returning();
+    return result[0];
+  }
+  async getUserPurchases(userId: string): Promise<ProgramPurchase[]> { return []; }
+  async hasProgramAccess(userId: string, programId: string): Promise<boolean> { return false; }
+  async createProgressEntry(entry: InsertProgressTracking): Promise<ProgressTracking> {
+    const result = await this.db.insert(progressTracking).values(entry).returning();
+    return result[0];
+  }
+  async getProgressEntries(userId: string, programId: string): Promise<ProgressTracking[]> { return []; }
+  async updateProgressEntry(id: string, updates: Partial<ProgressTracking>): Promise<ProgressTracking | undefined> { return undefined; }
+  async createKnowledgeArticle(article: InsertKnowledgeArticle): Promise<KnowledgeArticle> {
+    const result = await this.db.insert(knowledgeArticles).values(article).returning();
+    return result[0];
+  }
+  async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> { return []; }
+  async createExercise(exercise: InsertExercise): Promise<Exercise> {
+    const result = await this.db.insert(exercises).values(exercise).returning();
+    return result[0];
+  }
+  async getExercises(): Promise<Exercise[]> { return []; }
+  async getExercise(id: string): Promise<Exercise | undefined> { return undefined; }
+  async createWeeklyWorkout(workout: InsertWeeklyWorkout): Promise<WeeklyWorkout> {
+    const result = await this.db.insert(weeklyWorkouts).values(workout).returning();
+    return result[0];
+  }
+  async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
+  async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
+}
+
+// Use Database Storage instead of Memory Storage
+export const storage = new DatabaseStorage();
