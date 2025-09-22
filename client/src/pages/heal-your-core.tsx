@@ -6763,6 +6763,22 @@ function WhatComesNextSection({
   navigateToPreviousTab: () => void;
   getNavigationText: (direction: 'prev' | 'next') => string;
 }) {
+  const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
+
+  const toggleTopic = (topic: string) => {
+    setExpandedTopics(prev => ({
+      ...prev,
+      [topic]: !prev[topic]
+    }));
+  };
+
+  const topics = [
+    { id: 'how-to-know-ready', n: 1, title: 'Next Steps: How To Know You\'re Ready' },
+    { id: 'red-flag-movements', n: 2, title: 'Red Flag Movements to Avoid' },
+    { id: 'impact-readiness-test', n: 3, title: 'Return to Impact Readiness Test' },
+    { id: 'progress-tracker', n: 4, title: 'Progress Tracker' },
+  ];
+
   return (
     <div className="space-y-6">
       {/* What's Next Section Title */}
@@ -6774,6 +6790,335 @@ function WhatComesNextSection({
           Your roadmap for continued progress and empowerment
         </p>
       </div>
+
+      {/* Topics Container */}
+      <Card>
+        <div className="p-6 space-y-1">
+          {topics.map((topic, index) => (
+            <div key={topic.id} className="border-b border-gray-100 last:border-b-0">
+              <div className="flex items-center justify-between py-5">
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
+                  <h3 className="text-[15px] font-semibold text-left">{topic.title}</h3>
+                </div>
+                <div
+                  onClick={() => toggleTopic(topic.id)}
+                  className="w-8 h-8 min-w-[32px] min-h-[32px] bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200 flex-shrink-0"
+                  style={{ border: 'none', outline: 'none', boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3)' }}
+                  data-testid={`toggle-${topic.id}`}
+                >
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics[topic.id] ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+              {expandedTopics[topic.id] && (
+                <div className="pb-5 space-y-4" data-testid={`content-${topic.id}`}>
+                  {topic.id === 'how-to-know-ready' ? (
+                    <div className="space-y-4 text-sm">
+                      <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold mb-4">NEXT STEPS: HOW TO KNOW <span className="text-pink-500">YOU'RE READY</span></h3>
+                        <p className="text-gray-700 leading-relaxed">
+                          Graduating from core rehabilitation to regular exercise is a significant milestone. Here are the key indicators that you're ready to progress.
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-green-600 text-base">✅ Signs You're Ready to Progress</h4>
+                          <div className="space-y-2 text-gray-700">
+                            <div className="flex items-start">
+                              <span className="text-green-500 mr-2">•</span>
+                              <span>You can complete all Week 6 exercises without doming, coning, or pressure symptoms</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-green-500 mr-2">•</span>
+                              <span>Your core feels stable and connected during daily activities</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-green-500 mr-2">•</span>
+                              <span>No pelvic floor dysfunction symptoms (leaking, pressure, pain)</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-green-500 mr-2">•</span>
+                              <span>You can breathe naturally while maintaining core engagement</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-green-500 mr-2">•</span>
+                              <span>Diastasis gap has reduced and/or tension has improved significantly</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-blue-50 to-sky-50 border border-blue-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-blue-600 text-base">🎯 Your Next Exercise Options</h4>
+                          <div className="space-y-2 text-gray-700">
+                            <div className="flex items-start">
+                              <span className="text-blue-500 mr-2">→</span>
+                              <span><strong>Low-impact strength training:</strong> Bodyweight exercises, light weights</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-blue-500 mr-2">→</span>
+                              <span><strong>Pilates or yoga:</strong> Focus on continued core connection</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-blue-500 mr-2">→</span>
+                              <span><strong>Walking/hiking:</strong> Gradually increase distance and terrain</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-blue-500 mr-2">→</span>
+                              <span><strong>Swimming:</strong> Excellent full-body, low-impact option</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-400 p-5 rounded-r-lg">
+                          <p className="text-gray-700 leading-relaxed flex items-start">
+                            <span className="text-orange-500 mr-2 mt-1">⚡</span>
+                            <span><strong>Remember:</strong> There's no rush. Listen to your body and progress at your own pace. Some women are ready in 6 weeks, others need 6 months. Both are perfectly normal.</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : topic.id === 'red-flag-movements' ? (
+                    <div className="space-y-4 text-sm">
+                      <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold mb-4">RED FLAG <span className="text-red-500">MOVEMENTS TO AVOID</span></h3>
+                        <p className="text-gray-700 leading-relaxed">
+                          Certain exercises can worsen diastasis recti or cause injury. Avoid these movements until you're fully healed.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-red-600 text-base">🚫 High-Risk Core Exercises</h4>
+                          <div className="space-y-2 text-gray-700">
+                            <div className="flex items-start">
+                              <span className="text-red-500 mr-2">✗</span>
+                              <span><strong>Traditional crunches or sit-ups:</strong> Increase intra-abdominal pressure</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-red-500 mr-2">✗</span>
+                              <span><strong>Russian twists:</strong> Rotational stress on healing tissue</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-red-500 mr-2">✗</span>
+                              <span><strong>Bicycle crunches:</strong> Combined flexion and rotation</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-red-500 mr-2">✗</span>
+                              <span><strong>Full planks (initially):</strong> Too much load on the linea alba</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-red-500 mr-2">✗</span>
+                              <span><strong>Mountain climbers:</strong> Dynamic pressure on the core</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-yellow-600 text-base">⚠️ Movements Requiring Caution</h4>
+                          <div className="space-y-2 text-gray-700">
+                            <div className="flex items-start">
+                              <span className="text-yellow-500 mr-2">!</span>
+                              <span><strong>Heavy lifting:</strong> Avoid until core is fully functional</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-yellow-500 mr-2">!</span>
+                              <span><strong>High-intensity interval training:</strong> Too much stress too soon</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-yellow-500 mr-2">!</span>
+                              <span><strong>Running/jumping:</strong> Wait until core and pelvic floor are strong</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-yellow-500 mr-2">!</span>
+                              <span><strong>Backbends/deep twists:</strong> Can overstretch healing tissue</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 p-5 rounded-r-lg">
+                          <p className="text-gray-700 leading-relaxed flex items-start">
+                            <span className="text-blue-500 mr-2 mt-1">💡</span>
+                            <span><strong>Key Rule:</strong> If any exercise causes doming, coning, or pressure symptoms, stop immediately and return to easier modifications.</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : topic.id === 'impact-readiness-test' ? (
+                    <div className="space-y-4 text-sm">
+                      <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold mb-4">RETURN TO <span className="text-purple-500">IMPACT READINESS TEST</span></h3>
+                        <p className="text-gray-700 leading-relaxed">
+                          Before returning to running, jumping, or high-impact activities, complete this comprehensive readiness assessment.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-purple-600 text-base">📋 Core Function Assessment</h4>
+                          <div className="space-y-3">
+                            <div className="space-y-2">
+                              <p className="font-semibold text-gray-800">1. Single-leg stand (30 seconds each leg)</p>
+                              <div className="flex items-center space-x-3">
+                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
+                                <span className="text-gray-700">No wobbling or core instability</span>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <p className="font-semibold text-gray-800">2. Modified plank (hold for 60 seconds)</p>
+                              <div className="flex items-center space-x-3">
+                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
+                                <span className="text-gray-700">No doming, sagging, or breath-holding</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <p className="font-semibold text-gray-800">3. Marching in place (30 steps)</p>
+                              <div className="flex items-center space-x-3">
+                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
+                                <span className="text-gray-700">Core stays engaged, no compensation patterns</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <p className="font-semibold text-gray-800">4. Jump preparation (gentle bouncing)</p>
+                              <div className="flex items-center space-x-3">
+                                <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
+                                <span className="text-gray-700">No pelvic floor symptoms or core instability</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-teal-600 text-base">🏃‍♀️ Graduated Return Protocol</h4>
+                          <div className="space-y-2 text-gray-700">
+                            <div className="flex items-start">
+                              <span className="text-teal-500 mr-2 font-bold">Week 1:</span>
+                              <span>Walking with occasional 30-second jogs</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-teal-500 mr-2 font-bold">Week 2:</span>
+                              <span>5-minute jogging intervals with walking recovery</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-teal-500 mr-2 font-bold">Week 3:</span>
+                              <span>15-20 minutes continuous light jogging</span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="text-teal-500 mr-2 font-bold">Week 4+:</span>
+                              <span>Gradually increase intensity and duration</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 p-5 rounded-r-lg">
+                          <p className="text-gray-700 leading-relaxed flex items-start">
+                            <span className="text-amber-500 mr-2 mt-1">⚠️</span>
+                            <span><strong>Stop Signs:</strong> Pelvic pressure, leaking, back pain, or any doming means you need more time. Return to core strengthening for 2-4 weeks before retesting.</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : topic.id === 'progress-tracker' ? (
+                    <div className="space-y-4 text-sm">
+                      <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold mb-4">YOUR <span className="text-indigo-500">PROGRESS TRACKER</span></h3>
+                        <p className="text-gray-700 leading-relaxed">
+                          Monitor your healing journey with these key metrics and celebrate every milestone along the way.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-indigo-600 text-base">📊 Weekly Measurements</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <div className="space-y-2">
+                                <p className="font-semibold text-gray-800">Diastasis Width (above navel):</p>
+                                <input type="text" placeholder="Week 1: ___ fingers" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                                <input type="text" placeholder="Week 6: ___ fingers" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <p className="font-semibold text-gray-800">Tension/Depth Quality:</p>
+                                <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                  <option>Select current level</option>
+                                  <option>Deep and soft (needs work)</option>
+                                  <option>Some tension returning</option>
+                                  <option>Good tension and support</option>
+                                  <option>Strong and stable</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div className="space-y-3">
+                              <div className="space-y-2">
+                                <p className="font-semibold text-gray-800">Core Endurance:</p>
+                                <input type="text" placeholder="Modified plank hold time" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <p className="font-semibold text-gray-800">Daily Function:</p>
+                                <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                  <option>Rate your core support</option>
+                                  <option>1 - Very weak, no connection</option>
+                                  <option>2 - Slight awareness</option>
+                                  <option>3 - Moderate support</option>
+                                  <option>4 - Good functional strength</option>
+                                  <option>5 - Strong and confident</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-5 rounded-lg">
+                          <h4 className="font-bold mb-3 text-green-600 text-base">✅ Milestone Tracker</h4>
+                          <div className="space-y-2">
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                              <span className="text-gray-700">Can engage core without holding breath</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                              <span className="text-gray-700">No doming during basic movements</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                              <span className="text-gray-700">Can lift children without back strain</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                              <span className="text-gray-700">Completed Week 6 program successfully</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                              <span className="text-gray-700">Ready for impact readiness test</span>
+                            </label>
+                            <label className="flex items-center space-x-3 cursor-pointer">
+                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                              <span className="text-gray-700">Returned to regular exercise</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-pink-50 to-rose-50 border-l-4 border-pink-400 p-5 rounded-r-lg">
+                          <p className="text-gray-700 leading-relaxed flex items-start">
+                            <span className="text-pink-500 mr-2 mt-1">💖</span>
+                            <span><strong>Celebrate Progress:</strong> Every small improvement matters. Your body is healing, getting stronger, and adapting. Trust the process and honor your journey.</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Card>
       
       {/* Navigation Buttons */}
       <div className="mt-12 pt-8 border-t border-gray-200">
