@@ -653,7 +653,7 @@ export default function HealYourCorePage() {
           </TabsContent>
 
           <TabsContent value="faqs" className="mt-6 space-y-6" data-testid="content-faqs">
-            <div className="text-center mb-8">
+            <div className="text-left mb-8">
               <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 FAQS
               </h1>
@@ -846,8 +846,8 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle>💙 Heal</CardTitle>
+        <CardHeader className="text-left">
+          <CardTitle>Heal</CardTitle>
           <CardDescription>
             Understanding diastasis recti and beginning your core rehabilitation journey
           </CardDescription>
@@ -1236,7 +1236,6 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                           
                           <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
                             <div className="flex items-start gap-3">
-                              <div className="text-pink-500 text-2xl">▶</div>
                               <div>
                                 <p className="text-pink-700 font-semibold mb-2">How to view the videos of the exercises:</p>
                                 <p className="text-gray-700 text-sm">All blue underlined text is clickable and will open a video link. <strong>PLAY ALL videos that the following workout can be played as a single playlist combining all six exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</strong></p>
@@ -1709,8 +1708,8 @@ function WelcomeSection({
       <Card>
         <CardContent className="p-6">
           {/* Welcome Header */}
-          <div className="mb-8 text-center">
-            <h2 className="text-2xl font-bold text-foreground mb-2">✨ Welcome - Start Here</h2>
+          <div className="mb-8 text-left">
+            <h2 className="text-2xl font-bold text-foreground mb-2">Welcome - Start Here</h2>
             <p className="text-muted-foreground text-sm">
               Essential preparatory information for your core recovery journey
             </p>
@@ -1811,7 +1810,6 @@ function WelcomeSection({
                     
                     <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-yellow-600 text-lg">⚠️</span>
                         <p className="font-semibold text-primary text-sm">Important notes before you begin</p>
                       </div>
                       <ul className="space-y-2 text-sm">
@@ -2709,8 +2707,8 @@ function UnderstandingYourCoreSection({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-center">🧠 Understanding Your Core</CardTitle>
-          <CardDescription className="text-center">
+          <CardTitle className="text-xl font-semibold text-left">Understanding Your Core</CardTitle>
+          <CardDescription className="text-left">
             Educational foundation to empower you with understanding the "why" behind your recovery
           </CardDescription>
         </CardHeader>
@@ -3683,7 +3681,7 @@ function UnderstandingYourCoreSection({
             </div>
             
             <div className="bg-yellow-50 p-3 rounded">
-              <p className="font-semibold text-xs text-yellow-800 mb-1">⚠️ Disclaimer:</p>
+              <p className="font-semibold text-xs text-yellow-800 mb-1">Disclaimer:</p>
               <p className="text-xs text-yellow-700">If you notice a very large gap (more than 4 fingers), significant abdominal bulging, persistent pain, or feelings of instability in your core, back, or pelvis, this program alone may not be enough. Please consult a women's health physiotherapist or qualified healthcare provider before continuing. Your safety and long-term recovery come first.</p>
             </div>
           </CardContent>
@@ -3915,7 +3913,7 @@ function ProgramsSection({
                   <div className="mb-6">
                     <div className="program-1-section p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-lg">▶</span>
+
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: 360° Breathing</h4>
                       </div>
                     </div>
@@ -3932,7 +3930,7 @@ function ProgramsSection({
                     <div className="program-1-section p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-lg">▶</span>
+  
                           <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
                         </div>
                         <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center">
@@ -4105,7 +4103,7 @@ function ProgramsSection({
                   Advanced Strength & Conditioning Program
                 </div>
                 <div className="text-blue-100 font-normal text-xs drop-shadow-sm">
-                  🚀 6-week advanced postnatal fitness journey
+                  6-week advanced postnatal fitness journey
                 </div>
               </div>
               
@@ -4135,7 +4133,7 @@ function ProgramsSection({
                     Advanced Strength & Conditioning Program
                   </CardTitle>
                   <CardDescription className="text-blue-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
-                    🚀 6-week advanced postnatal fitness journey
+                    6-week advanced postnatal fitness journey
                   </CardDescription>
                 </div>
               </div>
@@ -4226,7 +4224,7 @@ function ProgramsSection({
                   <div className="mb-6">
                     <div className="program-2-section p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-lg">▶</span>
+
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Core & Breath Reset Flow</h4>
                       </div>
                     </div>
@@ -4247,7 +4245,7 @@ function ProgramsSection({
                     <div className="program-2-section p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-lg">▶</span>
+  
                           <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
                         </div>
                         <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center">
@@ -4372,7 +4370,7 @@ function ProgramsSection({
                   Control & Awareness Program
                 </div>
                 <div className="text-green-100 font-normal text-xs drop-shadow-sm">
-                  💪 6-week control and awareness fitness journey
+                  6-week control and awareness fitness journey
                 </div>
               </div>
               
@@ -4402,7 +4400,7 @@ function ProgramsSection({
                     Control & Awareness Program
                   </CardTitle>
                   <CardDescription className="text-green-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
-                    💪 6-week control and awareness fitness journey
+                    6-week control and awareness fitness journey
                   </CardDescription>
                 </div>
               </div>
@@ -4493,7 +4491,7 @@ function ProgramsSection({
                   <div className="mb-6">
                     <div className="program-3-section p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-lg">▶</span>
+
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
                       </div>
                     </div>
@@ -4522,7 +4520,7 @@ function ProgramsSection({
                     <div className="program-3-section p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-lg">▶</span>
+  
                           <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
                         </div>
                         <Button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center">
@@ -4648,7 +4646,7 @@ function ProgramsSection({
                   Align & Activate Program
                 </div>
                 <div className="text-purple-100 font-normal text-xs drop-shadow-sm">
-                  🎯 6-week alignment and activation fitness journey
+                  6-week alignment and activation fitness journey
                 </div>
               </div>
               
@@ -4678,7 +4676,7 @@ function ProgramsSection({
                     Align & Activate Program
                   </CardTitle>
                   <CardDescription className="text-purple-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
-                    🎯 6-week alignment and activation fitness journey
+                    6-week alignment and activation fitness journey
                   </CardDescription>
                 </div>
               </div>
@@ -4771,7 +4769,7 @@ function ProgramsSection({
                   <div className="mb-6">
                     <div className="program-4-section p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-lg">▶</span>
+
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
                       </div>
                     </div>
@@ -4792,7 +4790,7 @@ function ProgramsSection({
                     <div className="program-4-section p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-lg">▶</span>
+  
                           <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
                         </div>
                         <Button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center">
@@ -4918,7 +4916,7 @@ function ProgramsSection({
                   Functional Core Flow Program
                 </div>
                 <div className="text-teal-100 font-normal text-xs drop-shadow-sm">
-                  💫 6-week functional core movement fitness journey
+                  6-week functional core movement fitness journey
                 </div>
               </div>
               
@@ -4948,7 +4946,7 @@ function ProgramsSection({
                     Functional Core Flow Program
                   </CardTitle>
                   <CardDescription className="text-teal-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
-                    💫 6-week functional core movement fitness journey
+                    6-week functional core movement fitness journey
                   </CardDescription>
                 </div>
               </div>
@@ -5043,7 +5041,7 @@ function ProgramsSection({
                   <div className="mb-6">
                     <div className="program-5-section p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-lg">▶</span>
+
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
                       </div>
                     </div>
@@ -5072,7 +5070,7 @@ function ProgramsSection({
                     <div className="program-5-section p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-lg">▶</span>
+  
                           <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
                         </div>
                         <Button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center">
@@ -5199,7 +5197,7 @@ function ProgramsSection({
                   Foundational Strength Program
                 </div>
                 <div className="text-orange-100 font-normal text-xs drop-shadow-sm">
-                  🔥 6-week foundational strength fitness journey
+                  6-week foundational strength fitness journey
                 </div>
               </div>
               
@@ -5229,7 +5227,7 @@ function ProgramsSection({
                     Foundational Strength Program
                   </CardTitle>
                   <CardDescription className="text-orange-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
-                    🔥 6-week foundational strength fitness journey
+                    6-week foundational strength fitness journey
                   </CardDescription>
                 </div>
               </div>
@@ -5320,7 +5318,7 @@ function ProgramsSection({
                   <div className="mb-6">
                     <div className="program-6-section p-3 rounded-t-lg">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-lg">▶</span>
+
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: Morning + Evening - Can Be Performed In Multiple Positions</h4>
                       </div>
                     </div>
@@ -5341,7 +5339,7 @@ function ProgramsSection({
                     <div className="program-6-section p-3 rounded-t-lg">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-lg">▶</span>
+  
                           <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
                         </div>
                         <Button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center">
@@ -5490,8 +5488,8 @@ function TheRoleOfNutritionSection({
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle>🍎 The Role of Nutrition</CardTitle>
+        <CardHeader className="text-left">
+          <CardTitle>The Role of Nutrition</CardTitle>
           <CardDescription>
             Nutritional guidance giving the importance it deserves for your core recovery
           </CardDescription>
