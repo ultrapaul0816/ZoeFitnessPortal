@@ -78,7 +78,7 @@ export default function HealYourCorePage() {
 
   // Trigger animation when advancing to a new section
   useEffect(() => {
-    const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+    const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
     const currentIndex = tabOrder.indexOf(activeTab);
     const prevIndex = tabOrder.indexOf(prevActiveTabRef.current);
     
@@ -443,14 +443,10 @@ export default function HealYourCorePage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="shadow-xl rounded-lg">
             <div className="overflow-x-auto px-0">
-              <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
+              <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-7 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
               <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
                 <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
                 <span className="font-medium">Welcome</span>
-              </TabsTrigger>
-              <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium text-center leading-tight">Cardio Plan</span>
               </TabsTrigger>
               <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
                 <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
@@ -495,7 +491,7 @@ export default function HealYourCorePage() {
                   style={{
                     left: '0%',
                     width: `${(() => {
-                      const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                      const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
                       const currentIndex = tabOrder.indexOf(activeTab);
                       return (currentIndex / (tabOrder.length - 1)) * 100;
                     })()}%`
@@ -504,7 +500,7 @@ export default function HealYourCorePage() {
                 
                 {/* Progress Numbers */}
                 {(() => {
-                  const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                  const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
                   const currentIndex = tabOrder.indexOf(activeTab);
                   const colors = ['bg-pink-500', 'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-orange-500', 'bg-teal-500', 'bg-indigo-500', 'bg-red-500'];
                   
