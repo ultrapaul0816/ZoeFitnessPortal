@@ -456,7 +456,7 @@ export default function HealYourCorePage() {
             </TabsList>
             
             {/* Game-like Journey Progress Bar */}
-            <div className="relative mt-6 px-12 py-4">
+            <div className="relative my-6 px-12 py-6">
               <div className="flex items-center justify-between relative">
                 {/* Background connecting line */}
                 <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
