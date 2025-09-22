@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ interface ProfileSettingsProps {
 }
 
 export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }: ProfileSettingsProps) {
+  const [location, setLocation] = useLocation();
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'notifications'>('menu');
   const [profileData, setProfileData] = useState({
     country: '',
@@ -518,7 +520,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
                 style={{ animationDelay: '160ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.location.href = "/my-library";
+                  onClose();
+                  setLocation("/my-library");
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
