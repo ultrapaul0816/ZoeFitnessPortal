@@ -89,7 +89,7 @@ export default function HealYourCorePage() {
       // Remove animation after completion
       const timer = setTimeout(() => {
         setAnimatingNumber(null);
-      }, 1200); // Animation duration
+      }, 900); // Animation duration
       
       return () => clearTimeout(timer);
     }
