@@ -4453,9 +4453,9 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-purple-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-purple-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-amber-700 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-amber-200 inline-block">
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></div>
+                    <div className="w-1.5 h-1.5 bg-amber-600 rounded-full animate-pulse"></div>
                     PROGRAM 4
                   </div>
                 </div>
@@ -4477,7 +4477,7 @@ function ProgramsSection({
                   <div className="text-xs text-purple-100 font-bold uppercase tracking-wide">Align Program</div>
                   <div className="text-xs text-white font-medium">Coordination & activation</div>
                 </div>
-                <div className="w-8 h-8 bg-gradient-to-br from-white to-purple-100 text-purple-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                <div className="w-8 h-8 bg-gradient-to-br from-white to-amber-100 text-amber-700 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['align-activate-program'] ? 'rotate-180' : ''}`} />
                 </div>
               </div>
@@ -4486,9 +4486,9 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-purple-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-purple-200 flex-shrink-0">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-amber-700 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-amber-200 flex-shrink-0">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
                     <span>PROGRAM 4</span>
                   </div>
                 </div>
@@ -4506,7 +4506,7 @@ function ProgramsSection({
                   <div className="text-sm text-purple-100 font-bold uppercase tracking-wide">Align Program</div>
                   <div className="text-sm text-white font-medium">Coordination & activation</div>
                 </div>
-                <div className="w-10 h-10 bg-gradient-to-br from-white to-purple-100 text-purple-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                <div className="w-10 h-10 bg-gradient-to-br from-white to-amber-100 text-amber-700 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['align-activate-program'] ? 'rotate-180' : ''}`} />
                 </div>
               </div>
@@ -4532,7 +4532,7 @@ function ProgramsSection({
                     {/* Program Title */}
                     <div className="mb-3">
                       <CardTitle className="text-base text-gray-900 font-bold mb-2">PROGRAM 4 - ALIGN & ACTIVATE</CardTitle>
-                      <CardDescription className="text-violet-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                      <CardDescription className="text-amber-700 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                       <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, and 5 of each week</p>
                     </div>
                     
@@ -4556,7 +4556,7 @@ function ProgramsSection({
                       </div>
                       <div className="min-w-0">
                         <CardTitle className="text-lg text-gray-900">PROGRAM 4 - ALIGN & ACTIVATE</CardTitle>
-                        <CardDescription className="text-violet-600 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
+                        <CardDescription className="text-amber-700 font-semibold text-sm">Workout Schedule: 3x per week</CardDescription>
                         <p className="text-xs text-gray-600 mt-1">Complete on Days 1, 3, and 5 of each week</p>
                       </div>
                     </div>
