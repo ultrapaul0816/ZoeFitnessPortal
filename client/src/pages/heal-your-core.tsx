@@ -7047,92 +7047,195 @@ function WhatComesNextSection({
                       </div>
                     </div>
                   ) : topic.id === 'progress-tracker' ? (
-                    <div className="space-y-4 text-sm">
+                    <div className="space-y-6 text-sm">
                       <div className="text-center mb-6">
-                        <h3 className="text-xl font-bold mb-4">YOUR <span className="text-indigo-500">PROGRESS TRACKER</span></h3>
+                        <h3 className="text-xl font-bold mb-4">✨ <span className="text-indigo-500">PROGRESS TRACKER</span> ✨</h3>
                         <p className="text-gray-700 leading-relaxed">
-                          Monitor your healing journey with these key metrics and celebrate every milestone along the way.
+                          Track your healing journey, week by week. Use this table to note your progress, symptoms, and small 
+                          wins—because every step matters.
                         </p>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3c0e4'}}>
-                          <h4 className="font-bold mb-3 text-indigo-600 text-base">📊 Weekly Measurements</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-3">
-                              <div className="space-y-2">
-                                <p className="font-semibold text-gray-800">Diastasis Width (above navel):</p>
-                                <input type="text" placeholder="Week 1: ___ fingers" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" />
-                                <input type="text" placeholder="Week 6: ___ fingers" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" />
-                              </div>
+                      <div className="space-y-6">
+                        {/* Download PDF Button */}
+                        <div className="text-center">
+                          <button
+                            onClick={() => {
+                              const element = document.getElementById('progress-tracker-table');
+                              if (!element) return;
                               
-                              <div className="space-y-2">
-                                <p className="font-semibold text-gray-800">Tension/Depth Quality:</p>
-                                <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                  <option>Select current level</option>
-                                  <option>Deep and soft (needs work)</option>
-                                  <option>Some tension returning</option>
-                                  <option>Good tension and support</option>
-                                  <option>Strong and stable</option>
-                                </select>
-                              </div>
-                            </div>
+                              // Import dynamically to avoid bundle issues
+                              import('html2canvas').then(html2canvas => {
+                                import('jspdf').then(jsPDF => {
+                                  html2canvas.default(element, {
+                                    scale: 2,
+                                    backgroundColor: '#ffffff',
+                                    width: element.scrollWidth,
+                                    height: element.scrollHeight
+                                  }).then((canvas) => {
+                                    const imgData = canvas.toDataURL('image/png');
+                                    const pdf = new jsPDF.jsPDF({
+                                      orientation: 'landscape',
+                                      unit: 'mm',
+                                      format: 'a4'
+                                    });
+                                    
+                                    const imgWidth = 277; // A4 landscape width in mm minus margins
+                                    const pageHeight = 190; // A4 landscape height in mm minus margins
+                                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                                    
+                                    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, Math.min(imgHeight, pageHeight));
+                                    pdf.save('Progress-Tracker-Postpartum-Recovery.pdf');
+                                  });
+                                });
+                              });
+                            }}
+                            className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            data-testid="button-download-tracker"
+                          >
+                            📥 Download Printable Tracker
+                          </button>
+                        </div>
 
-                            <div className="space-y-3">
-                              <div className="space-y-2">
-                                <p className="font-semibold text-gray-800">Core Endurance:</p>
-                                <input type="text" placeholder="Modified plank hold time" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" />
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <p className="font-semibold text-gray-800">Daily Function:</p>
-                                <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                  <option>Rate your core support</option>
-                                  <option>1 - Very weak, no connection</option>
-                                  <option>2 - Slight awareness</option>
-                                  <option>3 - Moderate support</option>
-                                  <option>4 - Good functional strength</option>
-                                  <option>5 - Strong and confident</option>
-                                </select>
-                              </div>
-                            </div>
+                        {/* Progress Tracker Table */}
+                        <div id="progress-tracker-table" className="bg-white p-6 rounded-lg border-2" style={{borderColor: '#9aafdc'}}>
+                          <div className="text-center mb-6">
+                            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-3">
+                              ✨ PROGRESS TRACKER ✨
+                            </h2>
+                            <p className="text-gray-700 text-sm">
+                              Track your healing journey, week by week. Use this table to note your progress, symptoms, and small wins—because every step matters.
+                            </p>
+                          </div>
+                          
+                          <div className="overflow-x-auto">
+                            <table className="w-full border-collapse border border-gray-400">
+                              <thead>
+                                <tr>
+                                  <th className="border border-gray-400 bg-gray-200 p-3 text-center font-bold text-gray-700" style={{width: '20%'}}>
+                                    WEEK
+                                  </th>
+                                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-600 transform -rotate-90" style={{width: '13.33%', height: '80px'}}>
+                                    <div className="whitespace-nowrap">WEEK 1</div>
+                                  </th>
+                                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-600 transform -rotate-90" style={{width: '13.33%', height: '80px'}}>
+                                    <div className="whitespace-nowrap">WEEK 2</div>
+                                  </th>
+                                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-600 transform -rotate-90" style={{width: '13.33%', height: '80px'}}>
+                                    <div className="whitespace-nowrap">WEEK 3</div>
+                                  </th>
+                                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-600 transform -rotate-90" style={{width: '13.33%', height: '80px'}}>
+                                    <div className="whitespace-nowrap">WEEK 4</div>
+                                  </th>
+                                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-600 transform -rotate-90" style={{width: '13.33%', height: '80px'}}>
+                                    <div className="whitespace-nowrap">WEEK 5</div>
+                                  </th>
+                                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-600 transform -rotate-90" style={{width: '13.33%', height: '80px'}}>
+                                    <div className="whitespace-nowrap">WEEK 6</div>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td className="border border-gray-400 bg-gray-200 p-3 font-bold text-center text-xs">
+                                    <div>DR GAP</div>
+                                    <div>MEASUREMENT</div>
+                                    <div className="font-normal italic mt-1">(Width/Depth at Navel,</div>
+                                    <div className="font-normal italic">2" Above, 2" Below):</div>
+                                  </td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                </tr>
+                                <tr>
+                                  <td className="border border-gray-400 bg-gray-200 p-3 font-bold text-center text-xs">
+                                    <div>CORE</div>
+                                    <div>CONNECTION</div>
+                                    <div className="font-normal italic mt-1">(Scale 1-5)</div>
+                                  </td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                </tr>
+                                <tr>
+                                  <td className="border border-gray-400 bg-gray-200 p-3 font-bold text-center text-xs">
+                                    <div>PELVIC FLOOR</div>
+                                    <div>SYMPTOMS</div>
+                                    <div className="font-normal italic mt-1">(Leaking, heaviness,</div>
+                                    <div className="font-normal italic">bulging)</div>
+                                  </td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                </tr>
+                                <tr>
+                                  <td className="border border-gray-400 bg-gray-200 p-3 font-bold text-center text-xs">
+                                    <div>POSTURE/BACK</div>
+                                    <div>DISCOMFORT</div>
+                                    <div className="font-normal italic mt-1">(Scale 1-5)</div>
+                                  </td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                </tr>
+                                <tr>
+                                  <td className="border border-gray-400 bg-gray-200 p-3 font-bold text-center text-xs">
+                                    <div>ENERGY LEVEL</div>
+                                    <div className="font-normal italic mt-1">(Scale 1-5)</div>
+                                  </td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                </tr>
+                                <tr>
+                                  <td className="border border-gray-400 bg-gray-200 p-3 font-bold text-center text-xs">
+                                    <div>NUMBER OF</div>
+                                    <div>WORKOUTS</div>
+                                    <div className="font-normal italic mt-1">Completed</div>
+                                  </td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                </tr>
+                                <tr>
+                                  <td className="border border-gray-400 bg-gray-200 p-3 font-bold text-center text-xs">
+                                    <div>NOTES OR WINS</div>
+                                    <div className="font-normal italic mt-1">For the week</div>
+                                  </td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                  <td className="border border-gray-400 p-8 bg-gray-50"></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3a892'}}>
-                          <h4 className="font-bold mb-3 text-green-600 text-base">✅ Milestone Tracker</h4>
-                          <div className="space-y-2">
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-                              <span className="text-gray-700">Can engage core without holding breath</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-                              <span className="text-gray-700">No doming during basic movements</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-                              <span className="text-gray-700">Can lift children without back strain</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-                              <span className="text-gray-700">Completed Week 6 program successfully</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-                              <span className="text-gray-700">Ready for impact readiness test</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-                              <span className="text-gray-700">Returned to regular exercise</span>
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="bg-gradient-to-r from-pink-50 to-rose-50 border-l-4 border-pink-400 p-5 rounded-r-lg">
+                        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 p-5 rounded-r-lg">
                           <p className="text-gray-700 leading-relaxed flex items-start">
-                            <span className="text-pink-500 mr-2 mt-1">💖</span>
-                            <span><strong>Celebrate Progress:</strong> Every small improvement matters. Your body is healing, getting stronger, and adapting. Trust the process and honor your journey.</span>
+                            <span className="text-amber-500 mr-2 mt-1">💡</span>
+                            <span><strong>Printing Tip:</strong> After downloading, print in landscape mode for the best fit. This tracker is designed to be filled out by hand for convenient weekly tracking.</span>
                           </p>
                         </div>
                       </div>
