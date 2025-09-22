@@ -18,6 +18,7 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   // Check if user has access to this premium program
   const { data: accessData, isLoading: accessLoading } = useQuery({
@@ -130,22 +131,37 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
               </Badge>
             </div>
             
-            {/* YouTube Video Thumbnail */}
-            <div 
-              className="w-full mb-4 relative cursor-pointer group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-              onClick={() => window.open('https://www.youtube.com/watch?v=62Qht8GVfPE', '_blank')}
-              data-testid="video-thumbnail-welcome"
-            >
-              <img
-                src={videoThumbnailImage}
-                alt="Welcome video with Zoe Modgill - Hello & Welcome"
-                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+            {/* YouTube Video Section */}
+            <div className="w-full mb-4">
+              {!isVideoPlaying ? (
+                <div 
+                  className="relative cursor-pointer group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={() => setIsVideoPlaying(true)}
+                  data-testid="video-thumbnail-welcome"
+                >
+                  <img
+                    src={videoThumbnailImage}
+                    alt="Welcome video with Zoe Modgill - Hello & Welcome"
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                    <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="relative rounded-lg overflow-hidden shadow-lg">
+                  <iframe
+                    src="https://www.youtube.com/embed/62Qht8GVfPE?autoplay=1"
+                    title={`${program.name} program video`}
+                    className="w-full h-48 rounded-lg"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
             </div>
             
             <Button 
