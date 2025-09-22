@@ -3608,7 +3608,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-pink-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-pink-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></div>
                     PROGRAM 1
@@ -3618,10 +3618,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
                   Postpartum Strength Recovery Program
                 </div>
-                <div className="text-pink-100 font-normal text-xs drop-shadow-sm">
+                <div className="program-info-text font-normal text-xs">
                   ✨ 6-week comprehensive postnatal fitness journey
                 </div>
               </div>
@@ -3919,7 +3919,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-blue-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-blue-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-blue-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
                     PROGRAM 2
@@ -3929,10 +3929,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
                   Advanced Strength & Conditioning Program
                 </div>
-                <div className="text-blue-100 font-normal text-xs drop-shadow-sm">
+                <div className="program-info-text font-normal text-xs">
                   🚀 6-week advanced postnatal fitness journey
                 </div>
               </div>
@@ -4186,7 +4186,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     PROGRAM 3
@@ -4196,10 +4196,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
                   Control & Awareness Program
                 </div>
-                <div className="text-green-100 font-normal text-xs drop-shadow-sm">
+                <div className="program-info-text font-normal text-xs">
                   💪 6-week control and awareness fitness journey
                 </div>
               </div>
@@ -4462,7 +4462,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-purple-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-purple-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-purple-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></div>
                     PROGRAM 4
@@ -4472,10 +4472,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
                   Align & Activate Program
                 </div>
-                <div className="text-purple-100 font-normal text-xs drop-shadow-sm">
+                <div className="program-info-text font-normal text-xs">
                   🎯 6-week alignment and activation fitness journey
                 </div>
               </div>
@@ -4732,7 +4732,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-teal-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-teal-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-teal-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></div>
                     PROGRAM 5
@@ -4742,10 +4742,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
                   Functional Core Flow Program
                 </div>
-                <div className="text-teal-100 font-normal text-xs drop-shadow-sm">
+                <div className="program-info-text font-normal text-xs">
                   💫 6-week functional core movement fitness journey
                 </div>
               </div>
@@ -5013,7 +5013,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-orange-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-orange-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 program-badge-text px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-orange-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
                     PROGRAM 6
@@ -5023,10 +5023,10 @@ function ProgramsSection({
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="program-header-text font-bold text-sm tracking-tight mb-1">
                   Foundational Strength Program
                 </div>
-                <div className="text-orange-100 font-normal text-xs drop-shadow-sm">
+                <div className="program-info-text font-normal text-xs">
                   🔥 6-week foundational strength fitness journey
                 </div>
               </div>
