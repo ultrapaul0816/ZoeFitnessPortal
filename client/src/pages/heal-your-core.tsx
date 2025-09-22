@@ -6813,60 +6813,90 @@ function WhatComesNextSection({
               {expandedTopics[topic.id] && (
                 <div className="pb-5 space-y-4" data-testid={`content-${topic.id}`}>
                   {topic.id === 'how-to-know-ready' ? (
-                    <div className="space-y-4 text-sm">
+                    <div className="space-y-6 text-sm">
                       <div className="text-center mb-6">
-                        <h3 className="text-xl font-bold mb-4">NEXT STEPS: HOW TO KNOW <span className="text-pink-500">YOU'RE READY</span></h3>
+                        <h3 className="text-xl font-bold mb-4">NEXT STEPS: HOW TO KNOW YOU'RE <span className="text-pink-500">READY TO PROGRESS?</span></h3>
                         <p className="text-gray-700 leading-relaxed">
-                          Graduating from core rehabilitation to regular exercise is a significant milestone. Here are the key indicators that you're ready to progress.
+                          Once you've practiced your core connection work consistently and are no longer experiencing pressure, pain, or doming, you may be ready to move forward. Progression is not about how many reps you can do—but about how well your body responds and maintains function and control under load.
                         </p>
                       </div>
                       
-                      <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 p-5 rounded-lg" style={{borderColor: '#cbde9a'}}>
-                          <h4 className="font-bold mb-3 text-green-600 text-base">✅ Signs You're Ready to Progress</h4>
-                          <div className="space-y-2 text-gray-700">
-                            <div className="flex items-start">
-                              <span className="text-green-500 mr-2">•</span>
-                              <span>You can complete all Week 6 exercises without doming, coning, or pressure symptoms</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-green-500 mr-2">•</span>
-                              <span>Your core feels stable and connected during daily activities</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-green-500 mr-2">•</span>
-                              <span>No pelvic floor dysfunction symptoms (leaking, pressure, pain)</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-green-500 mr-2">•</span>
-                              <span>You can breathe naturally while maintaining core engagement</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-green-500 mr-2">•</span>
-                              <span>Diastasis gap has reduced and/or tension has improved significantly</span>
-                            </div>
+                      <div className="space-y-6">
+                        {/* Progress Indicators Table */}
+                        <div className="bg-white border-2 rounded-lg overflow-hidden" style={{borderColor: '#cbde9a'}}>
+                          <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-4">
+                            <h4 className="font-bold text-gray-800 text-base">📊 Progress Indicators</h4>
+                          </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="bg-gray-50">
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Progress Indicator</th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">What It Means</th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white divide-y divide-gray-200">
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Less or no abdominal doming during movement</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700">Your deep core is activating properly and controlling intra-abdominal pressure</td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Ability to exhale and engage the core without holding your breath</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700">You're breathing and bracing reflexively and safely</td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">The gap between abs is narrower with improved midline tension</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700">Your connective tissue is getting stronger and more supportive</td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Noticeably better posture and reduced back or pelvic pain</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700">Your core and pelvic floor are starting to stabilize your body again</td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Daily movements like lifting your baby or standing up feel easier</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700">You're regaining functional strength</td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-blue-50 to-sky-50 border-2 p-5 rounded-lg" style={{borderColor: '#b3c0e4'}}>
-                          <h4 className="font-bold mb-3 text-blue-600 text-base">🎯 Your Next Exercise Options</h4>
-                          <div className="space-y-2 text-gray-700">
-                            <div className="flex items-start">
-                              <span className="text-blue-500 mr-2">→</span>
-                              <span><strong>Low-impact strength training:</strong> Bodyweight exercises, light weights</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-blue-500 mr-2">→</span>
-                              <span><strong>Pilates or yoga:</strong> Focus on continued core connection</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-blue-500 mr-2">→</span>
-                              <span><strong>Walking/hiking:</strong> Gradually increase distance and terrain</span>
-                            </div>
-                            <div className="flex items-start">
-                              <span className="text-blue-500 mr-2">→</span>
-                              <span><strong>Swimming:</strong> Excellent full-body, low-impact option</span>
-                            </div>
+                        {/* What To Add Next Section */}
+                        <div className="bg-white border-2 rounded-lg overflow-hidden" style={{borderColor: '#f3a8cb'}}>
+                          <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-4">
+                            <h4 className="font-bold text-pink-600 text-base">🔄 What to add next (progression ideas):</h4>
+                          </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="bg-gray-50">
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">New Elements to Introduce</th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">How to Do It Safely</th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white divide-y divide-gray-200">
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Resistance bands</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Start with light bands and include moves like glute bridges, squats, clamshells</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Functional core integration</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Engage core during squats, hip hinges, rows—exhale on effort</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Slightly higher reps</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Your connective tissue is getting stronger and more supportive</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Noticeably better posture and reduced back or pelvic pain</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Increase to 8–12 reps if no symptoms appear (doming, heaviness, leakage)</em></td>
+                                </tr>
+                                <tr className="hover:bg-gray-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-gray-900">Gentle dynamic movement</td>
+                                  <td className="px-6 py-4 text-sm text-gray-700"><em>Include controlled movements like wall push-ups, modified lunges, or step-ups</em></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
 
