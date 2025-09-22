@@ -6,23 +6,26 @@ import programCover from "@assets/program-cover.png";
 import ProfileSettings from "@/components/profile-settings";
 import type { User, MemberProgram } from "@shared/schema";
 
+// Get user immediately during component initialization
+function getInitialUser(): User | null {
+  if (typeof window !== 'undefined') {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  }
+  return null;
+}
+
 export default function MyLibrary() {
   const [showProfileSettings, setShowProfileSettings] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(getInitialUser);
   
-  // Fetch user's purchased programs
-  const { data: memberPrograms = [], isLoading } = useQuery<MemberProgram[]>({
+  // Fetch user's purchased programs - now enabled immediately if user exists
+  const { data: memberPrograms = [], isLoading, error } = useQuery<MemberProgram[]>({
     queryKey: ['/api/member-programs', user?.id],
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
-
-  // Get user from localStorage on component mount
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
 
   const handleUserUpdate = (updatedUser: User) => {
     setUser(updatedUser);
