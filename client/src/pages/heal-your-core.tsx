@@ -317,11 +317,11 @@ export default function HealYourCorePage() {
             {/* Subtle gradient overlay on hover */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
-          <div className="relative">
+          <div className="zoe-logo-container relative">
             <img 
               src={zoeLogoImage} 
               alt="Pregnancy with Zoe" 
-              className="w-24 h-14 object-contain opacity-75 hover:opacity-100 transition-opacity duration-300 filter drop-shadow-lg"
+              className="zoe-logo-watermark w-24 h-14 object-contain cursor-pointer"
             />
           </div>
         </div>
