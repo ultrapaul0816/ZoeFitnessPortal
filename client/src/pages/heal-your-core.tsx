@@ -7091,10 +7091,10 @@ function WhatComesNextSection({
                                 ];
 
                                 // Draw table manually
-                                const startX = 15;
+                                const startX = 10;
                                 const startY = 40;
                                 const rowHeight = 15;
-                                const colWidths = [70, 37, 37, 37, 37, 37, 37];
+                                const colWidths = [60, 36, 36, 36, 36, 36, 36];
 
                                 // Draw rows
                                 for (let i = 0; i < tableData.length; i++) {
