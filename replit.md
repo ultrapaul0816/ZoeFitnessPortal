@@ -91,6 +91,7 @@ Each program follows this standardized structure for consistency:
   - **Gaming Psychology**: Progression system designed like video games to encourage completion and provide satisfaction
   - **8-Stage Journey**: Complete learning pathway from Welcome (1) through FAQs (8) with clear visual progression
   - **Responsive Design**: Mobile and desktop optimized layouts with proper spacing and positioning
+  - **Fixed Mobile Progress**: Progress bar remains stationary while tabs scroll horizontally on mobile devices
 - **Comprehensive FAQ Section**: 
   - **12 Numbered Questions**: Complete FAQ system with sequentially numbered questions for easy reference
   - **Collapsible Accordion Interface**: Clean, organized presentation using shadcn/ui Accordion components

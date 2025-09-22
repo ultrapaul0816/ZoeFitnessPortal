@@ -418,45 +418,47 @@ export default function HealYourCorePage() {
 
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <div className="overflow-x-auto px-0 shadow-xl rounded-lg">
-            <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
-            <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium">Welcome</span>
-            </TabsTrigger>
-            <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium text-center leading-tight">Cardio Plan</span>
-            </TabsTrigger>
-            <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium text-center leading-tight">Core</span>
-            </TabsTrigger>
-            <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <Heart className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium">Heal</span>
-            </TabsTrigger>
-            <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <Dumbbell className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium">Programs</span>
-            </TabsTrigger>
-            <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium">Nutrition</span>
-            </TabsTrigger>
-            <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium">What's Next</span>
-            </TabsTrigger>
+          <div className="shadow-xl rounded-lg">
+            <div className="overflow-x-auto px-0">
+              <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
+              <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium">Welcome</span>
+              </TabsTrigger>
+              <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium text-center leading-tight">Cardio Plan</span>
+              </TabsTrigger>
+              <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium text-center leading-tight">Core</span>
+              </TabsTrigger>
+              <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <Heart className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium">Heal</span>
+              </TabsTrigger>
+              <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <Dumbbell className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium">Programs</span>
+              </TabsTrigger>
+              <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium">Nutrition</span>
+              </TabsTrigger>
+              <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium">What's Next</span>
+              </TabsTrigger>
+              
+              <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
+                <HelpCircle className="w-6 h-6 md:w-5 md:h-5 mb-2" />
+                <span className="font-medium">FAQs</span>
+              </TabsTrigger>
+              </TabsList>
+            </div>
             
-            <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <HelpCircle className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-              <span className="font-medium">FAQs</span>
-            </TabsTrigger>
-            </TabsList>
-            
-            {/* Game-like Journey Progress Bar */}
-            <div className="relative my-6 px-4 sm:px-8 md:px-12 py-4 sm:py-6">
+            {/* Game-like Journey Progress Bar - Fixed Position */}
+            <div className="relative my-6 px-4 sm:px-8 md:px-12 py-4 sm:py-6 bg-white border-t border-pink-200">
               <div className="flex items-center justify-between relative">
                 {/* Background connecting line */}
                 <div className="absolute top-1/2 left-0 right-0 h-0.5 sm:h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
