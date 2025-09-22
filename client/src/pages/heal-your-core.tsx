@@ -6561,8 +6561,8 @@ function TheRoleOfNutritionSection({
                           </div>
 
                           {/* Fist-sized Veggies */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
-                            <div className="p-4" style={{backgroundColor: '#cbde9a'}}>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
+                            <div className="p-4" style={{backgroundColor: '#b3c0e4'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>✊</span> FIST-SIZED VEGGIES
                               </h4>
@@ -6571,17 +6571,17 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Cooked Vegetables</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Raw Vegetables</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>All Colors</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Leafy Greens</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Cooked Vegetables</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Raw Vegetables</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>All Colors</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Leafy Greens</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Cupped-hand Complex Carbs */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b8d082'}}>
-                            <div className="p-4" style={{backgroundColor: '#b8d082'}}>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
+                            <div className="p-4" style={{backgroundColor: '#cbde9a'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>🤲</span> CUPPED-HAND COMPLEX CARBS
                               </h4>
@@ -6590,18 +6590,18 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Oats</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Quinoa</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Sweet Potato</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Rice</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b8d082'}}>Fruit</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Oats</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Quinoa</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Sweet Potato</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Rice</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#cbde9a'}}>Fruit</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Thumb of Healthy Fat */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#9aafdc'}}>
-                            <div className="p-4" style={{backgroundColor: '#9aafdc'}}>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3a892'}}>
+                            <div className="p-4" style={{backgroundColor: '#b3a892'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>👍</span> THUMB OF HEALTHY FAT
                               </h4>
@@ -6610,17 +6610,17 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Nut Butters</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Oils</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Avocado</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#9aafdc'}}>Seeds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3a892'}}>Nut Butters</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3a892'}}>Oils</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3a892'}}>Avocado</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3a892'}}>Seeds</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Plus Extra If Breastfeeding */}
-                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#c2b9a1'}}>
-                            <div className="p-4" style={{backgroundColor: '#c2b9a1'}}>
+                          <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
+                            <div className="p-4" style={{backgroundColor: '#f3a8cb'}}>
                               <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
                                 <span>🤱</span> PLUS EXTRA IF BREASTFEEDING
                               </h4>
@@ -6629,9 +6629,9 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Add Between Meals:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#c2b9a1'}}>Eggs</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#c2b9a1'}}>Greek Yogurt</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#c2b9a1'}}>Trail Mix</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f3a8cb'}}>Eggs</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f3a8cb'}}>Greek Yogurt</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#f3a8cb'}}>Trail Mix</span>
                               </div>
                             </div>
                           </div>
