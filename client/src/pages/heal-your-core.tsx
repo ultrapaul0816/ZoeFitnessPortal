@@ -21,6 +21,7 @@ import coreBreathImage from "@assets/Screenshot 2025-09-21 at 16.35.35_175845277
 import coreBreathDiagramImage from "@assets/Screenshot 2025-09-21 at 16.35.43_1758452773516.png";
 import pressureManagementImage from "@assets/Screenshot 2025-09-21 at 16.35.50_1758452773516.png";
 import breathCoordinationImage from "@assets/Screenshot 2025-09-21 at 16.36.02_1758452773500.png";
+import zoeLogoImage from "@assets/Screenshot_2025-09-22_at_13.03.07-removebg-preview_1758527068639.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -316,9 +317,13 @@ export default function HealYourCorePage() {
             {/* Subtle gradient overlay on hover */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
-          <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 text-sm font-semibold shadow-lg border-0">
-            {healYourCoreProgram.level}
-          </Badge>
+          <div className="relative">
+            <img 
+              src={zoeLogoImage} 
+              alt="Pregnancy with Zoe" 
+              className="w-24 h-14 object-contain opacity-75 hover:opacity-100 transition-opacity duration-300 filter drop-shadow-lg"
+            />
+          </div>
         </div>
 
         {/* Progress Section */}
