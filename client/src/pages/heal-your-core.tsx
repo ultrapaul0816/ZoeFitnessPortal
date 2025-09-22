@@ -421,60 +421,86 @@ export default function HealYourCorePage() {
           <div className="overflow-x-auto px-0 shadow-xl rounded-lg">
             <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-8 gap-2 md:gap-4 h-auto p-3 md:p-4 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
             <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-pink-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">1</div>
               <BookOpen className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Welcome</span>
             </TabsTrigger>
             <TabsTrigger value="cardio" data-testid="tab-cardio" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">2</div>
               <Activity className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium text-center leading-tight">Cardio Plan</span>
             </TabsTrigger>
             <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">3</div>
               <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium text-center leading-tight">Core</span>
             </TabsTrigger>
             <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">4</div>
               <Heart className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Heal</span>
             </TabsTrigger>
             <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">5</div>
               <Dumbbell className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Programs</span>
             </TabsTrigger>
             <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-teal-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">6</div>
               <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">Nutrition</span>
             </TabsTrigger>
             <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">7</div>
               <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">What's Next</span>
             </TabsTrigger>
             
             <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20">8</div>
               <HelpCircle className="w-6 h-6 md:w-5 md:h-5 mb-2" />
               <span className="font-medium">FAQs</span>
             </TabsTrigger>
             </TabsList>
             
-            {/* Journey Progress Bar */}
-            <div className="journey-progress-container">
-              <div 
-                className={`journey-progress-bar progress-${activeTab.replace('-', '')}`}
-                style={{
-                  width: `${(() => {
-                    const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
-                    const currentIndex = tabOrder.indexOf(activeTab);
-                    return ((currentIndex + 1) / tabOrder.length) * 100;
-                  })()}%`
-                }}
-              />
+            {/* Game-like Journey Progress Bar */}
+            <div className="relative mt-4 px-8">
+              <div className="flex items-center justify-between relative">
+                {/* Background connecting line */}
+                <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
+                
+                {/* Active progress line */}
+                <div 
+                  className={`absolute top-1/2 left-0 h-1 rounded-full -translate-y-1/2 transition-all duration-700 ease-out progress-${activeTab.replace('-', '')}`}
+                  style={{
+                    width: `${(() => {
+                      const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                      const currentIndex = tabOrder.indexOf(activeTab);
+                      return ((currentIndex + 1) / tabOrder.length) * 100;
+                    })()}%`
+                  }}
+                />
+                
+                {/* Progress Numbers */}
+                {(() => {
+                  const tabOrder = ['welcome', 'cardio', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                  const currentIndex = tabOrder.indexOf(activeTab);
+                  const colors = ['bg-pink-500', 'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-orange-500', 'bg-teal-500', 'bg-indigo-500', 'bg-red-500'];
+                  
+                  return tabOrder.map((tab, index) => {
+                    const isUnlocked = index <= currentIndex;
+                    const isActive = index === currentIndex;
+                    
+                    return (
+                      <div 
+                        key={tab}
+                        className={`relative w-8 h-8 rounded-full border-3 flex items-center justify-center text-sm font-bold transition-all duration-500 z-10 ${
+                          isUnlocked 
+                            ? `${colors[index]} text-white border-white shadow-lg transform scale-110` 
+                            : 'bg-gray-300 text-gray-500 border-gray-200'
+                        } ${isActive ? 'animate-pulse shadow-xl' : ''}`}
+                      >
+                        {index + 1}
+                        {isActive && (
+                          <div className="absolute inset-0 rounded-full bg-white opacity-25 animate-ping"></div>
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
             </div>
           </div>
           

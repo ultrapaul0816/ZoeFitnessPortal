@@ -82,15 +82,15 @@ Each program follows this standardized structure for consistency:
 - **Consistent Navigation**: Clickable logo across all pages (Dashboard, My Library, Heal Your Core) with proper hover effects
 - **Advanced Tab Navigation System**:
   - **Meaningful Icons**: Each tab features descriptive icons (BookOpen for Welcome, Activity for Cardio, Brain for Core, Heart for Heal, Dumbbell for Programs, Apple for Nutrition, ChartBar for What's Next, HelpCircle for FAQs)
-  - **Numbered Sequence Indicators**: Each tab displays a colored number badge (1-8) showing the learning progression order
-  - **Color-Coded Numbers**: Number badges use distinct colors matching the progress bar theme (pink, blue, purple, green, orange, teal, indigo, red)
-  - **Animated Journey Progress Bar**: Dynamic progress indicator showing user's current position in their learning journey
-  - **Color-Changing Progress**: Progress bar changes colors based on current tab (pink for Welcome, blue for Cardio, purple for Core, green for Heal, orange for Programs, teal for Nutrition, indigo for What's Next, red for FAQs)
-  - **Shimmer Animation**: Subtle shimmer effect moves across the progress bar for premium visual appeal
-  - **Smooth Transitions**: Progress bar animates smoothly between tabs with cubic-bezier easing
-  - **Clean Interface**: Streamlined design with helpful progression indicators
-  - **8-Tab Navigation**: Complete learning journey from Welcome through FAQs with clear sequence guidance
-  - **Responsive Design**: Mobile and desktop optimized layouts with proper z-indexing and positioning
+  - **Game-like Progression System**: Interactive progress bar with numbered indicators that unlock as users advance through their journey
+  - **Locked/Unlocked States**: Numbers appear in grey (locked) until users reach that section, then turn to vibrant colors (pink, blue, purple, green, orange, teal, indigo, red)
+  - **Connecting Progress Line**: Dynamic connecting line that fills as users progress through sections, creating visual continuity
+  - **Active State Animations**: Current section pulses and has special ping animation effects for clear visual feedback
+  - **Color-Changing Progress**: Progress bar changes colors based on current tab matching the numbered indicator colors
+  - **Smooth Transitions**: Progress bar and numbers animate smoothly between tabs with 700ms duration easing
+  - **Gaming Psychology**: Progression system designed like video games to encourage completion and provide satisfaction
+  - **8-Stage Journey**: Complete learning pathway from Welcome (1) through FAQs (8) with clear visual progression
+  - **Responsive Design**: Mobile and desktop optimized layouts with proper spacing and positioning
 - **Comprehensive FAQ Section**: 
   - **12 Numbered Questions**: Complete FAQ system with sequentially numbered questions for easy reference
   - **Collapsible Accordion Interface**: Clean, organized presentation using shadcn/ui Accordion components
