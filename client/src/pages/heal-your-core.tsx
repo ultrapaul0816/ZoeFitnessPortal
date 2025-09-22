@@ -583,15 +583,6 @@ export default function HealYourCorePage() {
             />
           </TabsContent>
 
-          <TabsContent value="cardio">
-            <CardioSection 
-              canGoNext={canGoNext}
-              canGoPrevious={canGoPrevious}
-              navigateToNextTab={navigateToNextTab}
-              navigateToPreviousTab={navigateToPreviousTab}
-            />
-          </TabsContent>
-
           <TabsContent value="understanding">
             <UnderstandingYourCoreSection 
               articles={Array.isArray(knowledgeArticles) ? knowledgeArticles : []} 
@@ -2261,82 +2252,20 @@ function WelcomeSection({
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Next Section Button */}
-          <div className="mt-12 pt-8 border-t border-gray-200">
-            <div className="text-center">
-              <div className="flex gap-4 justify-center">
-                {canGoPrevious() && (
-                  <Button
-                    className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
-                    data-testid="button-previous-section"
-                    onClick={navigateToPreviousTab}
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Prev
-                  </Button>
-                )}
-                {canGoNext() && (
-                  <Button
-                    className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
-                    data-testid="button-next-section"
-                    onClick={navigateToNextTab}
-                  >
-                    Next
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                )}
+              
+              {/* Line Divider with Shadow */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground mt-3">
-                Ready to learn about cardio? Let's explore how to safely include cardio in your recovery.
-              </p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
 
-function CardioSection({
-  canGoNext,
-  canGoPrevious,
-  navigateToNextTab,
-  navigateToPreviousTab
-}: {
-  canGoNext: () => boolean;
-  canGoPrevious: () => boolean;
-  navigateToNextTab: () => void;
-  navigateToPreviousTab: () => void;
-}) {
-  const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
-
-  const toggleTopic = (topic: string) => {
-    setExpandedTopics(prev => ({
-      ...prev,
-      [topic]: !prev[topic]
-    }));
-  };
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold text-center">🏃‍♀️ Cardio Plan</CardTitle>
-          <CardDescription className="text-center">
-            Safe and strategic cardiovascular training for your postpartum journey
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-1">
-            
-            {/* Topic 1: How to Include Cardio – Safely & Strategically */}
+            {/* Topic 7: How to Include Cardio – Safely & Strategically */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">7</span>
                   <h3 className="text-[15px] font-semibold text-left">How to Include Cardio – Safely & Strategically</h3>
                 </div>
                 <div
@@ -2400,11 +2329,11 @@ function CardioSection({
               </div>
             </div>
 
-            {/* Topic 2: Cardio Plan Overview */}
+            {/* Topic 8: Cardio Plan Overview */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">2</span>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">8</span>
                   <h3 className="text-[15px] font-semibold text-left">Cardio Plan Overview</h3>
                 </div>
                 <div
@@ -2574,11 +2503,11 @@ function CardioSection({
               </div>
             </div>
 
-            {/* Topic 3: Your Training Schedule With Cardio */}
+            {/* Topic 9: Your Training Schedule With Cardio */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">3</span>
+                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">9</span>
                   <h3 className="text-[15px] font-semibold text-left">Your Training Schedule With Cardio</h3>
                 </div>
                 <div
@@ -2703,7 +2632,7 @@ function CardioSection({
                 {canGoPrevious() && (
                   <Button
                     className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
-                    data-testid="button-previous-section-cardio"
+                    data-testid="button-previous-section"
                     onClick={navigateToPreviousTab}
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -2713,7 +2642,7 @@ function CardioSection({
                 {canGoNext() && (
                   <Button
                     className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-2 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2"
-                    data-testid="button-next-section-cardio"
+                    data-testid="button-next-section"
                     onClick={navigateToNextTab}
                   >
                     Next
@@ -2731,6 +2660,7 @@ function CardioSection({
     </div>
   );
 }
+
 
 function UnderstandingYourCoreSection({ 
   articles, 
