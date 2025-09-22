@@ -7061,33 +7061,114 @@ function WhatComesNextSection({
                         <div className="text-center">
                           <button
                             onClick={() => {
-                              const element = document.getElementById('progress-tracker-table');
-                              if (!element) return;
-                              
                               // Import dynamically to avoid bundle issues
-                              import('html2canvas').then(html2canvas => {
-                                import('jspdf').then(jsPDF => {
-                                  html2canvas.default(element, {
-                                    scale: 2,
-                                    backgroundColor: '#ffffff',
-                                    width: element.scrollWidth,
-                                    height: element.scrollHeight
-                                  }).then((canvas) => {
-                                    const imgData = canvas.toDataURL('image/png');
-                                    const pdf = new jsPDF.jsPDF({
-                                      orientation: 'landscape',
-                                      unit: 'mm',
-                                      format: 'a4'
-                                    });
-                                    
-                                    const imgWidth = 277; // A4 landscape width in mm minus margins
-                                    const pageHeight = 190; // A4 landscape height in mm minus margins
-                                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                                    
-                                    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, Math.min(imgHeight, pageHeight));
-                                    pdf.save('Progress-Tracker-Postpartum-Recovery.pdf');
-                                  });
+                              import('jspdf').then(jsPDF => {
+                                const pdf = new jsPDF.jsPDF({
+                                  orientation: 'landscape',
+                                  unit: 'mm',
+                                  format: 'a4'
                                 });
+                                
+                                // Page setup
+                                const pageWidth = 297; // A4 landscape width
+                                const pageHeight = 210; // A4 landscape height
+                                const margin = 15;
+                                const usableWidth = pageWidth - (margin * 2);
+                                const usableHeight = pageHeight - (margin * 2);
+                                
+                                // Title
+                                pdf.setFontSize(20);
+                                pdf.setFont("helvetica", "bold");
+                                pdf.text("✨ PROGRESS TRACKER ✨", pageWidth / 2, margin + 10, { align: 'center' });
+                                
+                                pdf.setFontSize(10);
+                                pdf.setFont("helvetica", "normal");
+                                pdf.text("Track your healing journey, week by week. Use this table to note your progress, symptoms, and small wins—because every step matters.", pageWidth / 2, margin + 18, { align: 'center' });
+                                
+                                // Table setup
+                                const startY = margin + 30;
+                                const rowHeight = 20;
+                                const colWidth = usableWidth / 7; // 7 columns: 1 label + 6 weeks
+                                const labelColWidth = colWidth * 1.5;
+                                const weekColWidth = (usableWidth - labelColWidth) / 6;
+                                
+                                // Table headers
+                                pdf.setFillColor(220, 220, 220); // Light gray
+                                pdf.rect(margin, startY, labelColWidth, rowHeight, 'F');
+                                pdf.setFontSize(9);
+                                pdf.setFont("helvetica", "bold");
+                                pdf.text("WEEK", margin + labelColWidth/2, startY + rowHeight/2 + 2, { align: 'center' });
+                                
+                                // Week columns
+                                pdf.setFillColor(252, 182, 208); // Pink
+                                for (let i = 0; i < 6; i++) {
+                                  const x = margin + labelColWidth + (i * weekColWidth);
+                                  pdf.rect(x, startY, weekColWidth, rowHeight, 'F');
+                                  pdf.text(`WEEK ${i + 1}`, x + weekColWidth/2, startY + rowHeight/2 + 2, { align: 'center' });
+                                }
+                                
+                                // Table borders for header
+                                pdf.setDrawColor(0, 0, 0);
+                                pdf.setLineWidth(0.5);
+                                pdf.rect(margin, startY, usableWidth, rowHeight);
+                                for (let i = 1; i <= 6; i++) {
+                                  const x = margin + labelColWidth + (i * weekColWidth);
+                                  pdf.line(x, startY, x, startY + rowHeight);
+                                }
+                                
+                                // Row data
+                                const rows = [
+                                  { label: "DR GAP MEASUREMENT", sublabel: "(Width/Depth at Navel, 2\" Above, 2\" Below):" },
+                                  { label: "CORE CONNECTION", sublabel: "(Scale 1-5)" },
+                                  { label: "PELVIC FLOOR SYMPTOMS", sublabel: "(Leaking, heaviness, bulging)" },
+                                  { label: "POSTURE/BACK DISCOMFORT", sublabel: "(Scale 1-5)" },
+                                  { label: "ENERGY LEVEL", sublabel: "(Scale 1-5)" },
+                                  { label: "NUMBER OF WORKOUTS", sublabel: "Completed" },
+                                  { label: "NOTES OR WINS", sublabel: "For the week" }
+                                ];
+                                
+                                // Draw data rows
+                                for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                                  const y = startY + ((rowIndex + 1) * rowHeight);
+                                  const row = rows[rowIndex];
+                                  
+                                  // Alternating row colors
+                                  if (rowIndex % 2 === 0) {
+                                    pdf.setFillColor(245, 245, 245); // Light gray
+                                    pdf.rect(margin, y, usableWidth, rowHeight, 'F');
+                                  }
+                                  
+                                  // Label column background
+                                  pdf.setFillColor(220, 220, 220);
+                                  pdf.rect(margin, y, labelColWidth, rowHeight, 'F');
+                                  
+                                  // Row text
+                                  pdf.setFontSize(8);
+                                  pdf.setFont("helvetica", "bold");
+                                  pdf.text(row.label, margin + 2, y + 6, { maxWidth: labelColWidth - 4 });
+                                  
+                                  pdf.setFontSize(7);
+                                  pdf.setFont("helvetica", "italic");
+                                  pdf.text(row.sublabel, margin + 2, y + 12, { maxWidth: labelColWidth - 4 });
+                                  
+                                  // Row borders
+                                  pdf.setDrawColor(0, 0, 0);
+                                  pdf.rect(margin, y, usableWidth, rowHeight);
+                                  
+                                  // Vertical lines for week columns
+                                  for (let i = 1; i <= 6; i++) {
+                                    const x = margin + labelColWidth + (i * weekColWidth);
+                                    pdf.line(x, y, x, y + rowHeight);
+                                  }
+                                }
+                                
+                                // Footer note
+                                const footerY = startY + ((rows.length + 1) * rowHeight) + 10;
+                                pdf.setFontSize(9);
+                                pdf.setFont("helvetica", "italic");
+                                pdf.text("💡 Printing Tip: This tracker is designed to be filled out by hand for convenient weekly tracking.", margin, footerY);
+                                
+                                pdf.save('Progress-Tracker-Postpartum-Recovery.pdf');
                               });
                             }}
                             className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
