@@ -2127,78 +2127,11 @@ function WelcomeSection({
               </div>
             </div>
 
-            {/* Topic 6: Disclaimer */}
+            {/* Topic 6: What Equipment Do You Need */}
             <div>
               <div className="flex items-center justify-between py-5">
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">6</span>
-                  <h3 className="text-[15px] font-semibold text-left">Disclaimer</h3>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleTopic('disclaimer')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-disclaimer"
-                >
-                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['disclaimer'] ? 'rotate-180' : ''}`} />
-                </Button>
-              </div>
-              {expandedTopics['disclaimer'] && (
-                <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
-                  <div className="space-y-6 text-sm">
-                    
-                    <div>
-                      <p className="font-semibold text-primary mb-3">General Disclaimer:</p>
-                      <p className="leading-relaxed">
-                        "Stronger with Zoe – Postnatal Health & Fitness Bible" is designed to provide general information and support for postpartum women on their recovery, health, and fitness journey. The information and exercises provided are for educational purposes only and are not intended to replace professional medical advice, diagnosis, or treatment from a qualified healthcare provider. Always consult with your physician, physiotherapist, or other qualified health provider regarding any medical condition, postpartum recovery concerns, or exercise regimen.
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-primary mb-3">Participant Responsibility:</p>
-                      <p className="leading-relaxed">
-                        Participation in any postnatal exercise program carries inherent risks, particularly following childbirth. It is the responsibility of each participant to consult with a healthcare provider before beginning this or any other exercise program. By using "Stronger with Zoe – Postnatal Health & Fitness Bible," you acknowledge that you have been cleared by your healthcare provider to engage in postpartum physical activities. You voluntarily assume all risks associated with participation and accept full responsibility for any potential injury, discomfort, or health complications that may arise.
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-primary mb-3">Limitation of Liability:</p>
-                      <p className="leading-relaxed">
-                        Zoe Modgill and "Stronger with Zoe" shall not be liable for any claims, demands, injuries, damages, actions, or causes of action that arise in connection with, or as a result of, the postnatal program, workouts, or any recommendations provided therein. Participants agree to release and hold harmless Zoe Modgill and any affiliated entities from and against any claims arising from their participation in the program.
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-primary mb-3">Accuracy of Information:</p>
-                      <p className="leading-relaxed">
-                        While every effort is made to ensure the accuracy of the information presented in this guide, "Stronger with Zoe" cannot guarantee that all information is up-to-date, accurate, or complete at all times. Health and fitness recommendations evolve, and individual needs may vary. Any reliance you place on the information in this guide is strictly at your own risk.
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p className="font-semibold text-primary mb-3">Privacy:</p>
-                      <p className="leading-relaxed">
-                        Your privacy is of utmost importance. Any personal information you choose to share within "Stronger with Zoe" communities, coaching sessions, or discussions will be treated with confidentiality and will not be disclosed to any third party without your explicit consent, except as required by law.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Line Divider with Shadow */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30"></div>
-              </div>
-            </div>
-
-            {/* Topic 7: What Equipment Do You Need */}
-            <div>
-              <div className="flex items-center justify-between py-5">
-                <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">7</span>
                   <h3 className="text-[15px] font-semibold text-left">What Equipment Do You Need</h3>
                 </div>
                 <Button
