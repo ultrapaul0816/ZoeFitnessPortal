@@ -22,6 +22,13 @@ import coreBreathDiagramImage from "@assets/Screenshot 2025-09-21 at 16.35.43_17
 import pressureManagementImage from "@assets/Screenshot 2025-09-21 at 16.35.50_1758452773516.png";
 import breathCoordinationImage from "@assets/Screenshot 2025-09-21 at 16.36.02_1758452773500.png";
 import zoeLogoImage from "@assets/Screenshot_2025-09-22_at_13.03.07-removebg-preview_1758527068639.png";
+import yogaMatImage from "@assets/Screenshot 2025-09-22 at 13.29.38_1758528078678.png";
+import yogaBlocksImage from "@assets/Screenshot 2025-09-22 at 13.29.49_1758528078677.png";
+import miniResistanceBandsImage from "@assets/Screenshot 2025-09-22 at 13.29.57_1758528078677.png";
+import miniPilatesBallImage from "@assets/Screenshot 2025-09-22 at 13.30.04_1758528078677.png";
+import longResistanceBandImage from "@assets/Screenshot 2025-09-22 at 13.30.13_1758528078677.png";
+import swissBallImage from "@assets/Screenshot 2025-09-22 at 13.30.19_1758528078676.png";
+import foamRollerImage from "@assets/Screenshot 2025-09-22 at 13.30.27_1758528078676.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -2118,7 +2125,7 @@ function WelcomeSection({
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                           <img 
-                            src="@assets/Screenshot 2025-09-22 at 13.29.38_1758528078678.png" 
+                            src={yogaMatImage} 
                             alt="Pink yoga mat" 
                             className="w-20 h-20 object-contain"
                           />
@@ -2129,7 +2136,7 @@ function WelcomeSection({
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                           <img 
-                            src="@assets/Screenshot 2025-09-22 at 13.29.49_1758528078677.png" 
+                            src={yogaBlocksImage} 
                             alt="Pink yoga blocks" 
                             className="w-20 h-20 object-contain"
                           />
@@ -2140,7 +2147,7 @@ function WelcomeSection({
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                           <img 
-                            src="@assets/Screenshot 2025-09-22 at 13.29.57_1758528078677.png" 
+                            src={miniResistanceBandsImage} 
                             alt="Mini resistance bands" 
                             className="w-20 h-20 object-contain"
                           />
@@ -2152,7 +2159,7 @@ function WelcomeSection({
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                           <img 
-                            src="@assets/Screenshot 2025-09-22 at 13.30.04_1758528078677.png" 
+                            src={miniPilatesBallImage} 
                             alt="Mini Pilates ball" 
                             className="w-20 h-20 object-contain"
                           />
@@ -2163,7 +2170,7 @@ function WelcomeSection({
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                           <img 
-                            src="@assets/Screenshot 2025-09-22 at 13.30.13_1758528078677.png" 
+                            src={longResistanceBandImage} 
                             alt="Long resistance band" 
                             className="w-20 h-20 object-contain"
                           />
@@ -2174,7 +2181,7 @@ function WelcomeSection({
                       <div className="text-center">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                           <img 
-                            src="@assets/Screenshot 2025-09-22 at 13.30.19_1758528078676.png" 
+                            src={swissBallImage} 
                             alt="Medium Swiss ball" 
                             className="w-20 h-20 object-contain"
                           />
@@ -2186,7 +2193,7 @@ function WelcomeSection({
                       <div className="text-center md:col-start-2">
                         <div className="bg-gray-100 rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                           <img 
-                            src="@assets/Screenshot 2025-09-22 at 13.30.27_1758528078676.png" 
+                            src={foamRollerImage} 
                             alt="Foam roller" 
                             className="w-20 h-20 object-contain"
                           />
