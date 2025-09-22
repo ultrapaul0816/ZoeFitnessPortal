@@ -99,7 +99,7 @@ export default function HealYourCorePage() {
   const [showProfileSettings, setShowProfileSettings] = useState(false);
 
   // Tab navigation helpers
-  const tabOrder = ["welcome", "cardio", "understanding", "healing", "programs", "nutrition", "next-steps"];
+  const tabOrder = ["welcome", "understanding", "healing", "programs", "nutrition", "next-steps", "faqs"];
   
   const navigateToNextTab = () => {
     const currentIndex = tabOrder.indexOf(activeTab);
@@ -123,6 +123,32 @@ export default function HealYourCorePage() {
   const canGoPrevious = () => {
     const currentIndex = tabOrder.indexOf(activeTab);
     return currentIndex > 0;
+  };
+  
+  const getTabName = (tabValue: string) => {
+    const tabNames = {
+      'welcome': 'Start Here',
+      'understanding': 'Core Knowledge', 
+      'healing': 'Healing',
+      'programs': 'Programs',
+      'nutrition': 'Nutrition',
+      'next-steps': "What's Next",
+      'faqs': 'FAQs'
+    };
+    return tabNames[tabValue as keyof typeof tabNames] || tabValue;
+  };
+  
+  const getNavigationText = (direction: 'prev' | 'next') => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (direction === 'prev' && currentIndex > 0) {
+      const prevTab = tabOrder[currentIndex - 1];
+      return `Back to ${getTabName(prevTab)}`;
+    }
+    if (direction === 'next' && currentIndex < tabOrder.length - 1) {
+      const nextTab = tabOrder[currentIndex + 1];
+      return `Continue to ${getTabName(nextTab)}`;
+    }
+    return direction === 'prev' ? 'Previous' : 'Next';
   };
 
   useEffect(() => {
@@ -599,6 +625,7 @@ export default function HealYourCorePage() {
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}
               navigateToPreviousTab={navigateToPreviousTab}
+              getNavigationText={getNavigationText}
             />
           </TabsContent>
 
@@ -610,6 +637,7 @@ export default function HealYourCorePage() {
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}
               navigateToPreviousTab={navigateToPreviousTab}
+              getNavigationText={getNavigationText}
             />
           </TabsContent>
 
@@ -619,6 +647,7 @@ export default function HealYourCorePage() {
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}
               navigateToPreviousTab={navigateToPreviousTab}
+              getNavigationText={getNavigationText}
             />
           </TabsContent>
 
@@ -628,6 +657,7 @@ export default function HealYourCorePage() {
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}
               navigateToPreviousTab={navigateToPreviousTab}
+              getNavigationText={getNavigationText}
             />
           </TabsContent>
 
@@ -637,6 +667,7 @@ export default function HealYourCorePage() {
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}
               navigateToPreviousTab={navigateToPreviousTab}
+              getNavigationText={getNavigationText}
             />
           </TabsContent>
 
@@ -649,6 +680,7 @@ export default function HealYourCorePage() {
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}
               navigateToPreviousTab={navigateToPreviousTab}
+              getNavigationText={getNavigationText}
             />
           </TabsContent>
 
@@ -795,7 +827,7 @@ export default function HealYourCorePage() {
                   onClick={() => setActiveTab('next-steps')}
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  Back to What's Next
+                  {getNavigationText('prev')}
                 </Button>
               </div>
               <div className="text-center mt-4">
@@ -829,9 +861,10 @@ interface NavigationProps {
   canGoPrevious: () => boolean;
   navigateToNextTab: () => void;
   navigateToPreviousTab: () => void;
+  getNavigationText: (direction: 'prev' | 'next') => string;
 }
 
-function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPreviousTab }: NavigationProps) {
+function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPreviousTab, getNavigationText }: NavigationProps) {
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
 
   const toggleTopic = (topic: string) => {
@@ -1676,7 +1709,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Back to Core Knowledge
+              {getNavigationText('prev')}
             </Button>
           )}
           {canGoNext() && (
@@ -1685,7 +1718,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
               data-testid="button-next-section-heal"
               onClick={navigateToNextTab}
             >
-              Start Your Programs
+              {getNavigationText('next')}
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
@@ -1702,12 +1735,14 @@ function WelcomeSection({
   canGoNext,
   canGoPrevious,
   navigateToNextTab,
-  navigateToPreviousTab
+  navigateToPreviousTab,
+  getNavigationText
 }: {
   canGoNext: () => boolean;
   canGoPrevious: () => boolean;
   navigateToNextTab: () => void;
   navigateToPreviousTab: () => void;
+  getNavigationText: (direction: 'prev' | 'next') => string;
 }) {
   const [expandedTopics, setExpandedTopics] = useState<{[key: string]: boolean}>({});
 
@@ -2674,7 +2709,7 @@ function WelcomeSection({
                   onClick={navigateToPreviousTab}
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  Back to Start Here
+                  {getNavigationText('prev')}
                 </Button>
               )}
               {canGoNext() && (
@@ -2683,7 +2718,7 @@ function WelcomeSection({
                   data-testid="button-next-section"
                   onClick={navigateToNextTab}
                 >
-                  Begin Healing
+                  {getNavigationText('next')}
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               )}
@@ -2705,7 +2740,8 @@ function UnderstandingYourCoreSection({
   canGoNext,
   canGoPrevious,
   navigateToNextTab,
-  navigateToPreviousTab
+  navigateToPreviousTab,
+  getNavigationText
 }: { 
   articles: any[]; 
   onArticleClick: (article: any) => void;
@@ -2713,6 +2749,7 @@ function UnderstandingYourCoreSection({
   canGoPrevious: () => boolean;
   navigateToNextTab: () => void;
   navigateToPreviousTab: () => void;
+  getNavigationText: (direction: 'prev' | 'next') => string;
 }) {
   const [expandedTopics, setExpandedTopics] = useState<{[key: string]: boolean}>({});
 
@@ -3770,7 +3807,8 @@ function ProgramsSection({
   canGoNext, 
   canGoPrevious, 
   navigateToNextTab, 
-  navigateToPreviousTab 
+  navigateToPreviousTab,
+  getNavigationText 
 }: NavigationProps) {
   const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({});
 
@@ -5481,7 +5519,7 @@ function ProgramsSection({
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Back to Healing
+              {getNavigationText('prev')}
             </Button>
           )}
           {canGoNext() && (
@@ -5490,7 +5528,7 @@ function ProgramsSection({
               data-testid="button-next-section-programs"
               onClick={navigateToNextTab}
             >
-              Explore Nutrition
+              {getNavigationText('next')}
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
@@ -5507,7 +5545,8 @@ function TheRoleOfNutritionSection({
   canGoNext, 
   canGoPrevious, 
   navigateToNextTab, 
-  navigateToPreviousTab 
+  navigateToPreviousTab,
+  getNavigationText 
 }: NavigationProps) {
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
 
@@ -5790,7 +5829,7 @@ function TheRoleOfNutritionSection({
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Back to Programs
+              {getNavigationText('prev')}
             </Button>
           )}
           {canGoNext() && (
@@ -5799,7 +5838,7 @@ function TheRoleOfNutritionSection({
               data-testid="button-next-section-nutrition"
               onClick={navigateToNextTab}
             >
-              Plan Next Steps
+              {getNavigationText('next')}
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
@@ -5819,7 +5858,8 @@ function WhatComesNextSection({
   canGoNext, 
   canGoPrevious, 
   navigateToNextTab, 
-  navigateToPreviousTab 
+  navigateToPreviousTab,
+  getNavigationText 
 }: {
   userId: string;
   programId: string;
@@ -5828,6 +5868,7 @@ function WhatComesNextSection({
   canGoPrevious: () => boolean;
   navigateToNextTab: () => void;
   navigateToPreviousTab: () => void;
+  getNavigationText: (direction: 'prev' | 'next') => string;
 }) {
   return (
     <div className="space-y-6">
@@ -5855,7 +5896,7 @@ function WhatComesNextSection({
               onClick={navigateToPreviousTab}
             >
               <ChevronLeft className="w-4 h-4" />
-              Back to Nutrition
+              {getNavigationText('prev')}
             </Button>
           )}
           {canGoNext() && (
@@ -5864,7 +5905,7 @@ function WhatComesNextSection({
               data-testid="button-next-section-next-steps"
               onClick={navigateToNextTab}
             >
-              View FAQs
+              {getNavigationText('next')}
               <ChevronRight className="w-4 h-4" />
             </Button>
           )}
