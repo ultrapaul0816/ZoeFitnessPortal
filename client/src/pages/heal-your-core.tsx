@@ -388,25 +388,24 @@ export default function HealYourCorePage() {
           </div>
         </div>
 
-        {/* Progress Section */}
-        <Card className="border-pink-200 bg-gradient-to-r from-pink-50 to-pink-100 shadow-lg">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-center space-x-3 md:space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                <TrendingUp className="w-4 h-4 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+        {/* Connected Progress and Navigation Container */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-xl rounded-lg overflow-hidden">
+            {/* Greeting Section */}
+            <div className="p-4 md:p-6 border-b border-pink-200">
+              <div className="flex items-center space-x-3 md:space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                  <TrendingUp className="w-4 h-4 text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Navigation Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <div className="shadow-xl rounded-lg">
+            
+            {/* Navigation Tabs */}
             <div className="overflow-x-auto px-0">
-              <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-7 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-lg min-w-max md:min-w-0 mx-0">
+              <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-7 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-transparent border-0 shadow-none min-w-max md:min-w-0 mx-0">
               <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
                 <Play className="w-6 h-6 md:w-5 md:h-5 mb-2" />
                 <span className="font-medium">Start Here</span>
@@ -438,12 +437,8 @@ export default function HealYourCorePage() {
               </TabsTrigger>
               </TabsList>
             </div>
-            
-            {/* Game-like Journey Progress Bar - Fixed Position */}
-            <div className="relative mb-6 px-4 sm:px-8 md:px-12 py-4 sm:py-6 bg-white border border-pink-200 rounded-lg" style={{
-              background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #f9a8d4, #ec4899, #f9a8d4) border-box',
-              border: '1px solid transparent'
-            }}>
+            {/* Game-like Journey Progress Bar - Connected */}
+            <div className="relative px-4 sm:px-8 md:px-12 py-4 sm:py-6 bg-white border-t border-pink-200">
               <div className="flex items-center justify-between relative">
                 {/* Background connecting line */}
                 <div className="absolute top-1/2 left-0 right-0 h-0.5 sm:h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
