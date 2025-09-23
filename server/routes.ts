@@ -81,13 +81,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.body;
       
-      // Debug logging to see what's happening
-      console.log("Disclaimer acceptance request for userId:", userId);
-      
-      // Check if user exists first
-      const existingUser = await storage.getUser(userId);
-      console.log("Found user:", existingUser ? `${existingUser.email}` : "NOT FOUND");
-      
       const updatedUser = await storage.updateUser(userId, {
         disclaimerAccepted: true,
         disclaimerAcceptedAt: new Date(),
@@ -99,7 +92,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ success: true });
     } catch (error) {
-      console.error("Disclaimer acceptance error:", error);
       res.status(500).json({ message: "Failed to accept disclaimer" });
     }
   });
