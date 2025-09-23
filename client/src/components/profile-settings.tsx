@@ -14,7 +14,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Info, Globe, Bell, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy } from "lucide-react";
+import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
 interface ProfileSettingsProps {
@@ -26,7 +26,7 @@ interface ProfileSettingsProps {
 
 export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }: ProfileSettingsProps) {
   const [location, setLocation] = useLocation();
-  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'notifications' | 'support'>('menu');
+  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
   const [profileData, setProfileData] = useState({
     country: '',
     bio: '',
@@ -163,83 +163,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     );
   }
 
-  if (currentView === 'notifications') {
-    return (
-      <div 
-        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
-        data-testid="page-notifications-settings"
-      >
-        <div className="w-full h-full overflow-y-auto p-6">
-          {/* Back Button */}
-          <button 
-            onClick={() => setCurrentView('menu')}
-            className="group relative mb-6 flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
-          >
-            <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
-            <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
-              Back to Menu
-            </span>
-            {/* Subtle gradient overlay on hover */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
-          </button>
-
-          {/* My Notifications */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">My Notifications</h2>
-
-            <div className="space-y-4">
-              {/* News & Updates */}
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  checked={profileData.newsUpdates}
-                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, newsUpdates: checked as boolean}))}
-                  className="w-5 h-5"
-                />
-                <label className="text-gray-900 font-medium">News & Updates</label>
-              </div>
-
-              {/* Promotions */}
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  checked={profileData.promotions}
-                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, promotions: checked as boolean}))}
-                  className="w-5 h-5"
-                />
-                <label className="text-gray-900 font-medium">Promotions</label>
-              </div>
-
-              {/* Community Updates */}
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  checked={profileData.communityUpdates}
-                  onCheckedChange={(checked) => setProfileData(prev => ({...prev, communityUpdates: checked as boolean}))}
-                  className="w-5 h-5"
-                />
-                <label className="text-gray-900 font-medium">Community Updates</label>
-              </div>
-
-              {/* Transactional Emails */}
-              <div className="flex items-center space-x-3">
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-500">Transactional Emails</span>
-                <Info className="w-4 h-4 text-gray-400" />
-              </div>
-            </div>
-
-            {/* Save Button */}
-            <div className="mt-8 flex justify-center">
-              <Button 
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium px-8 py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
-                data-testid="button-save-notifications"
-              >
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (currentView === 'purchases') {
     return (
@@ -651,31 +574,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
               </button>
             </div>
 
-            {/* Divider */}
-            <div className="flex justify-start my-2 pl-3">
-              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
-            </div>
-
-            {/* Notifications */}
-            <div className="flex justify-start">
-              <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '320ms' }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentView('notifications');
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                  <Bell className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Notifications</span>
-                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                  <ChevronRight className="w-4 h-4 text-pink-500" />
-                </div>
-              </button>
-            </div>
 
             {/* Divider */}
             <div className="flex justify-start my-2 pl-3">
@@ -686,7 +584,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             <div className="flex justify-start">
               <button 
                 className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '400ms' }}
+                style={{ animationDelay: '320ms' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentView('support');
