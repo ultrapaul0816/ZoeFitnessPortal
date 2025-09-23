@@ -4449,243 +4449,259 @@ function ProgramsSection({
         </p>
       </div>
 
-      {/* WhatsApp Community Card */}
-      <Card className="overflow-hidden border-2 border-green-400 shadow-xl mb-8 bg-gradient-to-br from-green-50 via-white to-green-50">
-        <CardHeader className="bg-gradient-to-r from-green-400 to-green-500 text-white relative overflow-hidden">
+      {/* WhatsApp Community Card - Collapsible */}
+      <Card className="overflow-hidden border-l-4 border-green-500 shadow-xl mb-8">
+        <CardHeader 
+          className="bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 cursor-pointer transition-all duration-300 relative overflow-hidden"
+          onClick={() => toggleProgram('whatsapp-community')}
+        >
           {/* Decorative background pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
           </div>
           
-          <div className="relative z-10 text-center">
-            <div className="mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider bg-white bg-opacity-20 px-3 py-1 rounded-full">
-                EXCLUSIVE ACCESS
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-center mb-4">
-              {/* WhatsApp Icon */}
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mr-4 shadow-lg">
-                <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M24 0C10.745 0 0 10.745 0 24c0 4.245 1.107 8.238 3.048 11.697L0 48l12.597-3.059C16.065 46.897 19.965 48 24 48c13.255 0 24-10.745 24-24S37.255 0 24 0z" fill="#25D366"/>
-                  <path d="M35.096 12.904C32.832 10.64 29.616 9.36 26.208 9.36c-6.912 0-12.528 5.616-12.528 12.528 0 2.208.576 4.368 1.68 6.264L12.96 35.04l7.2-2.304c1.824.96 3.888 1.488 6.048 1.488 6.912 0 12.528-5.616 12.528-12.528 0-3.408-1.296-6.624-3.64-8.792zm-8.888 19.2c-1.872 0-3.696-.48-5.28-1.44l-.384-.24-3.984 1.296 1.344-3.888-.24-.384c-1.056-1.68-1.608-3.6-1.608-5.568 0-5.76 4.68-10.44 10.44-10.44 2.784 0 5.4 1.08 7.368 3.072 1.992 1.992 3.072 4.584 3.072 7.368 0 5.76-4.68 10.44-10.44 10.44z" fill="white"/>
-                  <path d="M30.72 26.928c-.312-.156-1.848-.912-2.136-1.008-.288-.096-.504-.144-.72.144-.216.288-.84 1.008-1.032 1.224-.192.216-.384.24-.696.096-.312-.144-1.32-.48-2.52-1.536-.936-.816-1.56-1.824-1.752-2.136-.192-.312-.024-.48.144-.636.144-.144.312-.384.468-.576.156-.192.216-.336.312-.552.096-.216.048-.408-.024-.576-.096-.144-.72-1.728-.984-2.376-.264-.624-.528-.528-.72-.528-.192 0-.408-.024-.624-.024-.216 0-.576.096-.864.408-.312.312-1.176 1.152-1.176 2.808 0 1.656 1.2 3.264 1.368 3.48.168.216 2.376 3.624 5.76 5.088.816.336 1.44.552 1.944.696.816.264 1.56.216 2.16.144.648-.096 1.848-.744 2.112-1.464.264-.72.264-1.32.192-1.464-.096-.12-.312-.192-.648-.336z" fill="white"/>
-                </svg>
+          <div className="relative z-10">
+            {/* Mobile Layout */}
+            <div className="block lg:hidden">
+              {/* WhatsApp Badge on top */}
+              <div className="mb-3">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
+                    </svg>
+                    <span>COMMUNITY</span>
+                  </div>
+                </div>
               </div>
-              <div className="text-left">
-                <div className="text-sm font-medium opacity-90">WhatsApp</div>
-                <div className="text-xs opacity-80">Communities</div>
+              
+              {/* Title and Description */}
+              <div className="mb-3">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                  Join the Heal My Core WhatsApp Community
+                </div>
+                <div className="text-green-100 font-normal text-xs drop-shadow-sm">
+                  💚 3-month community support with Zoe + coaches
+                </div>
+              </div>
+              
+              {/* Price and dropdown */}
+              <div className="flex items-center justify-between">
+                <div className="text-right bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm">
+                  <div className="text-xs text-green-100 font-bold uppercase tracking-wide">3 Months Access</div>
+                  <div className="text-sm text-white font-medium">₹1000</div>
+                </div>
+                <div className="w-8 h-8 bg-gradient-to-br from-white to-green-100 text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['whatsapp-community'] ? 'rotate-180' : ''}`} />
+                </div>
               </div>
             </div>
 
-            <CardTitle className="text-2xl font-bold mb-2 drop-shadow-md">
-              Join the Heal My Core WhatsApp Community
-            </CardTitle>
-            <CardDescription className="text-green-100 font-medium text-base leading-relaxed drop-shadow-sm">
-              Healing your core is powerful — but doing it with a community of moms (and with Zoe + her team cheering you on) makes it so much more fun!
-            </CardDescription>
-            <p className="text-green-100 text-sm mt-3 opacity-90">
-              This isn't just another WhatsApp group... it's your safe space to share progress, ask questions, and stay motivated — all while being guided by Zoe and her team of coaches.
-            </p>
+            {/* Desktop Layout */}
+            <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-green-200 flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
+                    </svg>
+                    <span>COMMUNITY</span>
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1 py-2">
+                  <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
+                    Join the Heal My Core WhatsApp Community
+                  </CardTitle>
+                  <CardDescription className="text-green-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
+                    💚 3-month community support with Zoe + coaches
+                  </CardDescription>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
+                  <div className="text-sm text-green-100 font-bold uppercase tracking-wide">3 Months Access</div>
+                  <div className="text-sm text-white font-medium">₹1000</div>
+                </div>
+                <div className="w-10 h-10 bg-gradient-to-br from-white to-green-100 text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['whatsapp-community'] ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+            </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-6">
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            
-            {/* What You'll Get Inside */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-bold text-green-600 mb-4">What You'll Get Inside</h4>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+        {expandedPrograms['whatsapp-community'] && (
+          <CardContent className="p-6 border-t border-green-100">
+            <div className="space-y-6">
+              {/* Hero Description */}
+              <div className="text-center bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border border-green-200">
+                <h3 className="text-xl font-bold text-green-600 mb-3">
+                  💚 Your Safe Space for Support & Celebration
+                </h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  Healing your core is powerful — but doing it with a community of moms (and with Zoe + her team cheering you on) makes it so much more fun! This isn't just another WhatsApp group... it's your safe space to share progress, ask questions, and stay motivated.
+                </p>
+                <div className="inline-flex items-center space-x-2 bg-green-100 px-4 py-2 rounded-full">
+                  <span className="text-green-600 font-semibold">EXCLUSIVE ACCESS</span>
+                  <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 10.793a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Benefits Grid - Responsive */}
+              <div className="grid md:grid-cols-2 gap-6">
+                
+                {/* What You'll Get Inside */}
+                <div className="bg-white border border-green-200 rounded-lg p-5">
+                  <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                  </div>
-                  <div>
-                    <strong>Zoe + Coaches in the Group</strong> - Direct access to guidance, motivation, and occasional "pep talks."
+                    What You'll Get Inside
+                  </h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>
+                        <strong>Zoe + Coaches in the Group</strong> - Direct access to guidance, motivation, and occasional "pep talks."
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>
+                        <strong>Community Energy</strong> - You'll be surrounded by moms just like you — starting, restarting, and celebrating wins.
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>
+                        <strong>Accountability Made Easy</strong> - Stay consistent with reminders, challenges, and check-ins.
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>
+                        <strong>The Real Talk Space</strong> - Where you can share struggles (yes, even the messy ones) and get support without judgment.
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>
+                        <strong>Tips & Surprises</strong> - Expect quick hacks, fun challenges, and mini-celebrations along the way.
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+
+                {/* Who Is It For */}
+                <div className="bg-white border border-green-200 rounded-lg p-5">
+                  <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
                     </svg>
-                  </div>
-                  <div>
-                    <strong>Community Energy</strong> - You'll be surrounded by moms just like you — starting, restarting, and celebrating wins.
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <strong>Accountability Made Easy</strong> - Stay consistent with reminders, challenges, and check-ins.
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <strong>The Real Talk Space</strong> - Where you can share struggles (yes, even the messy ones) and get support without judgment.
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <strong>Tips & Surprises</strong> - Expect quick hacks, fun challenges, and mini-celebrations along the way.
+                    Who Is It For
+                  </h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>You've started Heal Your Core and want ongoing support</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>You're unsure if you're 'doing it right' and want guidance</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>You love being part of a tribe that celebrates wins together</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>You want to stay consistent and actually finish the program</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                      <div>You value having expert answers at your fingertips</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Who Is It For */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-bold text-green-600 mb-4">WHO IS IT FOR</h4>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+              {/* How It Works */}
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-5">
+                <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
+                  </svg>
+                  How It Works
+                </h4>
+                <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
+                      <div>Pay ₹1000 for 3 months access</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+                      <div>Select and purchase your 3-month WhatsApp Community Support add-on</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+                      <div>Receive your exclusive invite link to the private group (This may take a few days)</div>
+                    </div>
                   </div>
-                  <div>You've started Heal Your Core and want ongoing support</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</div>
+                      <div>Join anytime — whether you're on Day 1 or Week 6 of your Heal My Core journey</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">5</div>
+                      <div>A Community Coach helps manage the group to keep it useful, supportive, and positive</div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">6</div>
+                      <div>Renew if you'd like to continue beyond your first 3 months</div>
+                    </div>
                   </div>
-                  <div>You're unsure if you're 'doing it right' and want guidance</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>You love being part of a tribe that celebrates wins together</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>You want to stay consistent and actually finish the program</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>You value having expert answers at your fingertips</div>
                 </div>
               </div>
-            </div>
 
-            {/* How It Works */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-bold text-green-600 mb-4">HOW IT WORKS</h4>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>Pay ₹1000 for 3 months access</div>
+              {/* Call to Action */}
+              <div className="text-center bg-white border-2 border-green-300 rounded-lg p-6">
+                <div className="mb-4">
+                  <div className="text-3xl font-bold text-green-600 mb-2">₹1000</div>
+                  <div className="text-gray-600 text-sm mb-1">3 months of community support</div>
+                  <p className="text-gray-500 text-xs">Join your supportive community of moms today!</p>
                 </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>Select and purchase your 3-month WhatsApp Community Support add-on (₹1000)</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>Receive your exclusive invite link to the private group (This may take a few days)</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>Renew if you'd like to continue beyond your first 3 months</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>Join anytime — whether you're on Day 1 or Week 6 of your Heal My Core journey</div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>A Community Coach helps manage the group to keep it useful, supportive, and positive</div>
-                </div>
+                <Button 
+                  onClick={() => window.open('https://www.strongerwithzoe.in/products/pwz-postnatal-heal-your-core', '_blank')}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
+                  data-testid="button-join-whatsapp-community"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
+                  </svg>
+                  <span>Join WhatsApp Community</span>
+                </Button>
               </div>
             </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="text-center border-t border-green-200 pt-6">
-            <div className="mb-4">
-              <div className="text-2xl font-bold text-green-600 mb-2">₹1000 for 3 months</div>
-              <p className="text-gray-600 text-sm">Join your supportive community of moms today!</p>
-            </div>
-            <Button 
-              onClick={() => window.open('https://www.strongerwithzoe.in/products/pwz-postnatal-heal-your-core', '_blank')}
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
-              data-testid="button-join-whatsapp-community"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
-              </svg>
-              <span>Join WhatsApp Community</span>
-            </Button>
-          </div>
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
       
       {/* 6-Week Program - Collapsible */}
