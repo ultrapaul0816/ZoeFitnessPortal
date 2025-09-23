@@ -149,7 +149,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             {/* Contact Button */}
             <div className="mt-8">
               <Button 
-                onClick={() => window.open('mailto:support@strongerwithzoe.in', '_blank')}
+                onClick={() => window.open('https://mail.google.com/mail/u/0/?to=support@strongerwithzoe.in&su=Support+Request&body=Hi+Stronger+With+Zoe+Team,%0D%0A%0D%0AI+would+like+to+get+support+with:%0D%0A%0D%0A[Please+describe+your+question+or+issue+here]%0D%0A%0D%0AThank+you!&tf=cm', '_blank')}
                 className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
                 data-testid="button-contact-support"
               >
