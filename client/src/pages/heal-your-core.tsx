@@ -77,7 +77,6 @@ export default function HealYourCorePage() {
   const [isProgressExpanded, setIsProgressExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("welcome");
   const [animatingNumber, setAnimatingNumber] = useState<number | null>(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const prevActiveTabRef = useRef(activeTab);
 
   // Trigger animation when advancing to a new section
@@ -1752,6 +1751,7 @@ function WelcomeSection({
   getNavigationText: (direction: 'prev' | 'next') => string;
 }) {
   const [expandedTopics, setExpandedTopics] = useState<{[key: string]: boolean}>({});
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const toggleTopic = (topicId: string) => {
     setExpandedTopics(prev => ({
