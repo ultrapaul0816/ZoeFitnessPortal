@@ -840,6 +840,15 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async updateProgram(id: string, updates: Partial<Program>): Promise<Program | undefined> {
+    const result = await this.db
+      .update(programs)
+      .set(updates)
+      .where(eq(programs.id, id))
+      .returning();
+    return result[0];
+  }
+
   // Member Programs
   async getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]> {
     const result = await this.db

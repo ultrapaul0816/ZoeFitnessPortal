@@ -641,6 +641,7 @@ export default function Dashboard() {
       <ZoeWelcomeModal
         isOpen={showDisclaimerModal}
         onClose={handleDisclaimerClose}
+        userId={user.id}
       />
 
       {/* Hamburger Menu Overlay */}
