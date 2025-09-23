@@ -908,7 +908,6 @@ class DatabaseStorage implements IStorage {
   }
   async getUserPurchases(userId: string): Promise<ProgramPurchase[]> { return []; }
   async hasProgramAccess(userId: string, programId: string): Promise<boolean> {
-    console.log("Checking program access for:", { userId, programId });
     const purchases = await this.db
       .select()
       .from(programPurchases)
@@ -917,7 +916,6 @@ class DatabaseStorage implements IStorage {
         eq(programPurchases.programId, programId),
         eq(programPurchases.status, "active")
       ));
-    console.log("Found purchases:", purchases.length);
     return purchases.length > 0;
   }
   async createProgressEntry(entry: InsertProgressTracking): Promise<ProgressTracking> {
