@@ -14,7 +14,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Info, Globe, Bell, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft } from "lucide-react";
+import { ChevronDown, Info, Globe, Bell, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
 interface ProfileSettingsProps {
@@ -26,7 +26,7 @@ interface ProfileSettingsProps {
 
 export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }: ProfileSettingsProps) {
   const [location, setLocation] = useLocation();
-  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'notifications'>('menu');
+  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'notifications' | 'support'>('menu');
   const [profileData, setProfileData] = useState({
     country: '',
     bio: '',
@@ -72,6 +72,96 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     'Italy', 'Spain', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Ireland', 
     'New Zealand', 'Japan', 'South Korea', 'Singapore', 'India', 'Brazil', 'Mexico'
   ];
+
+  if (currentView === 'support') {
+    return (
+      <div 
+        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
+        data-testid="page-support-settings"
+      >
+        <div className="w-full h-full overflow-y-auto p-6">
+          {/* Back Button */}
+          <button 
+            onClick={() => setCurrentView('menu')}
+            className="group relative mb-6 flex items-center gap-2 px-4 py-2.5 rounded-full border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:border-pink-300 hover:bg-pink-50 transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50"
+          >
+            <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-pink-600 transition-all duration-300 transform group-hover:-translate-x-1" />
+            <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700 transition-colors duration-300">
+              Back to Menu
+            </span>
+            {/* Subtle gradient overlay on hover */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
+          </button>
+
+          {/* Support Center */}
+          <div className="bg-white rounded-lg p-8 shadow-sm text-center">
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-pink-400 to-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <HelpCircle className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Need Help?</h2>
+              <p className="text-gray-600 mb-6">
+                We're here to support you on your wellness journey. Get in touch with our friendly team for any questions or assistance.
+              </p>
+            </div>
+
+            {/* Support Email Section */}
+            <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg p-6 mb-6 border border-pink-200">
+              <div className="flex items-center justify-center mb-4">
+                <Mail className="w-6 h-6 text-pink-600 mr-2" />
+                <h3 className="text-lg font-semibold text-gray-900">Email Support</h3>
+              </div>
+              
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-medium text-gray-900">support@strongerwithzoe.in</span>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText('support@strongerwithzoe.in');
+                      // You could add a toast notification here
+                    }}
+                    className="p-2 text-pink-600 hover:text-pink-700 hover:bg-pink-50 rounded-lg transition-colors duration-200"
+                    title="Copy email address"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <p className="text-sm text-gray-600 mt-3">
+                Send us an email and we'll get back to you within 24 hours
+              </p>
+            </div>
+
+            {/* Additional Support Info */}
+            <div className="grid md:grid-cols-2 gap-4 text-left">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Response Time</h4>
+                <p className="text-sm text-gray-600">We typically respond within 24 hours during business days</p>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 mb-2">What to Include</h4>
+                <p className="text-sm text-gray-600">Your account email and a detailed description of your question</p>
+              </div>
+            </div>
+
+            {/* Contact Button */}
+            <div className="mt-8">
+              <Button 
+                onClick={() => window.open('mailto:support@strongerwithzoe.in', '_blank')}
+                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+                data-testid="button-contact-support"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Send Email
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (currentView === 'notifications') {
     return (
@@ -581,6 +671,32 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
                   <Bell className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Notifications</span>
+                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
+                  <ChevronRight className="w-4 h-4 text-pink-500" />
+                </div>
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="flex justify-start my-2 pl-3">
+              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
+            </div>
+
+            {/* Support */}
+            <div className="flex justify-start">
+              <button 
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                style={{ animationDelay: '400ms' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentView('support');
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
+                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
+                  <HelpCircle className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Support</span>
                 <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
                   <ChevronRight className="w-4 h-4 text-pink-500" />
                 </div>
