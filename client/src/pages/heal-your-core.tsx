@@ -393,83 +393,82 @@ export default function HealYourCorePage() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-xl rounded-lg overflow-hidden">
             {/* Greeting Section */}
-            <div className="p-4 md:p-6 border-b border-pink-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                    <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <div className="p-3 sm:p-4 md:p-6 border-b border-pink-200">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                   </div>
-                  <div className="text-left">
-                    <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
-                    <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">Ready to strengthen your core today?</p>
+                  <div className="text-left flex-1">
+                    <h3 className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 font-medium mt-0.5">Ready to strengthen your core today?</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs md:text-sm text-gray-500 font-medium">
+                <div className="text-right flex-shrink-0">
+                  <div className="text-xs sm:text-sm text-gray-500 font-medium">
                     {new Date().toLocaleDateString('en-US', { 
-                      weekday: 'long', 
+                      weekday: 'short', 
                       month: 'short', 
                       day: 'numeric' 
                     })}
                   </div>
-                  <div className="flex items-center space-x-1 mt-1">
+                  <div className="flex items-center justify-end space-x-1 mt-1">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-gray-500">Active Program</span>
+                    <span className="text-xs text-gray-500">Active</span>
                   </div>
                 </div>
               </div>
-              <div className="mt-3 md:mt-4">
-                <div className="bg-white/50 rounded-lg p-3 border border-pink-200/50">
-                  <div className="flex items-center justify-between text-xs md:text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Heart className="w-4 h-4 text-pink-500" />
-                      <span className="text-gray-700 font-medium">Your recovery journey starts here</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Sparkles className="w-3 h-3 text-pink-400" />
-                      <span className="text-pink-600 font-semibold text-xs">6-Week Program</span>
-                    </div>
+              <div className="bg-white/50 rounded-lg p-2.5 sm:p-3 border border-pink-200/50">
+                <div className="flex items-center justify-between text-xs sm:text-sm">
+                  <div className="flex items-center space-x-2">
+                    <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-pink-500" />
+                    <span className="text-gray-700 font-medium">Your recovery journey starts here</span>
+                  </div>
+                  <div className="flex items-center space-x-1 flex-shrink-0">
+                    <Sparkles className="w-3 h-3 text-pink-400" />
+                    <span className="text-pink-600 font-semibold text-xs">6-Week Program</span>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* Navigation Tabs */}
-            <div className="overflow-x-auto px-0">
-              <TabsList className="tab-flow-container flex w-full md:grid md:grid-cols-7 gap-2 md:gap-4 h-auto p-4 md:p-6 bg-transparent border-0 shadow-none min-w-max md:min-w-0 mx-0">
-              <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <Play className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium">Start Here</span>
-              </TabsTrigger>
-              <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <Brain className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium text-center leading-tight">Core</span>
-              </TabsTrigger>
-              <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <Heart className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium">Heal</span>
-              </TabsTrigger>
-              <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <Dumbbell className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium">Programs</span>
-              </TabsTrigger>
-              <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <Apple className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium">Nutrition</span>
-              </TabsTrigger>
-              <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <ChartBar className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium">What's Next</span>
-              </TabsTrigger>
-              
-              <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[70px] md:min-h-[60px] min-w-[80px] flex-col p-2 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10">
-                <HelpCircle className="w-6 h-6 md:w-5 md:h-5 mb-2" />
-                <span className="font-medium">FAQs</span>
-              </TabsTrigger>
-              </TabsList>
+            <div className="overflow-x-auto scrollbar-hide px-0">
+              <div className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
+                <TabsList className="tab-flow-container flex gap-2 sm:gap-3 md:gap-4 h-auto bg-transparent border-0 shadow-none w-max md:w-full md:grid md:grid-cols-7 mx-0">
+                  <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Start Here</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <Brain className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Core</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <Heart className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Heal</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Programs</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <Apple className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Nutrition</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="next-steps" data-testid="tab-next-steps" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <ChartBar className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">What's Next</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">FAQs</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
             </div>
             {/* Game-like Journey Progress Bar - Connected */}
-            <div className="relative px-4 sm:px-8 md:px-12 py-4 sm:py-6 bg-white border-t border-pink-200">
+            <div className="relative px-3 sm:px-6 md:px-12 py-3 sm:py-4 md:py-6 bg-white border-t border-pink-200">
               <div className="flex items-center justify-between relative">
                 {/* Background connecting line */}
                 <div className="absolute top-1/2 left-0 right-0 h-0.5 sm:h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
