@@ -638,13 +638,10 @@ export default function Dashboard() {
       )}
 
       {/* Disclaimer Modal */}
-      {user && (
-        <ZoeWelcomeModal
-          isOpen={showDisclaimerModal}
-          onClose={handleDisclaimerClose}
-          userId={user.id}
-        />
-      )}
+      <ZoeWelcomeModal
+        isOpen={showDisclaimerModal}
+        onClose={handleDisclaimerClose}
+      />
 
       {/* Hamburger Menu Overlay */}
       {showProfileSettings && (

@@ -888,10 +888,7 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
   async markNotificationRead(id: string): Promise<boolean> { return false; }
-  async getActiveTerms(): Promise<Terms | undefined> {
-    const result = await this.db.select().from(terms).where(eq(terms.isActive, true)).limit(1);
-    return result[0];
-  }
+  async getActiveTerms(): Promise<Terms | undefined> { return undefined; }
   async createTerms(termsData: InsertTerms): Promise<Terms> {
     const result = await this.db.insert(terms).values(termsData).returning();
     return result[0];
@@ -912,9 +909,7 @@ class DatabaseStorage implements IStorage {
     const result = await this.db.insert(knowledgeArticles).values(article).returning();
     return result[0];
   }
-  async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> {
-    return await this.db.select().from(knowledgeArticles).where(eq(knowledgeArticles.programId, programId));
-  }
+  async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> { return []; }
   async createExercise(exercise: InsertExercise): Promise<Exercise> {
     const result = await this.db.insert(exercises).values(exercise).returning();
     return result[0];
@@ -925,32 +920,8 @@ class DatabaseStorage implements IStorage {
     const result = await this.db.insert(weeklyWorkouts).values(workout).returning();
     return result[0];
   }
-  async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
-    const result = await this.db
-      .select()
-      .from(weeklyWorkouts)
-      .innerJoin(exercises, eq(weeklyWorkouts.exerciseId, exercises.id))
-      .where(and(eq(weeklyWorkouts.programId, programId), eq(weeklyWorkouts.week, week)))
-      .orderBy(weeklyWorkouts.day, weeklyWorkouts.orderIndex);
-    
-    return result.map(row => ({
-      ...row.weekly_workouts,
-      exercise: row.exercises
-    }));
-  }
-  async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
-    const result = await this.db
-      .select()
-      .from(weeklyWorkouts)
-      .innerJoin(exercises, eq(weeklyWorkouts.exerciseId, exercises.id))
-      .where(eq(weeklyWorkouts.programId, programId))
-      .orderBy(weeklyWorkouts.week, weeklyWorkouts.day, weeklyWorkouts.orderIndex);
-    
-    return result.map(row => ({
-      ...row.weekly_workouts,
-      exercise: row.exercises
-    }));
-  }
+  async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
+  async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
 }
 
 // Use Database Storage instead of Memory Storage
