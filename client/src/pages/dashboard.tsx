@@ -16,6 +16,7 @@ import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
 import ProfileSettings from "@/components/profile-settings";
 import ZoeWelcomeModal from "@/components/zoe-welcome-modal";
+import ProfileBanner from "@/components/profile-banner";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 
@@ -45,6 +46,7 @@ export default function Dashboard() {
     }
   });
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -54,6 +56,16 @@ export default function Dashboard() {
     }
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
+    
+    // Check if this is the first login for profile completion banner
+    const lastLogin = localStorage.getItem("lastLoginDate");
+    const today = new Date().toDateString();
+    
+    if (!lastLogin || lastLogin !== today) {
+      setIsFirstLogin(true);
+      localStorage.setItem("lastLoginDate", today);
+    }
+    
     // Initialize profile data with user info
     setProfileData(prev => ({
       ...prev,
@@ -591,6 +603,17 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Ready to get stronger today?</p>
         </div>
 
+        {/* Profile Completion Banner */}
+        <ProfileBanner 
+          onCompleteProfile={() => setShowProfileSettings(true)}
+          context={{
+            location: 'dashboard',
+            isFirstLogin: isFirstLogin,
+            hasCompletedWorkout: stats.completedWorkouts > 0,
+            sessionStartTime: Date.now()
+          }}
+          className="mb-8"
+        />
 
         {/* Your Programs Section */}
         <section className="mb-8">

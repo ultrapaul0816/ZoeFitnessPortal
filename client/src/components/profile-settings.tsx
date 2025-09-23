@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,16 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy } from "lucide-react";
+import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  evaluateCompleteness, 
+  getCurrentProfileData, 
+  saveProfileData,
+  clearPromptState,
+  getFirstMissingFieldName,
+  type ProfileData 
+} from "@/lib/profile-completeness";
 import type { User as UserType } from "@shared/schema";
 
 interface ProfileSettingsProps {
@@ -27,29 +36,61 @@ interface ProfileSettingsProps {
 export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }: ProfileSettingsProps) {
   const [location, setLocation] = useLocation();
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
-  const [profileData, setProfileData] = useState({
+  const [profileData, setProfileData] = useState<ProfileData>({
     country: '',
     bio: '',
     socials: '',
-    fullName: `${user.firstName} ${user.lastName}`,
-    email: user.email,
     dueDate: '',
     postpartumTime: '',
-    timeFormat: '12 hours',
     timezone: '',
     newsUpdates: true,
     promotions: true,
     communityUpdates: true,
     transactionalEmails: false
   });
+  const [profileCompleteness, setProfileCompleteness] = useState<ReturnType<typeof evaluateCompleteness> | null>(null);
+  const { toast } = useToast();
+  const countryRef = useRef<HTMLButtonElement>(null);
+  const timezoneRef = useRef<HTMLButtonElement>(null);
+  const dueDateRef = useRef<HTMLInputElement>(null);
+  const postpartumRef = useRef<HTMLInputElement>(null);
 
   const [renderOpen, setRenderOpen] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
 
+  // Load profile data from localStorage when component opens
   useEffect(() => {
     if (isOpen) {
+      const currentProfile = getCurrentProfileData();
+      setProfileData(currentProfile);
+      
+      // Evaluate completeness
+      const completeness = evaluateCompleteness(currentProfile);
+      setProfileCompleteness(completeness);
+      
       setRenderOpen(true);
       setIsClosing(false);
+      
+      // Focus on first missing field after a short delay to allow render
+      setTimeout(() => {
+        if (!completeness.isComplete) {
+          const firstMissingField = getFirstMissingFieldName(completeness);
+          switch (firstMissingField) {
+            case 'country':
+              countryRef.current?.focus();
+              break;
+            case 'timezone':
+              timezoneRef.current?.focus();
+              break;
+            case 'dueDate':
+              dueDateRef.current?.focus();
+              break;
+            case 'postpartumTime':
+              postpartumRef.current?.focus();
+              break;
+          }
+        }
+      }, 100);
     } else if (renderOpen) {
       setIsClosing(true);
       const timer = setTimeout(() => {
@@ -59,12 +100,46 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     }
   }, [isOpen, renderOpen]);
 
+  // Update completeness when profile data changes
+  useEffect(() => {
+    const completeness = evaluateCompleteness(profileData);
+    setProfileCompleteness(completeness);
+  }, [profileData]);
+
   if (!renderOpen) return null;
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     onClose();
     window.location.href = "/";
+  };
+
+  const handleSaveProfile = () => {
+    // Save profile data to localStorage
+    saveProfileData(profileData);
+    
+    const completeness = evaluateCompleteness(profileData);
+    
+    // Show success feedback
+    if (completeness.isComplete) {
+      toast({
+        title: "Profile Complete! 🎉",
+        description: "Your profile has been completed successfully. You're all set!",
+        duration: 4000,
+      });
+      
+      // Clear prompt state since profile is now complete
+      clearPromptState();
+    } else {
+      toast({
+        title: "Profile Updated",
+        description: `Profile saved. ${completeness.missingRequiredCount} required field${completeness.missingRequiredCount > 1 ? 's' : ''} remaining.`,
+        duration: 3000,
+      });
+    }
+    
+    // Update completeness state
+    setProfileCompleteness(completeness);
   };
 
   const countries = [
@@ -270,6 +345,88 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
 
+          {/* Profile Completion Checklist */}
+          {profileCompleteness && !profileCompleteness.isComplete && (
+            <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-lg p-6 mb-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Complete Your Profile</h3>
+                    <p className="text-sm text-gray-600">
+                      {profileCompleteness.missingRequiredCount} required field{profileCompleteness.missingRequiredCount > 1 ? 's' : ''} remaining
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
+                    {profileCompleteness.completionPercentage}%
+                  </div>
+                  <div className="w-16 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-pink-500 to-rose-500 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${profileCompleteness.completionPercentage}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                {profileCompleteness.requiredFields.map((field) => (
+                  <div key={field.field} className="flex items-center space-x-2">
+                    {field.completed ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-gray-400" />
+                    )}
+                    <span className={`text-sm ${field.completed ? 'text-green-700' : 'text-gray-600'}`}>
+                      {field.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {profileCompleteness.optionalFields.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Optional (for better experience):</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {profileCompleteness.optionalFields.map((field) => (
+                      <div key={field.field} className="flex items-center space-x-2">
+                        {field.completed ? (
+                          <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                        ) : (
+                          <Circle className="w-4 h-4 text-gray-300" />
+                        )}
+                        <span className={`text-sm ${field.completed ? 'text-blue-700' : 'text-gray-500'}`}>
+                          {field.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Profile Complete Success Message */}
+          {profileCompleteness && profileCompleteness.isComplete && (
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6 mb-6 shadow-sm">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Profile Complete! 🎉</h3>
+                  <p className="text-sm text-gray-600">
+                    Your profile is 100% complete. You're all set for the best experience!
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* My Public Info */}
           <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">My Public Info</h2>
@@ -292,9 +449,12 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Country */}
             <div className="space-y-2 mb-6">
-              <Label htmlFor="country">Country</Label>
+              <Label htmlFor="country">Country *</Label>
               <Select value={profileData.country} onValueChange={(value) => setProfileData(prev => ({...prev, country: value}))}>
-                <SelectTrigger>
+                <SelectTrigger 
+                  ref={countryRef}
+                  className={!profileData.country ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
+                >
                   <SelectValue placeholder="Select Your Country" />
                 </SelectTrigger>
                 <SelectContent>
@@ -362,22 +522,29 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Due Date */}
             <div className="space-y-2 mb-6">
-              <Label htmlFor="dueDate">If pregnant, when are you due?</Label>
+              <Label htmlFor="dueDate">If pregnant, when are you due? *</Label>
               <Input
                 id="dueDate"
+                type="date"
                 value={profileData.dueDate}
                 onChange={(e) => setProfileData(prev => ({...prev, dueDate: e.target.value}))}
+                ref={dueDateRef}
+                className={!profileData.dueDate && !profileData.postpartumTime ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
               />
             </div>
 
             {/* Postpartum Time */}
             <div className="space-y-2">
-              <Label htmlFor="postpartumTime">If postpartum, how many weeks/months/years postpartum?</Label>
+              <Label htmlFor="postpartumTime">If postpartum, how many weeks/months/years postpartum? *</Label>
               <Input
                 id="postpartumTime"
+                placeholder="e.g., 6 weeks, 3 months, 1 year"
                 value={profileData.postpartumTime}
                 onChange={(e) => setProfileData(prev => ({...prev, postpartumTime: e.target.value}))}
+                ref={postpartumRef}
+                className={!profileData.dueDate && !profileData.postpartumTime ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
               />
+              <p className="text-xs text-gray-500">* Please fill either Due Date OR Postpartum Time (not both)</p>
             </div>
           </div>
 
@@ -399,9 +566,12 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
 
             {/* Timezone */}
             <div className="space-y-2">
-              <Label htmlFor="timezone">Timezone</Label>
+              <Label htmlFor="timezone">Timezone *</Label>
               <Select value={profileData.timezone} onValueChange={(value) => setProfileData(prev => ({...prev, timezone: value}))}>
-                <SelectTrigger>
+                <SelectTrigger 
+                  ref={timezoneRef}
+                  className={!profileData.timezone ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
+                >
                   <SelectValue placeholder="Select Your Timezone" />
                 </SelectTrigger>
                 <SelectContent>
@@ -441,7 +611,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
           </div>
 
           {/* Save Changes Button */}
-          <Button className="w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group">
+          <Button 
+            onClick={handleSaveProfile}
+            className="w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
+            data-testid="button-save-profile"
+          >
             <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>

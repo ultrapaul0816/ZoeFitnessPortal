@@ -107,10 +107,11 @@ export function evaluateCompleteness(profileData: ProfileData): ProfileCompleten
   const completedOptional = optionalFieldsStatus.filter(f => f.completed).length;
   const optionalBonus = (completedOptional / OPTIONAL_FIELDS.length) * 10; // 10% bonus for optional fields
 
-  const basePercentage = requiredComplete ? 100 : (completedRequired / totalRequired) * 100;
+  const basePercentage = requiredComplete ? 100 : ((completedRequired + (hasAlternativeField ? 1 : 0)) / totalRequired) * 100;
   const completionPercentage = Math.min(100, Math.round(basePercentage + optionalBonus));
 
-  const missingRequiredCount = totalRequired - completedRequired - (hasAlternativeField ? 0 : 1);
+  // Fix: Correct missing count calculation
+  const missingRequiredCount = (REQUIRED_FIELDS.length - completedRequired) + (hasAlternativeField ? 0 : 1);
 
   return {
     isComplete: requiredComplete,
@@ -138,6 +139,14 @@ export function getMissingFields(completeness: ProfileCompleteness): string[] {
   return completeness.requiredFields
     .filter(field => !field.completed)
     .map(field => field.label);
+}
+
+/**
+ * Gets the field name of the first missing required field (for focus targeting)
+ */
+export function getFirstMissingFieldName(completeness: ProfileCompleteness): keyof ProfileData | null {
+  const firstMissing = completeness.requiredFields.find(field => !field.completed);
+  return firstMissing ? firstMissing.field : null;
 }
 
 /**
