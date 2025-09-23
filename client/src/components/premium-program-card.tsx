@@ -75,11 +75,11 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
       data-testid={`card-program-${program.id}`}
     >
       {/* Program Cover Image with Tags */}
-      <div className="relative">
+      <div className="relative p-3">
         <img
           src={program.imageUrl}
           alt={`${program.name} program`}
-          className="w-full h-auto"
+          className="w-full h-auto rounded-lg"
         />
         {!hasAccess && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
