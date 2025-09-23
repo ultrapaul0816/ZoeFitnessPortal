@@ -106,10 +106,10 @@ export default function HealYourCorePage() {
   // Community promotion banner state
   const [bannerDismissed, setBannerDismissed] = useState(false);
   
-  // Simple banner logic without complex state tracking - show on alternating tabs
+  // Simple banner logic without complex state tracking - show on specific tabs
   const shouldShowCommunityBanner = 
     !bannerDismissed && 
-    (activeTab === 'understanding' || activeTab === 'next-steps');
+    (activeTab === 'healing' || activeTab === 'nutrition' || activeTab === 'faqs');
 
   // Tab navigation helpers
   const tabOrder = ["welcome", "understanding", "healing", "programs", "nutrition", "next-steps", "faqs"];
