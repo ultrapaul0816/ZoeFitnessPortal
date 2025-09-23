@@ -616,7 +616,10 @@ export default function Dashboard() {
               
               {/* All Programs */}
               {Array.isArray(allPrograms) && allPrograms
-                .filter((program: any) => program.name === "Your Postpartum Strength Recovery Program")
+                .filter((program: any) => 
+                  program.name === "Your Postpartum Strength Recovery Program" &&
+                  !memberPrograms.some(mp => mp.program.id === program.id)
+                )
                 .map((program: any) => (
                   <PremiumProgramCard
                     key={program.id}
