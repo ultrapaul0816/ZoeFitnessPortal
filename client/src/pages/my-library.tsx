@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, Calendar, Target, Dumbbell, Star, Menu, BookOpen } from "lucide-react";
+import { ArrowLeft, Calendar, Target, Dumbbell, Star, Menu, BookOpen, Play } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import programCover from "@assets/program-cover.png";
 import ProfileSettings from "@/components/profile-settings";
+import { Button } from "@/components/ui/button";
 import type { User, MemberProgram } from "@shared/schema";
 
 // Get user immediately during component initialization
@@ -161,63 +162,82 @@ export default function MyLibrary() {
               const program = memberProgram.program;
               if (!program) return null;
               return (
-                <Link key={program.id} to={program.name.includes("Postpartum") ? "/heal-your-core" : "/dashboard"}>
-                  <div 
-                    className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-200"
-                    data-testid={`program-card-${program.id}`}
-                  >
-                    {/* Program Image */}
-                    <div className="mb-4 rounded-lg overflow-hidden">
-                      <img 
-                        src={program.imageUrl || programCover}
-                        alt={program.name}
-                        className="w-full h-48 object-cover"
-                      />
+                <div
+                  key={program.id} 
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 overflow-hidden"
+                  data-testid={`program-card-${program.id}`}
+                >
+                  {/* Program Cover Image with Tags - Match home page style */}
+                  <div className="relative p-3">
+                    <img
+                      src={program.imageUrl || programCover}
+                      alt={`${program.name} program`}
+                      className="w-full h-auto rounded-lg"
+                    />
+                  </div>
+
+                  <div className="p-6">
+                    {/* Program Title */}
+                    <div className="mb-3">
+                      <h3 className="font-semibold text-lg">{program.name}</h3>
                     </div>
                     
-                    {/* Program Title */}
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      {program.name}
-                    </h3>
-                    
                     {/* Program Description */}
-                    <p className="text-gray-600 text-sm mb-4">
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                       {program.description}
                     </p>
                     
                     {/* Program Features */}
-                    <div className="space-y-2 mb-4">
+                    <div className="space-y-3 mb-4">
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-pink-500" />
+                        <Calendar className="w-4 h-4 text-primary" />
                         <span>{program.duration}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Target className="w-4 h-4 text-pink-500" />
-                        <span>{program.level}</span>
+                        <Target className="w-4 h-4 text-primary" />
+                        <span>{program.level} level</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Dumbbell className="w-4 h-4 text-pink-500" />
+                        <Dumbbell className="w-4 h-4 text-primary" />
                         <span>{program.equipment}</span>
                       </div>
                     </div>
                     
+                    {/* Progress Bar */}
+                    <div className="w-full h-2 bg-gray-200 rounded-full mb-4">
+                      <div 
+                        className="h-full bg-pink-500 rounded-full" 
+                        style={{width: `${((memberProgram.progress || 0) / (program.workoutCount || 1)) * 100}%`}}
+                      />
+                    </div>
+                    
                     {/* Badge */}
-                    <div className="mb-3">
+                    <div className="mb-4">
                       <div className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                         <Star className="w-3 h-3" />
                         Premium Access
                       </div>
                     </div>
                     
-                    {/* Progress Bar */}
-                    <div className="w-full h-2 bg-gray-200 rounded-full">
-                      <div 
-                        className="h-full bg-pink-500 rounded-full" 
-                        style={{width: `${((memberProgram.progress || 0) / (program.workoutCount || 1)) * 100}%`}}
-                      />
+                    {/* Continue Button - Match home page style */}
+                    <div className="space-y-3">
+                      <Link to={program.name.includes("Postpartum") ? "/heal-your-core" : "/dashboard"}>
+                        <Button 
+                          className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-200 ease-out border-0 relative overflow-hidden group rounded-lg hover:bg-gradient-to-l focus:ring-4 focus:ring-pink-300 active:shadow-inner" 
+                          data-testid={`button-continue-${program.id}`}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+                          <Play className="w-5 h-5 mr-2 animate-bounce group-hover:animate-pulse group-hover:scale-110 transition-all duration-300" />
+                          <span className="relative z-10 text-lg font-semibold tracking-wide group-hover:tracking-wider transition-all duration-200">Continue</span>
+                        </Button>
+                      </Link>
+                      <p className="text-xs text-center text-green-600 font-medium">
+                        ✓ You have full access to this program
+                      </p>
                     </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
