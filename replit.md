@@ -29,6 +29,7 @@ This project is a 6-week postnatal fitness web application, "Your Postpartum Str
 - **Promotional Strategy**: Implemented comprehensive promotional campaign with dismissible banners appearing during tab navigation and promotional cards in Welcome section
 - **Mobile UI Optimization**: Enhanced mobile responsiveness with improved spacing, text sizing, and touch-friendly buttons for better user experience on mobile devices  
 - **Support Integration**: Added WhatsApp Community support option in the Support section under hamburger menu, providing users with an additional support channel alongside email support
+- **Z-Index Layering Fix**: Resolved mobile UI conflict where promotional banners appeared above hamburger menu by adjusting z-index hierarchy (banners: z-30, menu: z-50) ensuring proper navigation accessibility
 
 # User Preferences
 
