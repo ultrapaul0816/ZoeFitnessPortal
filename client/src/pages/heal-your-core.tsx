@@ -6698,16 +6698,16 @@ function TheRoleOfNutritionSection({
                           {/* Collagen Support */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
                             <div className="p-4" style={{backgroundColor: '#f2038b'}}>
-                              <h4 className="font-bold text-lg" style={{color: '#8b0040'}}>COLLAGEN SUPPORT</h4>
-                              <p className="text-sm mt-1" style={{color: '#8b0040'}}>Provides amino acids for rebuilding fascia and soft tissue</p>
+                              <h4 className="font-bold text-white text-lg">COLLAGEN SUPPORT</h4>
+                              <p className="text-white text-sm mt-1">Provides amino acids for rebuilding fascia and soft tissue</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Bone Broth (Mutton/Chicken)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Homemade Soups</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Haldi-doodh (Turmeric Milk)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Collagen Powders</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Bone Broth (Mutton/Chicken)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Homemade Soups</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Haldi-doodh (Turmeric Milk)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Collagen Powders</span>
                               </div>
                             </div>
                           </div>
@@ -6796,18 +6796,18 @@ function TheRoleOfNutritionSection({
                           {/* Healthy Fats */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
                             <div className="p-4" style={{backgroundColor: '#f2038b'}}>
-                              <h4 className="font-bold text-lg" style={{color: '#8b0040'}}>HEALTHY FATS</h4>
-                              <p className="text-sm mt-1" style={{color: '#8b0040'}}>Supports hormones and tissue elasticity</p>
+                              <h4 className="font-bold text-white text-lg">HEALTHY FATS</h4>
+                              <p className="text-white text-sm mt-1">Supports hormones and tissue elasticity</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Ghee (Small Amounts)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Sesame Seeds (Til)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Coconut</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Soaked Almonds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Flaxseeds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Groundnut Chutney</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Ghee (Small Amounts)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Sesame Seeds (Til)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Coconut</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Soaked Almonds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Flaxseeds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Groundnut Chutney</span>
                               </div>
                             </div>
                           </div>
@@ -6915,20 +6915,20 @@ function TheRoleOfNutritionSection({
                           {/* Palm-sized Protein */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
                             <div className="p-4" style={{backgroundColor: '#f2038b'}}>
-                              <h4 className="font-bold text-lg flex items-center gap-2" style={{color: '#8b0040'}}>
+                              <h4 className="font-bold text-white text-lg flex items-center gap-2">
                                 <span>🤚</span> PALM-SIZED PROTEIN
                               </h4>
-                              <p className="text-sm mt-1" style={{color: '#8b0040'}}>1 palm = about 20–30g protein</p>
+                              <p className="text-white text-sm mt-1">1 palm = about 20–30g protein</p>
                             </div>
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Chicken</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Fish</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Tofu</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Eggs</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Beans</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#c8015e', color: '#8b0040'}}>Lentils</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Chicken</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Fish</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Tofu</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Eggs</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Beans</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f2038b', color: '#f2038b'}}>Lentils</span>
                               </div>
                             </div>
                           </div>
