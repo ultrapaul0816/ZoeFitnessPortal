@@ -15,7 +15,6 @@ import ProgramCard from "@/components/program-card";
 import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
 import ProfileSettings from "@/components/profile-settings";
-import ZoeWelcomeModal from "@/components/zoe-welcome-modal";
 import ProfileBanner from "@/components/profile-banner";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
@@ -45,7 +44,6 @@ export default function Dashboard() {
       transactionalEmails: true,
     }
   });
-  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
 
@@ -75,23 +73,6 @@ export default function Dashboard() {
     }));
   }, [setLocation]);
 
-  // Check if user should see disclaimer modal on this session
-  useEffect(() => {
-    if (user) {
-      const shouldShowDisclaimer = sessionStorage.getItem("showDisclaimerOnSession");
-      if (shouldShowDisclaimer === "true") {
-        setShowDisclaimerModal(true);
-      }
-    }
-  }, [user]);
-
-  const handleDisclaimerClose = (hasConsented: boolean) => {
-    if (hasConsented) {
-      // Clear the session flag so disclaimer won't show again this session
-      sessionStorage.removeItem("showDisclaimerOnSession");
-    }
-    setShowDisclaimerModal(false);
-  };
 
   const { data: memberPrograms = [] } = useQuery<(MemberProgram & { program: Program })[]>({
     queryKey: ["/api/member-programs", user?.id],
@@ -669,12 +650,6 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Disclaimer Modal */}
-      <ZoeWelcomeModal
-        isOpen={showDisclaimerModal}
-        onClose={handleDisclaimerClose}
-        userId={user.id}
-      />
 
       {/* Hamburger Menu Overlay */}
       {showProfileSettings && (
