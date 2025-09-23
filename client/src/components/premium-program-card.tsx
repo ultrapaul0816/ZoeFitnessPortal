@@ -79,7 +79,7 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
         <img
           src={program.imageUrl}
           alt={`${program.name} program`}
-          className="w-full h-80 object-contain"
+          className="w-full h-80 object-cover"
         />
         {!hasAccess && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
