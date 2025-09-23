@@ -63,7 +63,8 @@ import {
   Menu,
   Star,
   Sprout,
-  HelpCircle
+  HelpCircle,
+  Sparkles
 } from "lucide-react";
 import ProfileSettings from "@/components/profile-settings";
 import type { User } from "@shared/schema";
@@ -393,12 +394,42 @@ export default function HealYourCorePage() {
           <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 shadow-xl rounded-lg overflow-hidden">
             {/* Greeting Section */}
             <div className="p-4 md:p-6 border-b border-pink-200">
-              <div className="flex items-center space-x-3 md:space-x-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                  <TrendingUp className="w-4 h-4 text-white" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3 md:space-x-4">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                    <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                    <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">Ready to strengthen your core today?</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                <div className="text-right">
+                  <div className="text-xs md:text-sm text-gray-500 font-medium">
+                    {new Date().toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </div>
+                  <div className="flex items-center space-x-1 mt-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-gray-500">Active Program</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 md:mt-4">
+                <div className="bg-white/50 rounded-lg p-3 border border-pink-200/50">
+                  <div className="flex items-center justify-between text-xs md:text-sm">
+                    <div className="flex items-center space-x-2">
+                      <Heart className="w-4 h-4 text-pink-500" />
+                      <span className="text-gray-700 font-medium">Your recovery journey starts here</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Sparkles className="w-3 h-3 text-pink-400" />
+                      <span className="text-pink-600 font-semibold text-xs">6-Week Program</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
