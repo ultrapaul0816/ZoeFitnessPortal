@@ -6721,14 +6721,14 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Turmeric</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Ginger</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Tulsi Tea (Holy Basil)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Ajwain Water</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Soaked Almonds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Walnuts</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Fatty Fish</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Sardines</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Turmeric</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Ginger</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Tulsi Tea (Holy Basil)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Ajwain Water</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Soaked Almonds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Walnuts</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Fatty Fish</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Sardines</span>
                               </div>
                             </div>
                           </div>
@@ -6742,14 +6742,14 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>2 Eggs</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Cottage Cheese (Paneer)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Yoghurt</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Lentils</span>
-                                <span className="px-3 py-1 rounded-full text-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Fish</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Grilled Chicken</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Chana (Chickpeas)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Tofu</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>2 Eggs</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Cottage Cheese (Paneer)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Yoghurt</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Lentils</span>
+                                <span className="px-3 py-1 rounded-full text-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Fish</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Grilled Chicken</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Chana (Chickpeas)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Tofu</span>
                               </div>
                             </div>
                           </div>
@@ -6763,13 +6763,13 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Sweet Potato</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Bajra (Pearl Millet)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Jowar (Sorghum)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Rolled Oats</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Whole Wheat Roti</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Red Rice</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Poha With Veggies</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Sweet Potato</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Bajra (Pearl Millet)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Jowar (Sorghum)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Rolled Oats</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Whole Wheat Roti</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Red Rice</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Poha With Veggies</span>
                               </div>
                             </div>
                           </div>
@@ -6783,12 +6783,12 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>Jeera Water (Cumin)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>Coconut Water</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>Nimbu-paani (Lime Water)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>ORS</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>Salted Chaas (Buttermilk)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>8–10 Glasses Of Water</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>Jeera Water (Cumin)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>Coconut Water</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>Nimbu-paani (Lime Water)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>ORS</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>Salted Chaas (Buttermilk)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>8–10 Glasses Of Water</span>
                               </div>
                             </div>
                           </div>
@@ -6841,13 +6841,13 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Beetroot</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Leafy Greens</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Citrus Fruits</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Jaggery</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Sesame Seeds</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Methi (Fenugreek)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Sabzis With Haldi + Jeera</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Beetroot</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Leafy Greens</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Citrus Fruits</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Jaggery</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Sesame Seeds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Methi (Fenugreek)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Sabzis With Haldi + Jeera</span>
                               </div>
                             </div>
                           </div>
@@ -6944,10 +6944,10 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Cooked Vegetables</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Raw Vegetables</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>All Colors</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3c0e4', color: '#b3c0e4'}}>Leafy Greens</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Cooked Vegetables</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Raw Vegetables</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>All Colors</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Leafy Greens</span>
                               </div>
                             </div>
                           </div>
@@ -6963,11 +6963,11 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Oats</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Quinoa</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Sweet Potato</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Rice</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#cbde9a', color: '#cbde9a'}}>Fruit</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Oats</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Quinoa</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Sweet Potato</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Rice</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9fbd60', color: '#7fb030'}}>Fruit</span>
                               </div>
                             </div>
                           </div>
@@ -6983,10 +6983,10 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Nut Butters</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Oils</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Avocado</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#b3a892', color: '#b3a892'}}>Seeds</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Nut Butters</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Oils</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Avocado</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#9a8b72', color: '#8b7355'}}>Seeds</span>
                               </div>
                             </div>
                           </div>
@@ -7002,9 +7002,9 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Add Between Meals:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>Eggs</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>Greek Yogurt</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#f3a8cb', color: '#f3a8cb'}}>Trail Mix</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>Eggs</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>Greek Yogurt</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#e8819b', color: '#d1507a'}}>Trail Mix</span>
                               </div>
                             </div>
                           </div>
