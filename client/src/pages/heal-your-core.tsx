@@ -4563,7 +4563,7 @@ function ProgramsSection({
         </div>
 
         {/* WhatsApp Community Card - Collapsible */}
-        <Card className="overflow-hidden border-2 border-green-300 shadow-xl bg-gradient-to-br from-green-50 via-white to-emerald-50">
+        <Card className="overflow-hidden border-2 border-green-300 shadow-xl bg-gradient-to-br from-green-50 via-white to-emerald-50 rounded-3xl">
           <CardHeader 
             className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 cursor-pointer transition-all duration-300 relative overflow-hidden"
             onClick={() => toggleProgram('whatsapp-community')}
