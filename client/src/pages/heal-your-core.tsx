@@ -6698,7 +6698,7 @@ function TheRoleOfNutritionSection({
                           {/* Collagen Support */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
                             <div className="p-4" style={{backgroundColor: '#f2038b'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>COLLAGEN SUPPORT</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#8b0040'}}>COLLAGEN SUPPORT</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Provides amino acids for rebuilding fascia and soft tissue</p>
                             </div>
                             <div className="p-5">
@@ -6715,7 +6715,7 @@ function TheRoleOfNutritionSection({
                           {/* Anti-inflammatory Foods */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
                             <div className="p-4" style={{backgroundColor: '#b3c0e4'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>ANTI-INFLAMMATORY FOODS</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#5e73c4'}}>ANTI-INFLAMMATORY FOODS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Reduces swelling and pain, supports tissue healing</p>
                             </div>
                             <div className="p-5">
@@ -6736,7 +6736,7 @@ function TheRoleOfNutritionSection({
                           {/* Adequate Protein */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
                             <div className="p-4" style={{backgroundColor: '#cbde9a'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>ADEQUATE PROTEIN</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#7fb030'}}>ADEQUATE PROTEIN</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Helps repair muscles, ligaments & improves strength</p>
                             </div>
                             <div className="p-5">
@@ -6757,7 +6757,7 @@ function TheRoleOfNutritionSection({
                           {/* Low-GI Carbs */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3a892'}}>
                             <div className="p-4" style={{backgroundColor: '#b3a892'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>LOW-GI CARBS</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#8b7355'}}>LOW-GI CARBS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Prevents blood sugar spikes, improves hormone balance</p>
                             </div>
                             <div className="p-5">
@@ -6777,7 +6777,7 @@ function TheRoleOfNutritionSection({
                           {/* Hydration & Electrolytes */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
                             <div className="p-4" style={{backgroundColor: '#f3a8cb'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>HYDRATION & ELECTROLYTES</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#d1507a'}}>HYDRATION & ELECTROLYTES</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Keeps fascia elastic and supports nutrient delivery</p>
                             </div>
                             <div className="p-5">
@@ -6796,7 +6796,7 @@ function TheRoleOfNutritionSection({
                           {/* Healthy Fats */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
                             <div className="p-4" style={{backgroundColor: '#f2038b'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>HEALTHY FATS</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#8b0040'}}>HEALTHY FATS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Supports hormones and tissue elasticity</p>
                             </div>
                             <div className="p-5">
@@ -6815,7 +6815,7 @@ function TheRoleOfNutritionSection({
                           {/* Complex Carbs */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
                             <div className="p-4" style={{backgroundColor: '#b3c0e4'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>COMPLEX CARBS</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#5e73c4'}}>COMPLEX CARBS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Balances blood sugar, supports energy + digestion</p>
                             </div>
                             <div className="p-5">
@@ -6835,7 +6835,7 @@ function TheRoleOfNutritionSection({
                           {/* Micronutrients */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
                             <div className="p-4" style={{backgroundColor: '#cbde9a'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>MICRONUTRIENTS</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#7fb030'}}>MICRONUTRIENTS</h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.6)'}}>Supports wound healing and replenishes lost iron/zinc</p>
                             </div>
                             <div className="p-5">
@@ -6890,7 +6890,7 @@ function TheRoleOfNutritionSection({
                         {/* Hand Portion Guide */}
                         <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
                           <div className="p-4" style={{backgroundColor: '#b3c0e4'}}>
-                            <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>YOUR HANDS = YOUR BUILT-IN PORTION GUIDE</h4>
+                            <h4 className="font-bold text-lg" style={{color: '#5e73c4'}}>YOUR HANDS = YOUR BUILT-IN PORTION GUIDE</h4>
                             <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.2)'}}>Using your hands makes portioning simple and personal to your body</p>
                           </div>
                           <div className="p-6">
@@ -6908,14 +6908,14 @@ function TheRoleOfNutritionSection({
                         <div className="space-y-4">
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
                             <div className="p-4" style={{backgroundColor: '#f3a8cb'}}>
-                              <h4 className="font-bold text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>FOR EACH MAIN MEAL (3x/day), AIM FOR:</h4>
+                              <h4 className="font-bold text-lg" style={{color: '#d1507a'}}>FOR EACH MAIN MEAL (3x/day), AIM FOR:</h4>
                             </div>
                           </div>
 
                           {/* Palm-sized Protein */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f2038b'}}>
                             <div className="p-4" style={{backgroundColor: '#f2038b'}}>
-                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
+                              <h4 className="font-bold text-lg flex items-center gap-2" style={{color: '#8b0040'}}>
                                 <span>🤚</span> PALM-SIZED PROTEIN
                               </h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.2)'}}>1 palm = about 20–30g protein</p>
@@ -6936,7 +6936,7 @@ function TheRoleOfNutritionSection({
                           {/* Fist-sized Veggies */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3c0e4'}}>
                             <div className="p-4" style={{backgroundColor: '#b3c0e4'}}>
-                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
+                              <h4 className="font-bold text-lg flex items-center gap-2" style={{color: '#5e73c4'}}>
                                 <span>✊</span> FIST-SIZED VEGGIES
                               </h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.2)'}}>Go for variety & fiber to support digestion</p>
@@ -6955,7 +6955,7 @@ function TheRoleOfNutritionSection({
                           {/* Cupped-hand Complex Carbs */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#cbde9a'}}>
                             <div className="p-4" style={{backgroundColor: '#cbde9a'}}>
-                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
+                              <h4 className="font-bold text-lg flex items-center gap-2" style={{color: '#7fb030'}}>
                                 <span>🤲</span> CUPPED-HAND COMPLEX CARBS
                               </h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.2)'}}>Adjust depending on activity and energy</p>
@@ -6975,7 +6975,7 @@ function TheRoleOfNutritionSection({
                           {/* Thumb of Healthy Fat */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#b3a892'}}>
                             <div className="p-4" style={{backgroundColor: '#b3a892'}}>
-                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
+                              <h4 className="font-bold text-lg flex items-center gap-2" style={{color: '#8b7355'}}>
                                 <span>👍</span> THUMB OF HEALTHY FAT
                               </h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.2)'}}>Adjust depending on activity and energy</p>
@@ -6994,7 +6994,7 @@ function TheRoleOfNutritionSection({
                           {/* Plus Extra If Breastfeeding */}
                           <div className="bg-white border rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style={{borderColor: '#f3a8cb'}}>
                             <div className="p-4" style={{backgroundColor: '#f3a8cb'}}>
-                              <h4 className="font-bold text-white text-lg flex items-center gap-2" style={{textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.1)'}}>
+                              <h4 className="font-bold text-lg flex items-center gap-2" style={{color: '#d1507a'}}>
                                 <span>🤱</span> PLUS EXTRA IF BREASTFEEDING
                               </h4>
                               <p className="text-white text-sm mt-1" style={{textShadow: '0 1px 2px rgba(0,0,0,0.2)'}}>Add another ½—1 palm of carbs or fat</p>
