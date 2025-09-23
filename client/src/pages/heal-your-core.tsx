@@ -391,34 +391,13 @@ export default function HealYourCorePage() {
         {/* Progress Section */}
         <Card className="border-pink-200 bg-gradient-to-r from-pink-50 to-pink-100 shadow-lg">
           <CardContent className="p-4 md:p-6">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-3 md:space-x-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                  <TrendingUp className="w-4 h-4 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
-                  <p className="text-xs md:text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
-                </div>
+            <div className="flex items-center space-x-3 md:space-x-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                <TrendingUp className="w-4 h-4 text-white" />
               </div>
-              <div className="flex items-center space-x-3 md:space-x-4">
-                <div className="text-right space-y-1 md:space-y-2">
-                  <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">{Math.round(progressPercentage)}%</div>
-                  <div className="w-20 md:w-28">
-                    <Progress value={progressPercentage} className="h-2 md:h-3 bg-gray-200">
-                      <div className="h-full bg-gradient-to-r from-pink-400 to-pink-600 rounded-full transition-all duration-300 ease-out" style={{width: `${progressPercentage}%`}} />
-                    </Progress>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsProgressExpanded(!isProgressExpanded)}
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-pink-200 hover:bg-pink-50 p-0 ml-2 md:ml-4"
-                  data-testid="button-toggle-progress"
-                >
-                  <ChevronDown className={`w-4 h-4 text-pink-600 transition-transform duration-200 ${isProgressExpanded ? 'rotate-180' : ''}`} />
-                </Button>
+              <div className="text-left">
+                <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
+                <p className="text-xs md:text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
               </div>
             </div>
           </CardContent>
