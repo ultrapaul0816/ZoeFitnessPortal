@@ -86,6 +86,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check disclaimer status by email
+  app.get("/api/users/disclaimer-status", async (req, res) => {
+    try {
+      const { email } = req.query;
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.json({ needsDisclaimer: true }); // New users need disclaimer
+      }
+
+      res.json({ 
+        needsDisclaimer: !user.disclaimerAccepted,
+        userExists: true 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to check disclaimer status" });
+    }
+  });
+
   app.post("/api/auth/accept-disclaimer", async (req, res) => {
     try {
       const { userId } = req.body;

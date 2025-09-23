@@ -1,30 +1,43 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { loginSchema, type LoginData } from "@shared/schema";
-import TermsModal from "@/components/terms-modal";
+import { Shield, AlertTriangle } from "lucide-react";
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [showTermsModal, setShowTermsModal] = useState(false);
-  const [pendingUser, setPendingUser] = useState<any>(null);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
+      disclaimerAccepted: false,
     },
+  });
+
+  // Query to check if user needs disclaimer (only when email is provided)
+  const checkDisclaimerQuery = useQuery({
+    queryKey: ['/api/users/disclaimer-status', form.watch('email')],
+    queryFn: async () => {
+      const email = form.watch('email');
+      if (!email || !email.includes('@')) return null;
+      const response = await apiRequest('GET', `/api/users/disclaimer-status?email=${encodeURIComponent(email)}`);
+      return response.json();
+    },
+    enabled: false, // Only run manually
   });
 
   const loginMutation = useMutation({
@@ -33,18 +46,15 @@ export default function Login() {
       return response.json();
     },
     onSuccess: (data) => {
-      if (!data.user.termsAccepted) {
-        setPendingUser(data.user);
-        setShowTermsModal(true);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      toast({
+        title: "Welcome back!",
+        description: "Successfully signed in to your account.",
+      });
+      if (data.user.isAdmin) {
+        setLocation("/admin");
       } else {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        // Set session flag to show disclaimer on this login session
-        sessionStorage.setItem("showDisclaimerOnSession", "true");
-        if (data.user.isAdmin) {
-          setLocation("/admin");
-        } else {
-          setLocation("/dashboard");
-        }
+        setLocation("/dashboard");
       }
     },
     onError: () => {
@@ -56,23 +66,28 @@ export default function Login() {
     },
   });
 
-  const onSubmit = (data: LoginData) => {
-    loginMutation.mutate(data);
-  };
-
-  const handleTermsAccepted = () => {
-    if (pendingUser) {
-      localStorage.setItem("user", JSON.stringify({ ...pendingUser, termsAccepted: true }));
-      // Set session flag to show disclaimer on this login session
-      sessionStorage.setItem("showDisclaimerOnSession", "true");
-      if (pendingUser.isAdmin) {
-        setLocation("/admin");
-      } else {
-        setLocation("/dashboard");
+  const onSubmit = async (data: LoginData) => {
+    // Check if user exists and needs disclaimer
+    if (!showDisclaimer && data.email && data.email.includes('@')) {
+      try {
+        const response = await apiRequest('GET', `/api/users/disclaimer-status?email=${encodeURIComponent(data.email)}`);
+        const result = await response.json();
+        if (result.needsDisclaimer) {
+          setShowDisclaimer(true);
+          return; // Don't submit yet, show disclaimer first
+        }
+      } catch (error) {
+        // If endpoint doesn't exist yet, continue with login
       }
     }
-    setShowTermsModal(false);
-    setPendingUser(null);
+    
+    // Submit login with disclaimer acceptance if needed
+    const loginData = {
+      ...data,
+      disclaimerAccepted: showDisclaimer ? disclaimerAccepted : undefined
+    };
+    
+    loginMutation.mutate(loginData);
   };
 
   return (
@@ -150,11 +165,50 @@ export default function Login() {
                   />
                 </div>
 
+                {/* Disclaimer Section - Only shown when needed */}
+                {showDisclaimer && (
+                  <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-600 space-y-4">
+                    {/* Disclaimer Content */}
+                    <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-1">
+                          <Shield className="w-5 h-5 text-pink-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-800 mb-2">Health Disclaimer</h3>
+                          <p className="text-xs text-gray-700 leading-relaxed">
+                            This program provides general fitness information for postpartum women. Always consult your healthcare provider before beginning any exercise program. By proceeding, you confirm you have medical clearance and understand the risks involved.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Disclaimer Checkbox */}
+                    <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                      <div className="flex-shrink-0 mt-1">
+                        <Checkbox 
+                          id="disclaimer-acceptance"
+                          checked={disclaimerAccepted}
+                          onCheckedChange={(checked) => setDisclaimerAccepted(!!checked)}
+                          data-testid="checkbox-disclaimer-acceptance"
+                          className="w-4 h-4 border-2 border-pink-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-pink-500 data-[state=checked]:to-rose-500 data-[state=checked]:border-pink-500"
+                        />
+                      </div>
+                      <label 
+                        htmlFor="disclaimer-acceptance" 
+                        className="text-xs font-medium leading-relaxed cursor-pointer text-gray-800"
+                      >
+                        <strong className="text-pink-600">I acknowledge that I have read and understand the disclaimer above.</strong> I confirm that I have received medical clearance from my healthcare provider to begin exercising and understand the risks involved.
+                      </label>
+                    </div>
+                  </div>
+                )}
+
                 <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-700 pt-2">
                   <Button
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
-                    disabled={loginMutation.isPending}
+                    disabled={loginMutation.isPending || (showDisclaimer && !disclaimerAccepted)}
                     data-testid="button-signin"
                   >
                     {loginMutation.isPending ? (
@@ -201,16 +255,6 @@ export default function Login() {
         </Card>
       </div>
 
-      {showTermsModal && pendingUser && (
-        <TermsModal
-          userId={pendingUser.id}
-          onAccept={handleTermsAccepted}
-          onCancel={() => {
-            setShowTermsModal(false);
-            setPendingUser(null);
-          }}
-        />
-      )}
     </div>
   );
 }
