@@ -4451,6 +4451,8 @@ function ProgramsSection({
 
       {/* Community Support Section - Separate from Programs */}
       <div className="mb-12">
+        {/* White Container with Shadow */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
         <div className="text-center mb-6">
           <div className="inline-flex items-center space-x-2 bg-green-100 px-4 py-2 rounded-full mb-3">
             <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -4717,6 +4719,7 @@ function ProgramsSection({
             </CardContent>
           )}
         </Card>
+        </div> {/* End White Container */}
       </div>
       
       {/* 6-Week Program - Collapsible */}
