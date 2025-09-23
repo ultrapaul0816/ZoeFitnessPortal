@@ -297,6 +297,14 @@ export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
+  disclaimerAccepted: z.boolean().optional(),
 });
 
 export type LoginData = z.infer<typeof loginSchema>;
+
+// Extended login schema that requires disclaimer acceptance for new users
+export const loginWithDisclaimerSchema = loginSchema.extend({
+  disclaimerAccepted: z.boolean().refine((val) => val === true, {
+    message: "You must accept the disclaimer to continue"
+  })
+});

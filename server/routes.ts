@@ -34,22 +34,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { email, password } = loginSchema.parse(req.body);
+      const { email, password, disclaimerAccepted } = loginSchema.parse(req.body);
       
       const user = await storage.getUserByEmail(email);
       if (!user || user.password !== password) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+      // Handle disclaimer acceptance if provided and user hasn't already accepted
+      let updatedUser = user;
+      if (disclaimerAccepted && !user.disclaimerAccepted) {
+        updatedUser = await storage.updateUser(user.id, {
+          disclaimerAccepted: true,
+          disclaimerAcceptedAt: new Date(),
+        }) || user;
+      }
+
       // Simple session - in production would use proper session management
       res.json({
         user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin,
-          termsAccepted: user.termsAccepted,
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          isAdmin: updatedUser.isAdmin,
+          disclaimerAccepted: updatedUser.disclaimerAccepted,
         }
       });
     } catch (error) {
