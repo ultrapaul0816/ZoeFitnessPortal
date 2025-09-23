@@ -31,11 +31,12 @@ interface ProfileSettingsProps {
   onClose: () => void;
   user: UserType;
   onUserUpdate: (user: UserType) => void;
+  initialView?: 'menu' | 'profile' | 'purchases' | 'support';
 }
 
-export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }: ProfileSettingsProps) {
+export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, initialView = 'menu' }: ProfileSettingsProps) {
   const [location, setLocation] = useLocation();
-  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
+  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>(initialView);
   const [profileData, setProfileData] = useState<ProfileData>({
     country: '',
     bio: '',
@@ -105,6 +106,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
     const completeness = evaluateCompleteness(profileData);
     setProfileCompleteness(completeness);
   }, [profileData]);
+
+  // Update current view when initialView prop changes
+  useEffect(() => {
+    setCurrentView(initialView);
+  }, [initialView]);
 
   if (!renderOpen) return null;
 

@@ -47,6 +47,7 @@ export default function Dashboard() {
   });
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
+  const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -605,7 +606,13 @@ export default function Dashboard() {
 
         {/* Profile Completion Banner */}
         <ProfileBanner 
-          onCompleteProfile={() => setShowProfileSettings(true)}
+          onCompleteProfile={() => {
+            setShowProfileSettings(true);
+            // Use a small delay to ensure the hamburger menu is open before switching to profile view
+            setTimeout(() => {
+              setCurrentView('profile');
+            }, 100);
+          }}
           context={{
             location: 'dashboard',
             isFirstLogin: isFirstLogin,
@@ -673,9 +680,13 @@ export default function Dashboard() {
       {showProfileSettings && (
         <ProfileSettings
           isOpen={true}
-          onClose={() => setShowProfileSettings(false)}
+          onClose={() => {
+            setShowProfileSettings(false);
+            setCurrentView('menu'); // Reset to menu when closing
+          }}
           user={user}
           onUserUpdate={setUser}
+          initialView={currentView}
         />
       )}
     </div>
