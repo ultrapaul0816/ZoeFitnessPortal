@@ -6821,13 +6821,13 @@ function TheRoleOfNutritionSection({
                             <div className="p-5">
                               <h5 className="font-semibold text-gray-800 mb-3">Foods & Actions:</h5>
                               <div className="flex flex-wrap gap-2">
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Bajra (Pearl Millet)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Jowar (Sorghum)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Red Rice</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Oats</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Poha With Veggies</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Sabudana (Sago)</span>
-                                <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{backgroundColor: '#b3c0e4'}}>Sweet Potato</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Bajra (Pearl Millet)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Jowar (Sorghum)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Red Rice</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Oats</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Poha With Veggies</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Sabudana (Sago)</span>
+                                <span className="px-3 py-1 rounded-full text-sm font-medium border" style={{borderColor: '#8a9dd9', color: '#5e73c4'}}>Sweet Potato</span>
                               </div>
                             </div>
                           </div>
