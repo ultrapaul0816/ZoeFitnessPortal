@@ -985,7 +985,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                           />
                         </div>
 
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <div className="bg-blue-50 p-4 rounded-lg border border-green-200">
                           <p className="font-semibold text-blue-800 mb-3">Lie on your back, knees bent, feet flat on the floor. Get comfortable & breathe naturally.</p>
                           <p className="text-sm text-blue-700 mb-3">Place one hand behind your head, and the other hand across your belly, with your fingers pointing down toward your navel. Make sure your fingers are together (not spread wide).</p>
                           
@@ -1066,15 +1066,15 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <h4 className="font-bold text-blue-700 mb-3">As you continue through the program, we'll work to:</h4>
                               <ul className="space-y-2 text-sm">
                                 <li className="flex items-start gap-2">
-                                  <span className="text-blue-600">❖</span>
+                                  <span className="text-green-600">❖</span>
                                   <span>Reduce the gap width (if present)</span>
                                 </li>
                                 <li className="flex items-start gap-2">
-                                  <span className="text-blue-600">❖</span>
+                                  <span className="text-green-600">❖</span>
                                   <span>Improve tension & strength in the connective tissue</span>
                                 </li>
                                 <li className="flex items-start gap-2">
-                                  <span className="text-blue-600">❖</span>
+                                  <span className="text-green-600">❖</span>
                                   <span>Enhance coordination between breath, core, and pelvic floor</span>
                                 </li>
                               </ul>
@@ -1158,16 +1158,16 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                         <div className="text-center mb-6">
                           <h4 className="font-bold text-blue-800 text-lg mb-2">THE FOCUS NEEDS TO BE ON:</h4>
                           <div className="flex justify-center">
-                            <div className="text-blue-600 text-2xl">▼</div>
+                            <div className="text-green-600 text-2xl">▼</div>
                           </div>
                         </div>
 
                         {/* Four Focus Areas in 2x2 Grid */}
                         <div className="grid md:grid-cols-2 gap-8 mb-6">
                           {/* 1. Pressure Management */}
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+                          <div className="bg-blue-50 border border-green-200 rounded-lg p-6 space-y-4">
                             <div>
-                              <h5 className="font-bold text-blue-600 text-lg mb-3">1. Pressure Management</h5>
+                              <h5 className="font-bold text-green-600 text-lg mb-3">1. Pressure Management</h5>
                               <p className="text-sm text-gray-700 mb-4">
                                 Understanding how pressure moves through the core during breath, lifting, or movement. The goal is to avoid excess intra-abdominal pressure by coordinating breath and posture.
                               </p>
@@ -1236,7 +1236,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                         </div>
 
                         {/* Description */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <div className="bg-blue-50 border border-green-200 rounded-lg p-6">
                           <p className="text-gray-700 mb-4">
                             These foundational core reconnection exercises are designed to be gentle, effective, and easy to fit into a busy postpartum day. They require no equipment, take only 5-10 minutes, and can be repeated daily or every other day to build a strong foundation for functional movement. Each movement focuses on breath awareness, alignment, and deep core engagement. <strong className="text-pink-600">LEARN TO DO THESE VERY WELL!</strong>
                           </p>
@@ -1266,7 +1266,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://youtu.be/OwFN9Paf26o', '_blank')}
-                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-supine-pelvic-tilts"
                                 >
                                   SUPINE PELVIC TILTS
@@ -1288,7 +1288,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=ehaUhSSY1xY', '_blank')}
-                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-90-90-box-breathing"
                                 >
                                   90 90 BOX BREATHING
@@ -1310,7 +1310,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=AIEdkm2q-4k', '_blank')}
-                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-supine-heel-slides"
                                 >
                                   SUPINE HEEL SLIDES
@@ -1332,7 +1332,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=tCzxxPxxtjw', '_blank')}
-                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-side-lying-breathing"
                                 >
                                   SIDE LYING DIAPHRAGMATIC BREATHING
@@ -1354,7 +1354,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
-                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-supine-diaphragmatic-breathing"
                                 >
                                   SUPINE DIAPHRAGMATIC BREATHING
@@ -1376,7 +1376,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=AaYpP7iV378', '_blank')}
-                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-bird-dog-ground"
                                 >
                                   BIRD DOG GROUND LEVEL
@@ -1431,7 +1431,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                         </div>
 
                         {/* Description */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <div className="bg-blue-50 border border-green-200 rounded-lg p-6">
                           <p className="text-gray-700 text-center">
                             Core healing doesn't happen in a week. A routine builds over time, prioritizing breath, posture, and function. Use this checklist below to add to your warmup each week before your main workouts.
                           </p>
@@ -1457,7 +1457,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=B53GBfgME9E', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-360-breathing"
                                     >
                                       360° BREATHING
@@ -1467,7 +1467,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-diaphragmatic"
                                     >
                                       SUPINE DIAPHRAGMATIC BREATHING
@@ -1476,7 +1476,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=tCzxxPxxtjw', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-side-lying-diaphragmatic"
                                     >
                                       SIDE LYING DIAPHRAGMATIC BREATHING
@@ -1502,7 +1502,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=AIEdkm2q-4k', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-heel-slides"
                                     >
                                       SUPINE HEEL SLIDES
@@ -1511,7 +1511,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=SRoNksDTjUc', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-pelvic-tilts"
                                     >
                                       SUPINE PELVIC TILTS
@@ -1520,7 +1520,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=fxs0SDh1s3w', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supported-glute-bridges"
                                     >
                                       SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS
@@ -1529,7 +1529,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=_cY-rtXNPp4', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-standing-posture-reset"
                                     >
                                       STANDING POSTURE RESET
@@ -1555,7 +1555,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=GbqFe8zNQH4', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-elevated-chair-bird-dogs"
                                     >
                                       ELEVATED CHAIR BIRD DOGS
@@ -1564,7 +1564,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=T8HHp4KXpJI', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-alt-leg-marches"
                                     >
                                       SUPINE ALT LEG MARCHES
@@ -1574,7 +1574,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=_KMqnvDiLnk', '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-mini-squats-chair"
                                     >
                                       MINI SQUATS ON CHAIR
@@ -2338,7 +2338,7 @@ function WelcomeSection({
                       
                       {/* Row 2 */}
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-blue-200">
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-10 mb-4 aspect-square flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-green-200">
                           <img 
                             src={miniPilatesBallImage} 
                             alt="Mini Pilates ball" 
@@ -2833,9 +2833,9 @@ function WelcomeSection({
                         <h5 className="font-semibold text-pink-700 text-sm mb-1">💪 PROGRAM</h5>
                         <p className="text-xs text-pink-600">Core strengthening workouts from your 6-week plan</p>
                       </div>
-                      <div className="bg-blue-100 p-3 rounded-lg border-l-4 border-blue-400">
+                      <div className="bg-green-100 p-3 rounded-lg border-l-4 border-blue-400">
                         <h5 className="font-semibold text-blue-700 text-sm mb-1">❤️ CARDIO</h5>
-                        <p className="text-xs text-blue-600">Follow the cardio plan from Topic 8 above</p>
+                        <p className="text-xs text-green-600">Follow the cardio plan from Topic 8 above</p>
                       </div>
                       <div className="bg-emerald-100 p-3 rounded-lg border-l-4 border-emerald-400">
                         <h5 className="font-semibold text-emerald-700 text-sm mb-1">🌱 REST</h5>
@@ -2853,7 +2853,7 @@ function WelcomeSection({
                             <p className="text-gray-600">Program 1-6</p>
                           </div>
                           <div className="text-center">
-                            <div className="bg-blue-100 text-blue-700 py-1 px-2 rounded font-medium mb-1">C</div>
+                            <div className="bg-green-100 text-blue-700 py-1 px-2 rounded font-medium mb-1">C</div>
                             <p className="text-gray-600">Cardio</p>
                           </div>
                           <div className="text-center">
@@ -2891,7 +2891,7 @@ function WelcomeSection({
                             </div>
                             <div className="space-y-1">
                               <div className="font-semibold text-gray-500 text-[10px] md:text-xs">TUE</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                              <div className="bg-green-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
                                 <span className="block md:hidden">C</span>
                                 <span className="hidden md:block">CARDIO</span>
                               </div>
@@ -2905,7 +2905,7 @@ function WelcomeSection({
                             </div>
                             <div className="space-y-1">
                               <div className="font-semibold text-gray-500 text-[10px] md:text-xs">THU</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                              <div className="bg-green-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
                                 <span className="block md:hidden">C</span>
                                 <span className="hidden md:block">CARDIO</span>
                               </div>
@@ -2953,7 +2953,7 @@ function WelcomeSection({
                           <div className="grid grid-cols-7 gap-1 md:gap-2 text-center text-xs">
                             <div className="space-y-1">
                               <div className="font-semibold text-gray-500 text-[10px] md:text-xs">MON</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                              <div className="bg-green-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
                                 <span className="block md:hidden">P2</span>
                                 <span className="hidden md:block">PROGRAM 2</span>
                               </div>
@@ -2967,7 +2967,7 @@ function WelcomeSection({
                             </div>
                             <div className="space-y-1">
                               <div className="font-semibold text-gray-500 text-[10px] md:text-xs">WED</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                              <div className="bg-green-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
                                 <span className="block md:hidden">P2</span>
                                 <span className="hidden md:block">PROGRAM 2</span>
                               </div>
@@ -2981,7 +2981,7 @@ function WelcomeSection({
                             </div>
                             <div className="space-y-1">
                               <div className="font-semibold text-gray-500 text-[10px] md:text-xs">FRI</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                              <div className="bg-green-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
                                 <span className="block md:hidden">P2</span>
                                 <span className="hidden md:block">PROGRAM 2</span>
                               </div>
@@ -3160,7 +3160,7 @@ function WelcomeSection({
                           <div className="grid grid-cols-7 gap-1 md:gap-2 text-center text-xs">
                             <div className="space-y-1">
                               <div className="font-semibold text-gray-500 text-[10px] md:text-xs">MON</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                              <div className="bg-green-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
                                 <span className="block md:hidden">C</span>
                                 <span className="hidden md:block">CARDIO</span>
                               </div>
@@ -3188,7 +3188,7 @@ function WelcomeSection({
                             </div>
                             <div className="space-y-1">
                               <div className="font-semibold text-gray-500 text-[10px] md:text-xs">FRI</div>
-                              <div className="bg-blue-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
+                              <div className="bg-green-100 text-blue-700 py-2 px-0.5 md:px-1 rounded font-medium text-[10px] md:text-xs leading-tight">
                                 <span className="block md:hidden">C</span>
                                 <span className="hidden md:block">CARDIO</span>
                               </div>
@@ -4452,20 +4452,20 @@ function ProgramsSection({
       {/* Community Support Section - Separate from Programs */}
       <div className="mb-12">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full mb-3">
-            <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+          <div className="inline-flex items-center space-x-2 bg-green-100 px-4 py-2 rounded-full mb-3">
+            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
               <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
             </svg>
-            <span className="text-blue-600 font-semibold text-sm">COMMUNITY SUPPORT ADD-ON</span>
+            <span className="text-green-600 font-semibold text-sm">COMMUNITY SUPPORT ADD-ON</span>
           </div>
           <h2 className="text-xl font-bold text-gray-800 mb-2">Want Extra Support on Your Journey?</h2>
           <p className="text-gray-600 text-sm">Join our exclusive WhatsApp community for guidance, motivation, and celebration with fellow moms</p>
         </div>
 
         {/* WhatsApp Community Card - Collapsible */}
-        <Card className="overflow-hidden border-2 border-blue-300 shadow-xl bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <Card className="overflow-hidden border-2 border-green-300 shadow-xl bg-gradient-to-br from-green-50 via-white to-emerald-50">
           <CardHeader 
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 cursor-pointer transition-all duration-300 relative overflow-hidden"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 cursor-pointer transition-all duration-300 relative overflow-hidden"
             onClick={() => toggleProgram('whatsapp-community')}
           >
             {/* Decorative background pattern */}
@@ -4480,7 +4480,7 @@ function ProgramsSection({
               <div className="block lg:hidden">
                 {/* WhatsApp Badge on top */}
                 <div className="mb-4">
-                  <div className="bg-gradient-to-r from-white to-blue-50 text-blue-600 px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-blue-200 inline-block">
+                  <div className="bg-gradient-to-r from-white to-blue-50 text-green-600 px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
                     <div className="flex items-center gap-2">
                       <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
@@ -4495,7 +4495,7 @@ function ProgramsSection({
                   <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-2 leading-tight">
                     Community Support
                   </div>
-                  <div className="text-blue-100 font-medium text-sm drop-shadow-sm leading-relaxed">
+                  <div className="text-green-100 font-medium text-sm drop-shadow-sm leading-relaxed">
                     Get guidance, motivation & celebrate wins with Zoe + coaches
                   </div>
                 </div>
@@ -4503,10 +4503,10 @@ function ProgramsSection({
                 {/* Price and dropdown */}
                 <div className="flex items-center justify-between">
                   <div className="bg-white bg-opacity-20 px-4 py-3 rounded-xl backdrop-blur-sm border border-white border-opacity-30">
-                    <div className="text-blue-100 font-bold text-xs uppercase tracking-wide mb-1">3 Months Access</div>
+                    <div className="text-green-100 font-bold text-xs uppercase tracking-wide mb-1">3 Months Access</div>
                     <div className="text-white font-bold text-xl">₹1000</div>
                   </div>
-                  <div className="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <div className="w-10 h-10 bg-white text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                     <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['whatsapp-community'] ? 'rotate-180' : ''}`} />
                   </div>
                 </div>
@@ -4515,7 +4515,7 @@ function ProgramsSection({
               {/* Desktop Layout */}
               <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                  <div className="bg-gradient-to-r from-white to-blue-50 text-blue-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-blue-200 flex-shrink-0">
+                  <div className="bg-gradient-to-r from-white to-blue-50 text-green-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-green-200 flex-shrink-0">
                     <div className="flex items-center gap-2">
                       <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
@@ -4527,17 +4527,17 @@ function ProgramsSection({
                     <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                       Community Support Add-On
                     </CardTitle>
-                    <CardDescription className="text-blue-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
+                    <CardDescription className="text-green-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
                       Get guidance, motivation & celebrate wins with Zoe + coaches
                     </CardDescription>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right bg-white bg-opacity-20 px-4 py-3 rounded-lg backdrop-blur-sm border border-white border-opacity-30">
-                    <div className="text-sm text-blue-100 font-bold uppercase tracking-wide">3 Months Access</div>
+                    <div className="text-sm text-green-100 font-bold uppercase tracking-wide">3 Months Access</div>
                     <div className="text-lg text-white font-bold">₹1000</div>
                   </div>
-                  <div className="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <div className="w-10 h-10 bg-white text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                     <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['whatsapp-community'] ? 'rotate-180' : ''}`} />
                   </div>
                 </div>
@@ -4549,16 +4549,16 @@ function ProgramsSection({
             <CardContent className="p-6 border-t border-blue-100">
               <div className="space-y-6">
                 {/* Hero Description */}
-                <div className="text-center bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
-                  <h3 className="text-xl font-bold text-blue-600 mb-3">
+                <div className="text-center bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-green-200">
+                  <h3 className="text-xl font-bold text-green-600 mb-3">
                     💙 Your Safe Space for Support & Celebration
                   </h3>
                   <p className="text-gray-700 leading-relaxed mb-4">
                     Healing your core is powerful — but doing it with a community of moms (and with Zoe + her team cheering you on) makes it so much more fun! This isn't just another WhatsApp group... it's your safe space to share progress, ask questions, and stay motivated.
                   </p>
-                  <div className="inline-flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full">
-                    <span className="text-blue-600 font-semibold">EXCLUSIVE ACCESS</span>
-                    <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="inline-flex items-center space-x-2 bg-green-100 px-4 py-2 rounded-full">
+                    <span className="text-green-600 font-semibold">EXCLUSIVE ACCESS</span>
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 10.793a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -4568,8 +4568,8 @@ function ProgramsSection({
                 <div className="grid md:grid-cols-2 gap-6">
                   
                   {/* What You'll Get Inside */}
-                  <div className="bg-white border border-blue-200 rounded-lg p-5">
-                    <h4 className="text-lg font-bold text-blue-600 mb-4 flex items-center">
+                  <div className="bg-white border border-green-200 rounded-lg p-5">
+                    <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center">
                       <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
@@ -4614,8 +4614,8 @@ function ProgramsSection({
                   </div>
 
                   {/* Who Is It For */}
-                  <div className="bg-white border border-blue-200 rounded-lg p-5">
-                    <h4 className="text-lg font-bold text-blue-600 mb-4 flex items-center">
+                  <div className="bg-white border border-green-200 rounded-lg p-5">
+                    <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center">
                       <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
                       </svg>
@@ -4651,8 +4651,8 @@ function ProgramsSection({
                 </div>
 
                 {/* How It Works */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-5">
-                  <h4 className="text-lg font-bold text-blue-600 mb-4 flex items-center">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-green-200 rounded-lg p-5">
+                  <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center">
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
                     </svg>
@@ -4696,9 +4696,9 @@ function ProgramsSection({
                 </div>
 
                 {/* Call to Action */}
-                <div className="text-center bg-white border-2 border-blue-300 rounded-lg p-6">
+                <div className="text-center bg-white border-2 border-green-300 rounded-lg p-6">
                   <div className="mb-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">₹1000</div>
+                    <div className="text-3xl font-bold text-green-600 mb-2">₹1000</div>
                     <div className="text-gray-600 text-sm mb-1">3 months of community support</div>
                     <p className="text-gray-500 text-xs">Join your supportive community of moms today!</p>
                   </div>
@@ -4823,7 +4823,7 @@ function ProgramsSection({
                     <div>
                       <div className="text-xs text-gray-700 font-bold uppercase tracking-wide mb-2">Equipment Needed</div>
                       <div className="flex flex-wrap gap-2">
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini band</span>
+                        <span className="bg-green-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini band</span>
                         <span className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Small Pilates ball</span>
                         <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
                       </div>
@@ -4845,7 +4845,7 @@ function ProgramsSection({
                     <div className="flex flex-col gap-3">
                       <div className="text-xs text-gray-600 font-medium uppercase tracking-wide">Equipment Needed</div>
                       <div className="flex flex-wrap gap-2 justify-end">
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini band</span>
+                        <span className="bg-green-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini band</span>
                         <span className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Small Pilates ball</span>
                         <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
                       </div>
@@ -4875,10 +4875,10 @@ function ProgramsSection({
                         <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 1: 360° Breathing</h4>
                       </div>
                     </div>
-                    <div className="bg-blue-50 p-4 rounded-b-lg border border-blue-200">
+                    <div className="bg-blue-50 p-4 rounded-b-lg border border-green-200">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <span className="text-blue-800 font-semibold underline cursor-pointer text-sm">Morning + Evening Sessions</span>
-                        <span className="text-blue-700 font-bold text-sm bg-blue-100 px-3 py-1 rounded-full">25 breaths</span>
+                        <span className="text-blue-700 font-bold text-sm bg-green-100 px-3 py-1 rounded-full">25 breaths</span>
                       </div>
                     </div>
                   </div>
@@ -4920,7 +4920,7 @@ function ProgramsSection({
                                   href={exercise.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
+                                  className="text-green-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
                                 >
                                   {exercise.name}
                                 </a>
@@ -4945,11 +4945,11 @@ function ProgramsSection({
                       </div>
                       <div className="pl-4 space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                          All <span className="text-green-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                           <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                           playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                         </p>
-                        <div className="bg-blue-100 p-3 rounded-lg">
+                        <div className="bg-green-100 p-3 rounded-lg">
                           <p className="text-blue-800 text-sm font-medium">
                             <span className="font-bold">Rest:</span> Rest a minimum of 30 secs - ONE minute between movements. Rest more if needed.
                           </p>
@@ -5047,7 +5047,7 @@ function ProgramsSection({
             <div className="block lg:hidden">
               {/* Program Badge on top */}
               <div className="mb-3">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-blue-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-blue-200 inline-block">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
                     PROGRAM 2
@@ -5060,7 +5060,7 @@ function ProgramsSection({
                 <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
                   Advanced Strength & Conditioning Program
                 </div>
-                <div className="text-base font-medium text-blue-100 drop-shadow-sm">
+                <div className="text-base font-medium text-green-100 drop-shadow-sm">
                   Six Week Advanced Postnatal Fitness Journey
                 </div>
               </div>
@@ -5068,10 +5068,10 @@ function ProgramsSection({
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
                 <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
-                  <div className="text-xs text-blue-100 font-bold uppercase tracking-wide">Advanced Program</div>
+                  <div className="text-xs text-green-100 font-bold uppercase tracking-wide">Advanced Program</div>
                   <div className="text-xs text-white font-medium">Strength building & conditioning</div>
                 </div>
-                <div className="w-8 h-8 bg-gradient-to-br from-white to-blue-100 text-blue-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                <div className="w-8 h-8 bg-gradient-to-br from-white to-blue-100 text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['advanced-program'] ? 'rotate-180' : ''}`} />
                 </div>
               </div>
@@ -5080,7 +5080,7 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-blue-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-blue-200 flex-shrink-0">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-green-200 flex-shrink-0">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                     <span>PROGRAM 2</span>
@@ -5090,17 +5090,17 @@ function ProgramsSection({
                   <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
                     Advanced Strength & Conditioning Program
                   </CardTitle>
-                  <CardDescription className="text-base font-medium text-blue-100 mt-2 drop-shadow-sm leading-tight">
+                  <CardDescription className="text-base font-medium text-green-100 mt-2 drop-shadow-sm leading-tight">
                     Six Week Advanced Postnatal Fitness Journey
                   </CardDescription>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                  <div className="text-sm text-blue-100 font-bold uppercase tracking-wide">Advanced Program</div>
+                  <div className="text-sm text-green-100 font-bold uppercase tracking-wide">Advanced Program</div>
                   <div className="text-sm text-white font-medium">Strength building & conditioning</div>
                 </div>
-                <div className="w-10 h-10 bg-gradient-to-br from-white to-blue-100 text-blue-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                <div className="w-10 h-10 bg-gradient-to-br from-white to-blue-100 text-green-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
                   <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['advanced-program'] ? 'rotate-180' : ''}`} />
                 </div>
               </div>
@@ -5947,7 +5947,7 @@ function ProgramsSection({
                     <div>
                       <div className="text-xs text-gray-700 font-bold uppercase tracking-wide mb-2">Equipment Needed</div>
                       <div className="flex flex-wrap gap-2">
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini bands</span>
+                        <span className="bg-green-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini bands</span>
                         <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
                         <span className="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Yoga block or Pilates ball</span>
                         <span className="bg-orange-100 text-orange-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Long resistance band</span>
@@ -5971,7 +5971,7 @@ function ProgramsSection({
                     <div className="flex flex-col gap-3">
                       <div className="text-xs text-gray-600 font-medium uppercase tracking-wide">Equipment Needed</div>
                       <div className="flex flex-wrap gap-2 justify-end">
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini bands</span>
+                        <span className="bg-green-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mini bands</span>
                         <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Mat</span>
                         <span className="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Yoga block or Pilates ball</span>
                         <span className="bg-orange-100 text-orange-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">Long resistance band</span>
