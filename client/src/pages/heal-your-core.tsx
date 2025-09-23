@@ -397,55 +397,10 @@ export default function HealYourCorePage() {
               </div>
               <div className="text-left">
                 <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
-                <p className="text-xs md:text-sm text-gray-600 font-medium">{completedWeeks}/6 weeks completed</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
-        {/* Expandable Progress Details */}
-        {isProgressExpanded && (
-          <Card className="animate-in slide-in-from-top-2 duration-300">
-            <CardContent className="p-6">
-              <div className="grid md:grid-cols-2 gap-6 items-center">
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Your Healing Journey</h3>
-                  <p className="text-muted-foreground">
-                    Welcome to your personalized postnatal core recovery program. This journey has been 
-                    carefully designed to help you safely rebuild your core strength, address diastasis recti, 
-                    and support your overall postpartum recovery.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Current Week</span>
-                      <span className="text-primary font-bold">Week {Math.min(completedWeeks + 1, 6)}</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Total Progress</span>
-                      <span className="text-primary font-bold">{completedWeeks}/6 weeks</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="relative">
-                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Video className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">Welcome Video from Zoe</p>
-                      <p className="text-xs text-muted-foreground mt-1">Click to play</p>
-                    </div>
-                  </div>
-                  <Button 
-                    className="absolute inset-0 w-full h-full bg-black/20 hover:bg-black/30 text-white"
-                    variant="ghost"
-                    data-testid="button-play-welcome-video"
-                  >
-                    <Play className="w-8 h-8" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
