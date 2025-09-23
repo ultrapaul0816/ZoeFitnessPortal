@@ -13,6 +13,11 @@ This project is a 6-week postnatal fitness web application, "Your Postpartum Str
 - **Nutrition Card Consistency**: Updated all 8 nutrition strategy cards in Topic 2 to have border colors that match their respective header colors (pink, blue, green, brown, light pink) for improved visual cohesion and category differentiation.
 - **PDF Generation**: Implemented reliable jsPDF-based progress tracker with proper A4 landscape formatting, professional table styling, and optimized column widths to prevent content cutoff.
 
+## WhatsApp Community Integration
+- **Promotional Strategy**: Implemented comprehensive promotional campaign with dismissible banners appearing during tab navigation and promotional cards in Welcome section
+- **Mobile UI Optimization**: Enhanced mobile responsiveness with improved spacing, text sizing, and touch-friendly buttons for better user experience on mobile devices  
+- **Support Integration**: Added WhatsApp Community support option in the Support section under hamburger menu, providing users with an additional support channel alongside email support
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
