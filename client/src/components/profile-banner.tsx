@@ -30,12 +30,10 @@ export default function ProfileBanner({
     const completeness = evaluateCompleteness(profileData);
     setProfileCompleteness(completeness);
 
-    const shouldShow = shouldShowPrompt(completeness, context);
-    if (shouldShow) {
+    // Simple logic: show banner if profile is incomplete
+    if (!completeness.isComplete) {
       setIsVisible(true);
-      recordPromptShown(context.location);
-    } else if (completeness.isComplete) {
-      // Hide banner if profile is complete
+    } else {
       setIsVisible(false);
     }
   }, [context]);
@@ -48,14 +46,8 @@ export default function ProfileBanner({
         const completeness = evaluateCompleteness(profileData);
         setProfileCompleteness(completeness);
         
-        // Hide banner if profile is now complete
-        if (completeness.isComplete) {
-          setIsVisible(false);
-        } else {
-          // Re-evaluate if banner should show
-          const shouldShow = shouldShowPrompt(completeness, context);
-          setIsVisible(shouldShow);
-        }
+        // Simple logic: show banner if profile is incomplete
+        setIsVisible(!completeness.isComplete);
       }
     };
 
@@ -64,7 +56,6 @@ export default function ProfileBanner({
   }, [context]);
 
   const handleCompleteProfile = () => {
-    setIsVisible(false);
     onCompleteProfile();
   };
 
