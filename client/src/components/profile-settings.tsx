@@ -183,44 +183,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
 
-          {/* Payment Method */}
-          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-700 mb-6">Payment Method</h2>
-            
-            <div className="text-center">
-              <div className="relative inline-block mb-4">
-                <div className="w-16 h-16 bg-green-500 rounded flex items-center justify-center">
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                  </svg>
-                </div>
-              </div>
-              
-              <h3 className="text-lg font-medium text-gray-700 mb-2">Link</h3>
-              <p className="text-gray-600 mb-4">{user.email}</p>
-              
-              <Button variant="secondary" className="bg-gray-100 text-gray-800 hover:bg-gray-200">
-                Change Payment Method
-              </Button>
-            </div>
-          </div>
-
-          {/* Balance */}
-          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
-            <div className="text-center">
-              <h3 className="text-lg font-medium text-gray-700 mb-4">Balance</h3>
-              <p className="text-3xl font-bold text-gray-600 mb-6">$0.00</p>
-              
-              <div className="space-y-3">
-                <Button variant="secondary" className="w-full bg-gray-100 text-gray-800 hover:bg-gray-200">
-                  Buy a gift card
-                </Button>
-                <Button variant="secondary" className="w-full bg-gray-100 text-gray-800 hover:bg-gray-200">
-                  Redeem a gift card
-                </Button>
-              </div>
-            </div>
-          </div>
 
           {/* Invoice History */}
           <div className="bg-white rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
