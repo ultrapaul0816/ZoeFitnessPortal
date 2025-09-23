@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Lock, Star, Calendar, Target, Dumbbell, Baby, Play } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import videoThumbnailImage from "@assets/Screenshot 2025-09-22 at 12.15.21_1758537245258.png";
 
 interface PremiumProgramCardProps {
   program: any;
@@ -18,7 +17,6 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   // Check if user has access to this premium program
   const { data: accessData, isLoading: accessLoading } = useQuery({
@@ -122,41 +120,6 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
         ) : hasAccess ? (
           <div className="space-y-3">
             
-            {/* YouTube Video Section */}
-            <div className="w-full mb-4">
-              {!isVideoPlaying ? (
-                <div 
-                  className="relative cursor-pointer group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsVideoPlaying(true);
-                  }}
-                  data-testid="video-thumbnail-welcome"
-                >
-                  <img
-                    src={videoThumbnailImage}
-                    alt="Welcome video with Zoe Modgill - Hello & Welcome"
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                    <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Play className="w-3 h-3 text-white ml-0.5" fill="currentColor" />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative rounded-lg overflow-hidden shadow-lg">
-                  <iframe
-                    src="https://www.youtube.com/embed/62Qht8GVfPE?autoplay=1"
-                    title={`${program.name} program video`}
-                    className="w-full h-48 rounded-lg"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              )}
-            </div>
             
             <Button 
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-200 ease-out border-0 relative overflow-hidden group rounded-lg hover:bg-gradient-to-l focus:ring-4 focus:ring-pink-300 active:shadow-inner" 

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_1758445266265.png";
+import videoThumbnailImage from "@assets/Screenshot 2025-09-22 at 12.15.21_1758537245258.png";
 import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_1758445423086.png";
 import tvaContentImage from "@assets/Screenshot 2025-09-21 at 14.38.24_1758445791011.png";
 import tvaSkeletonImage from "@assets/Screenshot 2025-09-21 at 14.39.32_1758445791002.png";
@@ -76,6 +77,7 @@ export default function HealYourCorePage() {
   const [isProgressExpanded, setIsProgressExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("welcome");
   const [animatingNumber, setAnimatingNumber] = useState<number | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const prevActiveTabRef = useRef(activeTab);
 
   // Trigger animation when advancing to a new section
@@ -1798,6 +1800,43 @@ function WelcomeSection({
                     <p className="font-medium">Dear Mama, Welcome to Heal Your Core.</p>
                     <p>I created this program after my own struggle with diastasis recti. I spent the first two years postpartum with a painful gap in my abdominal wall and no guidance—just conflicting advice and exercises that made me feel worse.</p>
                     <p>Through research, consistency, and patience, I learned that healing isn't about "bouncing back" or doing endless crunches. It's about rebuilding your deep core connection from the ground up.</p>
+                    
+                    {/* YouTube Video Section */}
+                    <div className="w-full mb-4">
+                      {!isVideoPlaying ? (
+                        <div 
+                          className="relative cursor-pointer group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsVideoPlaying(true);
+                          }}
+                          data-testid="video-thumbnail-welcome"
+                        >
+                          <img
+                            src={videoThumbnailImage}
+                            alt="Welcome video with Zoe Modgill - Hello & Welcome"
+                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                            <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                              <Play className="w-3 h-3 text-white ml-0.5" fill="currentColor" />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="relative rounded-lg overflow-hidden shadow-lg">
+                          <iframe
+                            src="https://www.youtube.com/embed/62Qht8GVfPE?autoplay=1"
+                            title="Welcome video with Zoe Modgill - Hello & Welcome"
+                            className="w-full h-48 rounded-lg"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      )}
+                    </div>
+
                     <p className="font-medium text-primary">What makes "The Zoe Difference"?</p>
                     <ul className="space-y-1 ml-4 list-disc">
                       <li>✅ I've walked this path myself</li>
