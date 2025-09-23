@@ -528,7 +528,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate }:
                 <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
                   <CreditCard className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Purchases & Payment</span>
+                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Purchases</span>
                 <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
                   <ChevronRight className="w-4 h-4 text-pink-500" />
                 </div>
