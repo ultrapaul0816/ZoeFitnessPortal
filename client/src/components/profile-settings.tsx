@@ -157,7 +157,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   if (currentView === 'support') {
     return (
       <div 
-        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
+        className="fixed top-16 left-0 right-0 bottom-0 z-50 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
         data-testid="page-support-settings"
       >
         <div className="w-full h-full overflow-y-auto p-6">
@@ -281,7 +281,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   if (currentView === 'purchases') {
     return (
       <div 
-        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
+        className="fixed top-16 left-0 right-0 bottom-0 z-50 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
         data-testid="page-purchases-settings"
       >
         <div className="w-full h-full overflow-y-auto p-6">
@@ -368,7 +368,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   if (currentView === 'profile') {
     return (
       <div 
-        className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
+        className="fixed top-16 left-0 right-0 bottom-0 z-50 bg-gray-50 animate-in scale-in-95 fade-in duration-300" 
         data-testid="page-profile-settings"
       >
         <div className="w-full h-full overflow-y-auto p-6">
@@ -668,7 +668,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
 
   return (
     <div 
-      className="fixed top-16 left-0 right-0 bottom-0 z-40 bg-white animate-in slide-in-from-top-4 fade-in duration-300" 
+      className="fixed top-16 left-0 right-0 bottom-0 z-50 bg-white animate-in slide-in-from-top-4 fade-in duration-300" 
       data-testid="page-profile-settings"
     >
       <div className="w-full h-full overflow-y-auto">

@@ -592,7 +592,7 @@ export default function HealYourCorePage() {
 
           {/* Community Promotion Banner */}
           {shouldShowCommunityBanner && (
-            <div className="sticky top-16 z-40 bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border-l-4 border-green-500 shadow-lg transform transition-all duration-500 ease-in-out">
+            <div className="sticky top-16 z-30 bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border-l-4 border-green-500 shadow-lg transform transition-all duration-500 ease-in-out">
               <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
