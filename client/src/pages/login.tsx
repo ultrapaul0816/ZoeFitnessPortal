@@ -28,21 +28,14 @@ export default function Login() {
     },
   });
 
-  // Query to check if user needs disclaimer (only when email is provided)
-  const checkDisclaimerQuery = useQuery({
-    queryKey: ['/api/users/disclaimer-status', form.watch('email')],
-    queryFn: async () => {
-      const email = form.watch('email');
-      if (!email || !email.includes('@')) return null;
-      const response = await apiRequest('GET', `/api/users/disclaimer-status?email=${encodeURIComponent(email)}`);
-      return response.json();
-    },
-    enabled: false, // Only run manually
-  });
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
       const response = await apiRequest("POST", "/api/auth/login", data);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Login failed');
+      }
       return response.json();
     },
     onSuccess: (data) => {
@@ -57,7 +50,13 @@ export default function Login() {
         setLocation("/dashboard");
       }
     },
-    onError: () => {
+    onError: (error: Error) => {
+      // If user exists but needs disclaimer, show disclaimer
+      if (error.message.includes('disclaimer') || error.message.includes('Disclaimer')) {
+        setShowDisclaimer(true);
+        return;
+      }
+      
       toast({
         variant: "destructive",
         title: "Error",
@@ -66,22 +65,8 @@ export default function Login() {
     },
   });
 
-  const onSubmit = async (data: LoginData) => {
-    // Check if user exists and needs disclaimer
-    if (!showDisclaimer && data.email && data.email.includes('@')) {
-      try {
-        const response = await apiRequest('GET', `/api/users/disclaimer-status?email=${encodeURIComponent(data.email)}`);
-        const result = await response.json();
-        if (result.needsDisclaimer) {
-          setShowDisclaimer(true);
-          return; // Don't submit yet, show disclaimer first
-        }
-      } catch (error) {
-        // If endpoint doesn't exist yet, continue with login
-      }
-    }
-    
-    // Submit login with disclaimer acceptance if needed
+  const onSubmit = (data: LoginData) => {
+    // Submit login with disclaimer acceptance if shown
     const loginData = {
       ...data,
       disclaimerAccepted: showDisclaimer ? disclaimerAccepted : undefined
@@ -91,29 +76,26 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-white p-4 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-pink-200 to-rose-200 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-rose-200 to-pink-200 rounded-full opacity-20 blur-3xl"></div>
-      </div>
-      
-      <div className="w-full max-w-md relative z-10">
-        <Card className="rounded-3xl shadow-2xl border-0 bg-white/80 backdrop-blur-lg animate-in scale-in-95 fade-in duration-500">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-50 p-4">
+      <div className="w-full max-w-md">
+        <Card className="rounded-3xl shadow-xl border-0 bg-white/95 animate-in scale-in-95 fade-in duration-200">
           <CardContent className="p-10">
             {/* Logo and Header */}
             <div className="text-center mb-10">
-              <div className="w-28 h-20 mx-auto mb-6 flex items-center justify-center animate-in scale-in-95 fade-in duration-700 delay-200">
+              <div className="w-28 h-20 mx-auto mb-6 flex items-center justify-center animate-in scale-in-95 fade-in duration-300">
                 <img 
                   src="/assets/logo.png" 
                   alt="Stronger With Zoe" 
                   className="w-full h-full object-contain drop-shadow-sm"
+                  loading="eager"
+                  width="112"
+                  height="80"
                 />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3 animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300">
+              <h1 className="text-3xl font-bold text-gray-800 mb-3 animate-in slide-in-from-bottom-4 fade-in duration-300">
                 Welcome Back
               </h1>
-              <p className="text-gray-600 text-lg animate-in slide-in-from-bottom-4 fade-in duration-700 delay-400">
+              <p className="text-gray-600 text-lg animate-in slide-in-from-bottom-4 fade-in duration-300">
                 Access your fitness programs
               </p>
             </div>
@@ -121,7 +103,7 @@ export default function Login() {
             {/* Login Form */}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
-                <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-500">
+                <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
                   <FormField
                     control={form.control}
                     name="email"
@@ -133,7 +115,7 @@ export default function Login() {
                             type="email"
                             placeholder="your@email.com"
                             data-testid="input-email"
-                            className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-800 placeholder:text-gray-400"
+                            className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400"
                             {...field}
                           />
                         </FormControl>
@@ -143,7 +125,7 @@ export default function Login() {
                   />
                 </div>
                 
-                <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-600">
+                <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
                   <FormField
                     control={form.control}
                     name="password"
@@ -155,7 +137,7 @@ export default function Login() {
                             type="password"
                             placeholder="••••••••"
                             data-testid="input-password"
-                            className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-800 placeholder:text-gray-400"
+                            className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400"
                             {...field}
                           />
                         </FormControl>
@@ -167,7 +149,7 @@ export default function Login() {
 
                 {/* Disclaimer Section - Only shown when needed */}
                 {showDisclaimer && (
-                  <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-600 space-y-4">
+                  <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 space-y-4">
                     {/* Disclaimer Content */}
                     <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-xl p-4">
                       <div className="flex items-start gap-3">
@@ -204,10 +186,10 @@ export default function Login() {
                   </div>
                 )}
 
-                <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-700 pt-2">
+                <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 pt-2">
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
+                    className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
                     disabled={loginMutation.isPending || (showDisclaimer && !disclaimerAccepted)}
                     data-testid="button-signin"
                   >
@@ -229,7 +211,7 @@ export default function Login() {
               </form>
             </Form>
 
-            <div className="mt-8 text-center animate-in slide-in-from-bottom-4 fade-in duration-700 delay-800">
+            <div className="mt-8 text-center animate-in slide-in-from-bottom-4 fade-in duration-300">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>
