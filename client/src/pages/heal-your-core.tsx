@@ -6778,6 +6778,7 @@ function WhatComesNextSection({
     { id: 'red-flag-movements', n: 2, title: 'Red Flag Movements to Avoid' },
     { id: 'impact-readiness-test', n: 3, title: 'Return to Impact Readiness Test' },
     { id: 'progress-tracker', n: 4, title: 'Progress Tracker' },
+    { id: 'yay-mama-you-did-it', n: 5, title: 'YAY MAMA...YOU DID IT!' },
   ];
 
   return (
@@ -7300,6 +7301,107 @@ function WhatComesNextSection({
                             <span className="text-amber-500 mr-2 mt-1">💡</span>
                             <span><strong>Printing Tip:</strong> After downloading, print in landscape mode for the best fit. This tracker is designed to be filled out by hand for convenient weekly tracking.</span>
                           </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : topic.id === 'yay-mama-you-did-it' ? (
+                    <div className="space-y-6 text-sm">
+                      <div className="text-center mb-6">
+                        <h3 className="text-2xl font-bold mb-4">YAY MAMA...YOU DID IT!</h3>
+                        <div className="space-y-4 text-gray-700 leading-relaxed">
+                          <p>
+                            A moment to pause, reflect, and honour the strength you've rebuilt—inside and out. 
+                            This isn't just the end of a program. It's the beginning of a stronger, more connected you.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        {/* Take A Moment To Reflect Section */}
+                        <div className="bg-white border-2 rounded-lg p-6" style={{borderColor: '#f3a8cb'}}>
+                          <div className="mb-4">
+                            <h4 className="font-bold text-pink-500 text-lg mb-4">⭐ TAKE A MOMENT TO REFLECT</h4>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            <div className="flex items-start space-x-2">
+                              <span className="text-pink-500 font-bold">✧</span>
+                              <div>
+                                <strong className="font-semibold">What's changed in your body?</strong>
+                                <div className="text-gray-600 italic mt-1">
+                                  Maybe you stand taller, breathe deeper, or feel more supported in your core.
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start space-x-2">
+                              <span className="text-pink-500 font-bold">✧</span>
+                              <div>
+                                <strong className="font-semibold">What's changed in your mindset?</strong>
+                                <div className="text-gray-600 italic mt-1">
+                                  Maybe you've let go of pressure to "bounce back" and instead learned how to tune in.
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start space-x-2">
+                              <span className="text-pink-500 font-bold">✧</span>
+                              <div>
+                                <strong className="font-semibold">What's something you're proud of?</strong>
+                                <div className="text-gray-600 italic mt-1">
+                                  Even showing up once a week is worth celebrating. Progress looks different for everyone.
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Write Yourself A Note Section */}
+                        <div className="bg-white border-2 rounded-lg p-6" style={{borderColor: '#f3a8cb'}}>
+                          <h4 className="font-bold text-pink-500 text-lg mb-4">WRITE YOURSELF A NOTE</h4>
+                          <p className="text-gray-700 mb-4">Use this space to write down a message to your body or future self.</p>
+                          
+                          <textarea
+                            className="w-full h-32 p-4 border-2 border-gray-200 rounded-lg resize-none focus:border-pink-400 focus:outline-none"
+                            placeholder="Dear body, thank you for..."
+                            style={{
+                              fontSize: '14px',
+                              lineHeight: '1.5',
+                              fontFamily: 'inherit'
+                            }}
+                          />
+                        </div>
+
+                        {/* What Comes Next Section */}
+                        <div className="bg-white border-2 rounded-lg p-6" style={{borderColor: '#f3a8cb'}}>
+                          <h4 className="font-bold text-pink-500 text-lg mb-4">WHAT COMES NEXT?</h4>
+                          <p className="text-gray-700 mb-4">If you feel:</p>
+                          
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-start space-x-2">
+                              <span className="text-pink-500 font-bold">✧</span>
+                              <span>Stronger and more stable</span>
+                            </div>
+                            <div className="flex items-start space-x-2">
+                              <span className="text-pink-500 font-bold">✧</span>
+                              <span>Free from symptoms like doming or leaking</span>
+                            </div>
+                            <div className="flex items-start space-x-2">
+                              <span className="text-pink-500 font-bold">✧</span>
+                              <span>Ready for more challenge and variety</span>
+                            </div>
+                          </div>
+
+                          <p className="text-gray-700 mb-4">
+                            Then you should be ready to move into a strength training phase, or a return-to-impact program. 
+                            But, if still healing? You can repeat this program again—or stay in your favourite phase a little 
+                            longer. <strong>CELEBRATE YOUR WINS</strong> - Whether you finished every session or simply showed up 
+                            when you could—That. Is. Enough.
+                          </p>
+                          
+                          <div className="text-center mt-6">
+                            <p className="text-lg text-pink-600 font-medium">Love Zoe 💕</p>
+                          </div>
                         </div>
                       </div>
                     </div>
