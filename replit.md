@@ -13,6 +13,18 @@ This project is a 6-week postnatal fitness web application, "Your Postpartum Str
 - **Nutrition Card Consistency**: Updated all 8 nutrition strategy cards in Topic 2 to have border colors that match their respective header colors (pink, blue, green, brown, light pink) for improved visual cohesion and category differentiation.
 - **PDF Generation**: Implemented reliable jsPDF-based progress tracker with proper A4 landscape formatting, professional table styling, and optimized column widths to prevent content cutoff.
 
+## Nutrition Section Styling Overhaul (September 2025)
+- **Badge Design Modernization**: Converted all nutrition badges in Topics 2 and 3 from filled backgrounds to clean thin-bordered design for a modern, professional appearance
+- **Enhanced Readability**: Updated all badge text colors to darker shades for improved contrast and readability across all categories:
+  - Pink badges: Changed to darker pink (#8b0040) 
+  - Blue badges: Updated to darker blue (#5e73c4)
+  - Green badges: Enhanced to darker green (#7fb030)
+  - Brown badges: Improved to darker brown (#8b7355)
+  - Light pink badges: Adjusted to darker light pink (#d1507a)
+- **Text Shadow Removal**: Eliminated all text shadows from card titles and descriptions for crisp, clean typography
+- **Color Coordination**: Updated card titles and descriptions to use darker readable colors that perfectly match their respective card themes
+- **Pink Card Optimization**: Enhanced pink cards (COLLAGEN SUPPORT, HEALTHY FATS, PALM-SIZED PROTEIN) with bright pink badges (#f2038b) and white text for optimal contrast and readability
+
 ## WhatsApp Community Integration
 - **Promotional Strategy**: Implemented comprehensive promotional campaign with dismissible banners appearing during tab navigation and promotional cards in Welcome section
 - **Mobile UI Optimization**: Enhanced mobile responsiveness with improved spacing, text sizing, and touch-friendly buttons for better user experience on mobile devices  
