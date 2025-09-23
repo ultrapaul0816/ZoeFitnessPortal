@@ -907,7 +907,19 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
   async getUserPurchases(userId: string): Promise<ProgramPurchase[]> { return []; }
-  async hasProgramAccess(userId: string, programId: string): Promise<boolean> { return false; }
+  async hasProgramAccess(userId: string, programId: string): Promise<boolean> {
+    console.log("Checking program access for:", { userId, programId });
+    const purchases = await this.db
+      .select()
+      .from(programPurchases)
+      .where(and(
+        eq(programPurchases.userId, userId),
+        eq(programPurchases.programId, programId),
+        eq(programPurchases.status, "active")
+      ));
+    console.log("Found purchases:", purchases.length);
+    return purchases.length > 0;
+  }
   async createProgressEntry(entry: InsertProgressTracking): Promise<ProgressTracking> {
     const result = await this.db.insert(progressTracking).values(entry).returning();
     return result[0];
