@@ -197,28 +197,45 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-medium text-gray-900">support@strongerwithzoe.in</span>
                   <button 
-                    onClick={async (event) => {
+                    onClick={async () => {
                       try {
                         await navigator.clipboard.writeText('support@strongerwithzoe.in');
-                        // Show success feedback
-                        const button = event.currentTarget;
-                        const originalHTML = button.innerHTML;
-                        button.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>';
-                        setTimeout(() => {
-                          button.innerHTML = originalHTML;
-                        }, 2000);
+                        toast({
+                          title: "Email Copied!",
+                          description: "support@strongerwithzoe.in has been copied to your clipboard",
+                          duration: 3000,
+                        });
                       } catch (err) {
                         // Fallback for browsers that don't support clipboard API
-                        const textArea = document.createElement('textarea');
-                        textArea.value = 'support@strongerwithzoe.in';
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
+                        try {
+                          const textArea = document.createElement('textarea');
+                          textArea.value = 'support@strongerwithzoe.in';
+                          textArea.style.position = 'fixed';
+                          textArea.style.left = '-999999px';
+                          textArea.style.top = '-999999px';
+                          document.body.appendChild(textArea);
+                          textArea.focus();
+                          textArea.select();
+                          document.execCommand('copy');
+                          document.body.removeChild(textArea);
+                          toast({
+                            title: "Email Copied!",
+                            description: "support@strongerwithzoe.in has been copied to your clipboard",
+                            duration: 3000,
+                          });
+                        } catch (fallbackErr) {
+                          toast({
+                            title: "Copy Failed",
+                            description: "Please manually copy: support@strongerwithzoe.in",
+                            variant: "destructive",
+                            duration: 4000,
+                          });
+                        }
                       }
                     }}
                     className="p-2 text-pink-600 hover:text-pink-700 hover:bg-pink-50 rounded-lg transition-colors duration-200"
                     title="Copy email address"
+                    data-testid="button-copy-email"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
