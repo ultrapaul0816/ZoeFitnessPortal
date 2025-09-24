@@ -762,6 +762,12 @@ class DatabaseStorage implements IStorage {
   private db;
   private static instance: DatabaseStorage;
   public assetDisplayNames: Map<string, string> = new Map();
+  
+  // Performance caches for frequently accessed data
+  private programsCache: Program[] | null = null;
+  private programsCacheTime: number = 0;
+  private memberProgramsCache: Map<string, (MemberProgram & { program: Program })[]> = new Map();
+  private cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
     const connectionString = process.env.DATABASE_URL;
@@ -827,7 +833,19 @@ class DatabaseStorage implements IStorage {
 
   // Programs
   async getPrograms(): Promise<Program[]> {
-    return await this.db.select().from(programs);
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (this.programsCache && (now - this.programsCacheTime) < this.cacheTimeout) {
+      return this.programsCache;
+    }
+    
+    // Fetch fresh data and cache it
+    const result = await this.db.select().from(programs);
+    this.programsCache = result;
+    this.programsCacheTime = now;
+    
+    return result;
   }
 
   async getProgram(id: string): Promise<Program | undefined> {
@@ -851,16 +869,27 @@ class DatabaseStorage implements IStorage {
 
   // Member Programs
   async getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]> {
+    // Check cache first
+    const cached = this.memberProgramsCache.get(userId);
+    if (cached) {
+      return cached;
+    }
+    
     const result = await this.db
       .select()
       .from(memberPrograms)
       .innerJoin(programs, eq(memberPrograms.programId, programs.id))
       .where(eq(memberPrograms.userId, userId));
     
-    return result.map(row => ({
+    const mapped = result.map(row => ({
       ...row.member_programs,
       program: row.programs
     }));
+    
+    // Cache the result for this user
+    this.memberProgramsCache.set(userId, mapped);
+    
+    return mapped;
   }
 
   async createMemberProgram(memberProgram: InsertMemberProgram): Promise<MemberProgram> {
