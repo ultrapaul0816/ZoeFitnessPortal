@@ -79,10 +79,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       const currentProfile = getCurrentProfileData();
       setProfileData(currentProfile);
       
-      // Load saved photo if exists
-      if (currentProfile.photo) {
-        setSelectedPhoto(currentProfile.photo);
-      }
+      // Always sync selectedPhoto with stored data (clear if no photo saved)
+      setSelectedPhoto(currentProfile.photo || null);
       
       // Evaluate completeness
       const completeness = evaluateCompleteness(currentProfile);
