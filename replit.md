@@ -6,6 +6,22 @@ This project is a 6-week postnatal fitness web application, "Your Postpartum Str
 
 ## Latest Updates (September 24, 2025)
 
+### Comprehensive Profile Personalization (September 24, 2025)
+- **Fitness & Health Information Section**: Added extensive personalization fields for postpartum-specific fitness customization
+- **Profile Fields Added**: 
+  - Fitness Level (Beginner, Intermediate, Advanced)
+  - Delivery Type (Vaginal, C-section, Both, Prefer not to say)
+  - Number of Children (1-5+ children)
+  - Breastfeeding Status (Yes exclusively, Partially, No, Prefer not to say)
+  - Medical Clearance checkbox for healthcare provider approval
+  - Available Equipment multi-select grid (12 equipment options including resistance bands, dumbbells, yoga mat, etc.)
+  - Workout Frequency (1-2 days to daily options)
+  - Preferred Workout Time (Morning, Afternoon, Evening, Flexible)
+  - Personal Fitness Goals (text area for custom goals)
+  - Physical Limitations/Concerns (text area for health considerations)
+- **Data Persistence**: All fields properly save to localStorage and integrate with existing profile system
+- **Personalization Foundation**: Comprehensive data collection enables future workout customization based on individual needs, equipment availability, and recovery considerations
+
 ### Program Cover Image Update
 - **CARCS Program Branding**: Updated "Your Postpartum Strength Recovery Program" cover image with new professional branding featuring "POSTNATAL pregnancy WITH zoe" and "HEAL YOUR CORE - FIX, STRENGTHEN & REBUILD" messaging
 - **Visual Consistency**: New cover image displays across home page, library section, and all program references
