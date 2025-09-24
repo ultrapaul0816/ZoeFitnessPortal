@@ -4732,113 +4732,105 @@ function ProgramsSection({
       </div>
 
       {/* 6-Week Program - Collapsible */}
-                      Who Is It For
-                    </h4>
-                    <div className="space-y-3 text-sm">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                        <div>You've started Heal Your Core and want ongoing support</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                        <div>You're unsure if you're 'doing it right' and want guidance</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                        <div>You love being part of a tribe that celebrates wins together</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                        <div>You want to stay consistent and actually finish the program</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                        <div>You value having expert answers at your fingertips</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* How It Works */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-green-200 rounded-lg p-5">
-                  <h4 className="text-lg font-bold text-green-600 mb-4 flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
-                    </svg>
-                    How It Works
-                  </h4>
-                  <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                    <div className="space-y-3">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
-                        <div>Pay ₹1000 for 3 months access</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
-                        <div>Select and purchase your 3-month WhatsApp Community Support add-on</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
-                        <div>Receive your exclusive invite link to the private group (This may take a few days)</div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</div>
-                        <div>Join anytime — whether you're on Day 1 or Week 6 of your Heal My Core journey</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">5</div>
-                        <div>A Community Coach helps manage the group to keep it useful, supportive, and positive</div>
-                      </div>
-                      
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">6</div>
-                        <div>Renew if you'd like to continue beyond your first 3 months</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Call to Action */}
-                <div className="text-center bg-white border-2 border-green-300 rounded-lg p-6">
-                  <div className="mb-4">
-                    <div className="text-3xl font-bold text-green-600 mb-2">₹1000</div>
-                    <div className="text-gray-600 text-sm mb-1">3 months of community support</div>
-                    <p className="text-gray-500 text-xs">Join your supportive community of moms today!</p>
-                  </div>
-                  <Button 
-                    onClick={() => window.open('https://www.strongerwithzoe.in/products/pwz-postnatal-heal-your-core', '_blank')}
-                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2 w-full sm:w-auto"
-                    data-testid="button-join-whatsapp-community"
-                  >
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
-                    </svg>
-                    <span className="hidden sm:inline">Join WhatsApp Community</span>
-                    <span className="sm:hidden">Join Community</span>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          )}
-        </Card>
-        </div> {/* End White Container */}
-      </div>
-      
-      {/* 6-Week Program - Collapsible */}
       <Card className="overflow-hidden border-l-4 border-program-1 shadow-xl">
         <CardHeader 
           className="program-1-gradient hover:program-1-gradient-hover cursor-pointer transition-all duration-300 relative overflow-hidden"
           onClick={() => toggleProgram('6-week-program')}
+        >
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+          </div>
+          
+          <div className="relative z-10">
+            {/* Mobile Layout */}
+            <div className="block lg:hidden">
+              {/* Program Badge on top */}
+              <div className="mb-4">
+                <div className="program-1-badge inline-block">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4" />
+                    <span>6-WEEK PROGRAM</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Title and Description */}
+              <div className="mb-4">
+                <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-2 leading-tight">
+                  Heal Your Core
+                </div>
+                <div className="text-pink-100 font-medium text-sm drop-shadow-sm leading-relaxed">
+                  Comprehensive 6-week core rehabilitation program
+                </div>
+              </div>
+              
+              {/* Price and dropdown */}
+              <div className="flex items-center justify-between">
+                <div className="bg-white bg-opacity-20 px-4 py-3 rounded-xl backdrop-blur-sm border border-white border-opacity-30">
+                  <div className="text-pink-100 font-bold text-xs uppercase tracking-wide mb-1">Full Program</div>
+                  <div className="text-white font-bold text-xl">FREE</div>
+                </div>
+                <div className="w-10 h-10 bg-white text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
+                <div className="program-1-badge flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-5 h-5" />
+                    <span>6-WEEK PROGRAM</span>
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1 py-2">
+                  <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
+                    Heal Your Core
+                  </CardTitle>
+                  <CardDescription className="text-pink-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
+                    Comprehensive 6-week core rehabilitation program
+                  </CardDescription>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right bg-white bg-opacity-20 px-4 py-3 rounded-lg backdrop-blur-sm border border-white border-opacity-30">
+                  <div className="text-sm text-pink-100 font-bold uppercase tracking-wide">Full Program</div>
+                  <div className="text-lg text-white font-bold">FREE</div>
+                </div>
+                <div className="w-10 h-10 bg-white text-pink-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['6-week-program'] ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        {expandedPrograms['6-week-program'] && (
+          <CardContent className="p-6 border-t border-blue-100">
+            <div className="space-y-6">
+              {/* Program content goes here */}
+              <div className="text-center text-gray-600">
+                <p>6-week program content will be displayed here when expanded.</p>
+              </div>
+            </div>
+          </CardContent>
+        )}
+      </Card>
+
+      {/* Navigation */}
+      <NavigationButtons
+        canGoNext={canGoNext}
+        canGoPrevious={canGoPrevious}
+        navigateToNextTab={navigateToNextTab}
+        navigateToPreviousTab={navigateToPreviousTab}
+        getNavigationText={getNavigationText}
+      />
+    </div>
+  );
         >
           {/* Decorative background pattern */}
           <div className="absolute inset-0 opacity-10">
