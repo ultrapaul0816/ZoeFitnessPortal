@@ -534,21 +534,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                               )}
                             </div>
                             
-                            {/* Progress Bar */}
-                            <div className="mb-4">
-                              <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
-                                <span>
-                                  Progress ({memberProgram.progress || 0} of {program.workoutCount || 22} workouts)
-                                </span>
-                                <span className="font-semibold text-pink-600">{progressPercentage}%</span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div 
-                                  className="bg-pink-500 h-2 rounded-full transition-all duration-300"
-                                  style={{ width: `${progressPercentage}%` }}
-                                />
-                              </div>
-                            </div>
                             
                             {/* Equipment */}
                             {program.equipment && (

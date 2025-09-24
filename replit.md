@@ -10,7 +10,6 @@ This project is a 6-week postnatal fitness web application, "Your Postpartum Str
 - **Clean Design Philosophy**: Redesigned with a "simple and cool" approach removing excessive visual effects for better usability
 - **Minimal Card Layout**: Clean white cards with subtle borders and shadow effects for professional appearance
 - **Organized Information Grid**: Program details displayed in a clean grid layout with pink accent icons for visual consistency
-- **Clear Progress Tracking**: Simple progress bar with clean percentage display and readable text
 - **Streamlined Equipment Display**: Equipment requirements shown in a subtle gray background with minimal styling
 - **Simple Action Button**: Clean "Continue Program" button with pink branding and subtle hover effects
 - **Improved Readability**: Enhanced typography hierarchy with better spacing and contrast
