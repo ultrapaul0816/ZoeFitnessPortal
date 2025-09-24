@@ -197,9 +197,25 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-medium text-gray-900">support@strongerwithzoe.in</span>
                   <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText('support@strongerwithzoe.in');
-                      // You could add a toast notification here
+                    onClick={async (event) => {
+                      try {
+                        await navigator.clipboard.writeText('support@strongerwithzoe.in');
+                        // Show success feedback
+                        const button = event.currentTarget;
+                        const originalHTML = button.innerHTML;
+                        button.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>';
+                        setTimeout(() => {
+                          button.innerHTML = originalHTML;
+                        }, 2000);
+                      } catch (err) {
+                        // Fallback for browsers that don't support clipboard API
+                        const textArea = document.createElement('textarea');
+                        textArea.value = 'support@strongerwithzoe.in';
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                      }
                     }}
                     className="p-2 text-pink-600 hover:text-pink-700 hover:bg-pink-50 rounded-lg transition-colors duration-200"
                     title="Copy email address"
@@ -212,6 +228,18 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               <p className="text-sm text-gray-600 mt-3">
                 Send us an email and we'll get back to you within 24 hours
               </p>
+              
+              {/* Send Email Button - Moved here from bottom */}
+              <div className="mt-4">
+                <Button 
+                  onClick={() => window.open('https://mail.google.com/mail/u/0/?to=support@strongerwithzoe.in&su=Support+Request&body=Hi+Stronger+With+Zoe+Team,%0D%0A%0D%0AI+would+like+to+get+support+with:%0D%0A%0D%0A[Please+describe+your+question+or+issue+here]%0D%0A%0D%0AThank+you!&tf=cm', '_blank')}
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95 inline-flex items-center"
+                  data-testid="button-contact-support"
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Send Email
+                </Button>
+              </div>
             </div>
 
             {/* WhatsApp Community Support Section */}
@@ -261,17 +289,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               </div>
             </div>
 
-            {/* Contact Button */}
-            <div className="mt-8">
-              <Button 
-                onClick={() => window.open('https://mail.google.com/mail/u/0/?to=support@strongerwithzoe.in&su=Support+Request&body=Hi+Stronger+With+Zoe+Team,%0D%0A%0D%0AI+would+like+to+get+support+with:%0D%0A%0D%0A[Please+describe+your+question+or+issue+here]%0D%0A%0D%0AThank+you!&tf=cm', '_blank')}
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
-                data-testid="button-contact-support"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Send Email
-              </Button>
-            </div>
           </div>
         </div>
       </div>
