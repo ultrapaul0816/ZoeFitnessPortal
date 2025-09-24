@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation, Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_1758445266265.png";
 import videoThumbnailImage from "@assets/Screenshot 2025-09-22 at 12.15.21_1758537245258.png";
 import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_1758445423086.png";
@@ -68,6 +70,120 @@ import {
 } from "lucide-react";
 import ProfileSettings from "@/components/profile-settings";
 import type { User } from "@shared/schema";
+
+// Note Section Component for reflection notes
+function NoteSection({ userId, programId }: { userId?: string; programId: string }) {
+  const [noteText, setNoteText] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const { toast } = useToast();
+
+  // Load existing note on component mount
+  const { data: existingNote } = useQuery({
+    queryKey: ['/api/reflection-notes', userId, programId],
+    queryFn: () => fetch(`/api/reflection-notes/${userId}/${programId}`).then(res => res.json()),
+    enabled: !!userId,
+  });
+
+  // Set initial text when existing note loads
+  useEffect(() => {
+    if (existingNote?.noteText) {
+      setNoteText(existingNote.noteText);
+    }
+  }, [existingNote]);
+
+  // Save note mutation
+  const saveNoteMutation = useMutation({
+    mutationFn: (noteData: { userId: string; programId: string; noteText: string }) =>
+      apiRequest('/api/reflection-notes', {
+        method: 'POST',
+        body: JSON.stringify(noteData),
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    onSuccess: () => {
+      toast({
+        title: "Note Saved!",
+        description: "Your reflection note has been saved successfully.",
+      });
+      setSaveMessage("✓ Saved");
+      setTimeout(() => setSaveMessage(""), 2000);
+      
+      // Invalidate cache to refresh the note
+      queryClient.invalidateQueries({ queryKey: ['/api/reflection-notes', userId, programId] });
+    },
+    onError: () => {
+      toast({
+        title: "Save Failed",
+        description: "Failed to save your note. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSave = () => {
+    if (!userId) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to save notes.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!noteText.trim()) {
+      toast({
+        title: "Nothing to save",
+        description: "Please write something before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    saveNoteMutation.mutate({
+      userId,
+      programId,
+      noteText: noteText.trim(),
+    });
+    setIsSaving(false);
+  };
+
+  return (
+    <div className="bg-white border-2 rounded-lg p-6" style={{borderColor: '#f3a8cb'}}>
+      <h4 className="font-bold text-pink-500 text-lg mb-4">WRITE YOURSELF A NOTE</h4>
+      <p className="text-gray-700 mb-4">Use this space to write down a message to your body or future self.</p>
+      
+      <textarea
+        value={noteText}
+        onChange={(e) => setNoteText(e.target.value)}
+        className="w-full h-32 p-4 border-2 border-gray-200 rounded-lg resize-none focus:border-pink-400 focus:outline-none"
+        placeholder="Dear body, thank you for..."
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.5',
+          fontFamily: 'inherit'
+        }}
+        data-testid="reflection-note-textarea"
+      />
+      
+      <div className="mt-4 flex justify-between items-center">
+        <div className="text-sm text-gray-500">
+          {saveMessage && (
+            <span className="text-green-600 font-medium">{saveMessage}</span>
+          )}
+        </div>
+        <Button
+          onClick={handleSave}
+          disabled={isSaving || saveNoteMutation.isPending}
+          className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-lg font-medium"
+          data-testid="save-note-button"
+        >
+          {isSaving || saveNoteMutation.isPending ? 'Saving...' : 'Save Note'}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 export default function HealYourCorePage() {
   const [, navigate] = useLocation();
@@ -7692,20 +7808,7 @@ function WhatComesNextSection({
                         </div>
 
                         {/* Write Yourself A Note Section */}
-                        <div className="bg-white border-2 rounded-lg p-6" style={{borderColor: '#f3a8cb'}}>
-                          <h4 className="font-bold text-pink-500 text-lg mb-4">WRITE YOURSELF A NOTE</h4>
-                          <p className="text-gray-700 mb-4">Use this space to write down a message to your body or future self.</p>
-                          
-                          <textarea
-                            className="w-full h-32 p-4 border-2 border-gray-200 rounded-lg resize-none focus:border-pink-400 focus:outline-none"
-                            placeholder="Dear body, thank you for..."
-                            style={{
-                              fontSize: '14px',
-                              lineHeight: '1.5',
-                              fontFamily: 'inherit'
-                            }}
-                          />
-                        </div>
+                        <NoteSection userId={user?.id} programId="b03be40d-290e-4c96-bbb4-0267371c8024" />
 
                         {/* What Comes Next Section */}
                         <div className="bg-white border-2 rounded-lg p-6" style={{borderColor: '#f3a8cb'}}>

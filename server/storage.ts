@@ -1,5 +1,5 @@
-import { type User, type InsertUser, type Program, type InsertProgram, type MemberProgram, type InsertMemberProgram, type Workout, type InsertWorkout, type WorkoutCompletion, type InsertWorkoutCompletion, type SavedWorkout, type InsertSavedWorkout, type CommunityPost, type InsertCommunityPost, type Notification, type InsertNotification, type Terms, type InsertTerms, type ProgramPurchase, type InsertProgramPurchase, type ProgressTracking, type InsertProgressTracking, type KnowledgeArticle, type InsertKnowledgeArticle, type Exercise, type InsertExercise, type WeeklyWorkout, type InsertWeeklyWorkout } from "@shared/schema";
-import { users, programs, memberPrograms, workouts, workoutCompletions, savedWorkouts, communityPosts, notifications, terms, programPurchases, progressTracking, knowledgeArticles, exercises, weeklyWorkouts } from "@shared/schema";
+import { type User, type InsertUser, type Program, type InsertProgram, type MemberProgram, type InsertMemberProgram, type Workout, type InsertWorkout, type WorkoutCompletion, type InsertWorkoutCompletion, type SavedWorkout, type InsertSavedWorkout, type CommunityPost, type InsertCommunityPost, type Notification, type InsertNotification, type Terms, type InsertTerms, type ProgramPurchase, type InsertProgramPurchase, type ProgressTracking, type InsertProgressTracking, type KnowledgeArticle, type InsertKnowledgeArticle, type Exercise, type InsertExercise, type WeeklyWorkout, type InsertWeeklyWorkout, type ReflectionNote, type InsertReflectionNote } from "@shared/schema";
+import { users, programs, memberPrograms, workouts, workoutCompletions, savedWorkouts, communityPosts, notifications, terms, programPurchases, progressTracking, knowledgeArticles, exercises, weeklyWorkouts, reflectionNotes } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
@@ -78,6 +78,11 @@ export interface IStorage {
   // Weekly Workouts
   createWeeklyWorkout(workout: InsertWeeklyWorkout): Promise<WeeklyWorkout>;
   
+  // Reflection Notes
+  createReflectionNote(note: InsertReflectionNote): Promise<ReflectionNote>;
+  getReflectionNote(userId: string, programId: string): Promise<ReflectionNote | undefined>;
+  updateReflectionNote(userId: string, programId: string, noteText: string): Promise<ReflectionNote>;
+  
   // Assets
   assetDisplayNames?: Map<string, string>;
   getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
@@ -99,6 +104,7 @@ export class MemStorage implements IStorage {
   private knowledgeArticles: Map<string, KnowledgeArticle>;
   private exercises: Map<string, Exercise>;
   private weeklyWorkouts: Map<string, WeeklyWorkout>;
+  private reflectionNotes: Map<string, ReflectionNote>;
   public assetDisplayNames: Map<string, string>;
 
   constructor() {
@@ -116,6 +122,7 @@ export class MemStorage implements IStorage {
     this.knowledgeArticles = new Map();
     this.exercises = new Map();
     this.weeklyWorkouts = new Map();
+    this.reflectionNotes = new Map();
     this.assetDisplayNames = new Map();
     
     this.initializeData();
@@ -755,6 +762,42 @@ export class MemStorage implements IStorage {
       exercise: this.exercises.get(workout.exerciseId)!
     }));
   }
+
+  // Reflection Notes
+  async createReflectionNote(note: InsertReflectionNote): Promise<ReflectionNote> {
+    const id = randomUUID();
+    const newNote: ReflectionNote = {
+      ...note,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.reflectionNotes.set(id, newNote);
+    return newNote;
+  }
+
+  async getReflectionNote(userId: string, programId: string): Promise<ReflectionNote | undefined> {
+    return Array.from(this.reflectionNotes.values())
+      .find(note => note.userId === userId && note.programId === programId);
+  }
+
+  async updateReflectionNote(userId: string, programId: string, noteText: string): Promise<ReflectionNote> {
+    const existingNote = await this.getReflectionNote(userId, programId);
+    
+    if (existingNote) {
+      existingNote.noteText = noteText;
+      existingNote.updatedAt = new Date();
+      this.reflectionNotes.set(existingNote.id, existingNote);
+      return existingNote;
+    } else {
+      // Create new note if none exists
+      return this.createReflectionNote({
+        userId,
+        programId,
+        noteText,
+      });
+    }
+  }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -970,6 +1013,43 @@ class DatabaseStorage implements IStorage {
   }
   async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
   async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
+
+  // Reflection Notes
+  async createReflectionNote(note: InsertReflectionNote): Promise<ReflectionNote> {
+    const result = await this.db.insert(reflectionNotes).values(note).returning();
+    return result[0];
+  }
+
+  async getReflectionNote(userId: string, programId: string): Promise<ReflectionNote | undefined> {
+    const result = await this.db
+      .select()
+      .from(reflectionNotes)
+      .where(and(eq(reflectionNotes.userId, userId), eq(reflectionNotes.programId, programId)))
+      .limit(1);
+    return result[0];
+  }
+
+  async updateReflectionNote(userId: string, programId: string, noteText: string): Promise<ReflectionNote> {
+    const existing = await this.getReflectionNote(userId, programId);
+    
+    if (existing) {
+      const result = await this.db
+        .update(reflectionNotes)
+        .set({ 
+          noteText, 
+          updatedAt: new Date() 
+        })
+        .where(and(eq(reflectionNotes.userId, userId), eq(reflectionNotes.programId, programId)))
+        .returning();
+      return result[0];
+    } else {
+      return this.createReflectionNote({
+        userId,
+        programId,
+        noteText,
+      });
+    }
+  }
 }
 
 // Use Database Storage for persistent data

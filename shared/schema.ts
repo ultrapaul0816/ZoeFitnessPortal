@@ -160,6 +160,15 @@ export const weeklyWorkouts = pgTable("weekly_workouts", {
   isOptional: boolean("is_optional").default(false), // for optional cardio days
 });
 
+export const reflectionNotes = pgTable("reflection_notes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  programId: varchar("program_id").notNull(),
+  noteText: text("note_text").notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -187,6 +196,12 @@ export const insertExerciseSchema = createInsertSchema(exercises).omit({
 
 export const insertWeeklyWorkoutSchema = createInsertSchema(weeklyWorkouts).omit({
   id: true,
+});
+
+export const insertReflectionNoteSchema = createInsertSchema(reflectionNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const insertProgramSchema = createInsertSchema(programs).omit({
@@ -274,6 +289,8 @@ export type Exercise = typeof exercises.$inferSelect;
 export type InsertExercise = z.infer<typeof insertExerciseSchema>;
 export type WeeklyWorkout = typeof weeklyWorkouts.$inferSelect;
 export type InsertWeeklyWorkout = z.infer<typeof insertWeeklyWorkoutSchema>;
+export type ReflectionNote = typeof reflectionNotes.$inferSelect;
+export type InsertReflectionNote = z.infer<typeof insertReflectionNoteSchema>;
 export type Program = typeof programs.$inferSelect;
 export type InsertProgram = z.infer<typeof insertProgramSchema>;
 export type MemberProgram = typeof memberPrograms.$inferSelect;

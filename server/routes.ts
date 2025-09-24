@@ -284,6 +284,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reflection Notes routes
+  app.get("/api/reflection-notes/:userId/:programId", async (req, res) => {
+    try {
+      const { userId, programId } = req.params;
+      const note = await storage.getReflectionNote(userId, programId);
+      res.json(note || { noteText: "" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch reflection note" });
+    }
+  });
+
+  app.post("/api/reflection-notes", async (req, res) => {
+    try {
+      const { userId, programId, noteText } = req.body;
+      
+      if (!userId || !programId || !noteText) {
+        return res.status(400).json({ message: "userId, programId, and noteText are required" });
+      }
+
+      const note = await storage.updateReflectionNote(userId, programId, noteText);
+      res.json(note);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save reflection note" });
+    }
+  });
+
   // Weekly workouts
   app.get("/api/weekly-workouts/:programId", async (req, res) => {
     try {
