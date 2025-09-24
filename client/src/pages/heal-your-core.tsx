@@ -6721,32 +6721,32 @@ function TheRoleOfNutritionSection({
                           <p className="text-gray-600 mb-3 text-sm">
                             Use this as a gentle reminder — not for perfection, but for consistent nourishment.
                           </p>
-                          <div className="space-y-2">
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                          <ul className="space-y-2">
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
                               <span className="text-gray-700">Bone broth or warm protein-rich soup</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
                               <span className="text-gray-700">3 protein-rich servings (dal/lentils, curd/yogurt, chicken, etc.)</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
                               <span className="text-gray-700">2+ complex carb servings (bajra, quinoa/pearl millet flatbread, oats, sweet potato)</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
                               <span className="text-gray-700">1–2 healthy fat sources (ghee/clarified butter, nuts, coconut)</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
                               <span className="text-gray-700">2+ anti-inflammatory ingredients (Haldi/turmeric, ginger, soaked nuts)</span>
-                            </label>
-                            <label className="flex items-center space-x-3 cursor-pointer">
-                              <input type="checkbox" className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500" />
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-pink-500 mr-2">❖</span>
                               <span className="text-gray-700">8–10 cups fluid (water, chaas/buttermilk, ORS, nimbu-paani/lime water)</span>
-                            </label>
-                          </div>
+                            </li>
+                          </ul>
                         </div>
                         
                         <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-400 p-5 rounded-r-lg">
