@@ -4,6 +4,20 @@ This project is a 6-week postnatal fitness web application, "Your Postpartum Str
 
 # Recent Updates (September 2025)
 
+## Latest Updates (September 24, 2025)
+
+### Program Cover Image Update
+- **CARCS Program Branding**: Updated "Your Postpartum Strength Recovery Program" cover image with new professional branding featuring "POSTNATAL pregnancy WITH zoe" and "HEAL YOUR CORE - FIX, STRENGTHEN & REBUILD" messaging
+- **Visual Consistency**: New cover image displays across home page, library section, and all program references
+- **Database Sync**: Updated both in-memory storage and PostgreSQL database with new image path `/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png`
+
+### Deployment Infrastructure Fixes (September 23-24, 2025)
+- **Critical Static Asset Issue**: Resolved persistent deployment problem where published Replit URL showed blank pages due to failed React asset loading
+- **Root Cause Identified**: Static file serving configuration was using incorrect path resolution from `import.meta.dirname` when server runs from `dist/index.js`
+- **Path Resolution Fix**: Corrected `serveStatic` function in `server/vite.ts` to use direct path `path.resolve(import.meta.dirname, "public")` instead of relative `../dist/public`
+- **Production Validation**: Fixed both local production server testing and published deployment asset serving
+- **Server Architecture**: Ensured proper separation between development (Vite HMR) and production (Express static serving) modes
+
 ## What's Next Tab Completion
 - **Topic 2 "Red Flag Movements to Avoid"**: Added comprehensive content with professional table format detailing 6 critical movements to avoid during recovery, including crunches, planks, twisting exercises, and impact activities with clear explanations for each restriction.
 - **Topic 3 "Return to Impact Readiness Test"**: Implemented complete assessment protocol with 7-test evaluation table covering core breath activation, single leg stand, glute bridges, sit-to-stand, forward hops, jogging, and jumping jacks with specific pass criteria for safe return to high-impact activities.
@@ -51,6 +65,12 @@ Authentication uses a session-based approach, validating user credentials agains
 
 ## Technical Implementations
 The application features a comprehensive 6-week program structure with detailed exercises, coach notes, and safety tips. YouTube videos are integrated for exercises, with clickable buttons and playlist functionality. Content is organized into collapsible sections with distinct gradient color themes for each week, enhancing visual differentiation and user experience. Responsive design is a core principle, with separate mobile and desktop layouts for optimal viewing.
+
+### Deployment Architecture
+- **Development Mode**: Uses Vite dev server with HMR for fast development iterations
+- **Production Mode**: Express.js serves pre-built static assets from `dist/public` directory
+- **Asset Management**: Vite bundles all frontend assets with proper fingerprinting for cache optimization
+- **Static File Serving**: Configured Express middleware correctly handles asset requests in production environment
 
 # External Dependencies
 
