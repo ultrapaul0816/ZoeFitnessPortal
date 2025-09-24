@@ -492,10 +492,21 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                           {/* Access Program Button */}
                           <div className="flex justify-center md:justify-start">
                             <Button 
-                              onClick={() => {
-                                // Navigate first, then close modal to prevent logout issues
-                                setLocation(`/?program=${program.id}`);
-                                setTimeout(() => onClose(), 100);
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                try {
+                                  // Close modal first to prevent any state conflicts
+                                  onClose();
+                                  // Small delay then navigate
+                                  setTimeout(() => {
+                                    setLocation(`/?program=${program.id}`);
+                                  }, 50);
+                                } catch (error) {
+                                  console.error('Navigation error:', error);
+                                  // Fallback navigation
+                                  window.location.href = `/?program=${program.id}`;
+                                }
                               }}
                               className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
                               data-testid={`button-access-program-${program.id}`}
@@ -519,9 +530,18 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                   You haven't enrolled in any programs yet. Explore our programs to get started on your wellness journey.
                 </p>
                 <Button 
-                  onClick={() => {
-                    onClose();
-                    setLocation('/library');
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                      onClose();
+                      setTimeout(() => {
+                        setLocation('/library');
+                      }, 50);
+                    } catch (error) {
+                      console.error('Navigation error:', error);
+                      window.location.href = '/library';
+                    }
                   }}
                   className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white"
                 >
