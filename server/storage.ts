@@ -943,5 +943,5 @@ class DatabaseStorage implements IStorage {
   async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
 }
 
-// Use Database Storage instead of Memory Storage
-export const storage = new DatabaseStorage();
+// Use Memory Storage for better performance
+export const storage = new MemStorage();
