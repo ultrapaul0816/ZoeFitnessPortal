@@ -110,7 +110,7 @@ export default function ProfileBanner({
           </div>
 
           <p className="text-sm text-gray-700 mb-3">
-            Add your {missingFields.join(", ").toLowerCase()} to get personalized recommendations and connect with other moms in your area.
+            Add your {missingFields.join(", ").toLowerCase()} to complete your profile and enhance your experience.
           </p>
 
           {/* Progress Bar */}
