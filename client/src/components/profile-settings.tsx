@@ -354,66 +354,89 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               <div className="space-y-4">
                 {memberPrograms.map((memberProgram: any) => {
                   const { program } = memberProgram;
-                  const enrolledDate = new Date(memberProgram.enrolledAt);
+                  const enrolledDate = memberProgram.enrolledAt ? new Date(memberProgram.enrolledAt) : null;
+                  const isValidDate = enrolledDate && !isNaN(enrolledDate.getTime());
+                  
+                  // Convert price from cents to rupees
+                  const displayPrice = program.price ? (program.price / 100).toLocaleString('en-IN') : null;
                   
                   return (
-                    <div key={memberProgram.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow">
-                      <div className="flex items-start space-x-4">
+                    <div key={memberProgram.id} className="border rounded-xl p-6 hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-white to-gray-50">
+                      <div className="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-6">
                         {/* Program Cover Image */}
-                        <div className="flex-shrink-0">
-                          <img 
-                            src={program.coverImage || '/placeholder-program.jpg'}
-                            alt={program.title}
-                            className="w-20 h-20 object-cover rounded-lg shadow-sm"
-                          />
+                        <div className="flex-shrink-0 mx-auto md:mx-0">
+                          {program.coverImage ? (
+                            <img 
+                              src={program.coverImage}
+                              alt={program.title}
+                              className="w-24 h-24 object-cover rounded-xl shadow-md border border-gray-200"
+                              onError={(e) => {
+                                // Fallback to gradient if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <div className={`w-24 h-24 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl shadow-md flex items-center justify-center ${program.coverImage ? 'hidden' : ''}`}>
+                            <BookOpen className="w-8 h-8 text-white" />
+                          </div>
                         </div>
                         
                         {/* Program Details */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        <div className="flex-1 min-w-0 text-center md:text-left">
+                          <div className="flex flex-col md:flex-row md:items-start md:justify-between space-y-3 md:space-y-0">
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-gray-900 mb-3">
                                 {program.title}
                               </h3>
-                              <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                              <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                                 {program.description}
                               </p>
                             </div>
                             
                             {/* Active Status Badge */}
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                              Active
-                            </span>
+                            <div className="flex justify-center md:justify-end">
+                              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-200 shadow-sm">
+                                ✅ Active
+                              </span>
+                            </div>
                           </div>
                           
                           {/* Program Stats */}
-                          <div className="flex items-center space-x-6 text-sm text-gray-500">
-                            <div className="flex items-center space-x-1">
-                              <BookOpen className="w-4 h-4" />
-                              <span>{program.duration || '6 weeks'}</span>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
+                              <BookOpen className="w-5 h-5 text-pink-500" />
+                              <span className="font-medium">{program.duration || '6 Weeks'}</span>
                             </div>
-                            <div className="flex items-center space-x-1">
-                              <User className="w-4 h-4" />
-                              <span>Enrolled {enrolledDate.toLocaleDateString()}</span>
+                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
+                              <User className="w-5 h-5 text-pink-500" />
+                              <span className="font-medium">
+                                Enrolled {isValidDate ? enrolledDate.toLocaleDateString('en-GB', { 
+                                  day: 'numeric', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                }) : 'Recently'}
+                              </span>
                             </div>
-                            {program.price && (
-                              <div className="flex items-center space-x-1">
-                                <CreditCard className="w-4 h-4" />
-                                <span>₹{program.price}</span>
+                            {displayPrice && (
+                              <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
+                                <CreditCard className="w-5 h-5 text-pink-500" />
+                                <span className="font-semibold text-green-700">₹{displayPrice}</span>
                               </div>
                             )}
                           </div>
                           
                           {/* Progress Bar (if progress data available) */}
                           {memberProgram.completionPercentage !== undefined && (
-                            <div className="mt-4">
-                              <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
-                                <span>Progress</span>
-                                <span>{memberProgram.completionPercentage}%</span>
+                            <div className="mb-6">
+                              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                <span className="font-medium">Progress</span>
+                                <span className="font-bold text-pink-600">{memberProgram.completionPercentage}%</span>
                               </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                                 <div 
-                                  className="bg-gradient-to-r from-pink-500 to-rose-500 h-2 rounded-full transition-all duration-300"
+                                  className="bg-gradient-to-r from-pink-500 to-rose-500 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
                                   style={{ width: `${memberProgram.completionPercentage}%` }}
                                 />
                               </div>
@@ -421,13 +444,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                           )}
                           
                           {/* Access Program Button */}
-                          <div className="mt-4">
+                          <div className="flex justify-center md:justify-start">
                             <Button 
                               onClick={() => {
                                 onClose();
                                 setLocation(`/?program=${program.id}`);
                               }}
-                              className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-sm px-4 py-2"
+                              className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
                               data-testid={`button-access-program-${program.id}`}
                             >
                               Continue Program
