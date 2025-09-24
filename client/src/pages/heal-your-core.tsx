@@ -106,8 +106,10 @@ export default function HealYourCorePage() {
   // Community promotion banner state
   const [bannerDismissed, setBannerDismissed] = useState(false);
   
-  // Disable promotional banner - WhatsApp card moved to Start Here tab only
-  const shouldShowCommunityBanner = false;
+  // Show promotional banner on specific tabs - WhatsApp card also available in Start Here tab
+  const shouldShowCommunityBanner = 
+    !bannerDismissed && 
+    (activeTab === 'healing' || activeTab === 'nutrition' || activeTab === 'faqs');
 
   // Tab navigation helpers
   const tabOrder = ["welcome", "understanding", "healing", "programs", "nutrition", "next-steps", "faqs"];
