@@ -16,6 +16,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import { 
   evaluateCompleteness, 
   getCurrentProfileData, 
@@ -37,6 +38,14 @@ interface ProfileSettingsProps {
 export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, initialView = 'menu' }: ProfileSettingsProps) {
   const [location, setLocation] = useLocation();
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>(initialView);
+  const { toast } = useToast();
+  
+  // Fetch user's purchased programs
+  const { data: memberPrograms = [], isLoading: isLoadingPrograms } = useQuery({
+    queryKey: ['/api/member-programs', user.id],
+    enabled: !!user.id && currentView === 'purchases',
+  });
+  
   const [profileData, setProfileData] = useState<ProfileData>({
     country: '',
     bio: '',
@@ -50,7 +59,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     transactionalEmails: false
   });
   const [profileCompleteness, setProfileCompleteness] = useState<ReturnType<typeof evaluateCompleteness> | null>(null);
-  const { toast } = useToast();
   const countryRef = useRef<HTMLButtonElement>(null);
   const timezoneRef = useRef<HTMLButtonElement>(null);
   const dueDateRef = useRef<HTMLInputElement>(null);
@@ -333,66 +341,124 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
           </button>
 
 
-          {/* Invoice History */}
+          {/* My Programs */}
           <div className="bg-white rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-700 mb-6">Invoice History</h2>
+            <h2 className="text-xl font-semibold text-gray-700 mb-6">My Programs</h2>
             
-            {/* Subscription Section */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-800 mb-2">Subscription</h3>
-              <p className="text-gray-600 mb-4">Cancelled May 09, 2025, 4 months ago</p>
-              
-              <div className="border rounded-lg p-4 flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">Monthly Subscription</h4>
-                  <p className="text-gray-600">$29.00/month</p>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded border border-red-200">
-                      CLOSED
-                    </span>
-                    <span className="text-sm text-gray-600">on May 18, 2025</span>
-                  </div>
-                </div>
+            {isLoadingPrograms ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+                <span className="ml-3 text-gray-600">Loading your programs...</span>
               </div>
-              
-              <Button variant="secondary" className="mt-4 bg-gray-100 text-gray-800 hover:bg-gray-200">
-                Reactivate
-              </Button>
-            </div>
-
-            {/* Purchases Section */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-800 mb-4">Purchases</h3>
-              
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-200 to-pink-200 rounded flex items-center justify-center">
-                      <svg className="w-8 h-8 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
+            ) : memberPrograms.length > 0 ? (
+              <div className="space-y-4">
+                {memberPrograms.map((memberProgram: any) => {
+                  const { program } = memberProgram;
+                  const enrolledDate = new Date(memberProgram.enrolledAt);
+                  
+                  return (
+                    <div key={memberProgram.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-start space-x-4">
+                        {/* Program Cover Image */}
+                        <div className="flex-shrink-0">
+                          <img 
+                            src={program.coverImage || '/placeholder-program.jpg'}
+                            alt={program.title}
+                            className="w-20 h-20 object-cover rounded-lg shadow-sm"
+                          />
+                        </div>
+                        
+                        {/* Program Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                {program.title}
+                              </h3>
+                              <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                                {program.description}
+                              </p>
+                            </div>
+                            
+                            {/* Active Status Badge */}
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                              Active
+                            </span>
+                          </div>
+                          
+                          {/* Program Stats */}
+                          <div className="flex items-center space-x-6 text-sm text-gray-500">
+                            <div className="flex items-center space-x-1">
+                              <BookOpen className="w-4 h-4" />
+                              <span>{program.duration || '6 weeks'}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <User className="w-4 h-4" />
+                              <span>Enrolled {enrolledDate.toLocaleDateString()}</span>
+                            </div>
+                            {program.price && (
+                              <div className="flex items-center space-x-1">
+                                <CreditCard className="w-4 h-4" />
+                                <span>₹{program.price}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Progress Bar (if progress data available) */}
+                          {memberProgram.completionPercentage !== undefined && (
+                            <div className="mt-4">
+                              <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span>{memberProgram.completionPercentage}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-gradient-to-r from-pink-500 to-rose-500 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${memberProgram.completionPercentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Access Program Button */}
+                          <div className="mt-4">
+                            <Button 
+                              onClick={() => {
+                                onClose();
+                                setLocation(`/?program=${program.id}`);
+                              }}
+                              className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-sm px-4 py-2"
+                              data-testid={`button-access-program-${program.id}`}
+                            >
+                              Continue Program
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="absolute -top-2 -right-2 bg-gray-600 text-white text-xs font-medium px-2 py-1 rounded flex items-center space-x-1">
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                      </svg>
-                      <span>15</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 text-center">
-                    <h4 className="font-medium text-gray-900 mb-2 underline">The Mama Summit</h4>
-                    <span className="inline-block px-3 py-1 text-sm font-medium text-gray-700 border border-gray-300 rounded-full">
-                      BUNDLE
-                    </span>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
-            </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Programs Found</h3>
+                <p className="text-gray-600 mb-6">
+                  You haven't enrolled in any programs yet. Explore our programs to get started on your wellness journey.
+                </p>
+                <Button 
+                  onClick={() => {
+                    onClose();
+                    setLocation('/library');
+                  }}
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white"
+                >
+                  Browse Programs
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
