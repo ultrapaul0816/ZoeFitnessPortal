@@ -106,10 +106,8 @@ export default function HealYourCorePage() {
   // Community promotion banner state
   const [bannerDismissed, setBannerDismissed] = useState(false);
   
-  // Simple banner logic without complex state tracking - show on specific tabs
-  const shouldShowCommunityBanner = 
-    !bannerDismissed && 
-    (activeTab === 'healing' || activeTab === 'nutrition' || activeTab === 'faqs');
+  // Disable promotional banner - WhatsApp card moved to Start Here tab only
+  const shouldShowCommunityBanner = false;
 
   // Tab navigation helpers
   const tabOrder = ["welcome", "understanding", "healing", "programs", "nutrition", "next-steps", "faqs"];
@@ -1807,10 +1805,10 @@ function WelcomeSection({
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-xs sm:text-sm font-semibold text-green-800 mb-1">
-                    💙 Want Extra Support?
+                    💙 WhatsApp Community Support
                   </h4>
                   <p className="text-[10px] sm:text-xs text-green-700 mb-2 sm:mb-3 leading-relaxed">
-                    Join our WhatsApp community for guidance & support with Zoe + coaches!
+                    Get personalized guidance, support & connect with other mamas on the same journey!
                   </p>
                   <div className="flex items-center justify-between">
                     <div className="text-[10px] sm:text-xs text-green-600">
