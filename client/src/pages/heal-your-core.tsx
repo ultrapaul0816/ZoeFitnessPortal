@@ -95,11 +95,7 @@ function NoteSection({ userId, programId }: { userId?: string; programId: string
   // Save note mutation
   const saveNoteMutation = useMutation({
     mutationFn: (noteData: { userId: string; programId: string; noteText: string }) =>
-      apiRequest('/api/reflection-notes', {
-        method: 'POST',
-        body: JSON.stringify(noteData),
-        headers: { 'Content-Type': 'application/json' },
-      }),
+      apiRequest('POST', '/api/reflection-notes', noteData),
     onSuccess: () => {
       toast({
         title: "Note Saved!",
