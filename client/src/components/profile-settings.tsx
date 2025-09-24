@@ -57,6 +57,17 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     email: '',
     timeFormat: '12 hours',
     photo: '',
+    // Fitness & Health Information
+    fitnessLevel: '',
+    deliveryType: '',
+    numberOfChildren: '',
+    breastfeedingStatus: '',
+    medicalClearance: false,
+    availableEquipment: [],
+    fitnessGoals: '',
+    workoutDaysPerWeek: '',
+    preferredWorkoutTime: '',
+    physicalLimitations: '',
     newsUpdates: true,
     promotions: true,
     communityUpdates: true,
@@ -884,6 +895,195 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                   <SelectItem value="UTC+10">Australian Eastern Time (UTC+10)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          {/* Fitness & Health Information */}
+          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Fitness & Health Information</h2>
+            <p className="text-gray-600 mb-6">Help us personalize your postpartum fitness journey</p>
+
+            {/* Fitness Level */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="fitnessLevel">Current Fitness Level</Label>
+              <Select value={profileData.fitnessLevel} onValueChange={(value) => setProfileData(prev => ({...prev, fitnessLevel: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your fitness level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="beginner">Beginner - New to exercise</SelectItem>
+                  <SelectItem value="intermediate">Intermediate - Some exercise experience</SelectItem>
+                  <SelectItem value="advanced">Advanced - Regular exercise routine</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Delivery Type */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="deliveryType">Delivery Type</Label>
+              <Select value={profileData.deliveryType} onValueChange={(value) => setProfileData(prev => ({...prev, deliveryType: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select delivery type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vaginal">Vaginal delivery</SelectItem>
+                  <SelectItem value="c-section">C-section</SelectItem>
+                  <SelectItem value="both">Both (multiple births)</SelectItem>
+                  <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Number of Children */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="numberOfChildren">Number of Children</Label>
+              <Select value={profileData.numberOfChildren} onValueChange={(value) => setProfileData(prev => ({...prev, numberOfChildren: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select number of children" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 child</SelectItem>
+                  <SelectItem value="2">2 children</SelectItem>
+                  <SelectItem value="3">3 children</SelectItem>
+                  <SelectItem value="4">4 children</SelectItem>
+                  <SelectItem value="5+">5+ children</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Breastfeeding Status */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="breastfeedingStatus">Breastfeeding Status</Label>
+              <Select value={profileData.breastfeedingStatus} onValueChange={(value) => setProfileData(prev => ({...prev, breastfeedingStatus: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select breastfeeding status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Yes, exclusively breastfeeding</SelectItem>
+                  <SelectItem value="partially">Partially breastfeeding</SelectItem>
+                  <SelectItem value="no">Not breastfeeding</SelectItem>
+                  <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Medical Clearance */}
+            <div className="flex items-center space-x-3 mb-6">
+              <Checkbox 
+                id="medicalClearance"
+                checked={profileData.medicalClearance}
+                onCheckedChange={(checked) => setProfileData(prev => ({...prev, medicalClearance: !!checked}))}
+                data-testid="checkbox-medical-clearance"
+              />
+              <Label htmlFor="medicalClearance" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                I have medical clearance to exercise from my healthcare provider
+              </Label>
+            </div>
+
+            {/* Available Equipment */}
+            <div className="space-y-2 mb-6">
+              <Label>Available Equipment at Home</Label>
+              <p className="text-sm text-gray-600 mb-3">Select all equipment you have access to (helps customize workouts)</p>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  'None (bodyweight only)',
+                  'Resistance bands',
+                  'Dumbbells',
+                  'Kettlebell',
+                  'Yoga mat',
+                  'Stability ball',
+                  'Resistance loops',
+                  'Pilates ring',
+                  'Foam roller',
+                  'Pull-up bar',
+                  'TRX/suspension trainer',
+                  'Medicine ball'
+                ].map((equipment) => (
+                  <div key={equipment} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`equipment-${equipment.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                      checked={profileData.availableEquipment.includes(equipment)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setProfileData(prev => ({
+                            ...prev,
+                            availableEquipment: [...prev.availableEquipment, equipment]
+                          }));
+                        } else {
+                          setProfileData(prev => ({
+                            ...prev,
+                            availableEquipment: prev.availableEquipment.filter(item => item !== equipment)
+                          }));
+                        }
+                      }}
+                      data-testid={`checkbox-equipment-${equipment.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                    />
+                    <Label 
+                      htmlFor={`equipment-${equipment.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {equipment}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Workout Days Per Week */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="workoutDaysPerWeek">How many days per week can you commit to working out?</Label>
+              <Select value={profileData.workoutDaysPerWeek} onValueChange={(value) => setProfileData(prev => ({...prev, workoutDaysPerWeek: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select workout frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1-2">1-2 days per week</SelectItem>
+                  <SelectItem value="3-4">3-4 days per week</SelectItem>
+                  <SelectItem value="5-6">5-6 days per week</SelectItem>
+                  <SelectItem value="daily">Daily</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preferred Workout Time */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="preferredWorkoutTime">Preferred Workout Time</Label>
+              <Select value={profileData.preferredWorkoutTime} onValueChange={(value) => setProfileData(prev => ({...prev, preferredWorkoutTime: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select preferred time" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="morning">Morning (6 AM - 12 PM)</SelectItem>
+                  <SelectItem value="afternoon">Afternoon (12 PM - 6 PM)</SelectItem>
+                  <SelectItem value="evening">Evening (6 PM - 10 PM)</SelectItem>
+                  <SelectItem value="flexible">Flexible / Varies</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Fitness Goals */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="fitnessGoals">Primary Fitness Goals</Label>
+              <Textarea 
+                id="fitnessGoals"
+                placeholder="e.g., Rebuild core strength, lose baby weight, improve energy, prepare for next pregnancy..."
+                value={profileData.fitnessGoals}
+                onChange={(e) => setProfileData(prev => ({...prev, fitnessGoals: e.target.value}))}
+                className="min-h-[80px]"
+              />
+            </div>
+
+            {/* Physical Limitations */}
+            <div className="space-y-2">
+              <Label htmlFor="physicalLimitations">Physical Limitations or Concerns</Label>
+              <Textarea 
+                id="physicalLimitations"
+                placeholder="e.g., Back pain, diastasis recti, pelvic floor issues, joint problems..."
+                value={profileData.physicalLimitations}
+                onChange={(e) => setProfileData(prev => ({...prev, physicalLimitations: e.target.value}))}
+                className="min-h-[80px]"
+              />
+              <p className="text-xs text-gray-500">This helps us customize your workout recommendations</p>
             </div>
           </div>
 

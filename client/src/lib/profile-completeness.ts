@@ -9,6 +9,17 @@ export interface ProfileData {
   email: string;
   timeFormat: string;
   photo: string;
+  // Fitness & Health Information
+  fitnessLevel: string;
+  deliveryType: string;
+  numberOfChildren: string;
+  breastfeedingStatus: string;
+  medicalClearance: boolean;
+  availableEquipment: string[];
+  fitnessGoals: string;
+  workoutDaysPerWeek: string;
+  preferredWorkoutTime: string;
+  physicalLimitations: string;
   newsUpdates: boolean;
   promotions: boolean;
   communityUpdates: boolean;
@@ -69,9 +80,12 @@ const MIN_PROMPT_INTERVAL_MINUTES = 10;
 /**
  * Helper function to check if a field value is completed
  */
-function isFieldCompleted(value: string | boolean): boolean {
+function isFieldCompleted(value: string | boolean | string[]): boolean {
   if (typeof value === 'boolean') {
     return true; // Boolean fields are considered always completed (they have default values)
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0; // Array fields are completed if they have at least one item
   }
   return Boolean(value?.trim());
 }
@@ -266,6 +280,17 @@ export function getCurrentProfileData(): ProfileData {
     email: '',
     timeFormat: '12 hours',
     photo: '',
+    // Fitness & Health Information
+    fitnessLevel: '',
+    deliveryType: '',
+    numberOfChildren: '',
+    breastfeedingStatus: '',
+    medicalClearance: false,
+    availableEquipment: [],
+    fitnessGoals: '',
+    workoutDaysPerWeek: '',
+    preferredWorkoutTime: '',
+    physicalLimitations: '',
     newsUpdates: true,
     promotions: true,
     communityUpdates: true,
