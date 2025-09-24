@@ -727,7 +727,7 @@ export default function HealYourCorePage() {
                   <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
                     <Button
                       onClick={() => {
-                        window.open('https://www.strongerwithzoe.in/products/pwz-postnatal-heal-your-core', '_blank');
+                        window.open('https://www.strongerwithzoe.in/products/whatsapp-community', '_blank');
                       }}
                       className="bg-green-500 hover:bg-green-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-200 flex items-center space-x-1"
                       data-testid="banner-join-community"
@@ -2162,7 +2162,7 @@ function WelcomeSection({
                         <p className="text-gray-500 text-xs">Join your supportive community of moms today!</p>
                       </div>
                       <Button 
-                        onClick={() => window.open('https://www.strongerwithzoe.in/products/pwz-postnatal-heal-your-core', '_blank')}
+                        onClick={() => window.open('https://www.strongerwithzoe.in/products/whatsapp-community', '_blank')}
                         className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2 w-full sm:w-auto"
                         data-testid="button-join-whatsapp-community"
                       >

@@ -287,7 +287,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                     <span className="font-semibold">₹1000</span> for 3 months
                   </div>
                   <Button 
-                    onClick={() => window.open('https://www.strongerwithzoe.in/products/pwz-postnatal-heal-your-core', '_blank')}
+                    onClick={() => window.open('https://www.strongerwithzoe.in/products/whatsapp-community', '_blank')}
                     className="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200 flex items-center mx-auto"
                     data-testid="button-join-whatsapp-community"
                   >
