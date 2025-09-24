@@ -570,7 +570,7 @@ export default function HealYourCorePage() {
           
           {/* Medical Disclaimer Moving Bar */}
           <div className="bg-gray-100 border-y border-gray-200 py-2">
-            <div className="marquee" style={{ ['--marquee-duration' as any]: '90s' }}>
+            <div className="marquee" style={{ ['--marquee-duration' as any]: '150s' }}>
               <div className="marquee-track">
                 <div className="marquee-content">
                   {Array.from({ length: 10 }).map((_, i) => (
