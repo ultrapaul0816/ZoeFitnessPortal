@@ -7808,7 +7808,7 @@ function WhatComesNextSection({
                         </div>
 
                         {/* Write Yourself A Note Section */}
-                        <NoteSection userId={user?.id} programId="b03be40d-290e-4c96-bbb4-0267371c8024" />
+                        <NoteSection userId={userId} programId="b03be40d-290e-4c96-bbb4-0267371c8024" />
 
                         {/* What Comes Next Section */}
                         <div className="bg-white border-2 rounded-lg p-6" style={{borderColor: '#f3a8cb'}}>
