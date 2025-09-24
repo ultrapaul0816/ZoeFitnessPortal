@@ -24,10 +24,8 @@ export default function MyLibrary() {
   const { data: memberPrograms = [], isLoading, error } = useQuery<MemberProgram[]>({
     queryKey: ['/api/member-programs', user?.id],
     enabled: !!user?.id,
-    staleTime: 10 * 60 * 1000, // Cache for 10 minutes
-    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
-    refetchOnWindowFocus: false, // Don't refetch when window gains focus
-    refetchOnMount: false, // Don't refetch on component remount if data exists
+    staleTime: 30 * 1000, // 30 seconds - match global setting
+    gcTime: 5 * 60 * 1000, // 5 minutes in cache
   });
 
   const handleUserUpdate = (updatedUser: User) => {
