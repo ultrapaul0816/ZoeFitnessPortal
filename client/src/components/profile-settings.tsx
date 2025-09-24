@@ -56,12 +56,15 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     fullName: '',
     email: '',
     timeFormat: '12 hours',
+    photo: '',
     newsUpdates: true,
     promotions: true,
     communityUpdates: true,
     transactionalEmails: false
   });
   const [profileCompleteness, setProfileCompleteness] = useState<ReturnType<typeof evaluateCompleteness> | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const countryRef = useRef<HTMLButtonElement>(null);
   const timezoneRef = useRef<HTMLButtonElement>(null);
   const dueDateRef = useRef<HTMLInputElement>(null);
@@ -75,6 +78,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     if (isOpen) {
       const currentProfile = getCurrentProfileData();
       setProfileData(currentProfile);
+      
+      // Load saved photo if exists
+      if (currentProfile.photo) {
+        setSelectedPhoto(currentProfile.photo);
+      }
       
       // Evaluate completeness
       const completeness = evaluateCompleteness(currentProfile);
@@ -157,6 +165,65 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     
     // Update completeness state
     setProfileCompleteness(completeness);
+  };
+
+  const handlePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please select an image file (JPG, PNG, GIF, etc.)",
+          variant: "destructive",
+          duration: 3000,
+        });
+        // Reset the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+          duration: 3000,
+        });
+        // Reset the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setSelectedPhoto(result);
+        // Save photo to profileData for persistence
+        setProfileData(prev => ({ ...prev, photo: result }));
+        toast({
+          title: "Photo Updated",
+          description: "Your profile photo has been updated successfully!",
+          duration: 3000,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    // Reset the file input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const countries = [
@@ -651,12 +718,32 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
 
             {/* Avatar */}
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-2xl font-medium">
-                {user.firstName?.[0]}{user.lastName?.[0]}
-              </div>
+              {selectedPhoto ? (
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-200">
+                  <img 
+                    src={selectedPhoto} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-2xl font-medium">
+                  {user.firstName?.[0]}{user.lastName?.[0]}
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+                data-testid="input-profile-photo"
+              />
               <Button 
                 variant="secondary" 
                 className="bg-gray-400 text-white hover:bg-gray-500"
+                onClick={handlePhotoClick}
+                data-testid="button-change-photo"
               >
                 Change
               </Button>

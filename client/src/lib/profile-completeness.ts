@@ -5,6 +5,10 @@ export interface ProfileData {
   dueDate: string;
   postpartumTime: string;
   timezone: string;
+  fullName: string;
+  email: string;
+  timeFormat: string;
+  photo: string;
   newsUpdates: boolean;
   promotions: boolean;
   communityUpdates: boolean;
@@ -258,6 +262,10 @@ export function getCurrentProfileData(): ProfileData {
     dueDate: '',
     postpartumTime: '',
     timezone: '',
+    fullName: '',
+    email: '',
+    timeFormat: '12 hours',
+    photo: '',
     newsUpdates: true,
     promotions: true,
     communityUpdates: true,
