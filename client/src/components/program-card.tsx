@@ -94,6 +94,7 @@ export default function ProgramCard({ memberProgram, userId }: ProgramCardProps)
               <span className="text-yellow-300 text-4xl">Zoe</span>
             </div>
             <div className="w-20 h-1 bg-gradient-to-r from-yellow-300 to-pink-200 rounded-full mx-auto mt-3"></div>
+            <p className="text-white text-sm mt-2 opacity-80">UPDATED UI</p>
           </div>
         </div>
 
