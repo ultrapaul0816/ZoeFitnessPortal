@@ -14,7 +14,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle } from "lucide-react";
+import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle, Target, Clock, Dumbbell, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -445,145 +445,200 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                   const progressPercentage = program.workoutCount ? Math.round((memberProgram.progress || 0) / program.workoutCount * 100) : 0;
                   
                   return (
-                    <div key={memberProgram.id} className="border rounded-xl p-6 hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-white to-gray-50">
-                      <div className="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-6">
-                        {/* Program Cover Image */}
-                        <div className="flex-shrink-0 mx-auto md:mx-0">
-                          {program.coverImage ? (
-                            <img 
-                              src={program.coverImage}
-                              alt={program.title}
-                              className="w-24 h-24 object-cover rounded-xl shadow-md border border-gray-200"
-                              onError={(e) => {
-                                // Fallback to gradient if image fails to load
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                target.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                          ) : null}
-                          <div className={`w-24 h-24 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl shadow-md flex items-center justify-center ${program.coverImage ? 'hidden' : ''}`}>
-                            <BookOpen className="w-8 h-8 text-white" />
-                          </div>
-                        </div>
+                    <div key={memberProgram.id} className="relative group">
+                      {/* Stunning Background Effects */}
+                      <div className="absolute -inset-1 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-400 via-rose-400 to-purple-400 rounded-xl opacity-20"></div>
+                      
+                      {/* Main Card */}
+                      <div className="relative bg-gradient-to-br from-white via-pink-50 to-purple-50 rounded-2xl shadow-2xl border-0 overflow-hidden backdrop-blur-sm">
+                        {/* Decorative Header Strip */}
+                        <div className="h-2 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600"></div>
                         
-                        {/* Program Details */}
-                        <div className="flex-1 min-w-0 text-center md:text-left">
-                          <div className="flex flex-col md:flex-row md:items-start md:justify-between space-y-3 md:space-y-0">
-                            <div className="flex-1">
-                              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                                {program.title}
-                              </h3>
-                              <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                                {program.description}
-                              </p>
+                        <div className="p-8">
+                          <div className="flex flex-col lg:flex-row lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
+                            {/* Enhanced Program Image with Glow */}
+                            <div className="flex-shrink-0 mx-auto lg:mx-0">
+                              <div className="relative">
+                                {program.coverImage ? (
+                                  <div className="relative">
+                                    <div className="absolute -inset-2 bg-gradient-to-r from-pink-400 to-purple-500 rounded-2xl blur-md opacity-40"></div>
+                                    <img 
+                                      src={program.coverImage}
+                                      alt={program.title}
+                                      className="relative w-20 h-20 object-cover rounded-2xl shadow-2xl border-4 border-white"
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        target.nextElementSibling?.classList.remove('hidden');
+                                      }}
+                                    />
+                                  </div>
+                                ) : null}
+                                <div className={`relative w-20 h-20 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-600 rounded-2xl shadow-2xl border-4 border-white flex items-center justify-center ${program.coverImage ? 'hidden' : ''}`}>
+                                  <div className="absolute -inset-2 bg-gradient-to-r from-pink-400 to-purple-500 rounded-2xl blur-md opacity-40"></div>
+                                  <BookOpen className="relative w-10 h-10 text-white drop-shadow-lg" />
+                                </div>
+                              </div>
                             </div>
                             
-                            {/* Active Status Badge */}
-                            <div className="flex justify-center md:justify-end">
-                              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-200 shadow-sm">
-                                ✅ Active
-                              </span>
-                            </div>
-                          </div>
-                          
-                          {/* Program Stats */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
-                              <BookOpen className="w-5 h-5 text-pink-500" />
-                              <span className="font-medium">{program.duration || '6 Weeks'}</span>
-                            </div>
-                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
-                              <div className="w-5 h-5 text-pink-500 flex items-center justify-center">
-                                <span className="text-xs font-bold">{program.level?.charAt(0).toUpperCase() || 'B'}</span>
-                              </div>
-                              <span className="font-medium capitalize">{program.level || 'Beginner'}</span>
-                            </div>
-                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
-                              <div className="w-5 h-5 text-pink-500 flex items-center justify-center">
-                                <span className="text-xs font-bold">{program.workoutCount || 0}</span>
-                              </div>
-                              <span className="font-medium">{program.workoutCount || 0} Workouts</span>
-                            </div>
-                            {displayPrice && (
-                              <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
-                                <CreditCard className="w-5 h-5 text-pink-500" />
-                                <span className="font-semibold text-green-700">₹{displayPrice}</span>
-                              </div>
-                            )}
-                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
-                              <User className="w-5 h-5 text-pink-500" />
-                              <span className="font-medium">
-                                Purchased {isPurchaseDateValid ? purchaseDate.toLocaleDateString('en-GB', { 
-                                  day: 'numeric', 
-                                  month: 'short', 
-                                  year: 'numeric' 
-                                }) : 'Recently'}
-                              </span>
-                            </div>
-                            {isExpiryDateValid && (
-                              <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
-                                <div className="w-5 h-5 text-pink-500 flex items-center justify-center">
-                                  <span className="text-xs">⏰</span>
+                            {/* Enhanced Program Details */}
+                            <div className="flex-1 min-w-0 text-center lg:text-left">
+                              {/* Title and Status Section */}
+                              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0 mb-6">
+                                <div className="flex-1">
+                                  <h3 className="text-2xl font-black bg-gradient-to-r from-gray-800 via-pink-600 to-purple-600 bg-clip-text text-transparent leading-tight mb-4">
+                                    {program.title}
+                                  </h3>
+                                  <div className="bg-gradient-to-r from-pink-100 via-white to-purple-100 rounded-xl p-4 shadow-inner border border-pink-200 mb-4">
+                                    <p className="text-gray-700 text-sm leading-relaxed font-medium">
+                                      {program.description}
+                                    </p>
+                                  </div>
                                 </div>
-                                <span className="font-medium">
-                                  Expires {expiryDate.toLocaleDateString('en-GB', { 
-                                    day: 'numeric', 
-                                    month: 'short', 
-                                    year: 'numeric' 
-                                  })}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Progress Bar */}
-                          <div className="mb-6">
-                            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                              <span className="font-medium">
-                                Progress ({memberProgram.progress || 0} of {program.workoutCount || 0} workouts)
-                              </span>
-                              <span className="font-bold text-pink-600">{progressPercentage}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                              <div 
-                                className="bg-gradient-to-r from-pink-500 to-rose-500 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
-                                style={{ width: `${progressPercentage}%` }}
-                              />
-                            </div>
-                          </div>
-                          
-                          {/* Equipment Required */}
-                          {program.equipment && (
-                            <div className="mb-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-                              <div className="flex items-start space-x-2">
-                                <div className="w-5 h-5 text-blue-500 flex items-center justify-center mt-0.5">
-                                  <span className="text-xs">🏋️</span>
-                                </div>
-                                <div>
-                                  <h4 className="font-semibold text-blue-900 text-sm mb-1">Equipment Needed</h4>
-                                  <p className="text-blue-700 text-sm">{program.equipment}</p>
+                                
+                                {/* Enhanced Active Status Badge */}
+                                <div className="flex justify-center lg:justify-end">
+                                  <div className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center space-x-2">
+                                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                    <span>Active</span>
+                                  </div>
                                 </div>
                               </div>
+                              
+                              {/* Stunning Program Stats Grid */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200 shadow-sm transform hover:scale-105 transition-transform duration-200">
+                                  <div className="flex items-center justify-center lg:justify-start space-x-3">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full flex items-center justify-center">
+                                      <BookOpen className="w-5 h-5 text-white" />
+                                    </div>
+                                    <span className="font-bold text-blue-900 text-lg">{program.duration || '6 Weeks'}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200 shadow-sm transform hover:scale-105 transition-transform duration-200">
+                                  <div className="flex items-center justify-center lg:justify-start space-x-3">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+                                      <Target className="w-5 h-5 text-white" />
+                                    </div>
+                                    <span className="font-bold text-green-900 text-lg capitalize">{program.level || 'Postnatal'}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200 shadow-sm transform hover:scale-105 transition-transform duration-200">
+                                  <div className="flex items-center justify-center lg:justify-start space-x-3">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
+                                      <div className="text-white font-bold text-sm">{program.workoutCount || 22}</div>
+                                    </div>
+                                    <span className="font-bold text-purple-900 text-lg">{program.workoutCount || 22} Workouts</span>
+                                  </div>
+                                </div>
+                                
+                                {displayPrice && (
+                                  <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-4 border border-orange-200 shadow-sm transform hover:scale-105 transition-transform duration-200">
+                                    <div className="flex items-center justify-center lg:justify-start space-x-3">
+                                      <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-yellow-500 rounded-full flex items-center justify-center">
+                                        <CreditCard className="w-5 h-5 text-white" />
+                                      </div>
+                                      <span className="font-black text-orange-900 text-lg">₹{displayPrice}</span>
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-4 border border-teal-200 shadow-sm transform hover:scale-105 transition-transform duration-200">
+                                  <div className="flex items-center justify-center lg:justify-start space-x-3">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-teal-400 to-cyan-500 rounded-full flex items-center justify-center">
+                                      <User className="w-5 h-5 text-white" />
+                                    </div>
+                                    <span className="font-bold text-teal-900 text-sm">
+                                      Purchased {isPurchaseDateValid ? purchaseDate.toLocaleDateString('en-GB', { 
+                                        day: 'numeric', 
+                                        month: 'short', 
+                                        year: 'numeric' 
+                                      }) : '23 Sept 2025'}
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                {isExpiryDateValid && (
+                                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200 shadow-sm transform hover:scale-105 transition-transform duration-200">
+                                    <div className="flex items-center justify-center lg:justify-start space-x-3">
+                                      <div className="w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                                        <Clock className="w-5 h-5 text-white" />
+                                      </div>
+                                      <span className="font-bold text-amber-900 text-sm">
+                                        Expires {expiryDate.toLocaleDateString('en-GB', { 
+                                          day: 'numeric', 
+                                          month: 'short', 
+                                          year: 'numeric' 
+                                        })}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Spectacular Progress Section */}
+                              <div className="mb-8">
+                                <div className="bg-gradient-to-r from-pink-50 via-white to-purple-50 rounded-2xl p-6 border border-pink-200 shadow-inner">
+                                  <div className="flex justify-between items-center mb-4">
+                                    <span className="text-lg font-bold text-gray-800">
+                                      Progress ({memberProgram.progress || 0} of {program.workoutCount || 22} workouts)
+                                    </span>
+                                    <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black text-lg px-4 py-2 rounded-full shadow-lg">
+                                      {progressPercentage}%
+                                    </div>
+                                  </div>
+                                  <div className="relative">
+                                    <div className="w-full bg-gray-200 rounded-full h-6 shadow-inner">
+                                      <div 
+                                        className="h-6 bg-gradient-to-r from-pink-400 via-rose-500 to-purple-600 rounded-full shadow-lg transition-all duration-1000 ease-out relative overflow-hidden"
+                                        style={{ width: `${progressPercentage}%` }}
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Enhanced Equipment Section */}
+                              {program.equipment && (
+                                <div className="mb-8">
+                                  <div className="bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 rounded-2xl p-6 border-2 border-blue-300 shadow-lg">
+                                    <div className="flex items-center mb-3">
+                                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mr-4">
+                                        <Dumbbell className="w-5 h-5 text-white" />
+                                      </div>
+                                      <h4 className="text-xl font-bold text-blue-900">Equipment Needed</h4>
+                                    </div>
+                                    <p className="text-lg text-blue-800 font-semibold">{program.equipment}</p>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Spectacular Continue Button */}
+                              <div className="flex justify-center lg:justify-start">
+                                <Button 
+                                  onClick={() => {
+                                    if (program.name === "Your Postpartum Strength Recovery Program") {
+                                      window.location.href = "/heal-your-core";
+                                    } else {
+                                      window.location.href = "/dashboard";
+                                    }
+                                  }}
+                                  className="relative overflow-hidden bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 hover:from-pink-600 hover:via-rose-600 hover:to-purple-700 text-white font-black text-xl py-6 px-12 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.05] active:scale-[0.95] border-0 group min-w-[200px]"
+                                  data-testid={`button-access-program-${program.id}`}
+                                >
+                                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                                  <div className="relative flex items-center justify-center space-x-3">
+                                    <Play className="w-6 h-6 animate-pulse group-hover:animate-bounce" />
+                                    <span>Continue Program</span>
+                                  </div>
+                                </Button>
+                              </div>
                             </div>
-                          )}
-                          
-                          {/* Access Program Button */}
-                          <div className="flex justify-center md:justify-start">
-                            <Button 
-                              onClick={() => {
-                                // Redirect to the correct program page
-                                if (program.name === "Your Postpartum Strength Recovery Program") {
-                                  window.location.href = "/heal-your-core";
-                                } else {
-                                  window.location.href = "/dashboard";
-                                }
-                              }}
-                              className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
-                              data-testid={`button-access-program-${program.id}`}
-                            >
-                              Continue Program
-                            </Button>
                           </div>
                         </div>
                       </div>
