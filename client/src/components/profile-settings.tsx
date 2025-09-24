@@ -53,6 +53,9 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     dueDate: '',
     postpartumTime: '',
     timezone: '',
+    fullName: '',
+    email: '',
+    timeFormat: '12 hours',
     newsUpdates: true,
     promotions: true,
     communityUpdates: true,
@@ -716,7 +719,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               <Label htmlFor="fullName">Full Name</Label>
               <Input
                 id="fullName"
-                value={profileData.fullName}
+                value={profileData.fullName || ''}
                 onChange={(e) => setProfileData(prev => ({...prev, fullName: e.target.value}))}
               />
             </div>
@@ -727,7 +730,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               <Input
                 id="email"
                 type="email"
-                value={profileData.email}
+                value={profileData.email || ''}
                 onChange={(e) => setProfileData(prev => ({...prev, email: e.target.value}))}
               />
             </div>
@@ -765,7 +768,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
             {/* Time Format */}
             <div className="space-y-2 mb-6">
               <Label htmlFor="timeFormat">Time Format</Label>
-              <Select value={profileData.timeFormat} onValueChange={(value) => setProfileData(prev => ({...prev, timeFormat: value}))}>
+              <Select value={profileData.timeFormat || '12 hours'} onValueChange={(value) => setProfileData(prev => ({...prev, timeFormat: value}))}>
                 <SelectTrigger>
                   <SelectValue placeholder="12 hours" />
                 </SelectTrigger>
