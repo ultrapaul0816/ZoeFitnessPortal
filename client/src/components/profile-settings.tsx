@@ -41,7 +41,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   const { toast } = useToast();
   
   // Fetch user's purchased programs
-  const { data: memberPrograms = [], isLoading: isLoadingPrograms } = useQuery({
+  const { data: memberPrograms = [], isLoading: isLoadingPrograms } = useQuery<any[]>({
     queryKey: ['/api/member-programs', user.id],
     enabled: !!user.id && currentView === 'purchases',
   });
@@ -354,11 +354,16 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               <div className="space-y-4">
                 {memberPrograms.map((memberProgram: any) => {
                   const { program } = memberProgram;
-                  const enrolledDate = memberProgram.enrolledAt ? new Date(memberProgram.enrolledAt) : null;
-                  const isValidDate = enrolledDate && !isNaN(enrolledDate.getTime());
+                  const purchaseDate = memberProgram.purchaseDate ? new Date(memberProgram.purchaseDate) : null;
+                  const expiryDate = memberProgram.expiryDate ? new Date(memberProgram.expiryDate) : null;
+                  const isPurchaseDateValid = purchaseDate && !isNaN(purchaseDate.getTime());
+                  const isExpiryDateValid = expiryDate && !isNaN(expiryDate.getTime());
                   
                   // Convert price from cents to rupees
                   const displayPrice = program.price ? (program.price / 100).toLocaleString('en-IN') : null;
+                  
+                  // Calculate progress percentage
+                  const progressPercentage = program.workoutCount ? Math.round((memberProgram.progress || 0) / program.workoutCount * 100) : 0;
                   
                   return (
                     <div key={memberProgram.id} className="border rounded-xl p-6 hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-white to-gray-50">
@@ -404,20 +409,22 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                           </div>
                           
                           {/* Program Stats */}
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                             <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
                               <BookOpen className="w-5 h-5 text-pink-500" />
                               <span className="font-medium">{program.duration || '6 Weeks'}</span>
                             </div>
                             <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
-                              <User className="w-5 h-5 text-pink-500" />
-                              <span className="font-medium">
-                                Enrolled {isValidDate ? enrolledDate.toLocaleDateString('en-GB', { 
-                                  day: 'numeric', 
-                                  month: 'short', 
-                                  year: 'numeric' 
-                                }) : 'Recently'}
-                              </span>
+                              <div className="w-5 h-5 text-pink-500 flex items-center justify-center">
+                                <span className="text-xs font-bold">{program.level?.charAt(0).toUpperCase() || 'B'}</span>
+                              </div>
+                              <span className="font-medium capitalize">{program.level || 'Beginner'}</span>
+                            </div>
+                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
+                              <div className="w-5 h-5 text-pink-500 flex items-center justify-center">
+                                <span className="text-xs font-bold">{program.workoutCount || 0}</span>
+                              </div>
+                              <span className="font-medium">{program.workoutCount || 0} Workouts</span>
                             </div>
                             {displayPrice && (
                               <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
@@ -425,20 +432,59 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                                 <span className="font-semibold text-green-700">₹{displayPrice}</span>
                               </div>
                             )}
+                            <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
+                              <User className="w-5 h-5 text-pink-500" />
+                              <span className="font-medium">
+                                Purchased {isPurchaseDateValid ? purchaseDate.toLocaleDateString('en-GB', { 
+                                  day: 'numeric', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                }) : 'Recently'}
+                              </span>
+                            </div>
+                            {isExpiryDateValid && (
+                              <div className="flex items-center justify-center md:justify-start space-x-2 text-gray-600">
+                                <div className="w-5 h-5 text-pink-500 flex items-center justify-center">
+                                  <span className="text-xs">⏰</span>
+                                </div>
+                                <span className="font-medium">
+                                  Expires {expiryDate.toLocaleDateString('en-GB', { 
+                                    day: 'numeric', 
+                                    month: 'short', 
+                                    year: 'numeric' 
+                                  })}
+                                </span>
+                              </div>
+                            )}
                           </div>
                           
-                          {/* Progress Bar (if progress data available) */}
-                          {memberProgram.completionPercentage !== undefined && (
-                            <div className="mb-6">
-                              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                                <span className="font-medium">Progress</span>
-                                <span className="font-bold text-pink-600">{memberProgram.completionPercentage}%</span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                                <div 
-                                  className="bg-gradient-to-r from-pink-500 to-rose-500 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
-                                  style={{ width: `${memberProgram.completionPercentage}%` }}
-                                />
+                          {/* Progress Bar */}
+                          <div className="mb-6">
+                            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                              <span className="font-medium">
+                                Progress ({memberProgram.progress || 0} of {program.workoutCount || 0} workouts)
+                              </span>
+                              <span className="font-bold text-pink-600">{progressPercentage}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                              <div 
+                                className="bg-gradient-to-r from-pink-500 to-rose-500 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
+                                style={{ width: `${progressPercentage}%` }}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Equipment Required */}
+                          {program.equipment && (
+                            <div className="mb-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+                              <div className="flex items-start space-x-2">
+                                <div className="w-5 h-5 text-blue-500 flex items-center justify-center mt-0.5">
+                                  <span className="text-xs">🏋️</span>
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-blue-900 text-sm mb-1">Equipment Needed</h4>
+                                  <p className="text-blue-700 text-sm">{program.equipment}</p>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -447,8 +493,9 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                           <div className="flex justify-center md:justify-start">
                             <Button 
                               onClick={() => {
-                                onClose();
+                                // Navigate first, then close modal to prevent logout issues
                                 setLocation(`/?program=${program.id}`);
+                                setTimeout(() => onClose(), 100);
                               }}
                               className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
                               data-testid={`button-access-program-${program.id}`}
