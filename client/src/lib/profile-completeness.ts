@@ -4,22 +4,9 @@ export interface ProfileData {
   socials: string;
   dueDate: string;
   postpartumTime: string;
-  timezone: string;
   fullName: string;
   email: string;
-  timeFormat: string;
   photo: string;
-  // Fitness & Health Information
-  fitnessLevel: string;
-  deliveryType: string;
-  numberOfChildren: string;
-  breastfeedingStatus: string;
-  medicalClearance: boolean;
-  availableEquipment: string[];
-  fitnessGoals: string;
-  workoutDaysPerWeek: string;
-  preferredWorkoutTime: string;
-  physicalLimitations: string;
   newsUpdates: boolean;
   promotions: boolean;
   communityUpdates: boolean;
@@ -52,7 +39,6 @@ export interface PromptContext {
 
 // Define required and optional fields for profile completion
 const REQUIRED_FIELDS = [
-  { field: 'timezone' as keyof ProfileData, label: 'Timezone' },
   { field: 'country' as keyof ProfileData, label: 'Country' },
 ] as const;
 
@@ -275,22 +261,9 @@ export function getCurrentProfileData(): ProfileData {
     socials: '',
     dueDate: '',
     postpartumTime: '',
-    timezone: '',
     fullName: '',
     email: '',
-    timeFormat: '12 hours',
     photo: '',
-    // Fitness & Health Information
-    fitnessLevel: '',
-    deliveryType: '',
-    numberOfChildren: '',
-    breastfeedingStatus: '',
-    medicalClearance: false,
-    availableEquipment: [],
-    fitnessGoals: '',
-    workoutDaysPerWeek: '',
-    preferredWorkoutTime: '',
-    physicalLimitations: '',
     newsUpdates: true,
     promotions: true,
     communityUpdates: true,
