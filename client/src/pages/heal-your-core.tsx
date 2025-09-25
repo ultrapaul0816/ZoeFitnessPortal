@@ -4895,6 +4895,406 @@ function ProgramsSection({
         </p>
       </div>
 
+      {/* Cardio Guide Section */}
+      <Card className="overflow-hidden border-l-4 border-cyan-400 shadow-xl">
+        <CardHeader 
+          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 cursor-pointer transition-all duration-300 relative overflow-hidden"
+          onClick={() => toggleProgram('cardio-guide')}
+        >
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+          </div>
+          
+          <div className="relative z-10">
+            {/* Mobile Layout */}
+            <div className="block lg:hidden">
+              {/* Program Badge on top */}
+              <div className="mb-3">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-cyan-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-cyan-200 inline-block">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></div>
+                    CARDIO GUIDE
+                  </div>
+                </div>
+              </div>
+              
+              {/* Title and Description */}
+              <div className="mb-3">
+                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                  Cardio Integration Guide
+                </div>
+                <div className="text-cyan-100 font-normal text-xs drop-shadow-sm">
+                  ❤️ How to safely add cardio to your recovery journey
+                </div>
+              </div>
+              
+              {/* Info box and dropdown */}
+              <div className="flex items-center justify-between">
+                <div className="bg-white bg-opacity-10 px-3 py-2 rounded-lg backdrop-blur-sm flex-1 mr-3">
+                  <div className="text-xs text-cyan-100 font-bold uppercase tracking-wide">Optional Add-On</div>
+                  <div className="text-xs text-white font-medium">Cardio safety, plans & schedules</div>
+                </div>
+                <div className="w-8 h-8 bg-gradient-to-br from-white to-cyan-100 text-cyan-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPrograms['cardio-guide'] ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden lg:flex items-center justify-between">
+              <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
+                <div className="bg-gradient-to-r from-white to-gray-50 text-cyan-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-cyan-200 flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></div>
+                    <span>CARDIO GUIDE</span>
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1 py-2">
+                  <CardTitle className="text-2xl text-white font-bold tracking-tight drop-shadow-md leading-tight">
+                    Cardio Integration Guide
+                  </CardTitle>
+                  <CardDescription className="text-cyan-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
+                    ❤️ How to safely add cardio to your recovery journey
+                  </CardDescription>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right bg-white bg-opacity-10 px-4 py-2 rounded-lg backdrop-blur-sm">
+                  <div className="text-sm text-cyan-100 font-bold uppercase tracking-wide">Optional Add-On</div>
+                  <div className="text-sm text-white font-medium">Cardio safety, plans & schedules</div>
+                </div>
+                <div className="w-10 h-10 bg-gradient-to-br from-white to-cyan-100 text-cyan-600 rounded-full flex items-center justify-center shadow-xl flex-shrink-0 border-2 border-white">
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPrograms['cardio-guide'] ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        {expandedPrograms['cardio-guide'] && (
+          <CardContent className="p-6 border-t border-cyan-100">
+            <div className="space-y-8">
+              
+              {/* Topic 7: How to Include Cardio – Safely & Strategically */}
+              <Card className="overflow-hidden border-l-4 border-l-green-400">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+                  <CardTitle className="text-lg text-gray-900">How to Include Cardio – Safely & Strategically</CardTitle>
+                  <CardDescription className="text-green-600 font-semibold text-sm">Building cardiovascular fitness during postpartum recovery</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="space-y-5">
+                    <p className="text-sm">
+                      This cardio guide is designed to work for you whether you're 6 weeks postpartum, 6 months in, or 6 years down the line. The truth is—you can rebuild cardiovascular fitness at any time, and doing so can dramatically improve your stamina, mental health, and total-body strength.
+                    </p>
+                    
+                    <p className="text-sm mt-4">
+                      If you're just returning to movement after birth (even years later), start with the LISS (Low-Intensity Steady State) options and progress only when you feel core-ready, leak-free, and stable. The weekly suggestions here are optional—but powerful. You can walk, march, spin, or simply move at a pace that feels good.
+                    </p>
+                    
+                    <div className="mt-6">
+                      <ul className="space-y-3 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 font-bold text-lg">❖</span>
+                          <span><strong className="text-green-600">Early Postpartum (6–12 weeks):</strong> Focus on gentle walks, stroller movement, breath-led cardio.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 font-bold text-lg">❖</span>
+                          <span><strong className="text-green-600">Mid-Rebuild (3–6 months+):</strong> Progress to brisk walks, inclines, and low-impact rhythm-based cardio.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 font-bold text-lg">❖</span>
+                          <span><strong className="text-green-600">Ready for More?</strong> See the "Return to Impact" test later in this guide before trying HIIT or plyometric.</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <p className="text-sm mt-6 italic">
+                      There's no deadline on feeling fit. Do what feels right for your stage, energy, and healing pace.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Topic 8: Cardio Plan Overview */}
+              <Card className="overflow-hidden border-l-4 border-l-blue-400">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                  <CardTitle className="text-lg text-gray-900">Cardio Plan Overview</CardTitle>
+                  <CardDescription className="text-blue-600 font-semibold text-sm">The cardio is optional, but oh boy, will it increase your fitness, your results and overall confidence!</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="space-y-6">
+                    
+                    {/* Cardio Types Legend */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                      <div className="bg-green-100 p-3 rounded-lg border-l-4 border-green-400">
+                        <h5 className="font-semibold text-green-700 text-sm mb-1">LISS</h5>
+                        <p className="text-xs text-green-600">Slow & steady movement (walk, swim, light bike)</p>
+                      </div>
+                      <div className="bg-orange-100 p-3 rounded-lg border-l-4 border-orange-400">
+                        <h5 className="font-semibold text-orange-700 text-sm mb-1">MISS</h5>
+                        <p className="text-xs text-orange-600">Slightly faster, steady pace (jog, incline walk, elliptical)</p>
+                      </div>
+                      <div className="bg-red-100 p-3 rounded-lg border-l-4 border-red-400">
+                        <h5 className="font-semibold text-red-700 text-sm mb-1">HIIT</h5>
+                        <p className="text-xs text-red-600">Short bursts of effort followed by rest (30s work / 90s rest)</p>
+                      </div>
+                    </div>
+
+                    {/* Week by Week Cardio Plans */}
+                    <div className="space-y-4">
+                      {/* Week 1 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #f3a8cb 0%, #f2038b 100%)'}}>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 1</span>
+                              <h4 className="font-bold text-lg mt-1">Gentle Foundation</h4>
+                            </div>
+                            <div className="bg-green-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">LISS</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">40-50% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">10-15 mins</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 2, 4</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 6</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> Gentle walks, breathing flows, stroller movement. Focus on blood flow, not effort.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Week 2 */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #b3c0e4 0%, #9aafdc 100%)'}}>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Week 2</span>
+                              <h4 className="font-bold text-lg mt-1">Building Rhythm</h4>
+                            </div>
+                            <div className="bg-green-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">LISS</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500 text-xs">Intensity</span>
+                              <p className="font-semibold">50-60% MHR</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Duration</span>
+                              <p className="font-semibold">20 mins</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Days</span>
+                              <p className="font-semibold">Day 2, 6</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 text-xs">Rest Day</span>
+                              <p className="font-semibold">Day 4</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+                            <strong>Focus:</strong> Consistency over intensity. Light walks with gentle inclines or rhythmic movement.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Weeks 3-6 Summary */}
+                      <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                        <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'}}>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Weeks 3-6</span>
+                              <h4 className="font-bold text-lg mt-1">Progressive Intensity</h4>
+                            </div>
+                            <div className="bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 rounded-full">
+                              <span className="text-xs font-bold">MISS + HIIT</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <p className="text-sm text-gray-600 bg-orange-50 p-3 rounded-lg">
+                            <strong>Progression:</strong> Weeks 3-4 introduce MISS (25-30 mins). Weeks 5-6 add short HIIT intervals while maintaining steady cardio base. Always listen to your body and adjust as needed.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Important Tips Section */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h5 className="font-semibold text-blue-700 mb-3">Important Guidelines</h5>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold">❖</span>
+                          <span><strong>MHR Formula:</strong> Max Heart Rate = 220 - your age × target % range</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold">❖</span>
+                          <span><strong>Example:</strong> 30 years old → 220-30 = 190 → 50% MHR = 95 BPM</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold">❖</span>
+                          <span>Always warm up (3-5 mins) and cool down after each session</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold">❖</span>
+                          <span><strong>Talk Test:</strong> You should be able to talk, not sing (LISS), or speak short phrases (MISS/HIIT)</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold">❖</span>
+                          <span>Feel free to shuffle days based on your energy and schedule</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Topic 9: Your Training Schedule With Cardio */}
+              <Card className="overflow-hidden border-l-4 border-l-purple-400">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50">
+                  <CardTitle className="text-lg text-gray-900">Your Training Schedule With Cardio</CardTitle>
+                  <CardDescription className="text-purple-600 font-semibold text-sm">A gentle weekly rhythm to rebuild strength, core connection, and confidence</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="space-y-6">
+
+                    {/* Activity Legend */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                      <div className="bg-pink-100 p-3 rounded-lg border-l-4 border-pink-400">
+                        <h5 className="font-semibold text-pink-700 text-sm mb-1">💪 PROGRAM</h5>
+                        <p className="text-xs text-pink-600">Core strengthening workouts from your 6-week plan</p>
+                      </div>
+                      <div className="bg-green-100 p-3 rounded-lg border-l-4 border-blue-400">
+                        <h5 className="font-semibold text-blue-700 text-sm mb-1">❤️ CARDIO</h5>
+                        <p className="text-xs text-green-600">Follow the cardio plan from Topic 8 above</p>
+                      </div>
+                      <div className="bg-emerald-100 p-3 rounded-lg border-l-4 border-emerald-400">
+                        <h5 className="font-semibold text-emerald-700 text-sm mb-1">🌱 REST</h5>
+                        <p className="text-xs text-emerald-600">Recovery days with gentle walks or complete rest</p>
+                      </div>
+                    </div>
+
+                    {/* Mobile Legend */}
+                    <div className="block md:hidden mb-6">
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h5 className="font-semibold text-gray-700 mb-3 text-sm">📱 Mobile Quick Reference</h5>
+                        <div className="grid grid-cols-3 gap-3 text-xs">
+                          <div className="text-center">
+                            <div className="bg-pink-100 text-pink-700 py-1 px-2 rounded font-medium mb-1">P1-P6</div>
+                            <p className="text-gray-600">Program 1-6</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="bg-green-100 text-blue-700 py-1 px-2 rounded font-medium mb-1">C</div>
+                            <p className="text-gray-600">Cardio</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="bg-emerald-100 text-emerald-700 py-1 px-2 rounded font-medium mb-1">R</div>
+                            <p className="text-gray-600">Rest</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Weekly Schedule Example */}
+                    <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+                      <div className="p-4 text-white" style={{background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)'}}>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="bg-white/20 px-2 py-1 rounded-full text-xs font-semibold">Example Schedule</span>
+                            <h4 className="font-bold text-lg mt-1">Weekly Training Layout</h4>
+                          </div>
+                          <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                            <span className="block md:hidden">Flexible</span>
+                            <span className="hidden md:inline">Adapt to Your Schedule</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <div className="grid grid-cols-7 gap-2 text-xs">
+                          <div className="text-center">
+                            <div className="font-semibold text-gray-700 mb-2">Mon</div>
+                            <div className="bg-pink-100 text-pink-700 py-2 px-1 rounded mb-1">Program</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-gray-700 mb-2">Tue</div>
+                            <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded mb-1">Cardio</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-gray-700 mb-2">Wed</div>
+                            <div className="bg-pink-100 text-pink-700 py-2 px-1 rounded mb-1">Program</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-gray-700 mb-2">Thu</div>
+                            <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded mb-1">Rest</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-gray-700 mb-2">Fri</div>
+                            <div className="bg-pink-100 text-pink-700 py-2 px-1 rounded mb-1">Program</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-gray-700 mb-2">Sat</div>
+                            <div className="bg-blue-100 text-blue-700 py-2 px-1 rounded mb-1">Cardio</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-gray-700 mb-2">Sun</div>
+                            <div className="bg-emerald-100 text-emerald-700 py-2 px-1 rounded mb-1">Rest</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Important Guidelines */}
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                      <h5 className="font-semibold text-purple-700 mb-3">Remember</h5>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">✧</span>
+                          <span>You decide the exact schedule that works best for you</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">✧</span>
+                          <span>Listen to your body and adjust intensity as needed</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">✧</span>
+                          <span>Progress is not always linear—consistency is key</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-purple-500 font-bold">✧</span>
+                          <span>Rest days are just as important as training days</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+            </div>
+          </CardContent>
+        )}
+      </Card>
       
       {/* 6-Week Program - Collapsible */}
       <Card className="overflow-hidden border-l-4 border-program-1 shadow-xl">
