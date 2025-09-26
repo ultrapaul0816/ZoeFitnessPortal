@@ -1,24 +1,29 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { loginSchema, insertWorkoutCompletionSchema, updateUserProfileSchema, adminCreateUserSchema } from "@shared/schema";
+import {
+  loginSchema,
+  insertWorkoutCompletionSchema,
+  updateUserProfileSchema,
+  adminCreateUserSchema,
+} from "@shared/schema";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Serve assets
-  app.get("/assets/:filename(*)", (req, res) => {
+  // Serve attached assets (use different path to avoid conflict with built assets)
+  app.get("/attached-assets/:filename(*)", (req, res) => {
     try {
       const requestedFilename = decodeURIComponent(req.params.filename);
       const attachedAssetsPath = path.resolve(process.cwd(), "attached_assets");
       const filePath = path.resolve(attachedAssetsPath, requestedFilename);
-      
+
       // Security check to ensure we're still in the attached_assets directory
       if (!filePath.startsWith(attachedAssetsPath)) {
         return res.status(403).json({ error: "Access denied" });
       }
-      
+
       // Check if file exists
       if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
@@ -34,8 +39,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { email, password, disclaimerAccepted } = loginSchema.parse(req.body);
-      
+      const { email, password, disclaimerAccepted } = loginSchema.parse(
+        req.body
+      );
+
       const user = await storage.getUserByEmail(email);
       if (!user || user.password !== password) {
         return res.status(401).json({ message: "Invalid credentials" });
@@ -44,10 +51,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle disclaimer acceptance if provided and user hasn't already accepted
       let updatedUser = user;
       if (disclaimerAccepted && !user.disclaimerAccepted) {
-        updatedUser = await storage.updateUser(user.id, {
-          disclaimerAccepted: true,
-          disclaimerAcceptedAt: new Date(),
-        }) || user;
+        updatedUser =
+          (await storage.updateUser(user.id, {
+            disclaimerAccepted: true,
+            disclaimerAcceptedAt: new Date(),
+          })) || user;
       }
 
       // Simple session - in production would use proper session management
@@ -59,7 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastName: updatedUser.lastName,
           isAdmin: updatedUser.isAdmin,
           disclaimerAccepted: updatedUser.disclaimerAccepted,
-        }
+        },
       });
     } catch (error) {
       res.status(400).json({ message: "Invalid request data" });
@@ -70,7 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/accept-terms", async (req, res) => {
     try {
       const { userId } = req.body;
-      
+
       const updatedUser = await storage.updateUser(userId, {
         termsAccepted: true,
         termsAcceptedAt: new Date(),
@@ -90,18 +98,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/users/disclaimer-status", async (req, res) => {
     try {
       const { email } = req.query;
-      if (!email || typeof email !== 'string') {
+      if (!email || typeof email !== "string") {
         return res.status(400).json({ message: "Email is required" });
       }
-      
+
       const user = await storage.getUserByEmail(email);
       if (!user) {
         return res.json({ needsDisclaimer: true }); // New users need disclaimer
       }
 
-      res.json({ 
+      res.json({
         needsDisclaimer: !user.disclaimerAccepted,
-        userExists: true 
+        userExists: true,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to check disclaimer status" });
@@ -111,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/accept-disclaimer", async (req, res) => {
     try {
       const { userId } = req.body;
-      
+
       const updatedUser = await storage.updateUser(userId, {
         disclaimerAccepted: true,
         disclaimerAcceptedAt: new Date(),
@@ -132,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const profileUpdates = updateUserProfileSchema.parse(req.body);
-      
+
       const updatedUser = await storage.updateUser(id, profileUpdates);
 
       if (!updatedUser) {
@@ -144,9 +152,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(userWithoutPassword);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ 
-          message: "Invalid profile data", 
-          errors: error.errors 
+        return res.status(400).json({
+          message: "Invalid profile data",
+          errors: error.errors,
         });
       }
       res.status(500).json({ message: "Failed to update profile" });
@@ -199,7 +207,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/workouts/complete", async (req, res) => {
     try {
       const completionData = insertWorkoutCompletionSchema.parse(req.body);
-      
+
       const completion = await storage.createWorkoutCompletion(completionData);
 
       res.json(completion);
@@ -212,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/workouts/save", async (req, res) => {
     try {
       const { userId, workoutId } = req.body;
-      
+
       const savedWorkout = await storage.createSavedWorkout({
         userId,
         workoutId,
@@ -298,12 +306,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/reflection-notes", async (req, res) => {
     try {
       const { userId, programId, noteText } = req.body;
-      
+
       if (!userId || !programId || !noteText) {
-        return res.status(400).json({ message: "userId, programId, and noteText are required" });
+        return res
+          .status(400)
+          .json({ message: "userId, programId, and noteText are required" });
       }
 
-      const note = await storage.updateReflectionNote(userId, programId, noteText);
+      const note = await storage.updateReflectionNote(
+        userId,
+        programId,
+        noteText
+      );
       res.json(note);
     } catch (error) {
       res.status(500).json({ message: "Failed to save reflection note" });
@@ -315,9 +329,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { programId } = req.params;
       const { week } = req.query;
-      
+
       if (week) {
-        const workouts = await storage.getWeeklyWorkouts(programId, parseInt(week as string));
+        const workouts = await storage.getWeeklyWorkouts(
+          programId,
+          parseInt(week as string)
+        );
         res.json(workouts);
       } else {
         const allWorkouts = await storage.getAllWeeklyWorkouts(programId);
@@ -354,11 +371,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const updates = req.body;
       const entry = await storage.updateProgressEntry(id, updates);
-      
+
       if (!entry) {
         return res.status(404).json({ message: "Progress entry not found" });
       }
-      
+
       res.json(entry);
     } catch (error) {
       res.status(500).json({ message: "Failed to update progress entry" });
@@ -379,11 +396,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const exercise = await storage.getExercise(id);
-      
+
       if (!exercise) {
         return res.status(404).json({ message: "Exercise not found" });
       }
-      
+
       res.json(exercise);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch exercise" });
@@ -404,7 +421,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/community/posts", async (req, res) => {
     try {
       const { userId, channel, content } = req.body;
-      
+
       const post = await storage.createCommunityPost({
         userId,
         channel: channel || "general",
@@ -432,7 +449,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const success = await storage.markNotificationRead(id);
-      
+
       if (!success) {
         return res.status(404).json({ message: "Notification not found" });
       }
@@ -468,19 +485,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const assetsDir = path.join(process.cwd(), "attached_assets");
       const files = fs.readdirSync(assetsDir);
       const assets = files
-        .filter(file => /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(file))
-        .map(file => {
+        .filter((file) => /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(file))
+        .map((file) => {
           // Check if there's a custom display name stored
           const customDisplayName = storage.assetDisplayNames.get(file);
-          const defaultDisplayName = file === "Screenshot 2025-09-01 at 11.11.48 PM_1756748511780.png" ? "zoe-cover-1" : 
-                      file === "Screenshot 2025-09-01 at 11.07.44 PM_1756748649756.png" ? "stronger-with-zoe-logo" :
-                      file === "Screenshot 2025-09-01 at 11.19.02 PM_1756748945653.png" ? "zoe-welcome-photo" : file;
-          
+          const defaultDisplayName =
+            file === "Screenshot 2025-09-01 at 11.11.48 PM_1756748511780.png"
+              ? "zoe-cover-1"
+              : file ===
+                "Screenshot 2025-09-01 at 11.07.44 PM_1756748649756.png"
+              ? "stronger-with-zoe-logo"
+              : file ===
+                "Screenshot 2025-09-01 at 11.19.02 PM_1756748945653.png"
+              ? "zoe-welcome-photo"
+              : file;
+
           return {
             filename: file,
             displayName: customDisplayName || defaultDisplayName,
             url: `/assets/${file}`,
-            lastModified: fs.statSync(path.join(assetsDir, file)).mtime
+            lastModified: fs.statSync(path.join(assetsDir, file)).mtime,
           };
         });
       res.json(assets);
@@ -494,12 +518,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const updates = req.body;
-      
+
       const updatedProgram = await storage.updateProgram(id, updates);
       if (!updatedProgram) {
         return res.status(404).json({ message: "Program not found" });
       }
-      
+
       res.json(updatedProgram);
     } catch (error) {
       res.status(500).json({ message: "Failed to update program" });
@@ -511,10 +535,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { filename } = req.params;
       const { displayName } = req.body;
-      
+
       storage.assetDisplayNames.set(filename, displayName);
-      
-      res.json({ filename, displayName, message: "Asset display name updated successfully" });
+
+      res.json({
+        filename,
+        displayName,
+        message: "Asset display name updated successfully",
+      });
     } catch (error) {
       res.status(500).json({ message: "Failed to update asset display name" });
     }
@@ -525,23 +553,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Convert date strings to Date objects before validation
       const requestData = { ...req.body };
-      if (requestData.validFrom && typeof requestData.validFrom === 'string') {
+      if (requestData.validFrom && typeof requestData.validFrom === "string") {
         requestData.validFrom = new Date(requestData.validFrom);
       }
-      if (requestData.validUntil && typeof requestData.validUntil === 'string') {
+      if (
+        requestData.validUntil &&
+        typeof requestData.validUntil === "string"
+      ) {
         requestData.validUntil = new Date(requestData.validUntil);
       }
-      
+
       const userData = adminCreateUserSchema.parse(requestData);
-      
+
       // Generate 6-digit password
       const password = Math.floor(100000 + Math.random() * 900000).toString();
-      
+
       // Set default validity dates if not provided
       const now = new Date();
       const oneYearFromNow = new Date();
       oneYearFromNow.setFullYear(now.getFullYear() + 1);
-      
+
       const newUser = await storage.createUser({
         email: userData.email,
         password: password,
@@ -568,13 +599,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           validUntil: newUser.validUntil,
         },
         password: password,
-        message: "User created successfully"
+        message: "User created successfully",
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ 
-          message: "Validation error", 
-          errors: error.errors 
+        return res.status(400).json({
+          message: "Validation error",
+          errors: error.errors,
         });
       }
       console.error("User creation error:", error);
@@ -587,17 +618,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { password } = req.body;
-      
+
       if (!password) {
         return res.status(400).json({ message: "Password is required" });
       }
-      
+
       const updatedUser = await storage.updateUser(id, { password });
-      
+
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       res.json({ message: "Password updated successfully" });
     } catch (error) {
       console.error("Password update error:", error);
