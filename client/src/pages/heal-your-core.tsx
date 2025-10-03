@@ -5811,7 +5811,7 @@ function ProgramsSection({
                                   href={exercise.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-cyan-600 hover:text-cyan-800 underline font-semibold leading-tight text-sm"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
                                 >
                                   {exercise.name}
                                 </a>
@@ -5835,7 +5835,7 @@ function ProgramsSection({
                       </div>
                       <div className="pl-4 space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          All <span className="text-cyan-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                          All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                           <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                           playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                         </p>
@@ -6087,7 +6087,7 @@ function ProgramsSection({
                                   href={exercise.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-emerald-600 hover:text-emerald-800 underline font-semibold leading-tight text-sm"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
                                 >
                                   {exercise.name}
                                 </a>
@@ -6111,7 +6111,7 @@ function ProgramsSection({
                       </div>
                       <div className="pl-4 space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          All <span className="text-emerald-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                          All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                           <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                           playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                         </p>
@@ -6357,7 +6357,7 @@ function ProgramsSection({
                                   href={exercise.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-violet-600 hover:text-violet-800 underline font-semibold leading-tight text-sm"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
                                 >
                                   {exercise.name}
                                 </a>
@@ -6381,7 +6381,7 @@ function ProgramsSection({
                       </div>
                       <div className="pl-4 space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          All <span className="text-violet-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                          All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                           <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                           playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                         </p>
@@ -6637,7 +6637,7 @@ function ProgramsSection({
                                   href={exercise.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-indigo-600 hover:text-indigo-800 underline font-semibold leading-tight text-sm"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
                                 >
                                   {exercise.name}
                                 </a>
@@ -6661,7 +6661,7 @@ function ProgramsSection({
                       </div>
                       <div className="pl-4 space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          All <span className="text-indigo-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                          All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                           <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                           playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                         </p>
@@ -6906,7 +6906,7 @@ function ProgramsSection({
                                   href={exercise.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-amber-600 hover:text-amber-800 underline font-semibold leading-tight text-sm"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
                                 >
                                   {exercise.name}
                                 </a>
@@ -6930,7 +6930,7 @@ function ProgramsSection({
                       </div>
                       <div className="pl-4 space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          All <span className="text-amber-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                          All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                           <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                           playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                         </p>
