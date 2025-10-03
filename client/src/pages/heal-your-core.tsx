@@ -1417,7 +1417,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                             <div className="flex items-start gap-3">
                               <div>
                                 <p className="text-pink-700 font-semibold mb-2">How to view the videos of the exercises:</p>
-                                <p className="text-gray-700 text-sm">All blue underlined text is clickable and will open a video link. <strong>PLAY ALL videos that the following workout can be played as a single playlist combining all six exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</strong></p>
+                                <p className="text-gray-700 text-sm">All <span className="text-blue-600 underline">blue underlined text</span> is clickable and will open a video link. <strong>PLAY ALL videos that the following workout can be played as a single playlist combining all six exercises to make it easier to flow through. However, do listen to each exercise instruction beforehand.</strong></p>
                               </div>
                             </div>
                           </div>
@@ -1438,7 +1438,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://youtu.be/OwFN9Paf26o', '_blank')}
-                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-supine-pelvic-tilts"
                                 >
                                   SUPINE PELVIC TILTS
@@ -1460,7 +1460,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=ehaUhSSY1xY', '_blank')}
-                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-90-90-box-breathing"
                                 >
                                   90 90 BOX BREATHING
@@ -1482,7 +1482,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=AIEdkm2q-4k', '_blank')}
-                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-supine-heel-slides"
                                 >
                                   SUPINE HEEL SLIDES
@@ -1504,7 +1504,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=tCzxxPxxtjw', '_blank')}
-                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-side-lying-breathing"
                                 >
                                   SIDE LYING DIAPHRAGMATIC BREATHING
@@ -1526,7 +1526,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
-                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-supine-diaphragmatic-breathing"
                                 >
                                   SUPINE DIAPHRAGMATIC BREATHING
@@ -1548,7 +1548,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                               <div className="p-4 border-r border-gray-300">
                                 <button 
                                   onClick={() => window.open('https://www.youtube.com/watch?v=AaYpP7iV378', '_blank')}
-                                  className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                   data-testid="video-bird-dog-ground"
                                 >
                                   BIRD DOG GROUND LEVEL
@@ -1629,7 +1629,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=B53GBfgME9E', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-360-breathing"
                                     >
                                       360° BREATHING
@@ -1639,7 +1639,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=lBhO64vd8aE', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-diaphragmatic"
                                     >
                                       SUPINE DIAPHRAGMATIC BREATHING
@@ -1648,7 +1648,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=tCzxxPxxtjw', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-side-lying-diaphragmatic"
                                     >
                                       SIDE LYING DIAPHRAGMATIC BREATHING
@@ -1674,7 +1674,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=AIEdkm2q-4k', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-heel-slides"
                                     >
                                       SUPINE HEEL SLIDES
@@ -1683,7 +1683,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=SRoNksDTjUc', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-pelvic-tilts"
                                     >
                                       SUPINE PELVIC TILTS
@@ -1692,7 +1692,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=fxs0SDh1s3w', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supported-glute-bridges"
                                     >
                                       SUPPORTED GLUTE BRIDGES PILLOW UNDER HIPS
@@ -1701,7 +1701,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=_cY-rtXNPp4', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-standing-posture-reset"
                                     >
                                       STANDING POSTURE RESET
@@ -1727,7 +1727,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=GbqFe8zNQH4', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-elevated-chair-bird-dogs"
                                     >
                                       ELEVATED CHAIR BIRD DOGS
@@ -1736,7 +1736,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=T8HHp4KXpJI', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-supine-alt-leg-marches"
                                     >
                                       SUPINE ALT LEG MARCHES
@@ -1746,7 +1746,7 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
                                   <div>
                                     <button 
                                       onClick={() => window.open('https://www.youtube.com/watch?v=_KMqnvDiLnk', '_blank')}
-                                      className="text-green-600 hover:text-blue-800 underline font-semibold text-left"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold text-left"
                                       data-testid="video-mini-squats-chair"
                                     >
                                       MINI SQUATS ON CHAIR
@@ -2636,7 +2636,7 @@ function WelcomeSection({
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
-                          <span><em>All blue underlined text is clickable and will open a video link.</em></span>
+                          <span><em>All <span className="text-blue-600 underline">blue underlined text</span> is clickable and will open a video link.</em></span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-pink-500 font-bold">❖</span>
@@ -5497,7 +5497,7 @@ function ProgramsSection({
                                   href={exercise.url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-green-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
+                                  className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm"
                                 >
                                   {exercise.name}
                                 </a>
@@ -5522,7 +5522,7 @@ function ProgramsSection({
                       </div>
                       <div className="pl-4 space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          All <span className="text-green-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                          All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
                           <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
                           playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
                         </p>
