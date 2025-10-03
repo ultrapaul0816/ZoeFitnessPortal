@@ -32,6 +32,8 @@ export default function Admin() {
   const [assetDisplayNames, setAssetDisplayNames] = useState<{[key: string]: string}>({});
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [newUserData, setNewUserData] = useState<{user: any, password: string} | null>(null);
+  const [selectedMember, setSelectedMember] = useState<User | null>(null);
+  const [memberViewMode, setMemberViewMode] = useState<'view' | 'edit'>('view');
   const { toast } = useToast();
 
   const addUserForm = useForm<AdminCreateUser>({
@@ -397,6 +399,10 @@ export default function Admin() {
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => {
+                            setSelectedMember(member);
+                            setMemberViewMode('edit');
+                          }}
                           data-testid={`button-edit-${member.id}`}
                         >
                           <Edit className="w-4 h-4" />
@@ -404,6 +410,10 @@ export default function Admin() {
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => {
+                            setSelectedMember(member);
+                            setMemberViewMode('view');
+                          }}
                           data-testid={`button-view-${member.id}`}
                         >
                           <Eye className="w-4 h-4" />
@@ -415,6 +425,168 @@ export default function Admin() {
               </tbody>
             </table>
           </div>
+
+          {/* Member Details Dialog */}
+          <Dialog open={!!selectedMember} onOpenChange={(open) => !open && setSelectedMember(null)}>
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  {memberViewMode === 'view' ? 'Member Details' : 'Edit Member'}
+                </DialogTitle>
+              </DialogHeader>
+              
+              {selectedMember && (
+                <div className="space-y-6">
+                  {/* Profile Section */}
+                  <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
+                    <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+                      <span className="text-2xl font-bold text-primary">
+                        {selectedMember.firstName?.[0]}{selectedMember.lastName?.[0]}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        {selectedMember.firstName} {selectedMember.lastName}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">{selectedMember.email}</p>
+                    </div>
+                  </div>
+
+                  {/* Account Information */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-sm text-muted-foreground uppercase">Account Information</h4>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Status</Label>
+                        <Badge variant={selectedMember.termsAccepted ? "default" : "secondary"} className="mt-1">
+                          {selectedMember.termsAccepted ? "Active" : "Pending"}
+                        </Badge>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Role</Label>
+                        <Badge variant={selectedMember.isAdmin ? "destructive" : "outline"} className="mt-1">
+                          {selectedMember.isAdmin ? "Admin" : "Member"}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Member Since</Label>
+                      <p className="text-sm font-medium mt-1">
+                        {selectedMember.createdAt ? new Date(selectedMember.createdAt).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        }) : 'N/A'}
+                      </p>
+                    </div>
+
+                    {selectedMember.phone && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Phone</Label>
+                        <p className="text-sm font-medium mt-1">{selectedMember.phone}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Acceptance Status */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-sm text-muted-foreground uppercase">Acceptance Status</h4>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 border rounded-lg">
+                        <Label className="text-xs text-muted-foreground">Terms & Conditions</Label>
+                        {selectedMember.termsAcceptedAt ? (
+                          <div className="mt-2">
+                            <p className="text-sm font-medium text-green-600">✓ Accepted</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(selectedMember.termsAcceptedAt).toLocaleDateString()} at{' '}
+                              {new Date(selectedMember.termsAcceptedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-sm font-medium text-red-500 mt-2">Not accepted</p>
+                        )}
+                      </div>
+
+                      <div className="p-3 border rounded-lg">
+                        <Label className="text-xs text-muted-foreground">Health Disclaimer</Label>
+                        {selectedMember.disclaimerAcceptedAt ? (
+                          <div className="mt-2">
+                            <p className="text-sm font-medium text-green-600">✓ Accepted</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(selectedMember.disclaimerAcceptedAt).toLocaleDateString()} at{' '}
+                              {new Date(selectedMember.disclaimerAcceptedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-sm font-medium text-red-500 mt-2">Not accepted</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Validity Period */}
+                  {(selectedMember.validFrom || selectedMember.validUntil) && (
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-sm text-muted-foreground uppercase">Access Period</h4>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        {selectedMember.validFrom && (
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Valid From</Label>
+                            <p className="text-sm font-medium mt-1">
+                              {new Date(selectedMember.validFrom).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {selectedMember.validUntil && (
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Valid Until</Label>
+                            <p className="text-sm font-medium mt-1">
+                              {new Date(selectedMember.validUntil).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-end gap-2 pt-4 border-t">
+                    {memberViewMode === 'view' && (
+                      <Button 
+                        onClick={() => setMemberViewMode('edit')}
+                        data-testid="button-switch-to-edit"
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Member
+                      </Button>
+                    )}
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSelectedMember(null)}
+                      data-testid="button-close-member-dialog"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
             </Card>
           </TabsContent>
 
