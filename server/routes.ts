@@ -636,6 +636,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Extend user validity
+  app.post("/api/admin/users/:id/extend-validity", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { months } = req.body;
+
+      if (!months || typeof months !== 'number') {
+        return res.status(400).json({ message: "Months must be a number" });
+      }
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const currentValidUntil = user.validUntil ? new Date(user.validUntil) : new Date();
+      const newValidUntil = new Date(currentValidUntil);
+      newValidUntil.setMonth(newValidUntil.getMonth() + months);
+
+      const updatedUser = await storage.updateUser(id, { validUntil: newValidUntil });
+
+      res.json({ 
+        message: "Validity extended successfully",
+        validUntil: updatedUser?.validUntil
+      });
+    } catch (error) {
+      console.error("Extend validity error:", error);
+      res.status(500).json({ message: "Failed to extend validity" });
+    }
+  });
+
+  // Deactivate user
+  app.post("/api/admin/users/:id/deactivate", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Set validUntil to current date to immediately deactivate
+      const updatedUser = await storage.updateUser(id, { 
+        validUntil: new Date()
+      });
+
+      res.json({ 
+        message: "User deactivated successfully",
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error("Deactivate user error:", error);
+      res.status(500).json({ message: "Failed to deactivate user" });
+    }
+  });
+
+  // Reset user password
+  app.post("/api/admin/users/:id/reset-password", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Generate random password
+      const newPassword = Array.from({ length: 12 }, () => 
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'.charAt(
+          Math.floor(Math.random() * 68)
+        )
+      ).join('');
+
+      await storage.updateUser(id, { password: newPassword });
+
+      res.json({ 
+        message: "Password reset successfully",
+        password: newPassword
+      });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

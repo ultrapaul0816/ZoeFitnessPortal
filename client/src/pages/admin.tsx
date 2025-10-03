@@ -34,6 +34,7 @@ export default function Admin() {
   const [newUserData, setNewUserData] = useState<{user: any, password: string} | null>(null);
   const [selectedMember, setSelectedMember] = useState<User | null>(null);
   const [memberViewMode, setMemberViewMode] = useState<'view' | 'edit'>('view');
+  const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
   const addUserForm = useForm<AdminCreateUser>({
@@ -192,6 +193,73 @@ export default function Admin() {
     addUserForm.reset();
   };
 
+  const extendValidityMutation = useMutation({
+    mutationFn: async ({ userId, months }: { userId: string; months: number }) => {
+      const response = await apiRequest("POST", `/api/admin/users/${userId}/extend-validity`, { months });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast({
+        title: "Success",
+        description: "Member validity extended successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to extend validity",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deactivateMemberMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await apiRequest("POST", `/api/admin/users/${userId}/deactivate`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setSelectedMember(null);
+      toast({
+        title: "Success",
+        description: "Member deactivated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to deactivate member",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await apiRequest("POST", `/api/admin/users/${userId}/reset-password`);
+      return response.json();
+    },
+    onSuccess: (data: { password: string }) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Password Reset",
+        description: `New password: ${data.password}`,
+        duration: 10000,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to reset password",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (!user?.isAdmin) return null;
 
   return (
@@ -298,6 +366,8 @@ export default function Admin() {
                   type="search"
                   placeholder="Search members..."
                   className="w-64"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   data-testid="input-search-members"
                 />
                 <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
@@ -334,7 +404,15 @@ export default function Admin() {
                 </tr>
               </thead>
               <tbody>
-                {allUsers.map((member) => (
+                {allUsers.filter((member) => {
+                  if (!searchQuery) return true;
+                  const query = searchQuery.toLowerCase();
+                  return (
+                    member.firstName?.toLowerCase().includes(query) ||
+                    member.lastName?.toLowerCase().includes(query) ||
+                    member.email?.toLowerCase().includes(query)
+                  );
+                }).map((member) => (
                   <tr key={member.id} className="border-b border-border hover:bg-muted/50">
                     <td className="py-3 px-4">
                       <div className="flex items-center space-x-3">
@@ -564,17 +642,95 @@ export default function Admin() {
                     </div>
                   )}
 
-                  {/* Action Buttons */}
+                  {/* Member Actions */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-sm text-muted-foreground uppercase">Member Actions</h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* Extend Validity Buttons */}
+                      <div className="space-y-2">
+                        <Label className="text-xs text-muted-foreground">Extend Access Period</Label>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 1 })}
+                            disabled={extendValidityMutation.isPending}
+                            data-testid="button-extend-1month"
+                          >
+                            +1 Month
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 3 })}
+                            disabled={extendValidityMutation.isPending}
+                            data-testid="button-extend-3months"
+                          >
+                            +3 Months
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 6 })}
+                            disabled={extendValidityMutation.isPending}
+                            data-testid="button-extend-6months"
+                          >
+                            +6 Months
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Password Reset */}
+                      <div className="space-y-2">
+                        <Label className="text-xs text-muted-foreground">Password Management</Label>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => resetPasswordMutation.mutate(selectedMember.id)}
+                          disabled={resetPasswordMutation.isPending}
+                          data-testid="button-reset-password"
+                        >
+                          Reset Password
+                        </Button>
+                        <p className="text-xs text-muted-foreground">
+                          New password will be shown in a notification
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Deactivate Member */}
+                    <div className="pt-3 border-t">
+                      <Label className="text-xs text-red-600 font-semibold">Danger Zone</Label>
+                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-red-900">Deactivate Member</p>
+                            <p className="text-xs text-red-700 mt-1">
+                              This will immediately revoke access to all programs
+                            </p>
+                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to deactivate ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                                deactivateMemberMutation.mutate(selectedMember.id);
+                              }
+                            }}
+                            disabled={deactivateMemberMutation.isPending}
+                            data-testid="button-deactivate-member"
+                          >
+                            Deactivate
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dialog Action Buttons */}
                   <div className="flex justify-end gap-2 pt-4 border-t">
-                    {memberViewMode === 'view' && (
-                      <Button 
-                        onClick={() => setMemberViewMode('edit')}
-                        data-testid="button-switch-to-edit"
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Member
-                      </Button>
-                    )}
                     <Button 
                       variant="outline" 
                       onClick={() => setSelectedMember(null)}
@@ -840,6 +996,7 @@ Dear ${newUserData.user.firstName},
 Welcome to Your Postpartum Strength Recovery Program! Your account has been created successfully.
 
 Login Details:
+Login URL: https://app.strongerwithzoe.com/heal-your-core
 Email: ${newUserData.user.email}
 Password: ${newUserData.password}
 
@@ -859,6 +1016,7 @@ Dear ${newUserData.user.firstName},
 Welcome to Your Postpartum Strength Recovery Program! Your account has been created successfully.
 
 Login Details:
+Login URL: https://app.strongerwithzoe.com/heal-your-core
 Email: ${newUserData.user.email}
 Password: ${newUserData.password}
 
