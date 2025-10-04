@@ -6,14 +6,10 @@ import {
   insertWorkoutCompletionSchema,
   updateUserProfileSchema,
   adminCreateUserSchema,
-  memberPrograms,
 } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
-import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve attached assets (use different path to avoid conflict with built assets)
@@ -228,54 +224,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Failed to create member program:", error);
       res.status(500).json({ message: "Failed to enroll user in program" });
-    }
-  });
-
-  // Clean up duplicate enrollments (admin only)
-  app.post("/api/admin/cleanup-duplicates", async (req, res) => {
-    try {
-      const sql = neon(process.env.DATABASE_URL!);
-      const db = drizzle(sql);
-      
-      // Get all member programs with their details
-      const allEnrollments = await db.select().from(memberPrograms);
-      
-      // Group by user_id and program_id to find duplicates
-      const enrollmentMap = new Map<string, any[]>();
-      
-      for (const enrollment of allEnrollments) {
-        const key = `${enrollment.userId}-${enrollment.programId}`;
-        if (!enrollmentMap.has(key)) {
-          enrollmentMap.set(key, []);
-        }
-        enrollmentMap.get(key)!.push(enrollment);
-      }
-      
-      // Find and delete duplicates, keeping the oldest one
-      let deletedCount = 0;
-      for (const [key, enrollments] of enrollmentMap) {
-        if (enrollments.length > 1) {
-          // Sort by purchase date, then by id
-          enrollments.sort((a, b) => {
-            const dateCompare = new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime();
-            return dateCompare !== 0 ? dateCompare : a.id.localeCompare(b.id);
-          });
-          
-          // Delete all except the first (oldest) one
-          for (let i = 1; i < enrollments.length; i++) {
-            await db.delete(memberPrograms).where(eq(memberPrograms.id, enrollments[i].id));
-            deletedCount++;
-          }
-        }
-      }
-      
-      res.json({ 
-        message: `Successfully removed ${deletedCount} duplicate enrollments`,
-        deletedCount 
-      });
-    } catch (error) {
-      console.error("Failed to cleanup duplicates:", error);
-      res.status(500).json({ message: "Failed to cleanup duplicates" });
     }
   });
 

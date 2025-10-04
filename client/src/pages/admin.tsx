@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -353,7 +353,7 @@ export default function Admin() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview" data-testid="tab-overview">
               <TrendingUp className="w-4 h-4 mr-2" />
               Overview
@@ -361,6 +361,10 @@ export default function Admin() {
             <TabsTrigger value="members" data-testid="tab-members">
               <Users className="w-4 h-4 mr-2" />
               Members
+            </TabsTrigger>
+            <TabsTrigger value="deactivated" data-testid="tab-deactivated">
+              <UserX className="w-4 h-4 mr-2" />
+              Deactivated
             </TabsTrigger>
             <TabsTrigger value="programs" data-testid="tab-programs">
               <Settings className="w-4 h-4 mr-2" />
@@ -422,34 +426,6 @@ export default function Admin() {
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold text-foreground">Member Management</h3>
               <div className="flex space-x-3">
-                <Button
-                  variant="outline"
-                  onClick={async () => {
-                    try {
-                      const response = await fetch('/api/admin/cleanup-duplicates', {
-                        method: 'POST',
-                      });
-                      const data = await response.json();
-                      if (response.ok) {
-                        toast({
-                          title: "Success",
-                          description: data.message,
-                        });
-                        queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-                      } else {
-                        throw new Error(data.message);
-                      }
-                    } catch (error: any) {
-                      toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: error.message || "Failed to cleanup duplicates",
-                      });
-                    }
-                  }}
-                >
-                  Clean Duplicates
-                </Button>
                 <Input
                   type="search"
                   placeholder="Search members..."
@@ -1159,6 +1135,106 @@ export default function Admin() {
                   </div>
             </DialogContent>
           </Dialog>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="deactivated" className="space-y-6">
+            <Card className="overflow-hidden">
+              <div className="border-b border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground">Deactivated Members</h3>
+              </div>
+
+              {/* Deactivated Users Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/50">
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-foreground">Name</th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-foreground">Email</th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-foreground">Deactivated On</th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-foreground">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allUsers
+                      ?.filter(u => {
+                        const validUntil = u.validUntil ? new Date(u.validUntil) : null;
+                        return validUntil && validUntil <= new Date();
+                      })
+                      .map((member) => (
+                        <tr key={member.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-semibold">
+                                {member.firstName?.[0]}{member.lastName?.[0]}
+                              </div>
+                              <div>
+                                <p className="font-medium text-foreground" data-testid={`text-name-${member.id}`}>
+                                  {member.firstName} {member.lastName}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground" data-testid={`text-email-${member.id}`}>
+                            {member.email}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground" data-testid={`text-deactivated-${member.id}`}>
+                            {member.validUntil ? format(new Date(member.validUntil), "MMM dd, yyyy") : "Unknown"}
+                          </td>
+                          <td className="px-6 py-4">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={async () => {
+                                try {
+                                  const oneYearFromNow = new Date();
+                                  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+                                  
+                                  const response = await fetch(`/api/admin/users/${member.id}/extend-validity`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ validUntil: oneYearFromNow.toISOString() }),
+                                  });
+
+                                  if (!response.ok) {
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.message || 'Failed to reactivate user');
+                                  }
+
+                                  queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+                                  toast({
+                                    title: "Success",
+                                    description: `${member.firstName} ${member.lastName} has been reactivated for 1 year`,
+                                  });
+                                } catch (error) {
+                                  toast({
+                                    variant: "destructive",
+                                    title: "Error",
+                                    description: error instanceof Error ? error.message : "Failed to reactivate user",
+                                  });
+                                }
+                              }}
+                              data-testid={`button-reactivate-${member.id}`}
+                            >
+                              <UserPlus className="w-4 h-4 mr-2" />
+                              Reactivate
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    {allUsers?.filter(u => {
+                      const validUntil = u.validUntil ? new Date(u.validUntil) : null;
+                      return validUntil && validUntil <= new Date();
+                    }).length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+                          No deactivated members found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </Card>
           </TabsContent>
 
