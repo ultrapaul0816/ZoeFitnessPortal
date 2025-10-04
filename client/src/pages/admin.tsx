@@ -38,6 +38,11 @@ export default function Admin() {
   const [memberViewMode, setMemberViewMode] = useState<'view' | 'edit'>('view');
   const [selectedProgramForMember, setSelectedProgramForMember] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState("");
+  const [passwordMode, setPasswordMode] = useState<'auto' | 'manual'>('auto');
+  const [manualPassword, setManualPassword] = useState('');
+  const [resetPasswordMode, setResetPasswordMode] = useState<'auto' | 'manual'>('auto');
+  const [resetManualPassword, setResetManualPassword] = useState('');
+  const [resetPasswordMember, setResetPasswordMember] = useState<User | null>(null);
   const { toast } = useToast();
 
   const addUserForm = useForm<AdminCreateUser>({
@@ -197,11 +202,25 @@ export default function Admin() {
 
   const handleCreateUser = async (userData: AdminCreateUser) => {
     try {
-      // Create user
+      // Validate manual password if selected
+      if (passwordMode === 'manual' && !manualPassword) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Please enter a password or switch to auto-generate mode",
+        });
+        return;
+      }
+
+      // Create user with optional manual password
+      const requestBody = passwordMode === 'manual' 
+        ? { ...userData, password: manualPassword }
+        : userData;
+
       const response = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(requestBody),
       });
       
       const data = await response.json();
@@ -247,6 +266,8 @@ export default function Admin() {
   const closeAddUserModal = () => {
     setIsAddUserModalOpen(false);
     setNewUserData(null);
+    setPasswordMode('auto');
+    setManualPassword('');
     addUserForm.reset();
   };
 
@@ -294,6 +315,55 @@ export default function Admin() {
       });
     },
   });
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordMember) return;
+
+    try {
+      // Validate manual password if selected
+      if (resetPasswordMode === 'manual' && !resetManualPassword) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Please enter a password or switch to auto-generate mode",
+        });
+        return;
+      }
+
+      const requestBody = resetPasswordMode === 'manual'
+        ? { password: resetManualPassword }
+        : {};
+
+      const response = await fetch(`/api/admin/users/${resetPasswordMember.id}/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to reset password');
+      }
+
+      const data = await response.json();
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setResetPasswordData({
+        userId: resetPasswordMember.id,
+        email: resetPasswordMember.email,
+        password: data.password,
+      });
+      setResetPasswordMember(null);
+      setResetPasswordMode('auto');
+      setResetManualPassword('');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to reset password",
+      });
+    }
+  };
 
   const resetPasswordMutation = useMutation({
     mutationFn: async (userId: string) => {
@@ -448,6 +518,10 @@ export default function Admin() {
                     onClose={closeAddUserModal}
                     newUserData={newUserData}
                     programs={programs}
+                    passwordMode={passwordMode}
+                    setPasswordMode={setPasswordMode}
+                    manualPassword={manualPassword}
+                    setManualPassword={setManualPassword}
                   />
                 </Dialog>
               </div>
@@ -824,8 +898,7 @@ export default function Admin() {
                           variant="outline"
                           size="sm"
                           className="w-full"
-                          onClick={() => resetPasswordMutation.mutate(selectedMember.id)}
-                          disabled={resetPasswordMutation.isPending}
+                          onClick={() => setResetPasswordMember(selectedMember)}
                           data-testid="button-reset-password"
                         >
                           Reset Password
@@ -1418,7 +1491,101 @@ export default function Admin() {
         </Tabs>
       </div>
       
-      {/* Reset Password Dialog */}
+      {/* Reset Password Options Dialog */}
+      <Dialog open={!!resetPasswordMember} onOpenChange={() => {
+        setResetPasswordMember(null);
+        setResetPasswordMode('auto');
+        setResetManualPassword('');
+      }}>
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-md">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent font-semibold">
+                Reset Password
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          {resetPasswordMember && (
+            <div className="space-y-4">
+              <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  Resetting password for <strong>{resetPasswordMember.firstName} {resetPasswordMember.lastName}</strong>
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Password Setup</Label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="resetPasswordMode"
+                      value="auto"
+                      checked={resetPasswordMode === 'auto'}
+                      onChange={(e) => setResetPasswordMode(e.target.value as 'auto' | 'manual')}
+                      className="w-4 h-4"
+                      data-testid="radio-reset-password-auto"
+                    />
+                    <span className="text-sm">Auto-generate password</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="resetPasswordMode"
+                      value="manual"
+                      checked={resetPasswordMode === 'manual'}
+                      onChange={(e) => setResetPasswordMode(e.target.value as 'auto' | 'manual')}
+                      className="w-4 h-4"
+                      data-testid="radio-reset-password-manual"
+                    />
+                    <span className="text-sm">Enter password manually</span>
+                  </label>
+                </div>
+                
+                {resetPasswordMode === 'manual' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="reset-manual-password">New Password *</Label>
+                    <Input
+                      id="reset-manual-password"
+                      type="text"
+                      value={resetManualPassword}
+                      onChange={(e) => setResetManualPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      data-testid="input-reset-manual-password"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Password will be displayed after reset
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex justify-end space-x-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setResetPasswordMember(null);
+                    setResetPasswordMode('auto');
+                    setResetManualPassword('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleResetPassword} data-testid="button-confirm-reset-password">
+                  Reset Password
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Success Dialog */}
       <Dialog open={!!resetPasswordData} onOpenChange={() => setResetPasswordData(null)}>
         <DialogContent className="sm:max-w-md bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20">
           <DialogHeader className="border-b pb-4">
@@ -1493,9 +1660,13 @@ interface AddUserModalProps {
   onClose: () => void;
   newUserData: { user: any; password: string } | null;
   programs: Program[];
+  passwordMode: 'auto' | 'manual';
+  setPasswordMode: (mode: 'auto' | 'manual') => void;
+  manualPassword: string;
+  setManualPassword: (password: string) => void;
 }
 
-function AddUserModal({ form, onSubmit, isLoading, onClose, newUserData, programs }: AddUserModalProps) {
+function AddUserModal({ form, onSubmit, isLoading, onClose, newUserData, programs, passwordMode, setPasswordMode, manualPassword, setManualPassword }: AddUserModalProps) {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
@@ -1823,6 +1994,54 @@ The Stronger With Zoe Team`)}
               </FormItem>
             )}
           />
+
+          {/* Password Options */}
+          <div className="space-y-3 border-t pt-4">
+            <Label className="text-sm font-semibold">Password Setup</Label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="passwordMode"
+                  value="auto"
+                  checked={passwordMode === 'auto'}
+                  onChange={(e) => setPasswordMode(e.target.value as 'auto' | 'manual')}
+                  className="w-4 h-4"
+                  data-testid="radio-password-auto"
+                />
+                <span className="text-sm">Auto-generate password</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="passwordMode"
+                  value="manual"
+                  checked={passwordMode === 'manual'}
+                  onChange={(e) => setPasswordMode(e.target.value as 'auto' | 'manual')}
+                  className="w-4 h-4"
+                  data-testid="radio-password-manual"
+                />
+                <span className="text-sm">Enter password manually</span>
+              </label>
+            </div>
+            
+            {passwordMode === 'manual' && (
+              <div className="space-y-2">
+                <Label htmlFor="manual-password">Password *</Label>
+                <Input
+                  id="manual-password"
+                  type="text"
+                  value={manualPassword}
+                  onChange={(e) => setManualPassword(e.target.value)}
+                  placeholder="Enter password"
+                  data-testid="input-manual-password"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Password will be displayed after user creation
+                </p>
+              </div>
+            )}
+          </div>
           
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>

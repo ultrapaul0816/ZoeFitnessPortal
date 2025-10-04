@@ -600,8 +600,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const userData = adminCreateUserSchema.parse(requestData);
 
-      // Generate 6-digit password
-      const password = Math.floor(100000 + Math.random() * 900000).toString();
+      // Use manual password if provided, otherwise generate 6-digit password
+      const password = req.body.password || Math.floor(100000 + Math.random() * 900000).toString();
 
       // Set default validity dates if not provided
       const now = new Date();
@@ -741,14 +741,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/users/:id/reset-password", async (req, res) => {
     try {
       const { id } = req.params;
+      const { password: manualPassword } = req.body;
 
       const user = await storage.getUser(id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Generate random password
-      const newPassword = Array.from({ length: 12 }, () => 
+      // Use manual password if provided, otherwise generate random password
+      const newPassword = manualPassword || Array.from({ length: 12 }, () => 
         'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'.charAt(
           Math.floor(Math.random() * 68)
         )
