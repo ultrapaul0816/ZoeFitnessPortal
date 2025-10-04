@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
@@ -43,9 +44,12 @@ export default function Admin() {
       email: "",
       firstName: "",
       lastName: "",
+      phone: "",
       isAdmin: false,
       validFrom: undefined,
       validUntil: undefined,
+      hasWhatsAppSupport: false,
+      whatsAppSupportDuration: undefined,
     },
   });
 
@@ -1090,6 +1094,70 @@ The Stronger With Zoe Team`)}
               </FormItem>
             )}
           />
+          
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input {...field} type="tel" placeholder="Enter phone number" data-testid="input-phone" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="hasWhatsAppSupport"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value} 
+                    onCheckedChange={field.onChange}
+                    data-testid="checkbox-whatsapp-support"
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>WhatsApp Community Support</FormLabel>
+                  <p className="text-xs text-muted-foreground">
+                    Grant access to WhatsApp community support
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
+          
+          {form.watch("hasWhatsAppSupport") && (
+            <FormField
+              control={form.control}
+              name="whatsAppSupportDuration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>WhatsApp Support Duration</FormLabel>
+                  <Select 
+                    onValueChange={(value) => field.onChange(parseInt(value))} 
+                    value={field.value?.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger data-testid="select-whatsapp-duration">
+                        <SelectValue placeholder="Select duration" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="3">3 months</SelectItem>
+                      <SelectItem value="6">6 months</SelectItem>
+                      <SelectItem value="12">12 months</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           
           <div className="grid grid-cols-2 gap-4">
             <FormField

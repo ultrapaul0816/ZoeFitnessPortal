@@ -266,9 +266,12 @@ export const adminCreateUserSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
+  phone: z.string().optional(),
   isAdmin: z.boolean().default(false),
   validFrom: z.date().optional(),
   validUntil: z.date().optional(),
+  hasWhatsAppSupport: z.boolean().default(false),
+  whatsAppSupportDuration: z.number().optional(),
 }).refine((data) => {
   if (data.validFrom && data.validUntil) {
     return data.validFrom < data.validUntil;

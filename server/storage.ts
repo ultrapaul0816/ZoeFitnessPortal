@@ -147,6 +147,9 @@ export class MemStorage implements IStorage {
       disclaimerAcceptedAt: new Date(),
       validFrom: new Date(),
       validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      hasWhatsAppSupport: false,
+      whatsAppSupportDuration: null,
+      whatsAppSupportExpiryDate: null,
       createdAt: new Date(),
     };
     this.users.set(adminId, admin);
@@ -168,6 +171,9 @@ export class MemStorage implements IStorage {
       disclaimerAcceptedAt: null,
       validFrom: new Date(),
       validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      hasWhatsAppSupport: false,
+      whatsAppSupportDuration: null,
+      whatsAppSupportExpiryDate: null,
       createdAt: new Date(),
     };
     this.users.set(userId, user);
@@ -401,6 +407,9 @@ export class MemStorage implements IStorage {
       disclaimerAcceptedAt: insertUser.disclaimerAcceptedAt ?? null,
       validFrom: insertUser.validFrom ?? new Date(),
       validUntil: insertUser.validUntil ?? new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      hasWhatsAppSupport: insertUser.hasWhatsAppSupport ?? false,
+      whatsAppSupportDuration: insertUser.whatsAppSupportDuration ?? null,
+      whatsAppSupportExpiryDate: insertUser.whatsAppSupportExpiryDate ?? null,
       createdAt: new Date(),
     };
     this.users.set(id, user);
