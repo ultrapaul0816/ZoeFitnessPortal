@@ -1035,7 +1035,7 @@ export default function Admin() {
                                       throw new Error(errorData.message || 'Failed to remove enrollment');
                                     }
 
-                                    queryClient.invalidateQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
+                                    await queryClient.refetchQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
                                     toast({
                                       variant: "success",
                                       title: "Success",

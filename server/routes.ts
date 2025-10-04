@@ -190,6 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.params;
       const memberPrograms = await storage.getMemberPrograms(userId);
+      console.log(`[GET] Member programs for ${userId}: ${memberPrograms.length} programs`);
       res.json(memberPrograms);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch member programs" });
@@ -231,7 +232,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/member-programs/:enrollmentId", async (req, res) => {
     try {
       const { enrollmentId } = req.params;
+      console.log(`[DELETE] Removing enrollment: ${enrollmentId}`);
       await storage.deleteMemberProgram(enrollmentId);
+      console.log(`[DELETE] Successfully removed enrollment: ${enrollmentId}`);
       res.json({ message: "Enrollment removed successfully" });
     } catch (error) {
       console.error("Failed to delete member program:", error);
