@@ -64,8 +64,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const countryRef = useRef<HTMLButtonElement>(null);
-  const dueDateRef = useRef<HTMLInputElement>(null);
-  const postpartumRef = useRef<HTMLInputElement>(null);
 
   const [renderOpen, setRenderOpen] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
@@ -90,16 +88,8 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       setTimeout(() => {
         if (!completeness.isComplete) {
           const firstMissingField = getFirstMissingFieldName(completeness);
-          switch (firstMissingField) {
-            case 'country':
-              countryRef.current?.focus();
-              break;
-            case 'dueDate':
-              dueDateRef.current?.focus();
-              break;
-            case 'postpartumTime':
-              postpartumRef.current?.focus();
-              break;
+          if (firstMissingField === 'country') {
+            countryRef.current?.focus();
           }
         }
       }, 100);
@@ -625,7 +615,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+              <div className="space-y-2">
                 {profileCompleteness.requiredFields.map((field) => (
                   <div key={field.field} className="flex items-center space-x-2">
                     {field.completed ? (
@@ -638,12 +628,12 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                     </span>
                   </div>
                 ))}
-              </div>
-
-              {profileCompleteness.optionalFields.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Optional (for better experience):</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                
+                {profileCompleteness.optionalFields.length > 0 && (
+                  <>
+                    <div className="pt-2">
+                      <h4 className="text-xs font-medium text-gray-500 mb-1">Optional (for better experience):</h4>
+                    </div>
                     {profileCompleteness.optionalFields.map((field) => (
                       <div key={field.field} className="flex items-center space-x-2">
                         {field.completed ? (
@@ -656,9 +646,9 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                         </span>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
+                  </>
+                )}
+              </div>
             </div>
           )}
 
@@ -792,32 +782,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               />
             </div>
 
-            {/* Due Date */}
-            <div className="space-y-2 mb-6">
-              <Label htmlFor="dueDate">If pregnant, when are you due? *</Label>
-              <Input
-                id="dueDate"
-                type="date"
-                value={profileData.dueDate}
-                onChange={(e) => setProfileData(prev => ({...prev, dueDate: e.target.value}))}
-                ref={dueDateRef}
-                className={!profileData.dueDate && !profileData.postpartumTime ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
-              />
-            </div>
-
-            {/* Postpartum Time */}
-            <div className="space-y-2">
-              <Label htmlFor="postpartumTime">If postpartum, how many weeks/months/years postpartum? *</Label>
-              <Input
-                id="postpartumTime"
-                placeholder="e.g., 6 weeks, 3 months, 1 year"
-                value={profileData.postpartumTime}
-                onChange={(e) => setProfileData(prev => ({...prev, postpartumTime: e.target.value}))}
-                ref={postpartumRef}
-                className={!profileData.dueDate && !profileData.postpartumTime ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
-              />
-              <p className="text-xs text-gray-500">* Please fill either Due Date OR Postpartum Time (not both)</p>
-            </div>
           </div>
 
 

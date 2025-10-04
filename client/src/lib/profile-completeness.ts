@@ -42,12 +42,6 @@ const REQUIRED_FIELDS = [
   { field: 'country' as keyof ProfileData, label: 'Country' },
 ] as const;
 
-// Either due date OR postpartum time is required (not both)
-const REQUIRED_ALTERNATIVE_FIELDS = [
-  { field: 'dueDate' as keyof ProfileData, label: 'Due Date' },
-  { field: 'postpartumTime' as keyof ProfileData, label: 'Postpartum Time' },
-] as const;
-
 const OPTIONAL_FIELDS = [
   { field: 'bio' as keyof ProfileData, label: 'Bio' },
   { field: 'socials' as keyof ProfileData, label: 'Social Links' },
@@ -86,17 +80,6 @@ export function evaluateCompleteness(profileData: ProfileData): ProfileCompleten
     completed: isFieldCompleted(profileData[field]),
   }));
 
-  // Check if at least one alternative field is completed
-  const hasAlternativeField = REQUIRED_ALTERNATIVE_FIELDS.some(
-    ({ field }) => isFieldCompleted(profileData[field])
-  );
-
-  const alternativeFieldsStatus = REQUIRED_ALTERNATIVE_FIELDS.map(({ field, label }) => ({
-    field,
-    label,
-    completed: isFieldCompleted(profileData[field]),
-  }));
-
   const optionalFieldsStatus = OPTIONAL_FIELDS.map(({ field, label }) => ({
     field,
     label,
@@ -105,31 +88,21 @@ export function evaluateCompleteness(profileData: ProfileData): ProfileCompleten
 
   // Calculate completion
   const completedRequired = requiredFieldsStatus.filter(f => f.completed).length;
-  const totalRequired = REQUIRED_FIELDS.length + 1; // +1 for alternative fields requirement
-  const requiredComplete = completedRequired === REQUIRED_FIELDS.length && hasAlternativeField;
+  const totalRequired = REQUIRED_FIELDS.length;
+  const requiredComplete = completedRequired === REQUIRED_FIELDS.length;
 
   const completedOptional = optionalFieldsStatus.filter(f => f.completed).length;
   const optionalBonus = (completedOptional / OPTIONAL_FIELDS.length) * 10; // 10% bonus for optional fields
 
-  const basePercentage = requiredComplete ? 100 : ((completedRequired + (hasAlternativeField ? 1 : 0)) / totalRequired) * 100;
+  const basePercentage = requiredComplete ? 100 : (completedRequired / totalRequired) * 100;
   const completionPercentage = Math.min(100, Math.round(basePercentage + optionalBonus));
 
-  // Fix: Correct missing count calculation
-  const missingRequiredCount = (REQUIRED_FIELDS.length - completedRequired) + (hasAlternativeField ? 0 : 1);
+  const missingRequiredCount = REQUIRED_FIELDS.length - completedRequired;
 
   return {
     isComplete: requiredComplete,
     completionPercentage,
-    requiredFields: [
-      ...requiredFieldsStatus,
-      {
-        field: hasAlternativeField ? alternativeFieldsStatus.find(f => f.completed)!.field : 'dueDate',
-        label: hasAlternativeField 
-          ? alternativeFieldsStatus.find(f => f.completed)!.label 
-          : 'Due Date or Postpartum Time',
-        completed: hasAlternativeField,
-      }
-    ],
+    requiredFields: requiredFieldsStatus,
     optionalFields: optionalFieldsStatus,
     missingRequiredCount,
     totalRequiredCount: totalRequired,
