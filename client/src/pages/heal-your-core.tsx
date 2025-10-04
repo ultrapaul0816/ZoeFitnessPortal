@@ -5312,18 +5312,21 @@ function ProgramsSection({
             {/* Mobile Layout */}
             <div className="block lg:hidden">
               {/* Program Badge on top */}
-              <div className="mb-3">
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
                 <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-pink-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></div>
                     PROGRAM 1
                   </div>
                 </div>
+                <div className="bg-pink-600 text-white px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg inline-block">
+                  WEEK 1
+                </div>
               </div>
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-1">
                   Postpartum Strength Recovery Program
                 </div>
                 <div className="text-pink-100 font-normal text-xs drop-shadow-sm">
@@ -5346,10 +5349,15 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-pink-200 flex-shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
-                    <span>PROGRAM 1</span>
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="bg-gradient-to-r from-white to-gray-50 text-pink-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-pink-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                      <span>PROGRAM 1</span>
+                    </div>
+                  </div>
+                  <div className="bg-pink-600 text-white px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg">
+                    WEEK 1
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 py-2">
@@ -5623,18 +5631,21 @@ function ProgramsSection({
             {/* Mobile Layout */}
             <div className="block lg:hidden">
               {/* Program Badge on top */}
-              <div className="mb-3">
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
                 <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
                     PROGRAM 2
                   </div>
                 </div>
+                <div className="bg-blue-600 text-white px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg inline-block">
+                  WEEK 2
+                </div>
               </div>
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-1">
                   Advanced Strength & Conditioning Program
                 </div>
                 <div className="text-base font-medium text-green-100 drop-shadow-sm">
@@ -5657,10 +5668,15 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-green-200 flex-shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    <span>PROGRAM 2</span>
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-green-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <span>PROGRAM 2</span>
+                    </div>
+                  </div>
+                  <div className="bg-blue-600 text-white px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg">
+                    WEEK 2
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 py-2">
@@ -5890,18 +5906,21 @@ function ProgramsSection({
             {/* Mobile Layout */}
             <div className="block lg:hidden">
               {/* Program Badge on top */}
-              <div className="mb-3">
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
                 <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-green-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     PROGRAM 3
                   </div>
                 </div>
+                <div className="bg-green-600 text-white px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg inline-block">
+                  WEEK 3
+                </div>
               </div>
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-1">
                   Control & Awareness Program
                 </div>
                 <div className="text-base font-medium text-green-100 drop-shadow-sm">
@@ -5924,10 +5943,15 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-green-200 flex-shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>PROGRAM 3</span>
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="bg-gradient-to-r from-white to-gray-50 text-green-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-green-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span>PROGRAM 3</span>
+                    </div>
+                  </div>
+                  <div className="bg-green-600 text-white px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg">
+                    WEEK 3
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 py-2">
@@ -6166,18 +6190,21 @@ function ProgramsSection({
             {/* Mobile Layout */}
             <div className="block lg:hidden">
               {/* Program Badge on top */}
-              <div className="mb-3">
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
                 <div className="bg-gradient-to-r from-white to-gray-50 text-amber-700 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-amber-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-amber-600 rounded-full animate-pulse"></div>
                     PROGRAM 4
                   </div>
                 </div>
+                <div className="bg-amber-600 text-white px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg inline-block">
+                  WEEK 4
+                </div>
               </div>
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-1">
                   Align & Activate Program
                 </div>
                 <div className="text-base font-medium text-purple-100 drop-shadow-sm">
@@ -6200,10 +6227,15 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-amber-700 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-amber-200 flex-shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
-                    <span>PROGRAM 4</span>
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="bg-gradient-to-r from-white to-gray-50 text-amber-700 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-amber-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
+                      <span>PROGRAM 4</span>
+                    </div>
+                  </div>
+                  <div className="bg-amber-600 text-white px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg">
+                    WEEK 4
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 py-2">
@@ -6436,18 +6468,21 @@ function ProgramsSection({
             {/* Mobile Layout */}
             <div className="block lg:hidden">
               {/* Program Badge on top */}
-              <div className="mb-3">
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
                 <div className="bg-gradient-to-r from-white to-gray-50 text-teal-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-teal-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></div>
                     PROGRAM 5
                   </div>
                 </div>
+                <div className="bg-teal-600 text-white px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg inline-block">
+                  WEEK 5
+                </div>
               </div>
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-1">
                   Functional Core Flow Program
                 </div>
                 <div className="text-base font-medium text-teal-100 drop-shadow-sm">
@@ -6470,10 +6505,15 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-teal-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-teal-200 flex-shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
-                    <span>PROGRAM 5</span>
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="bg-gradient-to-r from-white to-gray-50 text-teal-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-teal-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
+                      <span>PROGRAM 5</span>
+                    </div>
+                  </div>
+                  <div className="bg-teal-600 text-white px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg">
+                    WEEK 5
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 py-2">
@@ -6717,18 +6757,21 @@ function ProgramsSection({
             {/* Mobile Layout */}
             <div className="block lg:hidden">
               {/* Program Badge on top */}
-              <div className="mb-3">
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
                 <div className="bg-gradient-to-r from-white to-gray-50 text-orange-600 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg border-2 border-orange-200 inline-block">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
                     PROGRAM 6
                   </div>
                 </div>
+                <div className="bg-orange-600 text-white px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap shadow-lg inline-block">
+                  WEEK 6
+                </div>
               </div>
               
               {/* Title and Description */}
               <div className="mb-3">
-                <div className="text-white font-bold text-sm tracking-tight drop-shadow-md mb-1">
+                <div className="text-white font-bold text-lg tracking-tight drop-shadow-md mb-1">
                   Foundational Strength Program
                 </div>
                 <div className="text-base font-medium text-orange-100 drop-shadow-sm">
@@ -6751,10 +6794,15 @@ function ProgramsSection({
             {/* Desktop Layout */}
             <div className="hidden lg:flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1 min-w-0 pr-2">
-                <div className="bg-gradient-to-r from-white to-gray-50 text-orange-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-orange-200 flex-shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                    <span>PROGRAM 6</span>
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="bg-gradient-to-r from-white to-gray-50 text-orange-600 px-5 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg border-2 border-orange-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                      <span>PROGRAM 6</span>
+                    </div>
+                  </div>
+                  <div className="bg-orange-600 text-white px-4 py-3 rounded-xl font-bold text-sm whitespace-nowrap shadow-lg">
+                    WEEK 6
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 py-2">
