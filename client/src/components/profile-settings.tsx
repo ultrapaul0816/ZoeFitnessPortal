@@ -791,15 +791,6 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
             </div>
           </div>
 
-
-          {/* Danger Zone */}
-          <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Danger Zone</h2>
-              <ChevronDown className="w-5 h-5 text-gray-400" />
-            </div>
-          </div>
-
           {/* Save Changes Button */}
           <Button 
             onClick={handleSaveProfile}
