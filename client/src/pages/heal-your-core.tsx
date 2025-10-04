@@ -757,6 +757,7 @@ export default function HealYourCorePage() {
 
           <TabsContent value="welcome">
             <WelcomeSection 
+              user={user}
               canGoNext={canGoNext}
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}
@@ -1871,12 +1872,14 @@ function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPr
 }
 
 function WelcomeSection({
+  user,
   canGoNext,
   canGoPrevious,
   navigateToNextTab,
   navigateToPreviousTab,
   getNavigationText
 }: {
+  user: User | null;
   canGoNext: () => boolean;
   canGoPrevious: () => boolean;
   navigateToNextTab: () => void;
