@@ -422,6 +422,34 @@ export default function Admin() {
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold text-foreground">Member Management</h3>
               <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/admin/cleanup-duplicates', {
+                        method: 'POST',
+                      });
+                      const data = await response.json();
+                      if (response.ok) {
+                        toast({
+                          title: "Success",
+                          description: data.message,
+                        });
+                        queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+                      } else {
+                        throw new Error(data.message);
+                      }
+                    } catch (error: any) {
+                      toast({
+                        variant: "destructive",
+                        title: "Error",
+                        description: error.message || "Failed to cleanup duplicates",
+                      });
+                    }
+                  }}
+                >
+                  Clean Duplicates
+                </Button>
                 <Input
                   type="search"
                   placeholder="Search members..."
