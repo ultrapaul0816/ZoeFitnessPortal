@@ -745,7 +745,11 @@ export default function Admin() {
                                   <div>
                                     <p className="text-sm font-medium">{program?.name || 'Unknown Program'}</p>
                                     <p className="text-xs text-muted-foreground">
-                                      Enrolled: {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                                      Enrolled: {enrollment.enrolledAt && !isNaN(new Date(enrollment.enrolledAt).getTime()) 
+                                        ? new Date(enrollment.enrolledAt).toLocaleDateString()
+                                        : selectedMember.createdAt 
+                                          ? new Date(selectedMember.createdAt).toLocaleDateString()
+                                          : 'Unknown'}
                                     </p>
                                   </div>
                                 </div>
@@ -916,7 +920,11 @@ export default function Admin() {
                               <div className="flex-1">
                                 <p className="text-sm font-medium text-green-800">{program?.name || 'Unknown Program'}</p>
                                 <p className="text-xs text-green-600">
-                                  Enrolled: {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                                  Enrolled: {enrollment.enrolledAt && !isNaN(new Date(enrollment.enrolledAt).getTime()) 
+                                    ? new Date(enrollment.enrolledAt).toLocaleDateString()
+                                    : selectedMember.createdAt 
+                                      ? new Date(selectedMember.createdAt).toLocaleDateString()
+                                      : 'Unknown'}
                                 </p>
                               </div>
                             </div>
