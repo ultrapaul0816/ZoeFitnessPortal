@@ -548,17 +548,21 @@ export default function Admin() {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-white p-3 rounded-lg border border-gray-200">
-                        <Label className="text-xs text-gray-500 font-medium">Status</Label>
-                        <Badge variant={selectedMember.termsAccepted ? "default" : "secondary"} className={cn("mt-2", selectedMember.termsAccepted && "bg-green-500 hover:bg-green-600")}>
-                          {selectedMember.termsAccepted ? "Active" : "Pending"}
-                        </Badge>
+                        <Label className="text-xs text-gray-500 font-medium block mb-2">Status</Label>
+                        <div>
+                          <Badge variant={selectedMember.termsAccepted ? "default" : "secondary"} className={cn(selectedMember.termsAccepted && "bg-green-500 hover:bg-green-600")}>
+                            {selectedMember.termsAccepted ? "Active" : "Pending"}
+                          </Badge>
+                        </div>
                       </div>
                       
                       <div className="bg-white p-3 rounded-lg border border-gray-200">
-                        <Label className="text-xs text-gray-500 font-medium">Role</Label>
-                        <Badge variant={selectedMember.isAdmin ? "destructive" : "outline"} className="mt-2">
-                          {selectedMember.isAdmin ? "Admin" : "Member"}
-                        </Badge>
+                        <Label className="text-xs text-gray-500 font-medium block mb-2">Role</Label>
+                        <div>
+                          <Badge variant={selectedMember.isAdmin ? "destructive" : "outline"}>
+                            {selectedMember.isAdmin ? "Admin" : "Member"}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
 
