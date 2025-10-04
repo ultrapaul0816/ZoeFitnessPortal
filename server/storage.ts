@@ -1,10 +1,57 @@
-import { type User, type InsertUser, type Program, type InsertProgram, type MemberProgram, type InsertMemberProgram, type Workout, type InsertWorkout, type WorkoutCompletion, type InsertWorkoutCompletion, type SavedWorkout, type InsertSavedWorkout, type CommunityPost, type InsertCommunityPost, type Notification, type InsertNotification, type Terms, type InsertTerms, type ProgramPurchase, type InsertProgramPurchase, type ProgressTracking, type InsertProgressTracking, type KnowledgeArticle, type InsertKnowledgeArticle, type Exercise, type InsertExercise, type WeeklyWorkout, type InsertWeeklyWorkout, type ReflectionNote, type InsertReflectionNote } from "@shared/schema";
-import { users, programs, memberPrograms, workouts, workoutCompletions, savedWorkouts, communityPosts, notifications, terms, programPurchases, progressTracking, knowledgeArticles, exercises, weeklyWorkouts, reflectionNotes } from "@shared/schema";
+import "dotenv/config";
+import {
+  type User,
+  type InsertUser,
+  type Program,
+  type InsertProgram,
+  type MemberProgram,
+  type InsertMemberProgram,
+  type Workout,
+  type InsertWorkout,
+  type WorkoutCompletion,
+  type InsertWorkoutCompletion,
+  type SavedWorkout,
+  type InsertSavedWorkout,
+  type CommunityPost,
+  type InsertCommunityPost,
+  type Notification,
+  type InsertNotification,
+  type Terms,
+  type InsertTerms,
+  type ProgramPurchase,
+  type InsertProgramPurchase,
+  type ProgressTracking,
+  type InsertProgressTracking,
+  type KnowledgeArticle,
+  type InsertKnowledgeArticle,
+  type Exercise,
+  type InsertExercise,
+  type WeeklyWorkout,
+  type InsertWeeklyWorkout,
+  type ReflectionNote,
+  type InsertReflectionNote,
+} from "@shared/schema";
+import {
+  users,
+  programs,
+  memberPrograms,
+  workouts,
+  workoutCompletions,
+  savedWorkouts,
+  communityPosts,
+  notifications,
+  terms,
+  programPurchases,
+  progressTracking,
+  knowledgeArticles,
+  exercises,
+  weeklyWorkouts,
+  reflectionNotes,
+} from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { eq, and, desc } from "drizzle-orm";
-
 
 export interface IStorage {
   // Users
@@ -12,44 +59,56 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
-  
+
   // Programs
   getPrograms(): Promise<Program[]>;
   getProgram(id: string): Promise<Program | undefined>;
   createProgram(program: InsertProgram): Promise<Program>;
-  
+
   // Member Programs
-  getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]>;
-  createMemberProgram(memberProgram: InsertMemberProgram): Promise<MemberProgram>;
+  getMemberPrograms(
+    userId: string
+  ): Promise<(MemberProgram & { program: Program })[]>;
+  createMemberProgram(
+    memberProgram: InsertMemberProgram
+  ): Promise<MemberProgram>;
   deleteMemberProgram(enrollmentId: string): Promise<void>;
-  
+
   // Workouts
   getWorkoutsByProgram(programId: string): Promise<Workout[]>;
   getWorkout(id: string): Promise<Workout | undefined>;
   createWorkout(workout: InsertWorkout): Promise<Workout>;
-  
+
   // Workout Completions
   getWorkoutCompletions(userId: string): Promise<WorkoutCompletion[]>;
-  createWorkoutCompletion(completion: InsertWorkoutCompletion): Promise<WorkoutCompletion>;
-  
+  createWorkoutCompletion(
+    completion: InsertWorkoutCompletion
+  ): Promise<WorkoutCompletion>;
+
   // Saved Workouts
-  getSavedWorkouts(userId: string): Promise<(SavedWorkout & { workout: Workout })[]>;
+  getSavedWorkouts(
+    userId: string
+  ): Promise<(SavedWorkout & { workout: Workout })[]>;
   createSavedWorkout(savedWorkout: InsertSavedWorkout): Promise<SavedWorkout>;
   deleteSavedWorkout(userId: string, workoutId: string): Promise<boolean>;
-  
+
   // Community
-  getCommunityPosts(channel?: string): Promise<(CommunityPost & { user: Pick<User, 'firstName' | 'lastName'> })[]>;
+  getCommunityPosts(
+    channel?: string
+  ): Promise<
+    (CommunityPost & { user: Pick<User, "firstName" | "lastName"> })[]
+  >;
   createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
-  
+
   // Notifications
   getUserNotifications(userId: string): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   markNotificationRead(id: string): Promise<boolean>;
-  
+
   // Terms
   getActiveTerms(): Promise<Terms | undefined>;
   createTerms(terms: InsertTerms): Promise<Terms>;
-  
+
   // Admin functions
   getAllUsers(): Promise<User[]>;
   getUserStats(): Promise<{
@@ -57,38 +116,60 @@ export interface IStorage {
     activeMembers: number;
     expiringSoon: number;
   }>;
-  
+
   // Program Purchases (for premium programs like Heal Your Core)
-  createProgramPurchase(purchase: InsertProgramPurchase): Promise<ProgramPurchase>;
+  createProgramPurchase(
+    purchase: InsertProgramPurchase
+  ): Promise<ProgramPurchase>;
   getUserPurchases(userId: string): Promise<ProgramPurchase[]>;
   hasProgramAccess(userId: string, programId: string): Promise<boolean>;
-  
+
   // Progress Tracking
   createProgressEntry(entry: InsertProgressTracking): Promise<ProgressTracking>;
-  getProgressEntries(userId: string, programId: string): Promise<ProgressTracking[]>;
-  updateProgressEntry(id: string, updates: Partial<ProgressTracking>): Promise<ProgressTracking | undefined>;
-  
+  getProgressEntries(
+    userId: string,
+    programId: string
+  ): Promise<ProgressTracking[]>;
+  updateProgressEntry(
+    id: string,
+    updates: Partial<ProgressTracking>
+  ): Promise<ProgressTracking | undefined>;
+
   // Knowledge Articles
-  createKnowledgeArticle(article: InsertKnowledgeArticle): Promise<KnowledgeArticle>;
+  createKnowledgeArticle(
+    article: InsertKnowledgeArticle
+  ): Promise<KnowledgeArticle>;
   getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]>;
-  
+
   // Exercises
   createExercise(exercise: InsertExercise): Promise<Exercise>;
   getExercises(): Promise<Exercise[]>;
   getExercise(id: string): Promise<Exercise | undefined>;
-  
+
   // Weekly Workouts
   createWeeklyWorkout(workout: InsertWeeklyWorkout): Promise<WeeklyWorkout>;
-  
+
   // Reflection Notes
   createReflectionNote(note: InsertReflectionNote): Promise<ReflectionNote>;
-  getReflectionNote(userId: string, programId: string): Promise<ReflectionNote | undefined>;
-  updateReflectionNote(userId: string, programId: string, noteText: string): Promise<ReflectionNote>;
-  
+  getReflectionNote(
+    userId: string,
+    programId: string
+  ): Promise<ReflectionNote | undefined>;
+  updateReflectionNote(
+    userId: string,
+    programId: string,
+    noteText: string
+  ): Promise<ReflectionNote>;
+
   // Assets
   assetDisplayNames?: Map<string, string>;
-  getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
-  getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
+  getWeeklyWorkouts(
+    programId: string,
+    week: number
+  ): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
+  getAllWeeklyWorkouts(
+    programId: string
+  ): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -126,7 +207,7 @@ export class MemStorage implements IStorage {
     this.weeklyWorkouts = new Map();
     this.reflectionNotes = new Map();
     this.assetDisplayNames = new Map();
-    
+
     this.initializeData();
   }
 
@@ -147,7 +228,9 @@ export class MemStorage implements IStorage {
       disclaimerAccepted: true,
       disclaimerAcceptedAt: new Date(),
       validFrom: new Date(),
-      validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      validUntil: new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      ),
       hasWhatsAppSupport: false,
       whatsAppSupportDuration: null,
       whatsAppSupportExpiryDate: null,
@@ -171,7 +254,9 @@ export class MemStorage implements IStorage {
       disclaimerAccepted: false,
       disclaimerAcceptedAt: null,
       validFrom: new Date(),
-      validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      validUntil: new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      ),
       hasWhatsAppSupport: false,
       whatsAppSupportDuration: null,
       whatsAppSupportExpiryDate: null,
@@ -186,7 +271,8 @@ export class MemStorage implements IStorage {
     const healYourCore: Program = {
       id: healYourCoreId,
       name: "Your Postpartum Strength Recovery Program",
-      description: "A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.",
+      description:
+        "A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.",
       level: "Postnatal",
       duration: "6 Weeks",
       equipment: "Minimal Equipment",
@@ -198,7 +284,6 @@ export class MemStorage implements IStorage {
     };
     this.programs.set(healYourCoreId, healYourCore);
 
-
     // Give test user access to Heal Your Core
     const healYourCorePurchase: ProgramPurchase = {
       id: randomUUID(),
@@ -209,7 +294,6 @@ export class MemStorage implements IStorage {
       status: "active",
     };
     this.programPurchases.set(healYourCorePurchase.id, healYourCorePurchase);
-
 
     // Create terms
     const termsId = randomUUID();
@@ -249,20 +333,23 @@ export class MemStorage implements IStorage {
       {
         id: randomUUID(),
         name: "Deep Core Breathing",
-        description: "Foundation breathing exercise to reconnect with your core",
+        description:
+          "Foundation breathing exercise to reconnect with your core",
         videoUrl: "https://www.youtube.com/embed/example-breathing",
         duration: "2 minutes",
-        instructions: "Lie on your back with knees bent. Place one hand on chest, one on belly. Breathe deeply into your belly.",
+        instructions:
+          "Lie on your back with knees bent. Place one hand on chest, one on belly. Breathe deeply into your belly.",
         category: "Breathing",
         difficulty: "beginner",
       },
       {
-        id: randomUUID(), 
+        id: randomUUID(),
         name: "Pelvic Tilts",
         description: "Gentle movement to activate deep abdominal muscles",
         videoUrl: "https://www.youtube.com/embed/example-pelvic-tilts",
         duration: "10 reps",
-        instructions: "Lie on back, knees bent. Gently tilt pelvis to flatten lower back against floor.",
+        instructions:
+          "Lie on back, knees bent. Gently tilt pelvis to flatten lower back against floor.",
         category: "Core",
         difficulty: "beginner",
       },
@@ -270,9 +357,10 @@ export class MemStorage implements IStorage {
         id: randomUUID(),
         name: "Modified Plank",
         description: "Adapted plank to rebuild core strength safely",
-        videoUrl: "https://www.youtube.com/embed/example-modified-plank", 
+        videoUrl: "https://www.youtube.com/embed/example-modified-plank",
         duration: "15-30 seconds",
-        instructions: "Start on knees and forearms. Hold straight line from knees to head.",
+        instructions:
+          "Start on knees and forearms. Hold straight line from knees to head.",
         category: "Core",
         difficulty: "beginner",
       },
@@ -281,8 +369,9 @@ export class MemStorage implements IStorage {
         name: "Wall Push-ups",
         description: "Upper body strengthening with core engagement",
         videoUrl: "https://www.youtube.com/embed/example-wall-pushups",
-        duration: "8-12 reps", 
-        instructions: "Stand arm's length from wall. Push against wall, engaging core throughout.",
+        duration: "8-12 reps",
+        instructions:
+          "Stand arm's length from wall. Push against wall, engaging core throughout.",
         category: "Strength",
         difficulty: "beginner",
       },
@@ -292,13 +381,14 @@ export class MemStorage implements IStorage {
         description: "Core stability exercise for balance and strength",
         videoUrl: "https://www.youtube.com/embed/example-bird-dog",
         duration: "5 reps each side",
-        instructions: "On hands and knees, extend opposite arm and leg. Hold briefly, return to start.",
+        instructions:
+          "On hands and knees, extend opposite arm and leg. Hold briefly, return to start.",
         category: "Core",
         difficulty: "intermediate",
       },
     ];
 
-    exercises.forEach(exercise => {
+    exercises.forEach((exercise) => {
       this.exercises.set(exercise.id, exercise as Exercise);
     });
 
@@ -308,16 +398,18 @@ export class MemStorage implements IStorage {
         id: randomUUID(),
         programId: healYourCoreId,
         title: "Understanding Your Core",
-        content: "Your core is more than just your abs. It includes your diaphragm, pelvic floor, deep abdominal muscles, and back muscles working together to support your spine and pelvis. After pregnancy, these muscles need time and proper exercises to recover their function.",
+        content:
+          "Your core is more than just your abs. It includes your diaphragm, pelvic floor, deep abdominal muscles, and back muscles working together to support your spine and pelvis. After pregnancy, these muscles need time and proper exercises to recover their function.",
         category: "Core-Understanding",
         videoUrl: "https://www.youtube.com/embed/example-core-anatomy",
         orderIndex: 1,
       },
       {
         id: randomUUID(),
-        programId: healYourCoreId, 
+        programId: healYourCoreId,
         title: "Diastasis Recti: What You Need to Know",
-        content: "Diastasis recti is the separation of the rectus abdominis muscles that commonly occurs during pregnancy. Learn how to check for it, understand its impact, and discover safe exercises to help heal this condition naturally.",
+        content:
+          "Diastasis recti is the separation of the rectus abdominis muscles that commonly occurs during pregnancy. Learn how to check for it, understand its impact, and discover safe exercises to help heal this condition naturally.",
         category: "Diastasis-Recti",
         videoUrl: "https://www.youtube.com/embed/example-diastasis-check",
         orderIndex: 2,
@@ -326,7 +418,8 @@ export class MemStorage implements IStorage {
         id: randomUUID(),
         programId: healYourCoreId,
         title: "The Role of Nutrition in Recovery",
-        content: "Proper nutrition supports your body's healing process and gives you energy for your workouts. Focus on whole foods, adequate protein, healthy fats, and staying hydrated to optimize your recovery journey.",
+        content:
+          "Proper nutrition supports your body's healing process and gives you energy for your workouts. Focus on whole foods, adequate protein, healthy fats, and staying hydrated to optimize your recovery journey.",
         category: "Nutrition",
         videoUrl: "https://www.youtube.com/embed/example-nutrition-tips",
         orderIndex: 3,
@@ -335,23 +428,26 @@ export class MemStorage implements IStorage {
         id: randomUUID(),
         programId: healYourCoreId,
         title: "Breathing Techniques for Core Recovery",
-        content: "Proper breathing is fundamental to core recovery. Learn the 360-degree breathing technique that helps activate your deep core muscles and supports your healing process.",
+        content:
+          "Proper breathing is fundamental to core recovery. Learn the 360-degree breathing technique that helps activate your deep core muscles and supports your healing process.",
         category: "Breathing",
         videoUrl: "https://www.youtube.com/embed/example-breathing-techniques",
         orderIndex: 4,
       },
     ];
 
-    knowledgeArticles.forEach(article => {
+    knowledgeArticles.forEach((article) => {
       this.knowledgeArticles.set(article.id, article as KnowledgeArticle);
     });
 
     // Create weekly workouts for Heal Your Core (6 weeks)
-    const healYourCoreExercises = exercises.filter(ex => ex.category === 'Breathing' || ex.category === 'Core');
-    
+    const healYourCoreExercises = exercises.filter(
+      (ex) => ex.category === "Breathing" || ex.category === "Core"
+    );
+
     // Week 1 & 6: 4 workouts per week
-    [1, 6].forEach(week => {
-      [1, 2, 3, 4].forEach(day => {
+    [1, 6].forEach((week) => {
+      [1, 2, 3, 4].forEach((day) => {
         healYourCoreExercises.forEach((exercise, index) => {
           const weeklyWorkout: WeeklyWorkout = {
             id: randomUUID(),
@@ -367,9 +463,10 @@ export class MemStorage implements IStorage {
       });
     });
 
-    // Weeks 2, 3, 4, 5: 3 workouts per week  
-    [2, 3, 4, 5].forEach(week => {
-      [1, 3, 5].forEach(day => { // Monday, Wednesday, Friday
+    // Weeks 2, 3, 4, 5: 3 workouts per week
+    [2, 3, 4, 5].forEach((week) => {
+      [1, 3, 5].forEach((day) => {
+        // Monday, Wednesday, Friday
         healYourCoreExercises.forEach((exercise, index) => {
           const weeklyWorkout: WeeklyWorkout = {
             id: randomUUID(),
@@ -391,7 +488,7 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+    return Array.from(this.users.values()).find((user) => user.email === email);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -407,7 +504,9 @@ export class MemStorage implements IStorage {
       disclaimerAccepted: insertUser.disclaimerAccepted ?? false,
       disclaimerAcceptedAt: insertUser.disclaimerAcceptedAt ?? null,
       validFrom: insertUser.validFrom ?? new Date(),
-      validUntil: insertUser.validUntil ?? new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      validUntil:
+        insertUser.validUntil ??
+        new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       hasWhatsAppSupport: insertUser.hasWhatsAppSupport ?? false,
       whatsAppSupportDuration: insertUser.whatsAppSupportDuration ?? null,
       whatsAppSupportExpiryDate: insertUser.whatsAppSupportExpiryDate ?? null,
@@ -417,15 +516,21 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+  async updateUser(
+    id: string,
+    updates: Partial<User>
+  ): Promise<User | undefined> {
     const user = this.users.get(id);
     if (!user) return undefined;
-    
+
     const updatedUser: User = {
       ...user,
       ...updates,
-      phone: updates.phone !== undefined ? (updates.phone || null) : user.phone,
-      profilePictureUrl: updates.profilePictureUrl !== undefined ? (updates.profilePictureUrl || null) : user.profilePictureUrl,
+      phone: updates.phone !== undefined ? updates.phone || null : user.phone,
+      profilePictureUrl:
+        updates.profilePictureUrl !== undefined
+          ? updates.profilePictureUrl || null
+          : user.profilePictureUrl,
     };
     this.users.set(id, updatedUser);
     return updatedUser;
@@ -451,26 +556,34 @@ export class MemStorage implements IStorage {
     return program;
   }
 
-  async updateProgram(id: string, updates: Partial<Program>): Promise<Program | undefined> {
+  async updateProgram(
+    id: string,
+    updates: Partial<Program>
+  ): Promise<Program | undefined> {
     const program = this.programs.get(id);
     if (!program) return undefined;
-    
+
     const updatedProgram = { ...program, ...updates };
     this.programs.set(id, updatedProgram);
     return updatedProgram;
   }
 
-  async getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]> {
-    const memberPrograms = Array.from(this.memberPrograms.values())
-      .filter(mp => mp.userId === userId);
-    
-    return memberPrograms.map(mp => ({
+  async getMemberPrograms(
+    userId: string
+  ): Promise<(MemberProgram & { program: Program })[]> {
+    const memberPrograms = Array.from(this.memberPrograms.values()).filter(
+      (mp) => mp.userId === userId
+    );
+
+    return memberPrograms.map((mp) => ({
       ...mp,
-      program: this.programs.get(mp.programId)!
+      program: this.programs.get(mp.programId)!,
     }));
   }
 
-  async createMemberProgram(insertMemberProgram: InsertMemberProgram): Promise<MemberProgram> {
+  async createMemberProgram(
+    insertMemberProgram: InsertMemberProgram
+  ): Promise<MemberProgram> {
     const id = randomUUID();
     const memberProgram: MemberProgram = {
       ...insertMemberProgram,
@@ -488,8 +601,9 @@ export class MemStorage implements IStorage {
   }
 
   async getWorkoutsByProgram(programId: string): Promise<Workout[]> {
-    return Array.from(this.workouts.values())
-      .filter(w => w.programId === programId);
+    return Array.from(this.workouts.values()).filter(
+      (w) => w.programId === programId
+    );
   }
 
   async getWorkout(id: string): Promise<Workout | undefined> {
@@ -504,11 +618,14 @@ export class MemStorage implements IStorage {
   }
 
   async getWorkoutCompletions(userId: string): Promise<WorkoutCompletion[]> {
-    return Array.from(this.workoutCompletions.values())
-      .filter(wc => wc.userId === userId);
+    return Array.from(this.workoutCompletions.values()).filter(
+      (wc) => wc.userId === userId
+    );
   }
 
-  async createWorkoutCompletion(insertCompletion: InsertWorkoutCompletion): Promise<WorkoutCompletion> {
+  async createWorkoutCompletion(
+    insertCompletion: InsertWorkoutCompletion
+  ): Promise<WorkoutCompletion> {
     const id = randomUUID();
     const completion: WorkoutCompletion = {
       ...insertCompletion,
@@ -524,17 +641,22 @@ export class MemStorage implements IStorage {
     return completion;
   }
 
-  async getSavedWorkouts(userId: string): Promise<(SavedWorkout & { workout: Workout })[]> {
-    const savedWorkouts = Array.from(this.savedWorkouts.values())
-      .filter(sw => sw.userId === userId);
-    
-    return savedWorkouts.map(sw => ({
+  async getSavedWorkouts(
+    userId: string
+  ): Promise<(SavedWorkout & { workout: Workout })[]> {
+    const savedWorkouts = Array.from(this.savedWorkouts.values()).filter(
+      (sw) => sw.userId === userId
+    );
+
+    return savedWorkouts.map((sw) => ({
       ...sw,
-      workout: this.workouts.get(sw.workoutId)!
+      workout: this.workouts.get(sw.workoutId)!,
     }));
   }
 
-  async createSavedWorkout(insertSavedWorkout: InsertSavedWorkout): Promise<SavedWorkout> {
+  async createSavedWorkout(
+    insertSavedWorkout: InsertSavedWorkout
+  ): Promise<SavedWorkout> {
     const id = randomUUID();
     const savedWorkout: SavedWorkout = {
       ...insertSavedWorkout,
@@ -545,10 +667,14 @@ export class MemStorage implements IStorage {
     return savedWorkout;
   }
 
-  async deleteSavedWorkout(userId: string, workoutId: string): Promise<boolean> {
-    const savedWorkout = Array.from(this.savedWorkouts.values())
-      .find(sw => sw.userId === userId && sw.workoutId === workoutId);
-    
+  async deleteSavedWorkout(
+    userId: string,
+    workoutId: string
+  ): Promise<boolean> {
+    const savedWorkout = Array.from(this.savedWorkouts.values()).find(
+      (sw) => sw.userId === userId && sw.workoutId === workoutId
+    );
+
     if (savedWorkout) {
       this.savedWorkouts.delete(savedWorkout.id);
       return true;
@@ -556,21 +682,27 @@ export class MemStorage implements IStorage {
     return false;
   }
 
-  async getCommunityPosts(channel?: string): Promise<(CommunityPost & { user: Pick<User, 'firstName' | 'lastName'> })[]> {
+  async getCommunityPosts(
+    channel?: string
+  ): Promise<
+    (CommunityPost & { user: Pick<User, "firstName" | "lastName"> })[]
+  > {
     const posts = Array.from(this.communityPosts.values())
-      .filter(post => !channel || post.channel === channel)
+      .filter((post) => !channel || post.channel === channel)
       .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
-    
-    return posts.map(post => ({
+
+    return posts.map((post) => ({
       ...post,
       user: {
-        firstName: this.users.get(post.userId)?.firstName || 'Unknown',
-        lastName: this.users.get(post.userId)?.lastName || 'User'
-      }
+        firstName: this.users.get(post.userId)?.firstName || "Unknown",
+        lastName: this.users.get(post.userId)?.lastName || "User",
+      },
     }));
   }
 
-  async createCommunityPost(insertPost: InsertCommunityPost): Promise<CommunityPost> {
+  async createCommunityPost(
+    insertPost: InsertCommunityPost
+  ): Promise<CommunityPost> {
     const id = randomUUID();
     const post: CommunityPost = {
       ...insertPost,
@@ -585,11 +717,13 @@ export class MemStorage implements IStorage {
 
   async getUserNotifications(userId: string): Promise<Notification[]> {
     return Array.from(this.notifications.values())
-      .filter(n => n.userId === userId)
+      .filter((n) => n.userId === userId)
       .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
   }
 
-  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+  async createNotification(
+    insertNotification: InsertNotification
+  ): Promise<Notification> {
     const id = randomUUID();
     const notification: Notification = {
       ...insertNotification,
@@ -611,7 +745,7 @@ export class MemStorage implements IStorage {
   }
 
   async getActiveTerms(): Promise<Terms | undefined> {
-    return Array.from(this.terms.values()).find(t => t.isActive);
+    return Array.from(this.terms.values()).find((t) => t.isActive);
   }
 
   async createTerms(insertTerms: InsertTerms): Promise<Terms> {
@@ -630,14 +764,19 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values());
   }
 
-  async getUserStats(): Promise<{ totalMembers: number; activeMembers: number; expiringSoon: number; }> {
+  async getUserStats(): Promise<{
+    totalMembers: number;
+    activeMembers: number;
+    expiringSoon: number;
+  }> {
     const users = Array.from(this.users.values());
     const memberPrograms = Array.from(this.memberPrograms.values());
-    
-    const totalMembers = users.filter(u => !u.isAdmin).length;
-    const activeMembers = memberPrograms.filter(mp => mp.isActive).length;
-    const expiringSoon = memberPrograms.filter(mp => {
-      const daysUntilExpiry = (mp.expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+
+    const totalMembers = users.filter((u) => !u.isAdmin).length;
+    const activeMembers = memberPrograms.filter((mp) => mp.isActive).length;
+    const expiringSoon = memberPrograms.filter((mp) => {
+      const daysUntilExpiry =
+        (mp.expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
       return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
     }).length;
 
@@ -645,7 +784,9 @@ export class MemStorage implements IStorage {
   }
 
   // Program Purchases methods
-  async createProgramPurchase(insertPurchase: InsertProgramPurchase): Promise<ProgramPurchase> {
+  async createProgramPurchase(
+    insertPurchase: InsertProgramPurchase
+  ): Promise<ProgramPurchase> {
     const id = randomUUID();
     const purchase: ProgramPurchase = {
       ...insertPurchase,
@@ -658,18 +799,25 @@ export class MemStorage implements IStorage {
   }
 
   async getUserPurchases(userId: string): Promise<ProgramPurchase[]> {
-    return Array.from(this.programPurchases.values())
-      .filter(purchase => purchase.userId === userId);
+    return Array.from(this.programPurchases.values()).filter(
+      (purchase) => purchase.userId === userId
+    );
   }
 
   async hasProgramAccess(userId: string, programId: string): Promise<boolean> {
-    const purchase = Array.from(this.programPurchases.values())
-      .find(p => p.userId === userId && p.programId === programId && p.status === "active");
+    const purchase = Array.from(this.programPurchases.values()).find(
+      (p) =>
+        p.userId === userId &&
+        p.programId === programId &&
+        p.status === "active"
+    );
     return !!purchase;
   }
 
   // Progress Tracking methods
-  async createProgressEntry(insertEntry: InsertProgressTracking): Promise<ProgressTracking> {
+  async createProgressEntry(
+    insertEntry: InsertProgressTracking
+  ): Promise<ProgressTracking> {
     const id = randomUUID();
     const entry: ProgressTracking = {
       ...insertEntry,
@@ -686,23 +834,33 @@ export class MemStorage implements IStorage {
     return entry;
   }
 
-  async getProgressEntries(userId: string, programId: string): Promise<ProgressTracking[]> {
+  async getProgressEntries(
+    userId: string,
+    programId: string
+  ): Promise<ProgressTracking[]> {
     return Array.from(this.progressTracking.values())
-      .filter(entry => entry.userId === userId && entry.programId === programId)
+      .filter(
+        (entry) => entry.userId === userId && entry.programId === programId
+      )
       .sort((a, b) => a.week - b.week);
   }
 
-  async updateProgressEntry(id: string, updates: Partial<ProgressTracking>): Promise<ProgressTracking | undefined> {
+  async updateProgressEntry(
+    id: string,
+    updates: Partial<ProgressTracking>
+  ): Promise<ProgressTracking | undefined> {
     const entry = this.progressTracking.get(id);
     if (!entry) return undefined;
-    
+
     const updatedEntry = { ...entry, ...updates };
     this.progressTracking.set(id, updatedEntry);
     return updatedEntry;
   }
 
   // Knowledge Articles methods
-  async createKnowledgeArticle(insertArticle: InsertKnowledgeArticle): Promise<KnowledgeArticle> {
+  async createKnowledgeArticle(
+    insertArticle: InsertKnowledgeArticle
+  ): Promise<KnowledgeArticle> {
     const id = randomUUID();
     const article: KnowledgeArticle = {
       ...insertArticle,
@@ -717,7 +875,7 @@ export class MemStorage implements IStorage {
 
   async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> {
     return Array.from(this.knowledgeArticles.values())
-      .filter(article => article.programId === programId)
+      .filter((article) => article.programId === programId)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
   }
 
@@ -744,7 +902,9 @@ export class MemStorage implements IStorage {
   }
 
   // Weekly Workout methods
-  async createWeeklyWorkout(insertWorkout: InsertWeeklyWorkout): Promise<WeeklyWorkout> {
+  async createWeeklyWorkout(
+    insertWorkout: InsertWeeklyWorkout
+  ): Promise<WeeklyWorkout> {
     const id = randomUUID();
     const workout: WeeklyWorkout = {
       ...insertWorkout,
@@ -756,30 +916,46 @@ export class MemStorage implements IStorage {
     return workout;
   }
 
-  async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
+  async getWeeklyWorkouts(
+    programId: string,
+    week: number
+  ): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
     const weeklyWorkouts = Array.from(this.weeklyWorkouts.values())
-      .filter(workout => workout.programId === programId && workout.week === week)
-      .sort((a, b) => a.day - b.day || (a.orderIndex || 0) - (b.orderIndex || 0));
-    
-    return weeklyWorkouts.map(workout => ({
+      .filter(
+        (workout) => workout.programId === programId && workout.week === week
+      )
+      .sort(
+        (a, b) => a.day - b.day || (a.orderIndex || 0) - (b.orderIndex || 0)
+      );
+
+    return weeklyWorkouts.map((workout) => ({
       ...workout,
-      exercise: this.exercises.get(workout.exerciseId)!
+      exercise: this.exercises.get(workout.exerciseId)!,
     }));
   }
 
-  async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
+  async getAllWeeklyWorkouts(
+    programId: string
+  ): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
     const weeklyWorkouts = Array.from(this.weeklyWorkouts.values())
-      .filter(workout => workout.programId === programId)
-      .sort((a, b) => a.week - b.week || a.day - b.day || (a.orderIndex || 0) - (b.orderIndex || 0));
-    
-    return weeklyWorkouts.map(workout => ({
+      .filter((workout) => workout.programId === programId)
+      .sort(
+        (a, b) =>
+          a.week - b.week ||
+          a.day - b.day ||
+          (a.orderIndex || 0) - (b.orderIndex || 0)
+      );
+
+    return weeklyWorkouts.map((workout) => ({
       ...workout,
-      exercise: this.exercises.get(workout.exerciseId)!
+      exercise: this.exercises.get(workout.exerciseId)!,
     }));
   }
 
   // Reflection Notes
-  async createReflectionNote(note: InsertReflectionNote): Promise<ReflectionNote> {
+  async createReflectionNote(
+    note: InsertReflectionNote
+  ): Promise<ReflectionNote> {
     const id = randomUUID();
     const newNote: ReflectionNote = {
       ...note,
@@ -791,14 +967,22 @@ export class MemStorage implements IStorage {
     return newNote;
   }
 
-  async getReflectionNote(userId: string, programId: string): Promise<ReflectionNote | undefined> {
-    return Array.from(this.reflectionNotes.values())
-      .find(note => note.userId === userId && note.programId === programId);
+  async getReflectionNote(
+    userId: string,
+    programId: string
+  ): Promise<ReflectionNote | undefined> {
+    return Array.from(this.reflectionNotes.values()).find(
+      (note) => note.userId === userId && note.programId === programId
+    );
   }
 
-  async updateReflectionNote(userId: string, programId: string, noteText: string): Promise<ReflectionNote> {
+  async updateReflectionNote(
+    userId: string,
+    programId: string,
+    noteText: string
+  ): Promise<ReflectionNote> {
     const existingNote = await this.getReflectionNote(userId, programId);
-    
+
     if (existingNote) {
       existingNote.noteText = noteText;
       existingNote.updatedAt = new Date();
@@ -820,11 +1004,14 @@ class DatabaseStorage implements IStorage {
   private db;
   private static instance: DatabaseStorage;
   public assetDisplayNames: Map<string, string> = new Map();
-  
+
   // Performance caches for frequently accessed data
   private programsCache: Program[] | null = null;
   private programsCacheTime: number = 0;
-  private memberProgramsCache: Map<string, (MemberProgram & { program: Program })[]> = new Map();
+  private memberProgramsCache: Map<
+    string,
+    (MemberProgram & { program: Program })[]
+  > = new Map();
   private cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
@@ -845,12 +1032,20 @@ class DatabaseStorage implements IStorage {
 
   // Users
   async getUser(id: string): Promise<User | undefined> {
-    const result = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    const result = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
     return result[0];
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
+    const result = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
     return result[0];
   }
 
@@ -859,7 +1054,10 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+  async updateUser(
+    id: string,
+    updates: Partial<User>
+  ): Promise<User | undefined> {
     const result = await this.db
       .update(users)
       .set(updates)
@@ -881,42 +1079,63 @@ class DatabaseStorage implements IStorage {
     const allUsers = await this.getAllUsers();
     const now = new Date();
     const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
+
     return {
       totalMembers: allUsers.length,
-      activeMembers: allUsers.filter(u => !u.isAdmin && u.validUntil && u.validUntil > now).length,
-      expiringSoon: allUsers.filter(u => !u.isAdmin && u.validUntil && u.validUntil > now && u.validUntil <= oneWeekFromNow).length,
+      activeMembers: allUsers.filter(
+        (u) => !u.isAdmin && u.validUntil && u.validUntil > now
+      ).length,
+      expiringSoon: allUsers.filter(
+        (u) =>
+          !u.isAdmin &&
+          u.validUntil &&
+          u.validUntil > now &&
+          u.validUntil <= oneWeekFromNow
+      ).length,
     };
   }
 
   // Programs
   async getPrograms(): Promise<Program[]> {
     const now = Date.now();
-    
+
     // Return cached data if still valid
-    if (this.programsCache && (now - this.programsCacheTime) < this.cacheTimeout) {
+    if (
+      this.programsCache &&
+      now - this.programsCacheTime < this.cacheTimeout
+    ) {
       return this.programsCache;
     }
-    
+
     // Fetch fresh data and cache it
     const result = await this.db.select().from(programs);
     this.programsCache = result;
     this.programsCacheTime = now;
-    
+
     return result;
   }
 
   async getProgram(id: string): Promise<Program | undefined> {
-    const result = await this.db.select().from(programs).where(eq(programs.id, id)).limit(1);
+    const result = await this.db
+      .select()
+      .from(programs)
+      .where(eq(programs.id, id))
+      .limit(1);
     return result[0];
   }
 
   async createProgram(insertProgram: InsertProgram): Promise<Program> {
-    const result = await this.db.insert(programs).values(insertProgram).returning();
+    const result = await this.db
+      .insert(programs)
+      .values(insertProgram)
+      .returning();
     return result[0];
   }
 
-  async updateProgram(id: string, updates: Partial<Program>): Promise<Program | undefined> {
+  async updateProgram(
+    id: string,
+    updates: Partial<Program>
+  ): Promise<Program | undefined> {
     const result = await this.db
       .update(programs)
       .set(updates)
@@ -926,85 +1145,144 @@ class DatabaseStorage implements IStorage {
   }
 
   // Member Programs
-  async getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]> {
+  async getMemberPrograms(
+    userId: string
+  ): Promise<(MemberProgram & { program: Program })[]> {
     // Check cache first
     const cached = this.memberProgramsCache.get(userId);
     if (cached) {
       return cached;
     }
-    
+
     const result = await this.db
       .select()
       .from(memberPrograms)
       .innerJoin(programs, eq(memberPrograms.programId, programs.id))
       .where(eq(memberPrograms.userId, userId));
-    
-    const mapped = result.map(row => ({
+
+    const mapped = result.map((row) => ({
       ...row.member_programs,
-      program: row.programs
+      program: row.programs,
     }));
-    
+
     // Cache the result for this user
     this.memberProgramsCache.set(userId, mapped);
-    
+
     return mapped;
   }
 
-  async createMemberProgram(memberProgram: InsertMemberProgram): Promise<MemberProgram> {
-    const result = await this.db.insert(memberPrograms).values(memberProgram).returning();
+  async createMemberProgram(
+    memberProgram: InsertMemberProgram
+  ): Promise<MemberProgram> {
+    const result = await this.db
+      .insert(memberPrograms)
+      .values(memberProgram)
+      .returning();
     // Clear cache for this user
     this.memberProgramsCache.delete(memberProgram.userId);
     return result[0];
   }
 
   async deleteMemberProgram(enrollmentId: string): Promise<void> {
-    await this.db.delete(memberPrograms).where(eq(memberPrograms.id, enrollmentId));
+    await this.db
+      .delete(memberPrograms)
+      .where(eq(memberPrograms.id, enrollmentId));
     // Clear the cache for all users since we don't know which user this enrollment belongs to
     this.memberProgramsCache.clear();
   }
 
   // Placeholder implementations for other methods - can be implemented as needed
-  async getWorkoutsByProgram(programId: string): Promise<Workout[]> { return []; }
-  async getWorkout(id: string): Promise<Workout | undefined> { return undefined; }
-  async createWorkout(workout: InsertWorkout): Promise<Workout> { 
+  async getWorkoutsByProgram(programId: string): Promise<Workout[]> {
+    return [];
+  }
+  async getWorkout(id: string): Promise<Workout | undefined> {
+    return undefined;
+  }
+  async createWorkout(workout: InsertWorkout): Promise<Workout> {
     const result = await this.db.insert(workouts).values(workout).returning();
     return result[0];
   }
-  async getWorkoutCompletions(userId: string): Promise<WorkoutCompletion[]> { return []; }
-  async createWorkoutCompletion(completion: InsertWorkoutCompletion): Promise<WorkoutCompletion> {
-    const result = await this.db.insert(workoutCompletions).values(completion).returning();
+  async getWorkoutCompletions(userId: string): Promise<WorkoutCompletion[]> {
+    return [];
+  }
+  async createWorkoutCompletion(
+    completion: InsertWorkoutCompletion
+  ): Promise<WorkoutCompletion> {
+    const result = await this.db
+      .insert(workoutCompletions)
+      .values(completion)
+      .returning();
     return result[0];
   }
-  async getSavedWorkouts(userId: string): Promise<(SavedWorkout & { workout: Workout })[]> { return []; }
-  async createSavedWorkout(savedWorkout: InsertSavedWorkout): Promise<SavedWorkout> {
-    const result = await this.db.insert(savedWorkouts).values(savedWorkout).returning();
+  async getSavedWorkouts(
+    userId: string
+  ): Promise<(SavedWorkout & { workout: Workout })[]> {
+    return [];
+  }
+  async createSavedWorkout(
+    savedWorkout: InsertSavedWorkout
+  ): Promise<SavedWorkout> {
+    const result = await this.db
+      .insert(savedWorkouts)
+      .values(savedWorkout)
+      .returning();
     return result[0];
   }
-  async deleteSavedWorkout(userId: string, workoutId: string): Promise<boolean> { return false; }
-  async getCommunityPosts(channel?: string): Promise<(CommunityPost & { user: Pick<User, 'firstName' | 'lastName'> })[]> { return []; }
+  async deleteSavedWorkout(
+    userId: string,
+    workoutId: string
+  ): Promise<boolean> {
+    return false;
+  }
+  async getCommunityPosts(
+    channel?: string
+  ): Promise<
+    (CommunityPost & { user: Pick<User, "firstName" | "lastName"> })[]
+  > {
+    return [];
+  }
   async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
-    const result = await this.db.insert(communityPosts).values(post).returning();
+    const result = await this.db
+      .insert(communityPosts)
+      .values(post)
+      .returning();
     return result[0];
   }
-  async getUserNotifications(userId: string): Promise<Notification[]> { return []; }
-  async createNotification(notification: InsertNotification): Promise<Notification> {
-    const result = await this.db.insert(notifications).values(notification).returning();
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    return [];
+  }
+  async createNotification(
+    notification: InsertNotification
+  ): Promise<Notification> {
+    const result = await this.db
+      .insert(notifications)
+      .values(notification)
+      .returning();
     return result[0];
   }
-  async markNotificationRead(id: string): Promise<boolean> { return false; }
-  async getActiveTerms(): Promise<Terms | undefined> { return undefined; }
+  async markNotificationRead(id: string): Promise<boolean> {
+    return false;
+  }
+  async getActiveTerms(): Promise<Terms | undefined> {
+    return undefined;
+  }
   async createTerms(termsData: InsertTerms): Promise<Terms> {
     const result = await this.db.insert(terms).values(termsData).returning();
     return result[0];
   }
-  async createProgramPurchase(purchase: InsertProgramPurchase): Promise<ProgramPurchase> {
-    const result = await this.db.insert(programPurchases).values(purchase).returning();
-    
+  async createProgramPurchase(
+    purchase: InsertProgramPurchase
+  ): Promise<ProgramPurchase> {
+    const result = await this.db
+      .insert(programPurchases)
+      .values(purchase)
+      .returning();
+
     // Also create member_programs entry so the program appears in user's library
     // Set expiry to 1 year from now (can be adjusted based on business logic)
     const expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    
+
     await this.db.insert(memberPrograms).values({
       userId: purchase.userId,
       programId: purchase.programId,
@@ -1013,74 +1291,140 @@ class DatabaseStorage implements IStorage {
       isActive: true,
       progress: 0,
     });
-    
+
     // Clear the member programs cache for this user
     this.memberProgramsCache.delete(purchase.userId);
-    
+
     return result[0];
   }
-  async getUserPurchases(userId: string): Promise<ProgramPurchase[]> { return []; }
+  async getUserPurchases(userId: string): Promise<ProgramPurchase[]> {
+    return [];
+  }
   async hasProgramAccess(userId: string, programId: string): Promise<boolean> {
     const purchases = await this.db
       .select()
       .from(programPurchases)
-      .where(and(
-        eq(programPurchases.userId, userId),
-        eq(programPurchases.programId, programId),
-        eq(programPurchases.status, "active")
-      ));
+      .where(
+        and(
+          eq(programPurchases.userId, userId),
+          eq(programPurchases.programId, programId),
+          eq(programPurchases.status, "active")
+        )
+      );
     return purchases.length > 0;
   }
-  async createProgressEntry(entry: InsertProgressTracking): Promise<ProgressTracking> {
-    const result = await this.db.insert(progressTracking).values(entry).returning();
+  async createProgressEntry(
+    entry: InsertProgressTracking
+  ): Promise<ProgressTracking> {
+    const result = await this.db
+      .insert(progressTracking)
+      .values(entry)
+      .returning();
     return result[0];
   }
-  async getProgressEntries(userId: string, programId: string): Promise<ProgressTracking[]> { return []; }
-  async updateProgressEntry(id: string, updates: Partial<ProgressTracking>): Promise<ProgressTracking | undefined> { return undefined; }
-  async createKnowledgeArticle(article: InsertKnowledgeArticle): Promise<KnowledgeArticle> {
-    const result = await this.db.insert(knowledgeArticles).values(article).returning();
+  async getProgressEntries(
+    userId: string,
+    programId: string
+  ): Promise<ProgressTracking[]> {
+    return [];
+  }
+  async updateProgressEntry(
+    id: string,
+    updates: Partial<ProgressTracking>
+  ): Promise<ProgressTracking | undefined> {
+    return undefined;
+  }
+  async createKnowledgeArticle(
+    article: InsertKnowledgeArticle
+  ): Promise<KnowledgeArticle> {
+    const result = await this.db
+      .insert(knowledgeArticles)
+      .values(article)
+      .returning();
     return result[0];
   }
-  async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> { return []; }
+  async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> {
+    return [];
+  }
   async createExercise(exercise: InsertExercise): Promise<Exercise> {
     const result = await this.db.insert(exercises).values(exercise).returning();
     return result[0];
   }
-  async getExercises(): Promise<Exercise[]> { return []; }
-  async getExercise(id: string): Promise<Exercise | undefined> { return undefined; }
-  async createWeeklyWorkout(workout: InsertWeeklyWorkout): Promise<WeeklyWorkout> {
-    const result = await this.db.insert(weeklyWorkouts).values(workout).returning();
+  async getExercises(): Promise<Exercise[]> {
+    return [];
+  }
+  async getExercise(id: string): Promise<Exercise | undefined> {
+    return undefined;
+  }
+  async createWeeklyWorkout(
+    workout: InsertWeeklyWorkout
+  ): Promise<WeeklyWorkout> {
+    const result = await this.db
+      .insert(weeklyWorkouts)
+      .values(workout)
+      .returning();
     return result[0];
   }
-  async getWeeklyWorkouts(programId: string, week: number): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
-  async getAllWeeklyWorkouts(programId: string): Promise<(WeeklyWorkout & { exercise: Exercise })[]> { return []; }
+  async getWeeklyWorkouts(
+    programId: string,
+    week: number
+  ): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
+    return [];
+  }
+  async getAllWeeklyWorkouts(
+    programId: string
+  ): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
+    return [];
+  }
 
   // Reflection Notes
-  async createReflectionNote(note: InsertReflectionNote): Promise<ReflectionNote> {
-    const result = await this.db.insert(reflectionNotes).values(note).returning();
+  async createReflectionNote(
+    note: InsertReflectionNote
+  ): Promise<ReflectionNote> {
+    const result = await this.db
+      .insert(reflectionNotes)
+      .values(note)
+      .returning();
     return result[0];
   }
 
-  async getReflectionNote(userId: string, programId: string): Promise<ReflectionNote | undefined> {
+  async getReflectionNote(
+    userId: string,
+    programId: string
+  ): Promise<ReflectionNote | undefined> {
     const result = await this.db
       .select()
       .from(reflectionNotes)
-      .where(and(eq(reflectionNotes.userId, userId), eq(reflectionNotes.programId, programId)))
+      .where(
+        and(
+          eq(reflectionNotes.userId, userId),
+          eq(reflectionNotes.programId, programId)
+        )
+      )
       .limit(1);
     return result[0];
   }
 
-  async updateReflectionNote(userId: string, programId: string, noteText: string): Promise<ReflectionNote> {
+  async updateReflectionNote(
+    userId: string,
+    programId: string,
+    noteText: string
+  ): Promise<ReflectionNote> {
     const existing = await this.getReflectionNote(userId, programId);
-    
+
     if (existing) {
       const result = await this.db
         .update(reflectionNotes)
-        .set({ 
-          noteText, 
-          updatedAt: new Date() 
+        .set({
+          noteText,
+          updatedAt: new Date(),
         })
-        .where(and(eq(reflectionNotes.userId, userId), eq(reflectionNotes.programId, programId)))
+        .where(
+          and(
+            eq(reflectionNotes.userId, userId),
+            eq(reflectionNotes.programId, programId)
+          )
+        )
         .returning();
       return result[0];
     } else {
