@@ -607,11 +607,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               {/* Fields list */}
               <div className="space-y-1.5 text-sm">
                 {profileCompleteness.requiredFields.map((field) => (
-                  <div key={field.field} className="flex items-center gap-2 text-gray-700">
+                  <div key={field.field} className="flex items-center gap-3 text-gray-700">
                     {field.completed ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-green-500 font-bold flex-shrink-0">✓</span>
                     ) : (
-                      <div className="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0" />
+                      <span className="text-gray-300 flex-shrink-0">−</span>
                     )}
                     <span className={field.completed ? 'line-through text-gray-400' : ''}>
                       {field.label}
@@ -625,11 +625,11 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                       <span className="text-xs text-gray-400 uppercase tracking-wide">Optional</span>
                     </div>
                     {profileCompleteness.optionalFields.map((field) => (
-                      <div key={field.field} className="flex items-center gap-2 text-gray-500">
+                      <div key={field.field} className="flex items-center gap-3 text-gray-500">
                         {field.completed ? (
-                          <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                          <span className="text-blue-500 font-bold flex-shrink-0">✓</span>
                         ) : (
-                          <div className="w-4 h-4 rounded-full border-2 border-gray-200 flex-shrink-0" />
+                          <span className="text-gray-200 flex-shrink-0">−</span>
                         )}
                         <span className={field.completed ? 'line-through text-gray-300' : ''}>
                           {field.label}
