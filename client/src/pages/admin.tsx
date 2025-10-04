@@ -36,6 +36,7 @@ export default function Admin() {
   const [resetPasswordData, setResetPasswordData] = useState<{userId: string, email: string, password: string} | null>(null);
   const [selectedMember, setSelectedMember] = useState<User | null>(null);
   const [memberViewMode, setMemberViewMode] = useState<'view' | 'edit'>('view');
+  const [selectedProgramForMember, setSelectedProgramForMember] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
@@ -567,7 +568,7 @@ export default function Admin() {
                 </DialogTitle>
               </DialogHeader>
               
-              {selectedMember && (
+              {selectedMember && memberViewMode === 'view' && (
                 <div className="space-y-6 pt-2">
                   {/* Profile Section */}
                   <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-200/50 shadow-sm">
@@ -798,15 +799,232 @@ export default function Admin() {
                     </div>
                   </div>
 
+              {/* EDIT MODE */}
+              {selectedMember && memberViewMode === 'edit' && (
+                <div className="space-y-6 pt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>First Name</Label>
+                      <Input 
+                        defaultValue={selectedMember.firstName}
+                        onChange={(e) => setSelectedMember({...selectedMember, firstName: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Last Name</Label>
+                      <Input 
+                        defaultValue={selectedMember.lastName}
+                        onChange={(e) => setSelectedMember({...selectedMember, lastName: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Email</Label>
+                    <Input 
+                      type="email"
+                      defaultValue={selectedMember.email}
+                      onChange={(e) => setSelectedMember({...selectedMember, email: e.target.value})}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Phone Number</Label>
+                    <Input 
+                      type="tel"
+                      defaultValue={selectedMember.phone || ''}
+                      onChange={(e) => setSelectedMember({...selectedMember, phone: e.target.value})}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Assign Program</Label>
+                    <Select 
+                      value={selectedProgramForMember}
+                      onValueChange={setSelectedProgramForMember}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select program to enroll" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Program</SelectItem>
+                        {programs.map((program) => (
+                          <SelectItem key={program.id} value={program.id}>
+                            {program.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Enroll user in an additional program
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <Checkbox 
+                      id="edit-whatsapp"
+                      defaultChecked={!!selectedMember.hasWhatsAppSupport}
+                      onCheckedChange={(checked) => 
+                        setSelectedMember({...selectedMember, hasWhatsAppSupport: !!checked})
+                      }
+                    />
+                    <div>
+                      <Label htmlFor="edit-whatsapp" className="font-medium">WhatsApp Community Support</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Grant access to WhatsApp community support
+                      </p>
+                    </div>
+                  </div>
+
+                  {selectedMember.hasWhatsAppSupport && (
+                    <div>
+                      <Label>WhatsApp Support Duration</Label>
+                      <Select 
+                        defaultValue={selectedMember.whatsAppSupportDuration?.toString()}
+                        onValueChange={(value) => 
+                          setSelectedMember({...selectedMember, whatsAppSupportDuration: parseInt(value)})
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select duration" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3">3 months</SelectItem>
+                          <SelectItem value="6">6 months</SelectItem>
+                          <SelectItem value="12">12 months</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Valid From</Label>
+                      <Input
+                        type="date"
+                        defaultValue={selectedMember.validFrom ? format(new Date(selectedMember.validFrom), "yyyy-MM-dd") : ""}
+                        onChange={(e) => {
+                          const date = e.target.value ? new Date(e.target.value) : null;
+                          setSelectedMember({...selectedMember, validFrom: date});
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label>Valid Until</Label>
+                      <Input
+                        type="date"
+                        defaultValue={selectedMember.validUntil ? format(new Date(selectedMember.validUntil), "yyyy-MM-dd") : ""}
+                        onChange={(e) => {
+                          const date = e.target.value ? new Date(e.target.value) : null;
+                          setSelectedMember({...selectedMember, validUntil: date});
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <Checkbox 
+                      id="edit-admin"
+                      defaultChecked={!!selectedMember.isAdmin}
+                      onCheckedChange={(checked) => 
+                        setSelectedMember({...selectedMember, isAdmin: !!checked})
+                      }
+                    />
+                    <div>
+                      <Label htmlFor="edit-admin" className="font-medium">Administrator Privileges</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Grant admin access to manage users and content
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
                   {/* Dialog Action Buttons */}
                   <div className="flex justify-end gap-2 pt-4 border-t">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setSelectedMember(null)}
-                      data-testid="button-close-member-dialog"
-                    >
-                      Close
-                    </Button>
+                    {memberViewMode === 'view' ? (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setMemberViewMode('edit')}
+                          data-testid="button-edit-member"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setSelectedMember(null)}
+                          data-testid="button-close-member-dialog"
+                        >
+                          Close
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setMemberViewMode('view')}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={async () => {
+                            if (!selectedMember) return;
+                            
+                            try {
+                              // Update user details
+                              const response = await fetch(`/api/admin/users/${selectedMember.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  firstName: selectedMember.firstName,
+                                  lastName: selectedMember.lastName,
+                                  email: selectedMember.email,
+                                  phone: selectedMember.phone,
+                                  isAdmin: selectedMember.isAdmin,
+                                  validFrom: selectedMember.validFrom,
+                                  validUntil: selectedMember.validUntil,
+                                  hasWhatsAppSupport: selectedMember.hasWhatsAppSupport,
+                                  whatsAppSupportDuration: selectedMember.whatsAppSupportDuration,
+                                }),
+                              });
+                              
+                              if (!response.ok) throw new Error('Failed to update user');
+                              
+                              // If program selected, enroll user
+                              if (selectedProgramForMember && selectedProgramForMember !== 'none') {
+                                await fetch('/api/member-programs', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    userId: selectedMember.id,
+                                    programId: selectedProgramForMember,
+                                    expiryDate: selectedMember.validUntil || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                                  }),
+                                });
+                              }
+                              
+                              queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+                              toast({ 
+                                title: "Success", 
+                                description: `${selectedMember.firstName} ${selectedMember.lastName} updated successfully${selectedProgramForMember && selectedProgramForMember !== 'none' ? ' and enrolled in program' : ''}` 
+                              });
+                              setMemberViewMode('view');
+                              setSelectedProgramForMember('');
+                            } catch (error) {
+                              toast({ 
+                                variant: "destructive",
+                                title: "Error", 
+                                description: "Failed to update member" 
+                              });
+                            }
+                          }}
+                        >
+                          Save Changes
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
