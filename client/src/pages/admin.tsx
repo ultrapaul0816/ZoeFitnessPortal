@@ -187,8 +187,48 @@ export default function Admin() {
     setAssetDisplayNames({ [filename]: currentDisplayName });
   };
 
-  const handleCreateUser = (userData: AdminCreateUser) => {
-    createUserMutation.mutate(userData);
+  const handleCreateUser = async (userData: AdminCreateUser) => {
+    try {
+      // Create user
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to create user');
+      }
+      
+      // If a program was selected, enroll the user
+      if (userData.programId && userData.programId !== 'none') {
+        await fetch('/api/member-programs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: data.user.id,
+            programId: userData.programId,
+            expiryDate: userData.validUntil || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Use validUntil or default 1 year
+          }),
+        });
+      }
+      
+      setNewUserData(data);
+      toast({
+        title: "Success",
+        description: `User ${data.user.firstName} ${data.user.lastName} created successfully${userData.programId && userData.programId !== 'none' ? ' and enrolled in program' : ''}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      addUserForm.reset();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to create user",
+      });
+    }
   };
 
   const closeAddUserModal = () => {
@@ -387,6 +427,7 @@ export default function Admin() {
                     isLoading={createUserMutation.isPending}
                     onClose={closeAddUserModal}
                     newUserData={newUserData}
+                    programs={programs}
                   />
                 </Dialog>
               </div>
@@ -960,9 +1001,10 @@ interface AddUserModalProps {
   isLoading: boolean;
   onClose: () => void;
   newUserData: { user: any; password: string } | null;
+  programs: Program[];
 }
 
-function AddUserModal({ form, onSubmit, isLoading, onClose, newUserData }: AddUserModalProps) {
+function AddUserModal({ form, onSubmit, isLoading, onClose, newUserData, programs }: AddUserModalProps) {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
@@ -1132,6 +1174,35 @@ The Stronger With Zoe Team`)}
                 <FormControl>
                   <Input {...field} type="tel" placeholder="Enter phone number" data-testid="input-phone" />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="programId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Assign Program</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger data-testid="select-program">
+                      <SelectValue placeholder="Select program (optional)" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">No Program</SelectItem>
+                    {programs.map((program) => (
+                      <SelectItem key={program.id} value={program.id}>
+                        {program.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Enroll user in a program they purchased from Shopify
+                </p>
                 <FormMessage />
               </FormItem>
             )}

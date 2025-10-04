@@ -196,6 +196,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enroll user in program
+  app.post("/api/member-programs", async (req, res) => {
+    try {
+      const { userId, programId, expiryDate } = req.body;
+      const memberProgram = await storage.createMemberProgram({
+        userId,
+        programId,
+        expiryDate: expiryDate ? new Date(expiryDate) : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Default 1 year
+        isActive: true,
+        progress: 0,
+      });
+      res.json(memberProgram);
+    } catch (error) {
+      console.error("Failed to create member program:", error);
+      res.status(500).json({ message: "Failed to enroll user in program" });
+    }
+  });
+
   // Workouts
   app.get("/api/workouts/:programId", async (req, res) => {
     try {
