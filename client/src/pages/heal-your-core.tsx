@@ -219,8 +219,10 @@ export default function HealYourCorePage() {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   
   // Show promotional banner on specific tabs - WhatsApp card also available in Start Here tab
+  // Hide if user has WhatsApp support
   const shouldShowCommunityBanner = 
     !bannerDismissed && 
+    !user?.hasWhatsAppSupport &&
     (activeTab === 'healing' || activeTab === 'nutrition' || activeTab === 'faqs');
 
   // Tab navigation helpers
@@ -1906,7 +1908,8 @@ function WelcomeSection({
             </p>
           </div>
 
-          {/* Community Support Section - Large Card */}
+          {/* Community Support Section - Large Card - Only show if user doesn't have WhatsApp support */}
+          {!user?.hasWhatsAppSupport && (
           <div className="mb-8">
             {/* White Container with Shadow */}
             <div className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-gray-100">
@@ -2179,6 +2182,7 @@ function WelcomeSection({
             </Card>
             </div> {/* End White Container */}
           </div>
+          )}
 
           {/* All Topics with Line Dividers */}
           <div className="space-y-0">
