@@ -763,22 +763,24 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
 
             {/* Full Name */}
             <div className="space-y-2 mb-6">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="fullName">Full Name *</Label>
               <Input
                 id="fullName"
                 value={profileData.fullName || ''}
                 onChange={(e) => setProfileData(prev => ({...prev, fullName: e.target.value}))}
+                className={!profileData.fullName ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
               />
             </div>
 
             {/* Email */}
             <div className="space-y-2 mb-6">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email *</Label>
               <Input
                 id="email"
                 type="email"
                 value={profileData.email || ''}
                 onChange={(e) => setProfileData(prev => ({...prev, email: e.target.value}))}
+                className={!profileData.email ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
               />
             </div>
 

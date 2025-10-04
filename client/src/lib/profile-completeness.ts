@@ -40,6 +40,8 @@ export interface PromptContext {
 // Define required and optional fields for profile completion
 const REQUIRED_FIELDS = [
   { field: 'country' as keyof ProfileData, label: 'Country' },
+  { field: 'fullName' as keyof ProfileData, label: 'Full Name' },
+  { field: 'email' as keyof ProfileData, label: 'Email' },
 ] as const;
 
 const OPTIONAL_FIELDS = [
