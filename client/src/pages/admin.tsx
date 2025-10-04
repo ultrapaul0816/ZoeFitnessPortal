@@ -510,46 +510,53 @@ export default function Admin() {
 
           {/* Member Details Dialog */}
           <Dialog open={!!selectedMember} onOpenChange={(open) => !open && setSelectedMember(null)}>
-            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  {memberViewMode === 'view' ? 'Member Details' : 'Edit Member'}
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-pink-50/30 to-rose-50/20">
+              <DialogHeader className="border-b pb-4">
+                <DialogTitle className="flex items-center gap-3 text-xl">
+                  <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center shadow-md">
+                    <Users className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent font-semibold">
+                    {memberViewMode === 'view' ? 'Member Details' : 'Edit Member'}
+                  </span>
                 </DialogTitle>
               </DialogHeader>
               
               {selectedMember && (
-                <div className="space-y-6">
+                <div className="space-y-6 pt-2">
                   {/* Profile Section */}
-                  <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
-                    <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
-                      <span className="text-2xl font-bold text-primary">
+                  <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-200/50 shadow-sm">
+                    <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg ring-4 ring-pink-100">
+                      <span className="text-2xl font-bold text-white">
                         {selectedMember.firstName?.[0]}{selectedMember.lastName?.[0]}
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold">
+                      <h3 className="text-lg font-semibold text-gray-800">
                         {selectedMember.firstName} {selectedMember.lastName}
                       </h3>
-                      <p className="text-sm text-muted-foreground">{selectedMember.email}</p>
+                      <p className="text-sm text-gray-600">{selectedMember.email}</p>
                     </div>
                   </div>
 
                   {/* Account Information */}
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-sm text-muted-foreground uppercase">Account Information</h4>
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Account Information
+                    </h4>
                     
                     <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-xs text-muted-foreground">Status</Label>
-                        <Badge variant={selectedMember.termsAccepted ? "default" : "secondary"} className="mt-1">
+                      <div className="bg-white p-3 rounded-lg border border-gray-200">
+                        <Label className="text-xs text-gray-500 font-medium">Status</Label>
+                        <Badge variant={selectedMember.termsAccepted ? "default" : "secondary"} className={cn("mt-2", selectedMember.termsAccepted && "bg-green-500 hover:bg-green-600")}>
                           {selectedMember.termsAccepted ? "Active" : "Pending"}
                         </Badge>
                       </div>
                       
-                      <div>
-                        <Label className="text-xs text-muted-foreground">Role</Label>
-                        <Badge variant={selectedMember.isAdmin ? "destructive" : "outline"} className="mt-1">
+                      <div className="bg-white p-3 rounded-lg border border-gray-200">
+                        <Label className="text-xs text-gray-500 font-medium">Role</Label>
+                        <Badge variant={selectedMember.isAdmin ? "destructive" : "outline"} className="mt-2">
                           {selectedMember.isAdmin ? "Admin" : "Member"}
                         </Badge>
                       </div>
@@ -576,11 +583,14 @@ export default function Admin() {
 
                   {/* Acceptance Status */}
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-sm text-muted-foreground uppercase">Acceptance Status</h4>
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Acceptance Status
+                    </h4>
                     
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-3 border rounded-lg">
-                        <Label className="text-xs text-muted-foreground">Terms & Conditions</Label>
+                      <div className="p-4 bg-white border-2 border-gray-100 rounded-lg">
+                        <Label className="text-xs text-gray-500 font-medium">Terms & Conditions</Label>
                         {selectedMember.termsAcceptedAt ? (
                           <div className="mt-2">
                             <p className="text-sm font-medium text-green-600">✓ Accepted</p>
@@ -594,8 +604,8 @@ export default function Admin() {
                         )}
                       </div>
 
-                      <div className="p-3 border rounded-lg">
-                        <Label className="text-xs text-muted-foreground">Health Disclaimer</Label>
+                      <div className="p-4 bg-white border-2 border-gray-100 rounded-lg">
+                        <Label className="text-xs text-gray-500 font-medium">Health Disclaimer</Label>
                         {selectedMember.disclaimerAcceptedAt ? (
                           <div className="mt-2">
                             <p className="text-sm font-medium text-green-600">✓ Accepted</p>
@@ -614,7 +624,10 @@ export default function Admin() {
                   {/* Validity Period */}
                   {(selectedMember.validFrom || selectedMember.validUntil) && (
                     <div className="space-y-4">
-                      <h4 className="font-semibold text-sm text-muted-foreground uppercase">Access Period</h4>
+                      <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
+                        <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                        Access Period
+                      </h4>
                       
                       <div className="grid grid-cols-2 gap-4">
                         {selectedMember.validFrom && (
@@ -648,7 +661,10 @@ export default function Admin() {
 
                   {/* Member Actions */}
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-sm text-muted-foreground uppercase">Member Actions</h4>
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Member Actions
+                    </h4>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {/* Extend Validity Buttons */}
@@ -950,11 +966,15 @@ function AddUserModal({ form, onSubmit, isLoading, onClose, newUserData }: AddUs
   if (newUserData) {
     // Show success modal with user credentials
     return (
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-green-600" />
-            User Created Successfully
+      <DialogContent className="sm:max-w-md bg-gradient-to-br from-white via-green-50/30 to-emerald-50/20">
+        <DialogHeader className="border-b pb-4">
+          <DialogTitle className="flex items-center gap-3 text-xl">
+            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center shadow-md">
+              <UserPlus className="w-5 h-5 text-white" />
+            </div>
+            <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent font-semibold">
+              User Created Successfully
+            </span>
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
@@ -1043,11 +1063,15 @@ The Stronger With Zoe Team`)}
 
   // Show form modal
   return (
-    <DialogContent className="sm:max-w-lg">
-      <DialogHeader>
-        <DialogTitle className="flex items-center gap-2">
-          <UserPlus className="w-5 h-5" />
-          Add New User
+    <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white via-pink-50/30 to-rose-50/20">
+      <DialogHeader className="border-b pb-4">
+        <DialogTitle className="flex items-center gap-3 text-xl">
+          <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center shadow-md">
+            <UserPlus className="w-5 h-5 text-white" />
+          </div>
+          <span className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent font-semibold">
+            Add New User
+          </span>
         </DialogTitle>
       </DialogHeader>
       <Form {...form}>
@@ -1164,40 +1188,23 @@ The Stronger With Zoe Team`)}
               control={form.control}
               name="validFrom"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Valid From</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                          data-testid="button-valid-from"
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date("1900-01-01")
-                        }
-                        initialFocus
+                <FormItem>
+                  <FormLabel className="text-gray-700">Valid From</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="date"
+                        value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                        onChange={(e) => {
+                          const date = e.target.value ? new Date(e.target.value) : undefined;
+                          field.onChange(date);
+                        }}
+                        className="pr-10"
+                        data-testid="input-valid-from"
                       />
-                    </PopoverContent>
-                  </Popover>
+                      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -1207,40 +1214,23 @@ The Stronger With Zoe Team`)}
               control={form.control}
               name="validUntil"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Valid Until</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                          data-testid="button-valid-until"
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date("1900-01-01")
-                        }
-                        initialFocus
+                <FormItem>
+                  <FormLabel className="text-gray-700">Valid Until</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="date"
+                        value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                        onChange={(e) => {
+                          const date = e.target.value ? new Date(e.target.value) : undefined;
+                          field.onChange(date);
+                        }}
+                        className="pr-10"
+                        data-testid="input-valid-until"
                       />
-                    </PopoverContent>
-                  </Popover>
+                      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
