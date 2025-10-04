@@ -977,6 +977,24 @@ class DatabaseStorage implements IStorage {
   }
   async createProgramPurchase(purchase: InsertProgramPurchase): Promise<ProgramPurchase> {
     const result = await this.db.insert(programPurchases).values(purchase).returning();
+    
+    // Also create member_programs entry so the program appears in user's library
+    // Set expiry to 1 year from now (can be adjusted based on business logic)
+    const expiryDate = new Date();
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    
+    await this.db.insert(memberPrograms).values({
+      userId: purchase.userId,
+      programId: purchase.programId,
+      purchaseDate: new Date(),
+      expiryDate,
+      isActive: true,
+      progress: 0,
+    });
+    
+    // Clear the member programs cache for this user
+    this.memberProgramsCache.delete(purchase.userId);
+    
     return result[0];
   }
   async getUserPurchases(userId: string): Promise<ProgramPurchase[]> { return []; }
