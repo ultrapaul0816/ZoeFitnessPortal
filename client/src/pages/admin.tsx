@@ -89,6 +89,12 @@ export default function Admin() {
     enabled: !!user?.isAdmin,
   });
 
+  // Fetch member's enrolled programs when a member is selected
+  const { data: memberEnrolledPrograms = [] } = useQuery<any[]>({
+    queryKey: ["/api/member-programs", selectedMember?.id],
+    enabled: !!selectedMember?.id,
+  });
+
   const updateProgramMutation = useMutation({
     mutationFn: async ({ id, ...updates }: { id: string } & Partial<Program>) => {
       const response = await fetch(`/api/admin/programs/${id}`, {
@@ -709,6 +715,53 @@ export default function Admin() {
                     </div>
                   )}
 
+                  {/* Enrolled Programs */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Enrolled Programs
+                    </h4>
+                    
+                    {memberEnrolledPrograms.length > 0 ? (
+                      <div className="space-y-2">
+                        {memberEnrolledPrograms.map((enrollment: any) => {
+                          const program = programs.find(p => p.id === enrollment.programId);
+                          return (
+                            <div key={enrollment.id} className="p-3 bg-white border-2 border-gray-100 rounded-lg">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  {program?.imageUrl && (
+                                    <img 
+                                      src={program.imageUrl} 
+                                      alt={program.name}
+                                      className="w-10 h-10 rounded object-cover"
+                                    />
+                                  )}
+                                  <div>
+                                    <p className="text-sm font-medium">{program?.name || 'Unknown Program'}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      Enrolled: {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                                    </p>
+                                  </div>
+                                </div>
+                                {enrollment.expiryDate && (
+                                  <div className="text-right">
+                                    <p className="text-xs text-muted-foreground">Expires</p>
+                                    <p className="text-xs font-medium">
+                                      {new Date(enrollment.expiryDate).toLocaleDateString()}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No programs enrolled</p>
+                    )}
+                  </div>
+
                   {/* Member Actions */}
                   <div className="space-y-4">
                     <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
@@ -839,8 +892,37 @@ export default function Admin() {
                     />
                   </div>
 
+                  {/* Currently Enrolled Programs */}
+                  {memberEnrolledPrograms.length > 0 && (
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">Currently Enrolled Programs</Label>
+                      <div className="space-y-2">
+                        {memberEnrolledPrograms.map((enrollment: any) => {
+                          const program = programs.find(p => p.id === enrollment.programId);
+                          return (
+                            <div key={enrollment.id} className="p-2 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                              {program?.imageUrl && (
+                                <img 
+                                  src={program.imageUrl} 
+                                  alt={program.name}
+                                  className="w-8 h-8 rounded object-cover"
+                                />
+                              )}
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-green-800">{program?.name || 'Unknown Program'}</p>
+                                <p className="text-xs text-green-600">
+                                  Enrolled: {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   <div>
-                    <Label>Assign Program</Label>
+                    <Label>Assign Additional Program</Label>
                     <Select 
                       value={selectedProgramForMember}
                       onValueChange={setSelectedProgramForMember}
@@ -850,7 +932,7 @@ export default function Admin() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">No Program</SelectItem>
-                        {programs.map((program) => (
+                        {programs.filter(p => !memberEnrolledPrograms.some((e: any) => e.programId === p.id)).map((program) => (
                           <SelectItem key={program.id} value={program.id}>
                             {program.name}
                           </SelectItem>
@@ -858,7 +940,7 @@ export default function Admin() {
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-gray-500 mt-1">
-                      Enroll user in an additional program
+                      Enroll user in an additional program (already enrolled programs are hidden)
                     </p>
                   </div>
 
@@ -1008,6 +1090,7 @@ export default function Admin() {
                               }
                               
                               queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+                              queryClient.invalidateQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
                               toast({ 
                                 title: "Success", 
                                 description: `${selectedMember.firstName} ${selectedMember.lastName} updated successfully${selectedProgramForMember && selectedProgramForMember !== 'none' ? ' and enrolled in program' : ''}` 
