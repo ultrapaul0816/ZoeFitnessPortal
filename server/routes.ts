@@ -573,18 +573,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const oneYearFromNow = new Date();
       oneYearFromNow.setFullYear(now.getFullYear() + 1);
 
+      // Calculate WhatsApp support expiry date if applicable
+      let whatsAppSupportExpiryDate: Date | null = null;
+      if (userData.hasWhatsAppSupport && userData.whatsAppSupportDuration) {
+        whatsAppSupportExpiryDate = new Date();
+        whatsAppSupportExpiryDate.setMonth(whatsAppSupportExpiryDate.getMonth() + userData.whatsAppSupportDuration);
+      }
+
       const newUser = await storage.createUser({
         email: userData.email,
         password: password,
         firstName: userData.firstName,
         lastName: userData.lastName,
         isAdmin: userData.isAdmin || false,
-        phone: null,
+        phone: userData.phone || null,
         profilePictureUrl: null,
         termsAccepted: false,
         termsAcceptedAt: null,
         validFrom: userData.validFrom || now,
         validUntil: userData.validUntil || oneYearFromNow,
+        hasWhatsAppSupport: userData.hasWhatsAppSupport || false,
+        whatsAppSupportDuration: userData.whatsAppSupportDuration || null,
+        whatsAppSupportExpiryDate: whatsAppSupportExpiryDate,
       });
 
       // Return user data with password for email template
