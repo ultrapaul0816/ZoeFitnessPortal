@@ -1189,7 +1189,7 @@ export default function Admin() {
                       <>
                         <Button 
                           variant="outline" 
-                          onClick={() => setMemberViewMode('view')}
+                          onClick={() => setSelectedMember(null)}
                         >
                           Cancel
                         </Button>
@@ -1242,7 +1242,7 @@ export default function Admin() {
                                 title: "Success", 
                                 description: `${selectedMember.firstName} ${selectedMember.lastName} updated successfully${selectedProgramForMember && selectedProgramForMember !== 'none' ? ' and enrolled in program' : ''}` 
                               });
-                              setMemberViewMode('view');
+                              setSelectedMember(null);
                               setSelectedProgramForMember('');
                             } catch (error) {
                               toast({ 
