@@ -4,7 +4,27 @@ This project is a 6-week postnatal fitness web application, "Your Postpartum Str
 
 # Recent Updates (October 2025)
 
-## Latest Updates (October 3, 2025)
+## Latest Updates (October 4, 2025)
+
+### WhatsApp Community Support Management (October 4, 2025)
+- **Admin Panel Enhancement**: Added comprehensive WhatsApp support management to user creation form
+  - Phone number field for WhatsApp contact
+  - WhatsApp Support toggle to enable/disable community access for users
+  - Duration dropdown with 3, 6, and 12-month options
+  - Automatic expiry date calculation based on selected duration
+- **Database Schema Updates**: Extended user model with WhatsApp support fields:
+  - `hasWhatsAppSupport` (boolean) - tracks if user has active WhatsApp community access
+  - `whatsAppSupportDuration` (integer) - stores duration in months
+  - `whatsAppSupportExpiryDate` (date) - automatically calculated expiry date
+  - `phone` (text) - user's phone number for WhatsApp contact
+- **Conditional UI Rendering**: Implemented smart promotional content visibility
+  - Users WITH WhatsApp support: All promotional banners and cards are hidden (no upselling needed)
+  - Users WITHOUT WhatsApp support: See promotional content encouraging community enrollment
+  - Applies to: Top floating banner (on specific tabs) and Welcome tab WhatsApp Community card
+- **Login API Update**: Enhanced authentication response to include WhatsApp support fields for proper client-side state management
+- **Business Logic**: Supports the WhatsApp Community add-on product model where users can purchase 3/6/12-month access alongside their fitness programs
+
+## Previous Updates (October 3, 2025)
 
 ### Blue Hyperlink Consistency (October 3, 2025)
 - **Exercise Link Styling**: Updated all exercise video hyperlinks throughout the program to use blue color (`text-blue-600`) instead of green for visual consistency
