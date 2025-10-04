@@ -200,6 +200,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/member-programs", async (req, res) => {
     try {
       const { userId, programId, expiryDate } = req.body;
+      
+      // Check if user is already enrolled in this program
+      const existingEnrollments = await storage.getMemberPrograms(userId);
+      const alreadyEnrolled = existingEnrollments.some(
+        (enrollment: any) => enrollment.programId === programId
+      );
+      
+      if (alreadyEnrolled) {
+        return res.status(400).json({ 
+          message: "User is already enrolled in this program" 
+        });
+      }
+      
       const memberProgram = await storage.createMemberProgram({
         userId,
         programId,

@@ -212,7 +212,7 @@ export default function Admin() {
       
       // If a program was selected, enroll the user
       if (userData.programId && userData.programId !== 'none') {
-        await fetch('/api/member-programs', {
+        const enrollResponse = await fetch('/api/member-programs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -221,6 +221,11 @@ export default function Admin() {
             expiryDate: userData.validUntil || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Use validUntil or default 1 year
           }),
         });
+        
+        if (!enrollResponse.ok) {
+          const errorData = await enrollResponse.json();
+          throw new Error(errorData.message || 'Failed to enroll in program');
+        }
       }
       
       setNewUserData(data);
@@ -1078,7 +1083,7 @@ export default function Admin() {
                               
                               // If program selected, enroll user
                               if (selectedProgramForMember && selectedProgramForMember !== 'none') {
-                                await fetch('/api/member-programs', {
+                                const enrollResponse = await fetch('/api/member-programs', {
                                   method: 'POST',
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({
@@ -1087,6 +1092,11 @@ export default function Admin() {
                                     expiryDate: selectedMember.validUntil || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
                                   }),
                                 });
+                                
+                                if (!enrollResponse.ok) {
+                                  const errorData = await enrollResponse.json();
+                                  throw new Error(errorData.message || 'Failed to enroll in program');
+                                }
                               }
                               
                               queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
@@ -1101,7 +1111,7 @@ export default function Admin() {
                               toast({ 
                                 variant: "destructive",
                                 title: "Error", 
-                                description: "Failed to update member" 
+                                description: error instanceof Error ? error.message : "Failed to update member" 
                               });
                             }
                           }}
