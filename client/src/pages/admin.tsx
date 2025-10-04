@@ -550,6 +550,12 @@ export default function Admin() {
               </thead>
               <tbody>
                 {allUsers.filter((member) => {
+                  // Filter out deactivated users (validUntil has passed)
+                  const validUntil = member.validUntil ? new Date(member.validUntil) : null;
+                  const isDeactivated = validUntil && validUntil <= new Date();
+                  if (isDeactivated) return false;
+                  
+                  // Search filter
                   if (!searchQuery) return true;
                   const query = searchQuery.toLowerCase();
                   return (
@@ -1306,13 +1312,10 @@ export default function Admin() {
                               size="sm"
                               onClick={async () => {
                                 try {
-                                  const oneYearFromNow = new Date();
-                                  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-                                  
                                   const response = await fetch(`/api/admin/users/${member.id}/extend-validity`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ validUntil: oneYearFromNow.toISOString() }),
+                                    body: JSON.stringify({ months: 12 }),
                                   });
 
                                   if (!response.ok) {
@@ -1321,6 +1324,7 @@ export default function Admin() {
                                   }
 
                                   queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+                                  queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
                                   toast({
                                     variant: "success",
                                     title: "Success",

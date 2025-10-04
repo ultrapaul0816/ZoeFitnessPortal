@@ -952,11 +952,15 @@ class DatabaseStorage implements IStorage {
 
   async createMemberProgram(memberProgram: InsertMemberProgram): Promise<MemberProgram> {
     const result = await this.db.insert(memberPrograms).values(memberProgram).returning();
+    // Clear cache for this user
+    this.memberProgramsCache.delete(memberProgram.userId);
     return result[0];
   }
 
   async deleteMemberProgram(enrollmentId: string): Promise<void> {
     await this.db.delete(memberPrograms).where(eq(memberPrograms.id, enrollmentId));
+    // Clear the cache for all users since we don't know which user this enrollment belongs to
+    this.memberProgramsCache.clear();
   }
 
   // Placeholder implementations for other methods - can be implemented as needed
