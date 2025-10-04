@@ -6,10 +6,14 @@ import {
   insertWorkoutCompletionSchema,
   updateUserProfileSchema,
   adminCreateUserSchema,
+  memberPrograms,
 } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve attached assets (use different path to avoid conflict with built assets)
@@ -230,10 +234,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Clean up duplicate enrollments (admin only)
   app.post("/api/admin/cleanup-duplicates", async (req, res) => {
     try {
-      const db = storage.db;
+      const sql = neon(process.env.DATABASE_URL!);
+      const db = drizzle(sql);
       
-      // Get all member programs
-      const allEnrollments = await storage.db.select().from(storage.schema.memberPrograms);
+      // Get all member programs with their details
+      const allEnrollments = await db.select().from(memberPrograms);
       
       // Group by user_id and program_id to find duplicates
       const enrollmentMap = new Map<string, any[]>();
@@ -258,7 +263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Delete all except the first (oldest) one
           for (let i = 1; i < enrollments.length; i++) {
-            await db.delete(storage.schema.memberPrograms).where(storage.eq(storage.schema.memberPrograms.id, enrollments[i].id));
+            await db.delete(memberPrograms).where(eq(memberPrograms.id, enrollments[i].id));
             deletedCount++;
           }
         }
