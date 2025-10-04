@@ -114,6 +114,7 @@ export default function Admin() {
       queryClient.invalidateQueries({ queryKey: ["/api/programs"] });
       setEditingProgram(null);
       toast({
+        variant: "success",
         title: "Success",
         description: "Program updated successfully",
       });
@@ -142,6 +143,7 @@ export default function Admin() {
       setEditingAsset(null);
       setAssetDisplayNames({});
       toast({
+        variant: "success",
         title: "Success",
         description: "Asset name updated successfully",
       });
@@ -174,6 +176,7 @@ export default function Admin() {
       setNewUserData(data);
       addUserForm.reset();
       toast({
+        variant: "success",
         title: "Success",
         description: `User ${data.user.firstName} ${data.user.lastName} created successfully`,
       });
@@ -249,6 +252,7 @@ export default function Admin() {
       
       setNewUserData(data);
       toast({
+        variant: "success",
         title: "Success",
         description: `User ${data.user.firstName} ${data.user.lastName} created successfully${userData.programId && userData.programId !== 'none' ? ' and enrolled in program' : ''}`,
       });
@@ -280,6 +284,7 @@ export default function Admin() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       toast({
+        variant: "success",
         title: "Success",
         description: "Member validity extended successfully",
       });
@@ -303,6 +308,7 @@ export default function Admin() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       setSelectedMember(null);
       toast({
+        variant: "success",
         title: "Success",
         description: "Member deactivated successfully",
       });
@@ -1187,6 +1193,7 @@ export default function Admin() {
                               queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
                               queryClient.invalidateQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
                               toast({ 
+                                variant: "success",
                                 title: "Success", 
                                 description: `${selectedMember.firstName} ${selectedMember.lastName} updated successfully${selectedProgramForMember && selectedProgramForMember !== 'none' ? ' and enrolled in program' : ''}` 
                               });
@@ -1276,6 +1283,7 @@ export default function Admin() {
 
                                   queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
                                   toast({
+                                    variant: "success",
                                     title: "Success",
                                     description: `${member.firstName} ${member.lastName} has been reactivated for 1 year`,
                                   });
@@ -1624,7 +1632,7 @@ export default function Admin() {
                         size="sm"
                         onClick={() => {
                           navigator.clipboard.writeText(resetPasswordData.password);
-                          toast({ title: "Copied!", description: "Password copied to clipboard" });
+                          toast({ variant: "success", title: "Copied!", description: "Password copied to clipboard" });
                         }}
                         className="h-7 w-7 p-0"
                       >
