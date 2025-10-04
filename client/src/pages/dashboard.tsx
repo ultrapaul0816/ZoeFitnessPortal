@@ -616,27 +616,21 @@ export default function Dashboard() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Member Programs */}
-              {memberPrograms
-                .filter((memberProgram) => false) // Hide enrolled programs
-                .map((memberProgram) => (
+              {/* Member Programs - Only show programs user is enrolled in */}
+              {memberPrograms.length > 0 ? (
+                memberPrograms.map((memberProgram) => (
                   <ProgramCard
                     key={memberProgram.id}
                     memberProgram={memberProgram}
                     userId={user.id}
                   />
-                ))}
-              
-              {/* All Programs */}
-              {Array.isArray(allPrograms) && allPrograms
-                .filter((program: any) => program.name === "Your Postpartum Strength Recovery Program")
-                .map((program: any) => (
-                  <PremiumProgramCard
-                    key={program.id}
-                    program={program}
-                    userId={user.id}
-                  />
-                ))}
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500 text-lg">No programs assigned yet.</p>
+                  <p className="text-gray-400 text-sm mt-2">Your admin will enroll you in programs soon.</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
