@@ -4,8 +4,6 @@ import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { eq, and, desc } from "drizzle-orm";
-import dotenv from "dotenv";
-dotenv.config();
 
 
 export interface IStorage {
