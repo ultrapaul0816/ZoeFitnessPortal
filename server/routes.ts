@@ -67,6 +67,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastName: updatedUser.lastName,
           isAdmin: updatedUser.isAdmin,
           disclaimerAccepted: updatedUser.disclaimerAccepted,
+          hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
+          whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
+          whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
+          phone: updatedUser.phone,
         },
       });
     } catch (error) {
