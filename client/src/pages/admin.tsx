@@ -1010,6 +1010,45 @@ export default function Admin() {
                                       : 'Unknown'}
                                 </p>
                               </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={async () => {
+                                  if (!confirm(`Remove ${program?.name} enrollment for ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                                    return;
+                                  }
+                                  
+                                  try {
+                                    const response = await fetch(`/api/member-programs/${enrollment.id}`, {
+                                      method: 'DELETE',
+                                    });
+
+                                    if (!response.ok) {
+                                      const errorData = await response.json();
+                                      throw new Error(errorData.message || 'Failed to remove enrollment');
+                                    }
+
+                                    queryClient.invalidateQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
+                                    toast({
+                                      variant: "success",
+                                      title: "Success",
+                                      description: `Removed ${program?.name} enrollment successfully`,
+                                    });
+                                  } catch (error) {
+                                    toast({
+                                      variant: "destructive",
+                                      title: "Error",
+                                      description: error instanceof Error ? error.message : "Failed to remove enrollment",
+                                    });
+                                  }
+                                }}
+                                data-testid={`button-remove-enrollment-${enrollment.id}`}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </Button>
                             </div>
                           );
                         })}

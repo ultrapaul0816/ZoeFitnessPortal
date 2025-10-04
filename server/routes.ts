@@ -227,6 +227,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Remove user enrollment from program
+  app.delete("/api/member-programs/:enrollmentId", async (req, res) => {
+    try {
+      const { enrollmentId } = req.params;
+      await storage.deleteMemberProgram(enrollmentId);
+      res.json({ message: "Enrollment removed successfully" });
+    } catch (error) {
+      console.error("Failed to delete member program:", error);
+      res.status(500).json({ message: "Failed to remove enrollment" });
+    }
+  });
+
   // Workouts
   app.get("/api/workouts/:programId", async (req, res) => {
     try {

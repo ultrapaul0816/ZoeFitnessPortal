@@ -21,6 +21,7 @@ export interface IStorage {
   // Member Programs
   getMemberPrograms(userId: string): Promise<(MemberProgram & { program: Program })[]>;
   createMemberProgram(memberProgram: InsertMemberProgram): Promise<MemberProgram>;
+  deleteMemberProgram(enrollmentId: string): Promise<void>;
   
   // Workouts
   getWorkoutsByProgram(programId: string): Promise<Workout[]>;
@@ -480,6 +481,10 @@ export class MemStorage implements IStorage {
     };
     this.memberPrograms.set(id, memberProgram);
     return memberProgram;
+  }
+
+  async deleteMemberProgram(enrollmentId: string): Promise<void> {
+    this.memberPrograms.delete(enrollmentId);
   }
 
   async getWorkoutsByProgram(programId: string): Promise<Workout[]> {
@@ -948,6 +953,10 @@ class DatabaseStorage implements IStorage {
   async createMemberProgram(memberProgram: InsertMemberProgram): Promise<MemberProgram> {
     const result = await this.db.insert(memberPrograms).values(memberProgram).returning();
     return result[0];
+  }
+
+  async deleteMemberProgram(enrollmentId: string): Promise<void> {
+    await this.db.delete(memberPrograms).where(eq(memberPrograms.id, enrollmentId));
   }
 
   // Placeholder implementations for other methods - can be implemented as needed
