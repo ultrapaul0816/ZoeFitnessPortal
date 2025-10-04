@@ -5333,6 +5333,22 @@ function ProgramsSection({
                   ✨ 6-week comprehensive postnatal fitness journey
                 </div>
               </div>
+
+              {/* Workout Schedule & Equipment */}
+              <div className="mb-3 space-y-2">
+                <div>
+                  <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 4x per week</div>
+                  <p className="text-pink-100 text-xs mt-0.5">Complete on Days 1, 3, 5, and 7 of each week</p>
+                </div>
+                <div>
+                  <div className="text-pink-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                    <span className="bg-blue-200 text-blue-800 px-2.5 py-1 rounded-full text-xs font-medium">Mini band</span>
+                    <span className="bg-green-200 text-green-800 px-2.5 py-1 rounded-full text-xs font-medium">Pilates ball</span>
+                  </div>
+                </div>
+              </div>
               
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
@@ -5367,6 +5383,18 @@ function ProgramsSection({
                   <CardDescription className="text-pink-100 font-semibold text-base mt-2 drop-shadow-sm leading-tight">
                     ✨ 6-week comprehensive postnatal fitness journey
                   </CardDescription>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 4x per week</div>
+                    <p className="text-pink-100 text-xs">Complete on Days 1, 3, 5, and 7 of each week</p>
+                    <div className="mt-2">
+                      <div className="text-pink-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                        <span className="bg-blue-200 text-blue-800 px-2.5 py-1 rounded-full text-xs font-medium">Mini band</span>
+                        <span className="bg-green-200 text-green-800 px-2.5 py-1 rounded-full text-xs font-medium">Pilates ball</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -5652,6 +5680,22 @@ function ProgramsSection({
                   Six Week Advanced Postnatal Fitness Journey
                 </div>
               </div>
+
+              {/* Workout Schedule & Equipment */}
+              <div className="mb-3 space-y-2">
+                <div>
+                  <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                  <p className="text-green-100 text-xs mt-0.5">Complete on Days 1, 3, and 5 of each week</p>
+                </div>
+                <div>
+                  <div className="text-green-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                    <span className="bg-blue-200 text-blue-800 px-2.5 py-1 rounded-full text-xs font-medium">Your breath</span>
+                    <span className="bg-pink-200 text-pink-800 px-2.5 py-1 rounded-full text-xs font-medium">Patience</span>
+                  </div>
+                </div>
+              </div>
               
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
@@ -5686,6 +5730,18 @@ function ProgramsSection({
                   <CardDescription className="text-base font-medium text-green-100 mt-2 drop-shadow-sm leading-tight">
                     Six Week Advanced Postnatal Fitness Journey
                   </CardDescription>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                    <p className="text-green-100 text-xs">Complete on Days 1, 3, and 5 of each week</p>
+                    <div className="mt-2">
+                      <div className="text-green-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                        <span className="bg-blue-200 text-blue-800 px-2.5 py-1 rounded-full text-xs font-medium">Your breath</span>
+                        <span className="bg-pink-200 text-pink-800 px-2.5 py-1 rounded-full text-xs font-medium">Patience</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -5927,6 +5983,22 @@ function ProgramsSection({
                   Six Week Control And Awareness Fitness Journey
                 </div>
               </div>
+
+              {/* Workout Schedule & Equipment */}
+              <div className="mb-3 space-y-2">
+                <div>
+                  <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                  <p className="text-green-100 text-xs mt-0.5">Complete on Days 2, 4, and 6 of each week</p>
+                </div>
+                <div>
+                  <div className="text-green-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                    <span className="bg-orange-200 text-orange-800 px-2.5 py-1 rounded-full text-xs font-medium">Pilates ball</span>
+                    <span className="bg-pink-200 text-pink-800 px-2.5 py-1 rounded-full text-xs font-medium">Patience</span>
+                  </div>
+                </div>
+              </div>
               
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
@@ -5961,6 +6033,18 @@ function ProgramsSection({
                   <CardDescription className="text-base font-medium text-green-100 mt-2 drop-shadow-sm leading-tight">
                     Six Week Control And Awareness Fitness Journey
                   </CardDescription>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                    <p className="text-green-100 text-xs">Complete on Days 2, 4, and 6 of each week</p>
+                    <div className="mt-2">
+                      <div className="text-green-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                        <span className="bg-orange-200 text-orange-800 px-2.5 py-1 rounded-full text-xs font-medium">Pilates ball</span>
+                        <span className="bg-pink-200 text-pink-800 px-2.5 py-1 rounded-full text-xs font-medium">Patience</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -6211,6 +6295,22 @@ function ProgramsSection({
                   Six Week Alignment And Activation Fitness Journey
                 </div>
               </div>
+
+              {/* Workout Schedule & Equipment */}
+              <div className="mb-3 space-y-2">
+                <div>
+                  <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                  <p className="text-purple-100 text-xs mt-0.5">Complete on Days 1, 3, and 5 of each week</p>
+                </div>
+                <div>
+                  <div className="text-purple-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                    <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Light dumbbells</span>
+                    <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
+                  </div>
+                </div>
+              </div>
               
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
@@ -6245,6 +6345,18 @@ function ProgramsSection({
                   <CardDescription className="text-base font-medium text-purple-100 mt-2 drop-shadow-sm leading-tight">
                     Six Week Alignment And Activation Fitness Journey
                   </CardDescription>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                    <p className="text-purple-100 text-xs">Complete on Days 1, 3, and 5 of each week</p>
+                    <div className="mt-2">
+                      <div className="text-purple-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                        <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Light dumbbells</span>
+                        <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -6489,6 +6601,22 @@ function ProgramsSection({
                   Six Week Functional Core Movement Fitness Journey
                 </div>
               </div>
+
+              {/* Workout Schedule & Equipment */}
+              <div className="mb-3 space-y-2">
+                <div>
+                  <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                  <p className="text-teal-100 text-xs mt-0.5">Complete on Days 2, 4, and 6 of each week</p>
+                </div>
+                <div>
+                  <div className="text-teal-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                    <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Dumbbells</span>
+                    <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
+                  </div>
+                </div>
+              </div>
               
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
@@ -6523,6 +6651,18 @@ function ProgramsSection({
                   <CardDescription className="text-base font-medium text-teal-100 mt-2 drop-shadow-sm leading-tight">
                     Six Week Functional Core Movement Fitness Journey
                   </CardDescription>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 3x per week</div>
+                    <p className="text-teal-100 text-xs">Complete on Days 2, 4, and 6 of each week</p>
+                    <div className="mt-2">
+                      <div className="text-teal-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                        <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Dumbbells</span>
+                        <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -6778,6 +6918,22 @@ function ProgramsSection({
                   Six Week Foundational Strength Fitness Journey
                 </div>
               </div>
+
+              {/* Workout Schedule & Equipment */}
+              <div className="mb-3 space-y-2">
+                <div>
+                  <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 4x per week</div>
+                  <p className="text-orange-100 text-xs mt-0.5">Complete on Days 1, 3, 5, and 7 of each week</p>
+                </div>
+                <div>
+                  <div className="text-orange-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                    <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Dumbbells</span>
+                    <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
+                  </div>
+                </div>
+              </div>
               
               {/* Info box and dropdown */}
               <div className="flex items-center justify-between">
@@ -6812,6 +6968,18 @@ function ProgramsSection({
                   <CardDescription className="text-base font-medium text-orange-100 mt-2 drop-shadow-sm leading-tight">
                     Six Week Foundational Strength Fitness Journey
                   </CardDescription>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="text-cyan-300 font-semibold text-sm">Workout Schedule: 4x per week</div>
+                    <p className="text-orange-100 text-xs">Complete on Days 1, 3, 5, and 7 of each week</p>
+                    <div className="mt-2">
+                      <div className="text-orange-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
+                        <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Dumbbells</span>
+                        <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
