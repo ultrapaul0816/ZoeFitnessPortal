@@ -1771,7 +1771,7 @@ The Stronger With Zoe Team`)}
 
   // Show form modal
   return (
-    <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white via-pink-50/30 to-rose-50/20">
+    <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-pink-50/30 to-rose-50/20">
       <DialogHeader className="border-b pb-4">
         <DialogTitle className="flex items-center gap-3 text-xl">
           <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center shadow-md">
