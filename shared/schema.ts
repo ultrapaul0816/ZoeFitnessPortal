@@ -18,6 +18,9 @@ export const users = pgTable("users", {
   disclaimerAcceptedAt: timestamp("disclaimer_accepted_at"),
   validFrom: timestamp("valid_from").default(sql`now()`),
   validUntil: timestamp("valid_until").default(sql`now() + interval '1 year'`),
+  hasWhatsAppSupport: boolean("has_whatsapp_support").default(false),
+  whatsAppSupportDuration: integer("whatsapp_support_duration"),
+  whatsAppSupportExpiryDate: timestamp("whatsapp_support_expiry_date"),
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
