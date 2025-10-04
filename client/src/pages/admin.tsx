@@ -798,6 +798,8 @@ export default function Admin() {
                       </div>
                     </div>
                   </div>
+                </div>
+              )}
 
               {/* EDIT MODE */}
               {selectedMember && memberViewMode === 'edit' && (
@@ -1026,8 +1028,6 @@ export default function Admin() {
                       </>
                     )}
                   </div>
-                </div>
-              )}
             </DialogContent>
           </Dialog>
             </Card>
