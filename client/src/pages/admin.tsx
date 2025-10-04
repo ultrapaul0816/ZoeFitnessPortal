@@ -33,6 +33,7 @@ export default function Admin() {
   const [assetDisplayNames, setAssetDisplayNames] = useState<{[key: string]: string}>({});
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [newUserData, setNewUserData] = useState<{user: any, password: string} | null>(null);
+  const [resetPasswordData, setResetPasswordData] = useState<{userId: string, email: string, password: string} | null>(null);
   const [selectedMember, setSelectedMember] = useState<User | null>(null);
   const [memberViewMode, setMemberViewMode] = useState<'view' | 'edit'>('view');
   const [searchQuery, setSearchQuery] = useState("");
@@ -287,13 +288,16 @@ export default function Admin() {
       const response = await apiRequest("POST", `/api/admin/users/${userId}/reset-password`);
       return response.json();
     },
-    onSuccess: (data: { password: string }) => {
+    onSuccess: (data: { password: string }, userId: string) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      toast({
-        title: "Password Reset",
-        description: `New password: ${data.password}`,
-        duration: 10000,
-      });
+      const member = allUsers?.find((u: User) => u.id === userId);
+      if (member) {
+        setResetPasswordData({
+          userId: member.id,
+          email: member.email,
+          password: data.password,
+        });
+      }
     },
     onError: () => {
       toast({
@@ -990,6 +994,70 @@ export default function Admin() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Reset Password Dialog */}
+      <Dialog open={!!resetPasswordData} onOpenChange={() => setResetPasswordData(null)}>
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-md">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent font-semibold">
+                Password Reset Successfully
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          {resetPasswordData && (
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                  New Password Generated
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-blue-700 dark:text-blue-300">Email:</span>
+                    <code className="bg-white dark:bg-blue-900 px-2 py-1 rounded border text-blue-800 dark:text-blue-200">
+                      {resetPasswordData.email}
+                    </code>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-blue-700 dark:text-blue-300">New Password:</span>
+                    <div className="flex items-center gap-2">
+                      <code className="bg-white dark:bg-blue-900 px-2 py-1 rounded border text-blue-800 dark:text-blue-200 font-mono">
+                        {resetPasswordData.password}
+                      </code>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(resetPasswordData.password);
+                          toast({ title: "Copied!", description: "Password copied to clipboard" });
+                        }}
+                        className="h-7 w-7 p-0"
+                      >
+                        📋
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                  ⚠️ Share this password securely with the user. They should change it after first login.
+                </p>
+              </div>
+              
+              <div className="flex justify-end">
+                <Button onClick={() => setResetPasswordData(null)}>Close</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
