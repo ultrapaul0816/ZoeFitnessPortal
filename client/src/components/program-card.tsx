@@ -1,13 +1,7 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Heart, Play } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import ProgramWorkouts from "@/components/program-workouts";
+import { Calendar, Target, Dumbbell, Baby } from "lucide-react";
 
 interface ProgramCardProps {
   memberProgram: any;
@@ -16,102 +10,68 @@ interface ProgramCardProps {
 
 export default function ProgramCard({ memberProgram, userId }: ProgramCardProps) {
   const { program } = memberProgram;
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [showWorkouts, setShowWorkouts] = useState(false);
+  const [, navigate] = useLocation();
 
-  const saveWorkoutMutation = useMutation({
-    mutationFn: async () => {
-      // For now, we'll use the first workout of the program
-      const response = await apiRequest("POST", "/api/workouts/save", {
-        userId,
-        workoutId: "sample-workout-id", // This would come from selecting a specific workout
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Workout Saved!",
-        description: "Added to your saved workouts list.",
-      });
-    },
-    onError: () => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save workout.",
-      });
-    },
-  });
-
-  const progressPercentage = (memberProgram.progress / program.workoutCount) * 100;
-
-  const getStatusBadge = () => {
-    if (memberProgram.progress === program.workoutCount) {
-      return <Badge variant="secondary">Completed</Badge>;
+  const handleStartProgram = () => {
+    if (program.name === "Your Postpartum Strength Recovery Program") {
+      navigate("/heal-your-core");
     }
-    if (memberProgram.isActive) {
-      return <Badge>Active</Badge>;
-    }
-    return <Badge variant="outline">Inactive</Badge>;
   };
 
   return (
-    <>
-    <Card className="overflow-hidden workout-card-hover shadow-sm">
-      <img
-        src={program.imageUrl}
-        alt={`${program.name} workout session`}
-        className="w-full h-48 object-cover"
-      />
+    <Card 
+      className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+      data-testid={`card-program-${program.id}`}
+    >
+      {/* Program Cover Image */}
+      <div className="relative p-3">
+        <img
+          src={program.imageUrl}
+          alt={`${program.name} program`}
+          className="w-full h-auto rounded-lg"
+        />
+      </div>
+
       <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-lg font-bold text-foreground">{program.name}</h3>
-          {getStatusBadge()}
+        <div className="mb-3">
+          <h3 className="font-semibold text-lg">{program.name}</h3>
         </div>
         
-        <p className="text-muted-foreground text-sm mb-4">{program.description}</p>
-        
-        {/* Progress */}
-        <div className="mb-4">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="font-medium text-foreground">
-              {memberProgram.progress}/{program.workoutCount} {program.workoutCount > 50 ? 'workouts' : 'days'}
-            </span>
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+          {program.description}
+        </p>
+
+        <div className="space-y-3 mb-4">
+          <div className="flex items-center gap-2 text-sm">
+            <Calendar className="w-4 h-4 text-primary" />
+            <span>{program.duration}</span>
           </div>
-          <Progress value={progressPercentage} className="h-2" />
+          <div className="flex items-center gap-2 text-sm">
+            <Target className="w-4 h-4 text-primary" />
+            <span>{program.level} level</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <Dumbbell className="w-4 h-4 text-primary" />
+            <span>{program.equipment}</span>
+          </div>
         </div>
 
-        <div className="flex gap-3">
-          <Button
-            className="flex-1"
-            onClick={() => setShowWorkouts(true)}
-            data-testid={`button-continue-${program.id}`}
+        <div className="space-y-3">
+          <Button 
+            onClick={handleStartProgram}
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-6 shadow-lg hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-200 ease-out border-0 relative overflow-hidden group rounded-lg hover:bg-gradient-to-l focus:ring-4 focus:ring-pink-300 active:shadow-inner" 
+            data-testid={`button-start-${program.id}`}
           >
-            <Play className="w-4 h-4 mr-2" />
-            {memberProgram.progress === program.workoutCount ? "Review" : "Continue"}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+            <Baby className="w-5 h-5 mr-2 animate-bounce group-hover:animate-pulse group-hover:scale-110 transition-all duration-300" />
+            <span className="relative z-10 text-lg font-semibold tracking-wide group-hover:tracking-wider transition-all duration-200">Start Program</span>
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => saveWorkoutMutation.mutate()}
-            disabled={saveWorkoutMutation.isPending}
-            data-testid={`button-save-${program.id}`}
-          >
-            <Heart className="w-5 h-5" />
-          </Button>
+          <p className="text-xs text-center text-green-600 font-medium">
+            ✓ You have full access to this program
+          </p>
         </div>
       </CardContent>
     </Card>
-    {showWorkouts && (
-      <ProgramWorkouts
-        program={program}
-        memberProgram={memberProgram}
-        userId={userId}
-        onClose={() => setShowWorkouts(false)}
-      />
-    )}
-    </>
   );
 }
