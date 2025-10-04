@@ -587,43 +587,33 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/0 to-pink-600/0 group-hover:from-pink-400/10 group-hover:to-pink-600/10 transition-all duration-300 pointer-events-none"></div>
           </button>
 
-          {/* Profile Completion Checklist */}
+          {/* Profile Completion Progress */}
           {profileCompleteness && !profileCompleteness.isComplete && (
-            <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-lg p-6 mb-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Complete Your Profile</h3>
-                    <p className="text-sm text-gray-600">
-                      {profileCompleteness.missingRequiredCount} required field{profileCompleteness.missingRequiredCount > 1 ? 's' : ''} remaining
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900 mb-1">
-                    {profileCompleteness.completionPercentage}%
-                  </div>
-                  <div className="w-16 bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-pink-500 to-rose-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${profileCompleteness.completionPercentage}%` }}
-                    />
-                  </div>
-                </div>
+            <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6">
+              {/* Header with percentage */}
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-semibold text-gray-900">Profile Progress</h3>
+                <span className="text-2xl font-bold text-pink-600">{profileCompleteness.completionPercentage}%</span>
               </div>
 
-              <div className="space-y-2">
+              {/* Progress bar */}
+              <div className="w-full bg-gray-100 rounded-full h-3 mb-4">
+                <div 
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${profileCompleteness.completionPercentage}%` }}
+                />
+              </div>
+
+              {/* Fields list */}
+              <div className="space-y-1.5 text-sm">
                 {profileCompleteness.requiredFields.map((field) => (
-                  <div key={field.field} className="flex items-center space-x-2">
+                  <div key={field.field} className="flex items-center gap-2 text-gray-700">
                     {field.completed ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                     ) : (
-                      <Circle className="w-4 h-4 text-gray-400" />
+                      <div className="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0" />
                     )}
-                    <span className={`text-sm ${field.completed ? 'text-green-700' : 'text-gray-600'}`}>
+                    <span className={field.completed ? 'line-through text-gray-400' : ''}>
                       {field.label}
                     </span>
                   </div>
@@ -631,17 +621,17 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                 
                 {profileCompleteness.optionalFields.length > 0 && (
                   <>
-                    <div className="pt-2">
-                      <h4 className="text-xs font-medium text-gray-500 mb-1">Optional (for better experience):</h4>
+                    <div className="pt-2 pb-1">
+                      <span className="text-xs text-gray-400 uppercase tracking-wide">Optional</span>
                     </div>
                     {profileCompleteness.optionalFields.map((field) => (
-                      <div key={field.field} className="flex items-center space-x-2">
+                      <div key={field.field} className="flex items-center gap-2 text-gray-500">
                         {field.completed ? (
-                          <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                          <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
                         ) : (
-                          <Circle className="w-4 h-4 text-gray-300" />
+                          <div className="w-4 h-4 rounded-full border-2 border-gray-200 flex-shrink-0" />
                         )}
-                        <span className={`text-sm ${field.completed ? 'text-blue-700' : 'text-gray-500'}`}>
+                        <span className={field.completed ? 'line-through text-gray-300' : ''}>
                           {field.label}
                         </span>
                       </div>
