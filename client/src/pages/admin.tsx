@@ -1470,15 +1470,14 @@ The Stronger With Zoe Team`)}
             name="programId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Assign Program</FormLabel>
+                <FormLabel>Assign Program *</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger data-testid="select-program">
-                      <SelectValue placeholder="Select program (optional)" />
+                      <SelectValue placeholder="Select program" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="none">No Program</SelectItem>
                     {programs.map((program) => (
                       <SelectItem key={program.id} value={program.id}>
                         {program.name}
@@ -1487,7 +1486,7 @@ The Stronger With Zoe Team`)}
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-gray-500 mt-1">
-                  Enroll user in a program they purchased from Shopify
+                  Required - User needs a program to access the app
                 </p>
                 <FormMessage />
               </FormItem>

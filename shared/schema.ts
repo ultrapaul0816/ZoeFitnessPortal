@@ -267,7 +267,7 @@ export const adminCreateUserSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   phone: z.string().optional(),
-  programId: z.string().optional(), // Optional program enrollment
+  programId: z.string().min(1, "Please select a program"), // Required program enrollment
   isAdmin: z.boolean().default(false),
   validFrom: z.date().optional(),
   validUntil: z.date().optional(),
