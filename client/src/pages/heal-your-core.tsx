@@ -25,7 +25,7 @@ import coreBreathDiagramImage from "@assets/Screenshot 2025-09-21 at 16.35.43_17
 import pressureManagementImage from "@assets/Screenshot 2025-09-21 at 16.35.50_1758452773516.png";
 import breathCoordinationImage from "@assets/Screenshot 2025-09-21 at 16.36.02_1758452773500.png";
 import zoeLogoImage from "@assets/Screenshot_2025-09-22_at_13.03.07-removebg-preview_1758527068639.png";
-import yogaMatImage from "@assets/Screenshot 2025-09-22 at 13.29.38_1758528078678.png";
+import yogaMatImage from "@assets/WhatsApp Image 2025-10-04 at 10.26.35_1759554817951.jpeg";
 import yogaBlocksImage from "@assets/Screenshot 2025-09-22 at 13.29.49_1758528078677.png";
 import miniResistanceBandsImage from "@assets/Screenshot 2025-09-22 at 13.29.57_1758528078677.png";
 import miniPilatesBallImage from "@assets/Screenshot 2025-09-22 at 13.30.04_1758528078677.png";
