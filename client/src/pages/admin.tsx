@@ -946,34 +946,6 @@ export default function Admin() {
                         </p>
                       </div>
                     </div>
-
-                    {/* Deactivate Member */}
-                    <div className="pt-3 border-t">
-                      <Label className="text-xs text-red-600 font-semibold">Danger Zone</Label>
-                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-red-900">Deactivate Member</p>
-                            <p className="text-xs text-red-700 mt-1">
-                              This will immediately revoke access to all programs
-                            </p>
-                          </div>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => {
-                              if (confirm(`Are you sure you want to deactivate ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
-                                deactivateMemberMutation.mutate(selectedMember.id);
-                              }
-                            }}
-                            disabled={deactivateMemberMutation.isPending}
-                            data-testid="button-deactivate-member"
-                          >
-                            Deactivate
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
@@ -1186,6 +1158,34 @@ export default function Admin() {
                       <p className="text-xs text-muted-foreground">
                         Grant admin access to manage users and content
                       </p>
+                    </div>
+                  </div>
+
+                  {/* Deactivate Member */}
+                  <div className="pt-3 border-t">
+                    <Label className="text-xs text-red-600 font-semibold">Danger Zone</Label>
+                    <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-red-900">Deactivate Member</p>
+                          <p className="text-xs text-red-700 mt-1">
+                            This will immediately revoke access to all programs
+                          </p>
+                        </div>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm(`Are you sure you want to deactivate ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                              deactivateMemberMutation.mutate(selectedMember.id);
+                            }
+                          }}
+                          disabled={deactivateMemberMutation.isPending}
+                          data-testid="button-deactivate-member"
+                        >
+                          Deactivate
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
