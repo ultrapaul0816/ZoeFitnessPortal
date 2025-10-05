@@ -2054,163 +2054,48 @@ The Stronger With Zoe Team`)}
         </DialogTitle>
       </DialogHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Enter first name" data-testid="input-first-name" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Enter last name" data-testid="input-last-name" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input {...field} type="email" placeholder="Enter email address" data-testid="input-email" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input {...field} type="tel" placeholder="Enter phone number" data-testid="input-phone" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="programId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Assign Program *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger data-testid="select-program">
-                      <SelectValue placeholder="Select program" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {programs.map((program) => (
-                      <SelectItem key={program.id} value={program.id}>
-                        {program.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-gray-500 mt-1">
-                  Required - User needs a program to access the app
-                </p>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="hasWhatsAppSupport"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value} 
-                    onCheckedChange={field.onChange}
-                    data-testid="checkbox-whatsapp-support"
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>WhatsApp Community Support</FormLabel>
-                  <p className="text-xs text-muted-foreground">
-                    Grant access to WhatsApp community support
-                  </p>
-                </div>
-              </FormItem>
-            )}
-          />
-          
-          {form.watch("hasWhatsAppSupport") && (
-            <FormField
-              control={form.control}
-              name="whatsAppSupportDuration"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>WhatsApp Support Duration</FormLabel>
-                  <Select 
-                    onValueChange={(value) => field.onChange(parseInt(value))} 
-                    value={field.value?.toString()}
-                  >
+          {/* Section 1: Basic Information */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">1. Basic Information</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <SelectTrigger data-testid="select-whatsapp-duration">
-                        <SelectValue placeholder="Select duration" />
-                      </SelectTrigger>
+                      <Input {...field} placeholder="Enter first name" data-testid="input-first-name" />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="3">3 months</SelectItem>
-                      <SelectItem value="6">6 months</SelectItem>
-                      <SelectItem value="12">12 months</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-          
-          <div className="grid grid-cols-2 gap-4">
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter last name" data-testid="input-last-name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
             <FormField
               control={form.control}
-              name="validFrom"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">Valid From</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="date"
-                        value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onChange={(e) => {
-                          const date = e.target.value ? new Date(e.target.value) : undefined;
-                          field.onChange(date);
-                        }}
-                        className="pr-10"
-                        data-testid="input-valid-from"
-                      />
-                      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                    </div>
+                    <Input {...field} type="email" placeholder="Enter email address" data-testid="input-email" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -2219,56 +2104,192 @@ The Stronger With Zoe Team`)}
             
             <FormField
               control={form.control}
-              name="validUntil"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">Valid Until</FormLabel>
+                  <FormLabel>Phone Number</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="date"
-                        value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onChange={(e) => {
-                          const date = e.target.value ? new Date(e.target.value) : undefined;
-                          field.onChange(date);
-                        }}
-                        className="pr-10"
-                        data-testid="input-valid-until"
-                      />
-                      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                    </div>
+                    <Input {...field} type="tel" placeholder="Enter phone number" data-testid="input-phone" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          
-          <FormField
-            control={form.control}
-            name="isAdmin"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value} 
-                    onCheckedChange={field.onChange}
-                    data-testid="checkbox-is-admin"
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Administrator Privileges</FormLabel>
-                  <p className="text-xs text-muted-foreground">
-                    Grant admin access to manage users and content
-                  </p>
-                </div>
-              </FormItem>
-            )}
-          />
 
-          {/* Password Options */}
-          <div className="space-y-3 border-t pt-4">
-            <Label className="text-sm font-semibold">Password Setup</Label>
+          {/* Section 2: Program Management */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">2. Program Management</h3>
+            <FormField
+              control={form.control}
+              name="programId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Assign Program *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger data-testid="select-program">
+                        <SelectValue placeholder="Select program" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {programs.map((program) => (
+                        <SelectItem key={program.id} value={program.id}>
+                          {program.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Required - User needs a program to access the app
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Section 3: WhatsApp Community Support */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">3. WhatsApp Community Support</h3>
+            <FormField
+              control={form.control}
+              name="hasWhatsAppSupport"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox 
+                      checked={field.value} 
+                      onCheckedChange={field.onChange}
+                      data-testid="checkbox-whatsapp-support"
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Grant WhatsApp Community Access</FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      Provide access to WhatsApp community support
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
+            
+            {form.watch("hasWhatsAppSupport") && (
+              <FormField
+                control={form.control}
+                name="whatsAppSupportDuration"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Support Duration</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(parseInt(value))} 
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger data-testid="select-whatsapp-duration">
+                          <SelectValue placeholder="Select duration" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="3">3 months</SelectItem>
+                        <SelectItem value="6">6 months</SelectItem>
+                        <SelectItem value="12">12 months</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
+
+          {/* Section 4: Account Access Period */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">4. Account Access Period</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="validFrom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">Valid From</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type="date"
+                          value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                          onChange={(e) => {
+                            const date = e.target.value ? new Date(e.target.value) : undefined;
+                            field.onChange(date);
+                          }}
+                          className="pr-10"
+                          data-testid="input-valid-from"
+                        />
+                        <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="validUntil"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">Valid Until</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type="date"
+                          value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                          onChange={(e) => {
+                            const date = e.target.value ? new Date(e.target.value) : undefined;
+                            field.onChange(date);
+                          }}
+                          className="pr-10"
+                          data-testid="input-valid-until"
+                        />
+                        <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Section 5: Admin Privileges */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">5. Admin Privileges</h3>
+            <FormField
+              control={form.control}
+              name="isAdmin"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox 
+                      checked={field.value} 
+                      onCheckedChange={field.onChange}
+                      data-testid="checkbox-is-admin"
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Grant Administrator Access</FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      Allow this user to manage other users and content
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Section 6: Password Setup */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">6. Password Setup</h3>
             <div className="flex gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -2314,7 +2335,7 @@ The Stronger With Zoe Team`)}
             )}
           </div>
           
-          <div className="flex justify-end space-x-2 pt-4">
+          <div className="flex justify-end space-x-2 pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
