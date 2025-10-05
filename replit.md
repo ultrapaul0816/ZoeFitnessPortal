@@ -51,6 +51,12 @@ PostgreSQL serves as the primary database, accessed via Drizzle ORM for type-saf
 ## Authentication and Authorization
 Authentication uses a session-based approach, validating user credentials against the database. Role-based access control differentiates between regular users and administrators. The login flow includes mandatory acceptance of both terms and conditions and health disclaimer: users cannot log in until they accept both, which are then permanently saved to their profile. Both terms and disclaimer appear automatically during login for any user who hasn't yet accepted them, with distinct visual styling (blue gradient for terms, pink gradient for disclaimer).
 
+### Promotional Content Visibility
+WhatsApp Community promotional sections are conditionally displayed based on user subscription status:
+- Users **without** WhatsApp support see promotional sections encouraging them to join (in program pages and hamburger menu)
+- Users **with** active WhatsApp support do not see promotional content
+- Logic checks `user.hasWhatsAppSupport` flag to control visibility
+
 ## Technical Implementations
 The application features a comprehensive 6-week program structure with detailed exercises, coach notes, and safety tips. YouTube videos are integrated for exercises, with clickable buttons and playlist functionality. Content is organized into collapsible sections with distinct gradient color themes for each week. Responsive design ensures optimal viewing on both mobile and desktop. Key features include:
 - **What's Next Tab**: Includes "Red Flag Movements to Avoid," "Return to Impact Readiness Test," and a downloadable PDF "Progress Tracker."
