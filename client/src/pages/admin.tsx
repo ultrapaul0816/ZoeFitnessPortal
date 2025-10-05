@@ -929,21 +929,15 @@ export default function Admin() {
                         </div>
                       </div>
 
-                      {/* Password Reset */}
+                      {/* Password Info */}
                       <div className="space-y-2">
-                        <Label className="text-xs text-muted-foreground">Password Management</Label>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full"
-                          onClick={() => setResetPasswordMember(selectedMember)}
-                          data-testid="button-reset-password"
-                        >
-                          Reset Password
-                        </Button>
-                        <p className="text-xs text-muted-foreground">
-                          New password will be shown in a notification
-                        </p>
+                        <Label className="text-xs text-muted-foreground">Password</Label>
+                        <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <p className="text-sm font-mono text-gray-400">••••••••••••</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Use Edit mode to reset password
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1101,22 +1095,22 @@ export default function Admin() {
 
                   {selectedMember.hasWhatsAppSupport && (
                     <div>
-                      <Label>WhatsApp Support Duration</Label>
-                      <Select 
-                        value={selectedMember.whatsAppSupportDuration?.toString()}
-                        onValueChange={(value) => 
-                          setSelectedMember({...selectedMember, whatsAppSupportDuration: parseInt(value)})
+                      <Label className="text-xs text-muted-foreground">WhatsApp Support Duration</Label>
+                      <p className="text-sm font-medium mt-1">
+                        {selectedMember.whatsAppSupportDuration 
+                          ? `${selectedMember.whatsAppSupportDuration} months`
+                          : 'Not set'
                         }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select duration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="3">3 months</SelectItem>
-                          <SelectItem value="6">6 months</SelectItem>
-                          <SelectItem value="12">12 months</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      </p>
+                      {selectedMember.whatsAppSupportExpiryDate && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Expires: {new Date(selectedMember.whatsAppSupportExpiryDate).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -1159,6 +1153,23 @@ export default function Admin() {
                         Grant admin access to manage users and content
                       </p>
                     </div>
+                  </div>
+
+                  {/* Password Reset */}
+                  <div className="space-y-2 pt-3 border-t">
+                    <Label className="text-xs text-muted-foreground">Password Management</Label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setResetPasswordMember(selectedMember)}
+                      data-testid="button-reset-password"
+                    >
+                      Reset Password
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      New password will be shown in a notification
+                    </p>
                   </div>
 
                   {/* Deactivate Member */}
