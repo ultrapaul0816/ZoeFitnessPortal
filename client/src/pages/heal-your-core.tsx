@@ -278,42 +278,33 @@ export default function HealYourCorePage() {
     return direction === 'prev' ? 'Go Back' : 'Continue';
   };
 
-  // Hardcode program ID for faster loading (no need to wait for programs query)
-  const HEAL_YOUR_CORE_PROGRAM_ID = "b03be40d-290e-4c96-bbb4-0267371c8024";
+  // Hardcode program details for instant loading (no slow database query needed)
+  const HEAL_YOUR_CORE_PROGRAM = {
+    id: "b03be40d-290e-4c96-bbb4-0267371c8024",
+    name: "Your Postpartum Strength Recovery Program",
+    description: "A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.",
+    level: "Postnatal",
+    duration: "6 Weeks",
+    equipment: "Minimal Equipment",
+    imageUrl: "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png",
+    price: 250000,
+    workoutCount: 22,
+    isActive: true,
+    isVisible: true,
+  };
+
+  const healYourCoreProgram = HEAL_YOUR_CORE_PROGRAM;
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      setProgramId(HEAL_YOUR_CORE_PROGRAM_ID); // Set immediately
+      setProgramId(HEAL_YOUR_CORE_PROGRAM.id); // Set immediately
     } else {
       navigate("/login");
     }
   }, [navigate]);
-
-  // Fetch fresh user data from API to get latest WhatsApp support status
-  const { data: freshUserData } = useQuery({
-    queryKey: ["/api/users", user?.id],
-    enabled: !!user?.id,
-  });
-
-  // Update user state when fresh data arrives
-  useEffect(() => {
-    if (freshUserData) {
-      setUser(freshUserData as User);
-      // Also update localStorage to keep it in sync
-      localStorage.setItem("user", JSON.stringify(freshUserData));
-    }
-  }, [freshUserData]);
-
-  // Get Heal Your Core program (runs in parallel with access check now)
-  const { data: programs } = useQuery({
-    queryKey: ["/api/programs"],
-    enabled: !!user,
-  });
-
-  const healYourCoreProgram = Array.isArray(programs) ? programs.find((p: any) => p.name === "Your Postpartum Strength Recovery Program") : null;
 
   // Check program access (now runs immediately in parallel with programs query)
   const { data: accessData, isLoading: isLoadingAccess } = useQuery({
