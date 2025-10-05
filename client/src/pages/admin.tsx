@@ -936,7 +936,7 @@ export default function Admin() {
                       <div className="space-y-2">
                         <Label className="text-xs text-muted-foreground">Password</Label>
                         <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                          <p className="text-sm font-mono text-gray-400">••••••••••••</p>
+                          <p className="text-sm font-mono text-gray-700 break-all">{selectedMember.password}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             Use Edit mode to reset password
                           </p>
