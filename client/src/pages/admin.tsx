@@ -887,45 +887,48 @@ export default function Admin() {
                     )}
                   </div>
 
-                  {/* Member Actions */}
+                  {/* WhatsApp Community */}
                   <div className="space-y-4">
                     <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
                       <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
-                      Member Actions
+                      WhatsApp Community
                     </h4>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {/* Extend Validity Buttons */}
+                      {/* WhatsApp Support Status */}
                       <div className="space-y-2">
-                        <Label className="text-xs text-muted-foreground">Extend Access Period</Label>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 1 })}
-                            disabled={extendValidityMutation.isPending}
-                            data-testid="button-extend-1month"
-                          >
-                            +1 Month
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 3 })}
-                            disabled={extendValidityMutation.isPending}
-                            data-testid="button-extend-3months"
-                          >
-                            +3 Months
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 6 })}
-                            disabled={extendValidityMutation.isPending}
-                            data-testid="button-extend-6months"
-                          >
-                            +6 Months
-                          </Button>
+                        <Label className="text-xs text-muted-foreground">Support Status</Label>
+                        <div className="p-3 bg-white border-2 border-gray-100 rounded-lg">
+                          {selectedMember.hasWhatsAppSupport && selectedMember.whatsAppSupportExpiryDate ? (
+                            <>
+                              {new Date(selectedMember.whatsAppSupportExpiryDate) > new Date() ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                  <p className="text-sm font-medium text-green-700">Active</p>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                  <p className="text-sm font-medium text-gray-600">Expired</p>
+                                </div>
+                              )}
+                              <p className="text-xs text-muted-foreground mt-2">
+                                Duration: {selectedMember.whatsAppSupportDuration} months
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Expires: {new Date(selectedMember.whatsAppSupportExpiryDate).toLocaleDateString('en-US', { 
+                                  year: 'numeric', 
+                                  month: 'long', 
+                                  day: 'numeric' 
+                                })}
+                              </p>
+                            </>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              <p className="text-sm font-medium text-gray-600">No Support</p>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1170,6 +1173,40 @@ export default function Admin() {
                     <p className="text-xs text-muted-foreground">
                       New password will be shown in a notification
                     </p>
+                  </div>
+
+                  {/* Extend Access Period */}
+                  <div className="space-y-2 pt-3 border-t">
+                    <Label className="text-xs text-muted-foreground">Extend Access Period</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 1 })}
+                        disabled={extendValidityMutation.isPending}
+                        data-testid="button-extend-1month"
+                      >
+                        +1 Month
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 3 })}
+                        disabled={extendValidityMutation.isPending}
+                        data-testid="button-extend-3months"
+                      >
+                        +3 Months
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 6 })}
+                        disabled={extendValidityMutation.isPending}
+                        data-testid="button-extend-6months"
+                      >
+                        +6 Months
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Deactivate Member */}
