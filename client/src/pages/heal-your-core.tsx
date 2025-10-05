@@ -318,7 +318,7 @@ export default function HealYourCorePage() {
   }, [healYourCoreProgram]);
 
   // Check program access
-  const { data: accessData } = useQuery({
+  const { data: accessData, isLoading: isLoadingAccess } = useQuery({
     queryKey: ["/api/program-access", user?.id, programId],
     enabled: !!user && !!programId,
   });
@@ -354,6 +354,11 @@ export default function HealYourCorePage() {
   };
 
   if (!user || !healYourCoreProgram) {
+    return <div>Loading...</div>;
+  }
+
+  // Show loading state while checking access
+  if (isLoadingAccess) {
     return <div>Loading...</div>;
   }
 
