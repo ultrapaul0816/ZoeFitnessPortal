@@ -756,11 +756,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/users/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const updateData = req.body;
+      const updateData = { ...req.body };
 
       const user = await storage.getUser(id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
+      }
+
+      // Convert date strings to Date objects
+      if (updateData.validFrom && typeof updateData.validFrom === "string") {
+        updateData.validFrom = new Date(updateData.validFrom);
+      }
+      if (updateData.validUntil && typeof updateData.validUntil === "string") {
+        updateData.validUntil = new Date(updateData.validUntil);
       }
 
       // Calculate WhatsApp support expiry date if duration is provided

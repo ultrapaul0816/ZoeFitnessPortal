@@ -1098,22 +1098,22 @@ export default function Admin() {
 
                   {selectedMember.hasWhatsAppSupport && (
                     <div>
-                      <Label className="text-xs text-muted-foreground">WhatsApp Support Duration</Label>
-                      <p className="text-sm font-medium mt-1">
-                        {selectedMember.whatsAppSupportDuration 
-                          ? `${selectedMember.whatsAppSupportDuration} months`
-                          : 'Not set'
+                      <Label>WhatsApp Support Duration</Label>
+                      <Select 
+                        value={selectedMember.whatsAppSupportDuration?.toString()}
+                        onValueChange={(value) => 
+                          setSelectedMember({...selectedMember, whatsAppSupportDuration: parseInt(value)})
                         }
-                      </p>
-                      {selectedMember.whatsAppSupportExpiryDate && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Expires: {new Date(selectedMember.whatsAppSupportExpiryDate).toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}
-                        </p>
-                      )}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select duration" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3">3 months</SelectItem>
+                          <SelectItem value="6">6 months</SelectItem>
+                          <SelectItem value="12">12 months</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   )}
 
