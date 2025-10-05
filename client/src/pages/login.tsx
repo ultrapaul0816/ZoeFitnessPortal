@@ -11,13 +11,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { loginSchema, type LoginData } from "@shared/schema";
-import { Shield, AlertTriangle } from "lucide-react";
+import { Shield, AlertTriangle, Loader2, CheckCircle2, XCircle } from "lucide-react";
+
+type LoginState = 'idle' | 'validating' | 'success' | 'error';
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [loginState, setLoginState] = useState<LoginState>('idle');
 
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
