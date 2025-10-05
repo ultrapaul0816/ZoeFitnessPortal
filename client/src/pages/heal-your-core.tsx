@@ -306,22 +306,25 @@ export default function HealYourCorePage() {
     }
   }, [navigate]);
 
-  // Check program access (now runs immediately in parallel with programs query)
+  // Check program access (cached for 5 minutes to avoid redundant checks)
   const { data: accessData, isLoading: isLoadingAccess } = useQuery({
     queryKey: ["/api/program-access", user?.id, programId],
     enabled: !!user && !!programId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  // Get knowledge articles
+  // Get knowledge articles (cached for 10 minutes - rarely changes)
   const { data: knowledgeArticles } = useQuery({
     queryKey: ["/api/knowledge-articles", programId],
     enabled: !!programId && (accessData as any)?.hasAccess,
+    staleTime: 10 * 60 * 1000, // Cache for 10 minutes
   });
 
-  // Get progress entries
+  // Get progress entries (cached for 1 minute - updates frequently)
   const { data: progressEntries } = useQuery({
     queryKey: ["/api/progress-tracking", user?.id, programId],
     enabled: !!user && !!programId && (accessData as any)?.hasAccess,
+    staleTime: 1 * 60 * 1000, // Cache for 1 minute
   });
 
   // Check if user should see disclaimer modal on this session
@@ -343,12 +346,29 @@ export default function HealYourCorePage() {
   };
 
   if (!user || !healYourCoreProgram) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background p-3 sm:p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="h-8 w-32 bg-gray-200 rounded animate-pulse mb-6"></div>
+          <div className="h-64 bg-gray-200 rounded-lg animate-pulse"></div>
+        </div>
+      </div>
+    );
   }
 
   // Show loading state while checking access
   if (isLoadingAccess) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background p-3 sm:p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="h-8 w-32 bg-gray-200 rounded animate-pulse mb-6"></div>
+          <div className="space-y-4">
+            <div className="h-12 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-64 bg-gray-200 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!(accessData as any)?.hasAccess) {
