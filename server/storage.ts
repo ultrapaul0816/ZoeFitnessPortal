@@ -1301,8 +1301,6 @@ class DatabaseStorage implements IStorage {
     return [];
   }
   async hasProgramAccess(userId: string, programId: string): Promise<boolean> {
-    console.log(`[ACCESS CHECK] Checking access for user ${userId} to program ${programId}`);
-    
     // Check both programPurchases (for direct purchases) and memberPrograms (for admin enrollments)
     const purchases = await this.db
       .select()
@@ -1315,10 +1313,7 @@ class DatabaseStorage implements IStorage {
         )
       );
     
-    console.log(`[ACCESS CHECK] Found ${purchases.length} purchases`);
-    
     if (purchases.length > 0) {
-      console.log(`[ACCESS CHECK] Access granted via purchase`);
       return true;
     }
     
@@ -1334,11 +1329,7 @@ class DatabaseStorage implements IStorage {
         )
       );
     
-    console.log(`[ACCESS CHECK] Found ${enrollments.length} enrollments`);
-    const hasAccess = enrollments.length > 0;
-    console.log(`[ACCESS CHECK] Final access result: ${hasAccess}`);
-    
-    return hasAccess;
+    return enrollments.length > 0;
   }
   async createProgressEntry(
     entry: InsertProgressTracking

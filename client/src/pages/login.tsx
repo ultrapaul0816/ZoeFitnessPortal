@@ -40,6 +40,12 @@ export default function Login() {
     },
     onSuccess: (data) => {
       localStorage.setItem("user", JSON.stringify(data.user));
+      
+      // If user just accepted disclaimer, set flag to show welcome modal on first program access
+      if (showDisclaimer && disclaimerAccepted) {
+        sessionStorage.setItem("showDisclaimerOnSession", "true");
+      }
+      
       toast({
         title: "Welcome back!",
         description: "Successfully signed in to your account.",
