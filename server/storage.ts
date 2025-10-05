@@ -1301,6 +1301,7 @@ class DatabaseStorage implements IStorage {
     return [];
   }
   async hasProgramAccess(userId: string, programId: string): Promise<boolean> {
+    // Check both programPurchases (for direct purchases) and memberPrograms (for admin enrollments)
     const purchases = await this.db
       .select()
       .from(programPurchases)
@@ -1311,7 +1312,24 @@ class DatabaseStorage implements IStorage {
           eq(programPurchases.status, "active")
         )
       );
-    return purchases.length > 0;
+    
+    if (purchases.length > 0) {
+      return true;
+    }
+    
+    // Also check memberPrograms table for admin enrollments
+    const enrollments = await this.db
+      .select()
+      .from(memberPrograms)
+      .where(
+        and(
+          eq(memberPrograms.userId, userId),
+          eq(memberPrograms.programId, programId),
+          eq(memberPrograms.isActive, true)
+        )
+      );
+    
+    return enrollments.length > 0;
   }
   async createProgressEntry(
     entry: InsertProgressTracking

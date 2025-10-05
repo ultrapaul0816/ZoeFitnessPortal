@@ -22,6 +22,7 @@ The application features a comprehensive 6-week program structure with detailed 
 - **What's Next Tab**: Includes "Red Flag Movements to Avoid," "Return to Impact Readiness Test," and a downloadable PDF "Progress Tracker."
 - **Nutrition Section**: Features modernized badge designs, enhanced readability, and color-coordinated card styling.
 - **Profile Personalization**: Extensive fields for postpartum-specific fitness customization.
+- **Program Access Control**: The `hasProgramAccess` function checks both the `programPurchases` table (for direct purchases) and the `memberPrograms` table (for admin enrollments), ensuring enrolled users can access program content.
 
 ### Deployment Architecture
 - **Development Mode**: Uses Vite dev server with HMR.
