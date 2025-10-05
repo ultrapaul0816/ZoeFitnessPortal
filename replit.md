@@ -13,10 +13,29 @@ The backend is an Express.js and TypeScript RESTful API. It uses a modular route
 
 ### Admin Panel Architecture
 The admin panel features a dual-mode dialog system with strict separation between viewing and editing:
-- **View Dialog (Read-Only)**: Displays member information without any editable controls. Shows basic info, access period, enrolled programs, WhatsApp Community status (with visual indicators for Active/Expired/No Support), duration, expiry dates, and actual password in plain text. No action buttons except Edit and Close.
-- **Edit Dialog (Full Control)**: Provides complete editing capabilities including basic info modification, WhatsApp support setup with duration selection, validity period adjustments, admin privileges toggle, password reset functionality, access period extension (+1/+3/+6 months), and member deactivation in a danger zone.
-- **WhatsApp Support Management**: Controlled components using `checked` for checkbox and `value` for dropdown. Auto-calculates expiry dates server-side. Displays support status with color-coded indicators (green for active, gray for expired/none).
-- **Password Management**: View mode shows actual password in monospace font for easy copying. Reset functionality is only available in edit mode.
+
+**View Dialog (Read-Only):**
+- Basic info, access period, enrolled programs
+- WhatsApp Community status with visual indicators (Active/Expired/No Support)
+- Actual password displayed in monospace font for easy copying
+- Only Edit and Close buttons available
+
+**Edit Dialog (Organized Sections):**
+1. **Basic Information**: Name, email, phone number
+2. **Program Management**: 
+   - View currently enrolled programs with remove option
+   - Add new program enrollment
+   - Extend program access by 12 months (moved near programs for logical placement)
+3. **WhatsApp Community Support**:
+   - If already has support: Shows status, "Extend by 3 Months" and "Remove Access" options (not easily changeable)
+   - If no support: Option to grant with 3/6/12 month duration selection
+   - Auto-calculates expiry dates
+4. **Account Access Period**: Valid from/until dates (overall account access, separate from programs)
+5. **Admin Privileges**: Toggle for admin access
+6. **Password Management**: Reset password functionality
+7. **Danger Zone**: Account deactivation with clear warning
+
+This reorganized structure prevents accidental changes to WhatsApp support (requires explicit extend/remove actions), clarifies the purpose of each setting with section headers, and groups related functionality together logically.
 
 ## Data Storage Solutions
 PostgreSQL serves as the primary database, accessed via Drizzle ORM for type-safe operations. The data model includes users, fitness programs, workouts, member enrollments, community posts, notifications, and terms/conditions. User profiles store extensive personalization fields, including fitness level, delivery type, number of children, breastfeeding status, medical clearance, available equipment, workout frequency, preferred workout time, personal fitness goals, and physical limitations. Database migrations are managed with Drizzle Kit.

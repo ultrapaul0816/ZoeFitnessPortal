@@ -950,217 +950,334 @@ export default function Admin() {
               {/* EDIT MODE */}
               {selectedMember && memberViewMode === 'edit' && (
                 <div className="space-y-6 pt-2">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>First Name</Label>
-                      <Input 
-                        defaultValue={selectedMember.firstName}
-                        onChange={(e) => setSelectedMember({...selectedMember, firstName: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <Label>Last Name</Label>
-                      <Input 
-                        defaultValue={selectedMember.lastName}
-                        onChange={(e) => setSelectedMember({...selectedMember, lastName: e.target.value})}
-                      />
-                    </div>
-                  </div>
-
+                  {/* 1. BASIC INFO */}
                   <div>
-                    <Label>Email</Label>
-                    <Input 
-                      type="email"
-                      defaultValue={selectedMember.email}
-                      onChange={(e) => setSelectedMember({...selectedMember, email: e.target.value})}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Phone Number</Label>
-                    <Input 
-                      type="tel"
-                      defaultValue={selectedMember.phone || ''}
-                      onChange={(e) => setSelectedMember({...selectedMember, phone: e.target.value})}
-                    />
-                  </div>
-
-                  {/* Currently Enrolled Programs */}
-                  {memberEnrolledPrograms.length > 0 && (
-                    <div>
-                      <Label className="text-sm font-medium mb-2 block">Currently Enrolled Programs</Label>
-                      <div className="space-y-2">
-                        {memberEnrolledPrograms.map((enrollment: any) => {
-                          const program = programs.find(p => p.id === enrollment.programId);
-                          return (
-                            <div key={enrollment.id} className="p-2 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
-                              {program?.imageUrl && (
-                                <img 
-                                  src={program.imageUrl} 
-                                  alt={program.name}
-                                  className="w-8 h-8 rounded object-cover"
-                                />
-                              )}
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-green-800">{program?.name || 'Unknown Program'}</p>
-                                <p className="text-xs text-green-600">
-                                  Enrolled: {enrollment.enrolledAt && !isNaN(new Date(enrollment.enrolledAt).getTime()) 
-                                    ? new Date(enrollment.enrolledAt).toLocaleDateString()
-                                    : selectedMember.createdAt 
-                                      ? new Date(selectedMember.createdAt).toLocaleDateString()
-                                      : 'Unknown'}
-                                </p>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                onClick={async () => {
-                                  if (!confirm(`Remove ${program?.name} enrollment for ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
-                                    return;
-                                  }
-                                  
-                                  try {
-                                    const response = await fetch(`/api/member-programs/${enrollment.id}`, {
-                                      method: 'DELETE',
-                                    });
-
-                                    if (!response.ok) {
-                                      const errorData = await response.json();
-                                      throw new Error(errorData.message || 'Failed to remove enrollment');
-                                    }
-
-                                    await queryClient.refetchQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
-                                    toast({
-                                      variant: "success",
-                                      title: "Success",
-                                      description: `Removed ${program?.name} enrollment successfully`,
-                                    });
-                                  } catch (error) {
-                                    toast({
-                                      variant: "destructive",
-                                      title: "Error",
-                                      description: error instanceof Error ? error.message : "Failed to remove enrollment",
-                                    });
-                                  }
-                                }}
-                                data-testid={`button-remove-enrollment-${enrollment.id}`}
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </Button>
-                            </div>
-                          );
-                        })}
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Basic Information
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>First Name</Label>
+                          <Input 
+                            defaultValue={selectedMember.firstName}
+                            onChange={(e) => setSelectedMember({...selectedMember, firstName: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label>Last Name</Label>
+                          <Input 
+                            defaultValue={selectedMember.lastName}
+                            onChange={(e) => setSelectedMember({...selectedMember, lastName: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Email</Label>
+                        <Input 
+                          type="email"
+                          defaultValue={selectedMember.email}
+                          onChange={(e) => setSelectedMember({...selectedMember, email: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label>Phone Number</Label>
+                        <Input 
+                          type="tel"
+                          defaultValue={selectedMember.phone || ''}
+                          onChange={(e) => setSelectedMember({...selectedMember, phone: e.target.value})}
+                        />
                       </div>
                     </div>
-                  )}
+                  </div>
 
-                  <div>
-                    <Label>Assign Additional Program</Label>
-                    <Select 
-                      value={selectedProgramForMember}
-                      onValueChange={setSelectedProgramForMember}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select program to enroll" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No Program</SelectItem>
-                        {programs.filter(p => !memberEnrolledPrograms.some((e: any) => e.programId === p.id)).map((program) => (
-                          <SelectItem key={program.id} value={program.id}>
-                            {program.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  {/* 2. PROGRAM MANAGEMENT */}
+                  <div className="pt-3 border-t">
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Program Management
+                    </h4>
+                    <div className="space-y-3">
+                      {memberEnrolledPrograms.length > 0 && (
+                        <div>
+                          <Label className="text-sm font-medium mb-2 block">Currently Enrolled Programs</Label>
+                          <div className="space-y-2">
+                            {memberEnrolledPrograms.map((enrollment: any) => {
+                              const program = programs.find(p => p.id === enrollment.programId);
+                              return (
+                                <div key={enrollment.id} className="p-2 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                                  {program?.imageUrl && (
+                                    <img 
+                                      src={program.imageUrl} 
+                                      alt={program.name}
+                                      className="w-8 h-8 rounded object-cover"
+                                    />
+                                  )}
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium text-green-800">{program?.name || 'Unknown Program'}</p>
+                                    <p className="text-xs text-green-600">
+                                      Enrolled: {enrollment.enrolledAt && !isNaN(new Date(enrollment.enrolledAt).getTime()) 
+                                        ? new Date(enrollment.enrolledAt).toLocaleDateString()
+                                        : selectedMember.createdAt 
+                                          ? new Date(selectedMember.createdAt).toLocaleDateString()
+                                          : 'Unknown'}
+                                    </p>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={async () => {
+                                      if (!confirm(`Remove ${program?.name} enrollment for ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                                        return;
+                                      }
+                                      
+                                      try {
+                                        const response = await fetch(`/api/member-programs/${enrollment.id}`, {
+                                          method: 'DELETE',
+                                        });
+
+                                        if (!response.ok) {
+                                          const errorData = await response.json();
+                                          throw new Error(errorData.message || 'Failed to remove enrollment');
+                                        }
+
+                                        await queryClient.refetchQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
+                                        toast({
+                                          variant: "success",
+                                          title: "Success",
+                                          description: `Removed ${program?.name} enrollment successfully`,
+                                        });
+                                      } catch (error) {
+                                        toast({
+                                          variant: "destructive",
+                                          title: "Error",
+                                          description: error instanceof Error ? error.message : "Failed to remove enrollment",
+                                        });
+                                      }
+                                    }}
+                                    data-testid={`button-remove-enrollment-${enrollment.id}`}
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <Label>Add New Program</Label>
+                        <Select 
+                          value={selectedProgramForMember}
+                          onValueChange={setSelectedProgramForMember}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select program to enroll" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">No Program</SelectItem>
+                            {programs.filter(p => !memberEnrolledPrograms.some((e: any) => e.programId === p.id)).map((program) => (
+                              <SelectItem key={program.id} value={program.id}>
+                                {program.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Enroll user in an additional program (already enrolled programs are hidden)
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium mb-2 block">Extend Program Access</Label>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 12 })}
+                          disabled={extendValidityMutation.isPending}
+                          data-testid="button-extend-program-12months"
+                        >
+                          Extend by 12 Months
+                        </Button>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Extend member's access to all programs by 12 months
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. WHATSAPP COMMUNITY SUPPORT */}
+                  <div className="pt-3 border-t">
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      WhatsApp Community Support
+                    </h4>
+                    
+                    {selectedMember.hasWhatsAppSupport && selectedMember.whatsAppSupportExpiryDate ? (
+                      <div className="space-y-3">
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <p className="text-sm font-medium text-green-700">
+                              {new Date(selectedMember.whatsAppSupportExpiryDate) > new Date() ? 'Active' : 'Expired'}
+                            </p>
+                          </div>
+                          <p className="text-xs text-green-600">
+                            Duration: {selectedMember.whatsAppSupportDuration} months
+                          </p>
+                          <p className="text-xs text-green-600">
+                            Expires: {new Date(selectedMember.whatsAppSupportExpiryDate).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric' 
+                            })}
+                          </p>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => {
+                              const currentExpiry = new Date(selectedMember.whatsAppSupportExpiryDate!);
+                              const newExpiry = new Date(currentExpiry);
+                              newExpiry.setMonth(newExpiry.getMonth() + 3);
+                              setSelectedMember({
+                                ...selectedMember, 
+                                whatsAppSupportDuration: (selectedMember.whatsAppSupportDuration || 0) + 3,
+                                whatsAppSupportExpiryDate: newExpiry
+                              });
+                            }}
+                          >
+                            Extend by 3 Months
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => {
+                              if (confirm(`Remove WhatsApp support access for ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                                setSelectedMember({
+                                  ...selectedMember, 
+                                  hasWhatsAppSupport: false,
+                                  whatsAppSupportDuration: null,
+                                  whatsAppSupportExpiryDate: null
+                                });
+                              }
+                            }}
+                          >
+                            Remove Access
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <p className="text-sm text-gray-600">No WhatsApp support currently assigned</p>
+                        </div>
+                        
+                        <div>
+                          <Label>Grant WhatsApp Support</Label>
+                          <Select 
+                            value={selectedMember.hasWhatsAppSupport ? selectedMember.whatsAppSupportDuration?.toString() : ""}
+                            onValueChange={(value) => {
+                              const duration = parseInt(value);
+                              const now = new Date();
+                              const expiryDate = new Date(now);
+                              expiryDate.setMonth(expiryDate.getMonth() + duration);
+                              
+                              setSelectedMember({
+                                ...selectedMember, 
+                                hasWhatsAppSupport: true,
+                                whatsAppSupportDuration: duration,
+                                whatsAppSupportExpiryDate: expiryDate
+                              });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select duration" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="3">3 months</SelectItem>
+                              <SelectItem value="6">6 months</SelectItem>
+                              <SelectItem value="12">12 months</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Select duration to grant WhatsApp community access
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 4. ACCOUNT ACCESS PERIOD */}
+                  <div className="pt-3 border-t">
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Account Access Period
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Valid From</Label>
+                        <Input
+                          type="date"
+                          defaultValue={selectedMember.validFrom ? format(new Date(selectedMember.validFrom), "yyyy-MM-dd") : ""}
+                          onChange={(e) => {
+                            const date = e.target.value ? new Date(e.target.value) : null;
+                            setSelectedMember({...selectedMember, validFrom: date});
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label>Valid Until</Label>
+                        <Input
+                          type="date"
+                          defaultValue={selectedMember.validUntil ? format(new Date(selectedMember.validUntil), "yyyy-MM-dd") : ""}
+                          onChange={(e) => {
+                            const date = e.target.value ? new Date(e.target.value) : null;
+                            setSelectedMember({...selectedMember, validUntil: date});
+                          }}
+                        />
+                      </div>
+                    </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      Enroll user in an additional program (already enrolled programs are hidden)
+                      Overall account access period (separate from program access)
                     </p>
                   </div>
 
-                  <div className="flex items-center space-x-3">
-                    <Checkbox 
-                      id="edit-whatsapp"
-                      checked={!!selectedMember.hasWhatsAppSupport}
-                      onCheckedChange={(checked) => 
-                        setSelectedMember({...selectedMember, hasWhatsAppSupport: !!checked})
-                      }
-                    />
-                    <div>
-                      <Label htmlFor="edit-whatsapp" className="font-medium">WhatsApp Community Support</Label>
-                      <p className="text-xs text-muted-foreground">
-                        Grant access to WhatsApp community support
-                      </p>
-                    </div>
-                  </div>
-
-                  {selectedMember.hasWhatsAppSupport && (
-                    <div>
-                      <Label>WhatsApp Support Duration</Label>
-                      <Select 
-                        value={selectedMember.whatsAppSupportDuration?.toString()}
-                        onValueChange={(value) => 
-                          setSelectedMember({...selectedMember, whatsAppSupportDuration: parseInt(value)})
+                  {/* 5. ADMIN PRIVILEGES */}
+                  <div className="pt-3 border-t">
+                    <div className="flex items-center space-x-3">
+                      <Checkbox 
+                        id="edit-admin"
+                        defaultChecked={!!selectedMember.isAdmin}
+                        onCheckedChange={(checked) => 
+                          setSelectedMember({...selectedMember, isAdmin: !!checked})
                         }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select duration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="3">3 months</SelectItem>
-                          <SelectItem value="6">6 months</SelectItem>
-                          <SelectItem value="12">12 months</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Valid From</Label>
-                      <Input
-                        type="date"
-                        defaultValue={selectedMember.validFrom ? format(new Date(selectedMember.validFrom), "yyyy-MM-dd") : ""}
-                        onChange={(e) => {
-                          const date = e.target.value ? new Date(e.target.value) : null;
-                          setSelectedMember({...selectedMember, validFrom: date});
-                        }}
                       />
-                    </div>
-                    <div>
-                      <Label>Valid Until</Label>
-                      <Input
-                        type="date"
-                        defaultValue={selectedMember.validUntil ? format(new Date(selectedMember.validUntil), "yyyy-MM-dd") : ""}
-                        onChange={(e) => {
-                          const date = e.target.value ? new Date(e.target.value) : null;
-                          setSelectedMember({...selectedMember, validUntil: date});
-                        }}
-                      />
+                      <div>
+                        <Label htmlFor="edit-admin" className="font-medium">Administrator Privileges</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Grant admin access to manage users and content
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3">
-                    <Checkbox 
-                      id="edit-admin"
-                      defaultChecked={!!selectedMember.isAdmin}
-                      onCheckedChange={(checked) => 
-                        setSelectedMember({...selectedMember, isAdmin: !!checked})
-                      }
-                    />
-                    <div>
-                      <Label htmlFor="edit-admin" className="font-medium">Administrator Privileges</Label>
-                      <p className="text-xs text-muted-foreground">
-                        Grant admin access to manage users and content
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Password Reset */}
-                  <div className="space-y-2 pt-3 border-t">
-                    <Label className="text-xs text-muted-foreground">Password Management</Label>
+                  {/* 6. PASSWORD MANAGEMENT */}
+                  <div className="pt-3 border-t">
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Password Management
+                    </h4>
                     <Button
                       variant="outline"
                       size="sm"
@@ -1170,68 +1287,37 @@ export default function Admin() {
                     >
                       Reset Password
                     </Button>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground mt-1">
                       New password will be shown in a notification
                     </p>
                   </div>
 
-                  {/* Extend Access Period */}
-                  <div className="space-y-2 pt-3 border-t">
-                    <Label className="text-xs text-muted-foreground">Extend Access Period</Label>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 1 })}
-                        disabled={extendValidityMutation.isPending}
-                        data-testid="button-extend-1month"
-                      >
-                        +1 Month
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 3 })}
-                        disabled={extendValidityMutation.isPending}
-                        data-testid="button-extend-3months"
-                      >
-                        +3 Months
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => extendValidityMutation.mutate({ userId: selectedMember.id, months: 6 })}
-                        disabled={extendValidityMutation.isPending}
-                        data-testid="button-extend-6months"
-                      >
-                        +6 Months
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Deactivate Member */}
+                  {/* 7. DANGER ZONE */}
                   <div className="pt-3 border-t">
-                    <Label className="text-xs text-red-600 font-semibold">Danger Zone</Label>
-                    <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 className="font-semibold text-sm text-red-600 uppercase tracking-wide flex items-center gap-2 mb-3">
+                      <div className="w-1 h-4 bg-gradient-to-b from-red-500 to-rose-500 rounded-full"></div>
+                      Danger Zone
+                    </h4>
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-red-900">Deactivate Member</p>
+                          <p className="text-sm font-medium text-red-900">Deactivate Account</p>
                           <p className="text-xs text-red-700 mt-1">
-                            This will immediately revoke access to all programs
+                            Permanently revoke all access to programs and community
                           </p>
                         </div>
                         <Button
                           variant="destructive"
                           size="sm"
                           onClick={() => {
-                            if (confirm(`Are you sure you want to deactivate ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                            if (confirm(`Are you sure you want to deactivate ${selectedMember.firstName} ${selectedMember.lastName}? This action will immediately revoke all access.`)) {
                               deactivateMemberMutation.mutate(selectedMember.id);
                             }
                           }}
                           disabled={deactivateMemberMutation.isPending}
                           data-testid="button-deactivate-member"
                         >
-                          Deactivate
+                          Deactivate Account
                         </Button>
                       </div>
                     </div>
