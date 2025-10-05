@@ -278,11 +278,15 @@ export default function HealYourCorePage() {
     return direction === 'prev' ? 'Go Back' : 'Continue';
   };
 
+  // Hardcode program ID for faster loading (no need to wait for programs query)
+  const HEAL_YOUR_CORE_PROGRAM_ID = "b03be40d-290e-4c96-bbb4-0267371c8024";
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
+      setProgramId(HEAL_YOUR_CORE_PROGRAM_ID); // Set immediately
     } else {
       navigate("/login");
     }
@@ -303,7 +307,7 @@ export default function HealYourCorePage() {
     }
   }, [freshUserData]);
 
-  // Get Heal Your Core program
+  // Get Heal Your Core program (runs in parallel with access check now)
   const { data: programs } = useQuery({
     queryKey: ["/api/programs"],
     enabled: !!user,
@@ -311,13 +315,7 @@ export default function HealYourCorePage() {
 
   const healYourCoreProgram = Array.isArray(programs) ? programs.find((p: any) => p.name === "Your Postpartum Strength Recovery Program") : null;
 
-  useEffect(() => {
-    if (healYourCoreProgram) {
-      setProgramId(healYourCoreProgram.id);
-    }
-  }, [healYourCoreProgram]);
-
-  // Check program access
+  // Check program access (now runs immediately in parallel with programs query)
   const { data: accessData, isLoading: isLoadingAccess } = useQuery({
     queryKey: ["/api/program-access", user?.id, programId],
     enabled: !!user && !!programId,
