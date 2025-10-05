@@ -48,11 +48,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      console.log(`[LOGIN] User ${email} - disclaimerAccepted in DB: ${user.disclaimerAccepted}, in request: ${disclaimerAccepted}`);
-
       // Check if user needs to accept disclaimer
       if (!user.disclaimerAccepted && !disclaimerAccepted) {
-        console.log(`[LOGIN] Blocking login - disclaimer not accepted`);
         return res.status(403).json({ 
           message: "Please accept the disclaimer to continue" 
         });
