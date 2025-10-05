@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -455,41 +455,67 @@ export default function Admin() {
           <TabsContent value="overview" className="space-y-6">
         {/* Admin Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-pink-50 to-white">
             <CardContent className="p-6">
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">Total Members</h3>
-              <p className="text-3xl font-bold text-foreground" data-testid="stat-total-members">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Total Members</h3>
+                <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                  <Users className="w-5 h-5 text-pink-600" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-gray-800 mb-1" data-testid="stat-total-members">
                 {adminStats?.totalMembers || 0}
               </p>
-              <p className="text-sm text-green-600 mt-1">+12% this month</p>
+              <p className="text-sm text-green-600 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" />
+                +12% this month
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-white">
             <CardContent className="p-6">
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">Active Members</h3>
-              <p className="text-3xl font-bold text-foreground" data-testid="stat-active-members">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Active Members</h3>
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <UserCheck className="w-5 h-5 text-green-600" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-gray-800 mb-1" data-testid="stat-active-members">
                 {adminStats?.activeMembers || 0}
               </p>
-              <p className="text-sm text-green-600 mt-1">87% active rate</p>
+              <p className="text-sm text-green-600 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" />
+                87% active rate
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-amber-50 to-white">
             <CardContent className="p-6">
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">Expiring Soon</h3>
-              <p className="text-3xl font-bold text-foreground" data-testid="stat-expiring">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Expiring Soon</h3>
+                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-amber-600" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-gray-800 mb-1" data-testid="stat-expiring">
                 {adminStats?.expiringSoon || 0}
               </p>
-              <p className="text-sm text-amber-600 mt-1">Next 7 days</p>
+              <p className="text-sm text-amber-600">Next 7 days</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-white">
             <CardContent className="p-6">
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">Community Posts</h3>
-              <p className="text-3xl font-bold text-foreground">156</p>
-              <p className="text-sm text-green-600 mt-1">This week</p>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Community Posts</h3>
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-blue-600" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-gray-800 mb-1">156</p>
+              <p className="text-sm text-blue-600">This week</p>
             </CardContent>
           </Card>
         </div>
@@ -535,19 +561,19 @@ export default function Admin() {
           </div>
 
           {/* Members Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-white rounded-lg shadow-sm">
             <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Member</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Role</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Terms Accepted</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Disclaimer Accepted</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">WhatsApp Support</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">WhatsApp Expiry</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Joined</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Actions</th>
+              <thead className="bg-gradient-to-r from-pink-50 to-rose-50 border-b border-pink-100">
+                <tr>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Member</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Status</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Role</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Terms</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Disclaimer</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">WhatsApp</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Expiry Date</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Joined</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700 text-xs uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -566,94 +592,120 @@ export default function Admin() {
                     member.email?.toLowerCase().includes(query)
                   );
                 }).map((member) => (
-                  <tr key={member.id} className="border-b border-border hover:bg-muted/50">
-                    <td className="py-3 px-4">
+                  <tr key={member.id} className="border-b border-border hover:bg-muted/30 transition-colors">
+                    <td className="py-4 px-4">
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-primary">
+                        <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-sm">
+                          <span className="text-sm font-semibold text-white">
                             {member.firstName?.[0]}{member.lastName?.[0]}
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-foreground">
+                          <p className="font-semibold text-foreground">
                             {member.firstName} {member.lastName}
                           </p>
                           <p className="text-xs text-muted-foreground">{member.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
-                      <Badge variant={member.termsAccepted ? "default" : "secondary"} className="rounded-none px-4 py-2">
-                        {member.termsAccepted ? "Active" : "Pending"}
-                      </Badge>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${member.termsAccepted ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                        <span className="text-sm font-medium">{member.termsAccepted ? "Active" : "Pending"}</span>
+                      </div>
                     </td>
-                    <td className="py-3 px-4">
-                      <Badge variant={member.isAdmin ? "destructive" : "outline"} className="rounded-none px-4 py-2">
-                        {member.isAdmin ? "Admin" : "Member"}
-                      </Badge>
+                    <td className="py-4 px-4">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                        member.isAdmin 
+                          ? 'bg-purple-100 text-purple-700' 
+                          : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {member.isAdmin ? "ADMIN" : "MEMBER"}
+                      </span>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <div className="text-xs">
                         {member.termsAcceptedAt ? (
-                          <div className="flex flex-col">
-                            <span className="text-green-600 font-medium">✓ Accepted</span>
-                            <span className="text-muted-foreground">
-                              {new Date(member.termsAcceptedAt).toLocaleDateString()} {new Date(member.termsAcceptedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </span>
+                          <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <div className="flex flex-col">
+                              <span className="text-gray-700 font-medium">Accepted</span>
+                              <span className="text-muted-foreground text-[10px]">
+                                {new Date(member.termsAcceptedAt).toLocaleDateString()}
+                              </span>
+                            </div>
                           </div>
                         ) : (
-                          <span className="text-red-500">Not accepted</span>
+                          <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-red-600 font-medium">Pending</span>
+                          </div>
                         )}
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <div className="text-xs">
                         {member.disclaimerAcceptedAt ? (
-                          <div className="flex flex-col">
-                            <span className="text-green-600 font-medium">✓ Accepted</span>
-                            <span className="text-muted-foreground">
-                              {new Date(member.disclaimerAcceptedAt).toLocaleDateString()} {new Date(member.disclaimerAcceptedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </span>
+                          <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <div className="flex flex-col">
+                              <span className="text-gray-700 font-medium">Accepted</span>
+                              <span className="text-muted-foreground text-[10px]">
+                                {new Date(member.disclaimerAcceptedAt).toLocaleDateString()}
+                              </span>
+                            </div>
                           </div>
                         ) : (
-                          <span className="text-red-500">Not accepted</span>
+                          <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-red-600 font-medium">Pending</span>
+                          </div>
                         )}
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       {(() => {
                         const hasSupport = member.hasWhatsAppSupport;
                         const expiryDate = member.whatsAppSupportExpiryDate ? new Date(member.whatsAppSupportExpiryDate) : null;
                         const isActive = hasSupport && expiryDate && expiryDate > new Date();
                         
                         return (
-                          <Badge 
-                            variant={isActive ? "default" : "secondary"} 
-                            className={`rounded-none px-4 py-2 ${isActive ? 'bg-green-500 hover:bg-green-600' : ''}`}
-                          >
-                            {isActive ? "Active" : "Inactive"}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`}></div>
+                            <span className={`text-sm font-medium ${isActive ? 'text-green-700' : 'text-gray-500'}`}>
+                              {isActive ? "Active" : "Inactive"}
+                            </span>
+                          </div>
                         );
                       })()}
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="text-foreground">
+                    <td className="py-4 px-4">
+                      <span className="text-sm text-gray-600">
                         {member.whatsAppSupportExpiryDate 
                           ? new Date(member.whatsAppSupportExpiryDate).toLocaleDateString()
-                          : 'N/A'
+                          : '—'
                         }
                       </span>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="text-foreground">
-                        {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : 'N/A'}
+                    <td className="py-4 px-4">
+                      <span className="text-sm text-gray-600">
+                        {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : '—'}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
-                      <div className="flex space-x-2">
+                    <td className="py-4 px-4">
+                      <div className="flex space-x-1">
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-8 w-8 hover:bg-pink-50 hover:text-pink-600"
                           onClick={() => {
                             setSelectedMember(member);
                             setMemberViewMode('edit');
@@ -665,6 +717,7 @@ export default function Admin() {
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600"
                           onClick={() => {
                             setSelectedMember(member);
                             setMemberViewMode('view');
