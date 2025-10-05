@@ -517,6 +517,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get current user data
+  app.get("/api/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await storage.getUser(id);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Return user without password
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Admin routes
   app.get("/api/admin/users", async (req, res) => {
     try {

@@ -1088,7 +1088,7 @@ export default function Admin() {
                   <div className="flex items-center space-x-3">
                     <Checkbox 
                       id="edit-whatsapp"
-                      defaultChecked={!!selectedMember.hasWhatsAppSupport}
+                      checked={!!selectedMember.hasWhatsAppSupport}
                       onCheckedChange={(checked) => 
                         setSelectedMember({...selectedMember, hasWhatsAppSupport: !!checked})
                       }
@@ -1105,7 +1105,7 @@ export default function Admin() {
                     <div>
                       <Label>WhatsApp Support Duration</Label>
                       <Select 
-                        defaultValue={selectedMember.whatsAppSupportDuration?.toString()}
+                        value={selectedMember.whatsAppSupportDuration?.toString()}
                         onValueChange={(value) => 
                           setSelectedMember({...selectedMember, whatsAppSupportDuration: parseInt(value)})
                         }

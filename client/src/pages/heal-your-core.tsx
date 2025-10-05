@@ -288,6 +288,21 @@ export default function HealYourCorePage() {
     }
   }, [navigate]);
 
+  // Fetch fresh user data from API to get latest WhatsApp support status
+  const { data: freshUserData } = useQuery({
+    queryKey: ["/api/users", user?.id],
+    enabled: !!user?.id,
+  });
+
+  // Update user state when fresh data arrives
+  useEffect(() => {
+    if (freshUserData) {
+      setUser(freshUserData as User);
+      // Also update localStorage to keep it in sync
+      localStorage.setItem("user", JSON.stringify(freshUserData));
+    }
+  }, [freshUserData]);
+
   // Get Heal Your Core program
   const { data: programs } = useQuery({
     queryKey: ["/api/programs"],
