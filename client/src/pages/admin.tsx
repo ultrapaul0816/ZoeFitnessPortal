@@ -454,7 +454,7 @@ export default function Admin() {
 
           <TabsContent value="overview" className="space-y-6">
         {/* Admin Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-pink-50 to-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-3">
@@ -505,20 +505,57 @@ export default function Admin() {
               <p className="text-sm text-amber-600">Next 7 days</p>
             </CardContent>
           </Card>
+        </div>
 
-          <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Community Posts</h3>
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-blue-600" />
-                </div>
+        {/* Expiring Users Details */}
+        {adminStats?.expiringUsers && adminStats.expiringUsers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                Members Expiring Soon
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {adminStats.expiringUsers.map((user) => (
+                  <div key={user.userId} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <div>
+                      <p className="font-semibold text-gray-800">{user.userName}</p>
+                      <div className="flex gap-3 mt-1">
+                        {user.programExpiring && (
+                          <span className="text-xs text-amber-700 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Program expires: {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString() : 'N/A'}
+                          </span>
+                        )}
+                        {user.whatsAppExpiring && (
+                          <span className="text-xs text-amber-700 flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3" />
+                            WhatsApp expires: {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString() : 'N/A'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const member = allUsers.find(u => u.id === user.userId);
+                        if (member) {
+                          setSelectedMember(member);
+                          setMemberViewMode('edit');
+                        }
+                      }}
+                    >
+                      Extend
+                    </Button>
+                  </div>
+                ))}
               </div>
-              <p className="text-4xl font-bold text-gray-800 mb-1">156</p>
-              <p className="text-sm text-blue-600">This week</p>
             </CardContent>
           </Card>
-        </div>
+        )}
 
           </TabsContent>
 

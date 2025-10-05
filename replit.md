@@ -12,7 +12,15 @@ The frontend is built with React and TypeScript, using Vite for development and 
 The backend is an Express.js and TypeScript RESTful API. It uses a modular route structure, centralized error handling, and request logging. Authentication is session-based, with role-based access control for users and administrators. The system manages WhatsApp Community support with duration-based access and promotional content visibility. User creation requires program assignment. The admin panel includes a comprehensive PUT endpoint (`/api/admin/users/:id`) that automatically calculates WhatsApp support expiry dates based on the selected duration.
 
 ### Admin Panel Architecture
-The admin panel features a dual-mode dialog system with strict separation between viewing and editing:
+The admin panel features a dual-mode dialog system with strict separation between viewing and editing, plus comprehensive dashboard statistics:
+
+**Dashboard Overview (3-card layout):**
+- **Total Members**: Count of all members with growth indicator
+- **Active Members**: Count of members who have accepted terms (non-admin)
+- **Expiring Soon**: Real-time tracking of both program access and WhatsApp support expiring within 7 days
+  - Shows detailed breakdown of expiring users below stats
+  - Each expiring user displays: name, program expiry date (if applicable), WhatsApp support expiry date (if applicable)
+  - "Extend" button for quick access to member edit dialog
 
 **View Dialog (Read-Only):**
 - Basic info, access period, enrolled programs

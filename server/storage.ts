@@ -115,6 +115,14 @@ export interface IStorage {
     totalMembers: number;
     activeMembers: number;
     expiringSoon: number;
+    expiringUsers: Array<{
+      userId: string;
+      userName: string;
+      programExpiring: boolean;
+      whatsAppExpiring: boolean;
+      programExpiryDate?: Date;
+      whatsAppExpiryDate?: Date;
+    }>;
   }>;
 
   // Program Purchases (for premium programs like Heal Your Core)
@@ -768,19 +776,70 @@ export class MemStorage implements IStorage {
     totalMembers: number;
     activeMembers: number;
     expiringSoon: number;
+    expiringUsers: Array<{
+      userId: string;
+      userName: string;
+      programExpiring: boolean;
+      whatsAppExpiring: boolean;
+      programExpiryDate?: Date;
+      whatsAppExpiryDate?: Date;
+    }>;
   }> {
     const users = Array.from(this.users.values());
     const memberPrograms = Array.from(this.memberPrograms.values());
+    const now = new Date();
+    const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
     const totalMembers = users.filter((u) => !u.isAdmin).length;
-    const activeMembers = memberPrograms.filter((mp) => mp.isActive).length;
-    const expiringSoon = memberPrograms.filter((mp) => {
-      const daysUntilExpiry =
-        (mp.expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
-      return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
-    }).length;
+    const activeMembers = users.filter(
+      (u) => !u.isAdmin && u.termsAccepted
+    ).length;
 
-    return { totalMembers, activeMembers, expiringSoon };
+    const expiringUsers: Array<{
+      userId: string;
+      userName: string;
+      programExpiring: boolean;
+      whatsAppExpiring: boolean;
+      programExpiryDate?: Date;
+      whatsAppExpiryDate?: Date;
+    }> = [];
+
+    for (const user of users.filter(u => !u.isAdmin)) {
+      const programExpiring = memberPrograms.some(mp => 
+        mp.userId === user.id &&
+        mp.expiryDate > now &&
+        mp.expiryDate <= oneWeekFromNow
+      );
+
+      const whatsAppExpiring = 
+        user.whatsAppSupportExpiryDate &&
+        user.whatsAppSupportExpiryDate > now &&
+        user.whatsAppSupportExpiryDate <= oneWeekFromNow;
+
+      if (programExpiring || whatsAppExpiring) {
+        const userProgram = memberPrograms.find(mp => 
+          mp.userId === user.id &&
+          mp.expiryDate > now &&
+          mp.expiryDate <= oneWeekFromNow
+        );
+
+        expiringUsers.push({
+          userId: user.id,
+          userName: `${user.firstName} ${user.lastName}`,
+          programExpiring: !!programExpiring,
+          whatsAppExpiring: !!whatsAppExpiring,
+          programExpiryDate: userProgram?.expiryDate,
+          whatsAppExpiryDate: user.whatsAppSupportExpiryDate || undefined,
+        });
+      }
+    }
+
+    return { 
+      totalMembers, 
+      activeMembers, 
+      expiringSoon: expiringUsers.length,
+      expiringUsers 
+    };
   }
 
   // Program Purchases methods
@@ -1075,23 +1134,74 @@ class DatabaseStorage implements IStorage {
     totalMembers: number;
     activeMembers: number;
     expiringSoon: number;
+    expiringUsers: Array<{
+      userId: string;
+      userName: string;
+      programExpiring: boolean;
+      whatsAppExpiring: boolean;
+      programExpiryDate?: Date;
+      whatsAppExpiryDate?: Date;
+    }>;
   }> {
     const allUsers = await this.getAllUsers();
     const now = new Date();
     const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
+    // Get all member programs
+    const memberPrograms = await this.db
+      .select()
+      .from(memberProgramsTable)
+      .execute();
+
+    const expiringUsers: Array<{
+      userId: string;
+      userName: string;
+      programExpiring: boolean;
+      whatsAppExpiring: boolean;
+      programExpiryDate?: Date;
+      whatsAppExpiryDate?: Date;
+    }> = [];
+
+    // Check each user for expiring programs or WhatsApp support
+    for (const user of allUsers.filter(u => !u.isAdmin)) {
+      const programExpiring = memberPrograms.some(mp => 
+        mp.userId === user.id &&
+        mp.expiryDate &&
+        mp.expiryDate > now &&
+        mp.expiryDate <= oneWeekFromNow
+      );
+
+      const whatsAppExpiring = 
+        user.whatsAppSupportExpiryDate &&
+        user.whatsAppSupportExpiryDate > now &&
+        user.whatsAppSupportExpiryDate <= oneWeekFromNow;
+
+      if (programExpiring || whatsAppExpiring) {
+        const userProgram = memberPrograms.find(mp => 
+          mp.userId === user.id &&
+          mp.expiryDate &&
+          mp.expiryDate > now &&
+          mp.expiryDate <= oneWeekFromNow
+        );
+
+        expiringUsers.push({
+          userId: user.id,
+          userName: `${user.firstName} ${user.lastName}`,
+          programExpiring: !!programExpiring,
+          whatsAppExpiring: !!whatsAppExpiring,
+          programExpiryDate: userProgram?.expiryDate,
+          whatsAppExpiryDate: user.whatsAppSupportExpiryDate || undefined,
+        });
+      }
+    }
+
     return {
       totalMembers: allUsers.length,
       activeMembers: allUsers.filter(
-        (u) => !u.isAdmin && u.validUntil && u.validUntil > now
+        (u) => !u.isAdmin && u.termsAccepted
       ).length,
-      expiringSoon: allUsers.filter(
-        (u) =>
-          !u.isAdmin &&
-          u.validUntil &&
-          u.validUntil > now &&
-          u.validUntil <= oneWeekFromNow
-      ).length,
+      expiringSoon: expiringUsers.length,
+      expiringUsers,
     };
   }
 
