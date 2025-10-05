@@ -1241,7 +1241,12 @@ export default function Admin() {
                                 }),
                               });
                               
-                              if (!response.ok) throw new Error('Failed to update user');
+                              if (!response.ok) {
+                                const errorData = await response.json();
+                                throw new Error(errorData.message || 'Failed to update user');
+                              }
+                              
+                              const responseData = await response.json();
                               
                               // If program selected, enroll user
                               if (selectedProgramForMember && selectedProgramForMember !== 'none') {
@@ -1261,8 +1266,10 @@ export default function Admin() {
                                 }
                               }
                               
-                              queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-                              queryClient.invalidateQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
+                              // Refetch queries and wait for them to complete
+                              await queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+                              await queryClient.invalidateQueries({ queryKey: ["/api/member-programs", selectedMember.id] });
+                              
                               toast({ 
                                 variant: "success",
                                 title: "Success", 
