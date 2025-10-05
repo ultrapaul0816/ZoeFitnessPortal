@@ -11,6 +11,13 @@ The frontend is built with React and TypeScript, using Vite for development and 
 ## Backend Architecture
 The backend is an Express.js and TypeScript RESTful API. It uses a modular route structure, centralized error handling, and request logging. Authentication is session-based, with role-based access control for users and administrators. The system manages WhatsApp Community support with duration-based access and promotional content visibility. User creation requires program assignment. The admin panel includes a comprehensive PUT endpoint (`/api/admin/users/:id`) that automatically calculates WhatsApp support expiry dates based on the selected duration.
 
+### Admin Panel Architecture
+The admin panel features a dual-mode dialog system with strict separation between viewing and editing:
+- **View Dialog (Read-Only)**: Displays member information without any editable controls. Shows basic info, access period, enrolled programs, WhatsApp Community status (with visual indicators for Active/Expired/No Support), duration, expiry dates, and actual password in plain text. No action buttons except Edit and Close.
+- **Edit Dialog (Full Control)**: Provides complete editing capabilities including basic info modification, WhatsApp support setup with duration selection, validity period adjustments, admin privileges toggle, password reset functionality, access period extension (+1/+3/+6 months), and member deactivation in a danger zone.
+- **WhatsApp Support Management**: Controlled components using `checked` for checkbox and `value` for dropdown. Auto-calculates expiry dates server-side. Displays support status with color-coded indicators (green for active, gray for expired/none).
+- **Password Management**: View mode shows actual password in monospace font for easy copying. Reset functionality is only available in edit mode.
+
 ## Data Storage Solutions
 PostgreSQL serves as the primary database, accessed via Drizzle ORM for type-safe operations. The data model includes users, fitness programs, workouts, member enrollments, community posts, notifications, and terms/conditions. User profiles store extensive personalization fields, including fitness level, delivery type, number of children, breastfeeding status, medical clearance, available equipment, workout frequency, preferred workout time, personal fitness goals, and physical limitations. Database migrations are managed with Drizzle Kit.
 
