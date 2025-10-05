@@ -1812,7 +1812,7 @@ Dear ${newUserData.user.firstName},
 Welcome to Your Postpartum Strength Recovery Program! Your account has been created successfully.
 
 Login Details:
-Login URL: https://app.strongerwithzoe.com/heal-your-core
+Login URL: https://app.strongerwithzoe.in/
 Email: ${newUserData.user.email}
 Password: ${newUserData.password}
 
@@ -1832,7 +1832,7 @@ Dear ${newUserData.user.firstName},
 Welcome to Your Postpartum Strength Recovery Program! Your account has been created successfully.
 
 Login Details:
-Login URL: https://app.strongerwithzoe.com/heal-your-core
+Login URL: https://app.strongerwithzoe.in/
 Email: ${newUserData.user.email}
 Password: ${newUserData.password}
 
