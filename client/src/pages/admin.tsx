@@ -544,6 +544,8 @@ export default function Admin() {
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Role</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Terms Accepted</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Disclaimer Accepted</th>
+                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">WhatsApp Support</th>
+                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">WhatsApp Expiry</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Joined</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Actions</th>
                 </tr>
@@ -617,6 +619,30 @@ export default function Admin() {
                           <span className="text-red-500">Not accepted</span>
                         )}
                       </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      {(() => {
+                        const hasSupport = member.hasWhatsAppSupport;
+                        const expiryDate = member.whatsAppSupportExpiryDate ? new Date(member.whatsAppSupportExpiryDate) : null;
+                        const isActive = hasSupport && expiryDate && expiryDate > new Date();
+                        
+                        return (
+                          <Badge 
+                            variant={isActive ? "default" : "secondary"} 
+                            className={`rounded-none px-4 py-2 ${isActive ? 'bg-green-500 hover:bg-green-600' : ''}`}
+                          >
+                            {isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        );
+                      })()}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-foreground">
+                        {member.whatsAppSupportExpiryDate 
+                          ? new Date(member.whatsAppSupportExpiryDate).toLocaleDateString()
+                          : 'N/A'
+                        }
+                      </span>
                     </td>
                     <td className="py-3 px-4">
                       <span className="text-foreground">
