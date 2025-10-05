@@ -39,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { email, password, disclaimerAccepted } = loginSchema.parse(
+      const { email, password, termsAccepted, disclaimerAccepted } = loginSchema.parse(
         req.body
       );
 
@@ -48,21 +48,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Check if user needs to accept disclaimer
+      // Check if user needs to accept terms and disclaimer
+      if (!user.termsAccepted && !termsAccepted) {
+        return res.status(403).json({ 
+          message: "Please accept the terms and conditions to continue" 
+        });
+      }
+
       if (!user.disclaimerAccepted && !disclaimerAccepted) {
         return res.status(403).json({ 
           message: "Please accept the disclaimer to continue" 
         });
       }
 
-      // Handle disclaimer acceptance if provided and user hasn't already accepted
+      // Handle terms and disclaimer acceptance if provided
       let updatedUser = user;
+      const updates: any = {};
+
+      if (termsAccepted && !user.termsAccepted) {
+        updates.termsAccepted = true;
+        updates.termsAcceptedAt = new Date();
+      }
+
       if (disclaimerAccepted && !user.disclaimerAccepted) {
-        updatedUser =
-          (await storage.updateUser(user.id, {
-            disclaimerAccepted: true,
-            disclaimerAcceptedAt: new Date(),
-          })) || user;
+        updates.disclaimerAccepted = true;
+        updates.disclaimerAcceptedAt = new Date();
+      }
+
+      if (Object.keys(updates).length > 0) {
+        updatedUser = (await storage.updateUser(user.id, updates)) || user;
       }
 
       // Simple session - in production would use proper session management
@@ -73,6 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           firstName: updatedUser.firstName,
           lastName: updatedUser.lastName,
           isAdmin: updatedUser.isAdmin,
+          termsAccepted: updatedUser.termsAccepted,
           disclaimerAccepted: updatedUser.disclaimerAccepted,
           hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
           whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,

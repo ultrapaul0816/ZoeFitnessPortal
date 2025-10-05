@@ -16,7 +16,8 @@ import { Shield, AlertTriangle } from "lucide-react";
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showTermsAndDisclaimer, setShowTermsAndDisclaimer] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   const form = useForm<LoginData>({
@@ -24,6 +25,7 @@ export default function Login() {
     defaultValues: {
       email: "",
       password: "",
+      termsAccepted: false,
       disclaimerAccepted: false,
     },
   });
@@ -41,8 +43,8 @@ export default function Login() {
     onSuccess: (data) => {
       localStorage.setItem("user", JSON.stringify(data.user));
       
-      // If user just accepted disclaimer, set flag to show welcome modal on first program access
-      if (showDisclaimer && disclaimerAccepted) {
+      // If user just accepted terms/disclaimer, set flag to show welcome modal on first program access
+      if (showTermsAndDisclaimer && (termsAccepted || disclaimerAccepted)) {
         sessionStorage.setItem("showDisclaimerOnSession", "true");
       }
       
@@ -57,9 +59,10 @@ export default function Login() {
       }
     },
     onError: (error: Error) => {
-      // If user exists but needs disclaimer, show disclaimer
-      if (error.message.includes('disclaimer') || error.message.includes('Disclaimer')) {
-        setShowDisclaimer(true);
+      // If user exists but needs terms or disclaimer, show the acceptance forms
+      if (error.message.includes('terms') || error.message.includes('Terms') || 
+          error.message.includes('disclaimer') || error.message.includes('Disclaimer')) {
+        setShowTermsAndDisclaimer(true);
         return;
       }
       
@@ -72,10 +75,11 @@ export default function Login() {
   });
 
   const onSubmit = (data: LoginData) => {
-    // Submit login with disclaimer acceptance if shown
+    // Submit login with terms and disclaimer acceptance if shown
     const loginData = {
       ...data,
-      disclaimerAccepted: showDisclaimer ? disclaimerAccepted : undefined
+      termsAccepted: showTermsAndDisclaimer ? termsAccepted : undefined,
+      disclaimerAccepted: showTermsAndDisclaimer ? disclaimerAccepted : undefined
     };
     
     loginMutation.mutate(loginData);
@@ -153,9 +157,43 @@ export default function Login() {
                   />
                 </div>
 
-                {/* Disclaimer Section - Only shown when needed */}
-                {showDisclaimer && (
+                {/* Terms and Disclaimer Section - Only shown when needed */}
+                {showTermsAndDisclaimer && (
                   <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 space-y-4">
+                    {/* Terms Content */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-1">
+                          <AlertTriangle className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-800 mb-2">Terms & Conditions</h3>
+                          <p className="text-xs text-gray-700 leading-relaxed">
+                            By accessing this program, you agree to our terms of service. This includes proper use of the platform, respecting intellectual property, and understanding that results may vary. You are responsible for your own health and safety while using this program.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Terms Checkbox */}
+                    <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                      <div className="flex-shrink-0 mt-1">
+                        <Checkbox 
+                          id="terms-acceptance"
+                          checked={termsAccepted}
+                          onCheckedChange={(checked) => setTermsAccepted(!!checked)}
+                          data-testid="checkbox-terms-acceptance"
+                          className="w-4 h-4 border-2 border-blue-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-500 data-[state=checked]:to-indigo-500 data-[state=checked]:border-blue-500"
+                        />
+                      </div>
+                      <label 
+                        htmlFor="terms-acceptance" 
+                        className="text-xs font-medium leading-relaxed cursor-pointer text-gray-800"
+                      >
+                        <strong className="text-blue-600">I accept the terms and conditions.</strong> I understand and agree to the terms of service outlined above.
+                      </label>
+                    </div>
+
                     {/* Disclaimer Content */}
                     <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-xl p-4">
                       <div className="flex items-start gap-3">
@@ -196,7 +234,7 @@ export default function Login() {
                   <Button
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
-                    disabled={loginMutation.isPending || (showDisclaimer && !disclaimerAccepted)}
+                    disabled={loginMutation.isPending || (showTermsAndDisclaimer && (!termsAccepted || !disclaimerAccepted))}
                     data-testid="button-signin"
                   >
                     {loginMutation.isPending ? (
