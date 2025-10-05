@@ -734,6 +734,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user (admin)
+  app.put("/api/admin/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Calculate WhatsApp support expiry date if duration is provided
+      if (updateData.hasWhatsAppSupport && updateData.whatsAppSupportDuration) {
+        const now = new Date();
+        const expiryDate = new Date(now);
+        expiryDate.setMonth(expiryDate.getMonth() + updateData.whatsAppSupportDuration);
+        updateData.whatsAppSupportExpiryDate = expiryDate;
+      } else if (!updateData.hasWhatsAppSupport) {
+        // Clear WhatsApp support fields if disabled
+        updateData.whatsAppSupportDuration = null;
+        updateData.whatsAppSupportExpiryDate = null;
+      }
+
+      const updatedUser = await storage.updateUser(id, updateData);
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ 
+        message: "User updated successfully",
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error("Update user error:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
   // Deactivate user
   app.post("/api/admin/users/:id/deactivate", async (req, res) => {
     try {
