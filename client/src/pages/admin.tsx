@@ -1272,43 +1272,39 @@ export default function Admin() {
                     </div>
                   </div>
 
-                  {/* 6. PASSWORD MANAGEMENT */}
+                  {/* 6. PASSWORD MANAGEMENT & DANGER ZONE */}
                   <div className="pt-3 border-t">
-                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
-                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
-                      Password Management
-                    </h4>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => setResetPasswordMember(selectedMember)}
-                      data-testid="button-reset-password"
-                    >
-                      Reset Password
-                    </Button>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      New password will be shown in a notification
-                    </p>
-                  </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Password Management */}
+                      <div>
+                        <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
+                          <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                          Password
+                        </h4>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => setResetPasswordMember(selectedMember)}
+                          data-testid="button-reset-password"
+                        >
+                          Reset Password
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          New password shown in notification
+                        </p>
+                      </div>
 
-                  {/* 7. DANGER ZONE */}
-                  <div className="pt-3 border-t">
-                    <h4 className="font-semibold text-sm text-red-600 uppercase tracking-wide flex items-center gap-2 mb-3">
-                      <div className="w-1 h-4 bg-gradient-to-b from-red-500 to-rose-500 rounded-full"></div>
-                      Danger Zone
-                    </h4>
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-red-900">Deactivate Account</p>
-                          <p className="text-xs text-red-700 mt-1">
-                            Permanently revoke all access to programs and community
-                          </p>
-                        </div>
+                      {/* Danger Zone */}
+                      <div>
+                        <h4 className="font-semibold text-sm text-red-600 uppercase tracking-wide flex items-center gap-2 mb-3">
+                          <div className="w-1 h-4 bg-gradient-to-b from-red-500 to-rose-500 rounded-full"></div>
+                          Danger Zone
+                        </h4>
                         <Button
                           variant="destructive"
                           size="sm"
+                          className="w-full"
                           onClick={() => {
                             if (confirm(`Are you sure you want to deactivate ${selectedMember.firstName} ${selectedMember.lastName}? This action will immediately revoke all access.`)) {
                               deactivateMemberMutation.mutate(selectedMember.id);
@@ -1319,6 +1315,9 @@ export default function Admin() {
                         >
                           Deactivate Account
                         </Button>
+                        <p className="text-xs text-red-600 mt-1">
+                          Permanently revoke all access
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1372,6 +1371,7 @@ export default function Admin() {
                                   validUntil: selectedMember.validUntil,
                                   hasWhatsAppSupport: selectedMember.hasWhatsAppSupport,
                                   whatsAppSupportDuration: selectedMember.whatsAppSupportDuration,
+                                  whatsAppSupportExpiryDate: selectedMember.whatsAppSupportExpiryDate,
                                 }),
                               });
                               

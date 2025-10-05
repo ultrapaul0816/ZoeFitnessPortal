@@ -763,16 +763,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Convert date strings to Date objects
-      if (updateData.validFrom && typeof updateData.validFrom === "string") {
-        updateData.validFrom = new Date(updateData.validFrom);
-      }
-      if (updateData.validUntil && typeof updateData.validUntil === "string") {
-        updateData.validUntil = new Date(updateData.validUntil);
-      }
+      // Convert all date fields to Date objects, remove null/undefined
+      const dateFields = ['validFrom', 'validUntil', 'whatsAppSupportExpiryDate'];
+      dateFields.forEach(field => {
+        if (updateData[field] !== undefined && updateData[field] !== null) {
+          if (typeof updateData[field] === "string") {
+            updateData[field] = new Date(updateData[field]);
+          } else if (typeof updateData[field] === "object" && updateData[field] !== null) {
+            // If it's an object, try to extract date value or convert to Date
+            if (updateData[field].$date) {
+              updateData[field] = new Date(updateData[field].$date);
+            } else {
+              // Assume it's already a Date-like object, create new Date
+              updateData[field] = new Date(updateData[field]);
+            }
+          }
+          // Validate that we have a valid Date object
+          if (isNaN(updateData[field].getTime())) {
+            updateData[field] = null;
+          }
+        } else {
+          // Remove undefined/null to prevent issues
+          delete updateData[field];
+        }
+      });
 
-      // Calculate WhatsApp support expiry date if duration is provided
-      if (updateData.hasWhatsAppSupport && updateData.whatsAppSupportDuration) {
+      // Calculate WhatsApp support expiry date if duration is provided (and not already set)
+      if (updateData.hasWhatsAppSupport && updateData.whatsAppSupportDuration && !updateData.whatsAppSupportExpiryDate) {
         const now = new Date();
         const expiryDate = new Date(now);
         expiryDate.setMonth(expiryDate.getMonth() + updateData.whatsAppSupportDuration);
