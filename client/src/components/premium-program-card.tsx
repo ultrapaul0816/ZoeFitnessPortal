@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Lock, Star, Calendar, Target, Dumbbell, Baby, Play } from "lucide-react";
+import { Heart, Lock, Star, Calendar, Target, Baby, Play } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -106,10 +106,6 @@ export default function PremiumProgramCard({ program, userId }: PremiumProgramCa
           <div className="flex items-center gap-2 text-sm">
             <Target className="w-4 h-4 text-primary" />
             <span>{program.level} level</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Dumbbell className="w-4 h-4 text-primary" />
-            <span>{program.equipment}</span>
           </div>
         </div>
 

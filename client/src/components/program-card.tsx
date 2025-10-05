@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Target, Dumbbell, Baby } from "lucide-react";
+import { Calendar, Target, Baby } from "lucide-react";
 
 interface ProgramCardProps {
   memberProgram: any;
@@ -49,10 +49,6 @@ export default function ProgramCard({ memberProgram, userId }: ProgramCardProps)
           <div className="flex items-center gap-2 text-sm">
             <Target className="w-4 h-4 text-primary" />
             <span>{program.level} level</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Dumbbell className="w-4 h-4 text-primary" />
-            <span>{program.equipment}</span>
           </div>
         </div>
 

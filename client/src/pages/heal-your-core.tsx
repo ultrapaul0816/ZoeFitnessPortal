@@ -6628,7 +6628,6 @@ function ProgramsSection({
                   <div className="text-teal-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
                   <div className="flex flex-wrap gap-1.5">
                     <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
-                    <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Dumbbells</span>
                     <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
                   </div>
                 </div>
@@ -6945,7 +6944,6 @@ function ProgramsSection({
                   <div className="text-orange-100 font-bold text-xs uppercase tracking-wide mb-1.5">Equipment Needed</div>
                   <div className="flex flex-wrap gap-1.5">
                     <span className="bg-purple-200 text-purple-800 px-2.5 py-1 rounded-full text-xs font-medium">Mat</span>
-                    <span className="bg-amber-200 text-amber-800 px-2.5 py-1 rounded-full text-xs font-medium">Dumbbells</span>
                     <span className="bg-teal-200 text-teal-800 px-2.5 py-1 rounded-full text-xs font-medium">Resistance band</span>
                   </div>
                 </div>
