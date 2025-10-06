@@ -66,9 +66,11 @@ import {
   Star,
   Sprout,
   HelpCircle,
-  Sparkles
+  Sparkles,
+  Camera
 } from "lucide-react";
 import ProfileSettings from "@/components/profile-settings";
+import ProgressPage from "@/pages/progress";
 import type { User } from "@shared/schema";
 
 // Note Section Component for reflection notes
@@ -194,7 +196,7 @@ export default function HealYourCorePage() {
 
   // Trigger animation when advancing to a new section
   useEffect(() => {
-    const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+    const tabOrder = ['welcome', 'understanding', 'healing', 'progress', 'programs', 'nutrition', 'next-steps', 'faqs'];
     const currentIndex = tabOrder.indexOf(activeTab);
     const prevIndex = tabOrder.indexOf(prevActiveTabRef.current);
     
@@ -587,7 +589,7 @@ export default function HealYourCorePage() {
             {/* Navigation Tabs */}
             <div className="overflow-x-auto scrollbar-hide px-0">
               <div className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
-                <TabsList className="tab-flow-container flex gap-2 sm:gap-3 md:gap-4 h-auto bg-transparent border-0 shadow-none w-max md:w-full md:grid md:grid-cols-7 mx-0">
+                <TabsList className="tab-flow-container flex gap-2 sm:gap-3 md:gap-4 h-auto bg-transparent border-0 shadow-none w-max md:w-full md:grid md:grid-cols-8 mx-0">
                   <TabsTrigger value="welcome" data-testid="tab-welcome" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
                     <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
                     <span className="font-medium text-center leading-tight">Start Here</span>
@@ -599,6 +601,10 @@ export default function HealYourCorePage() {
                   <TabsTrigger value="healing" data-testid="tab-healing" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
                     <Heart className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
                     <span className="font-medium text-center leading-tight">Heal</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="progress" data-testid="tab-progress" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
+                    <Camera className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Progress</span>
                   </TabsTrigger>
                   <TabsTrigger value="programs" data-testid="tab-programs" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-pink-300 relative z-10 flex-shrink-0">
                     <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
@@ -631,7 +637,7 @@ export default function HealYourCorePage() {
                   style={{
                     left: '0%',
                     width: `${(() => {
-                      const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                      const tabOrder = ['welcome', 'understanding', 'healing', 'progress', 'programs', 'nutrition', 'next-steps', 'faqs'];
                       const currentIndex = tabOrder.indexOf(activeTab);
                       return (currentIndex / (tabOrder.length - 1)) * 100;
                     })()}%`,
@@ -640,12 +646,13 @@ export default function HealYourCorePage() {
                         'linear-gradient(135deg, #f3a8cb 0%, #ec4899 100%)', // Welcome - Light pink
                         'linear-gradient(135deg, #b3c0e4 0%, #3b82f6 100%)', // Understanding - Light blue  
                         'linear-gradient(135deg, #cbde9a 0%, #10b981 100%)', // Healing - Light green
+                        'linear-gradient(135deg, #fb7185 0%, #f472b6 100%)', // Progress - Pink
                         'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', // Programs - Orange
                         'linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)', // Nutrition - Teal
                         'linear-gradient(135deg, #c2b9a1 0%, #6366f1 100%)', // Next Steps - Light brown to indigo
                         'linear-gradient(135deg, #8b5cf6 0%, #ef4444 100%)'  // FAQs - Purple to red
                       ];
-                      const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                      const tabOrder = ['welcome', 'understanding', 'healing', 'progress', 'programs', 'nutrition', 'next-steps', 'faqs'];
                       const currentIndex = tabOrder.indexOf(activeTab);
                       return colors[currentIndex] || colors[0];
                     })()
@@ -654,12 +661,13 @@ export default function HealYourCorePage() {
                 
                 {/* Progress Numbers */}
                 {(() => {
-                  const tabOrder = ['welcome', 'understanding', 'healing', 'programs', 'nutrition', 'next-steps', 'faqs'];
+                  const tabOrder = ['welcome', 'understanding', 'healing', 'progress', 'programs', 'nutrition', 'next-steps', 'faqs'];
                   const currentIndex = tabOrder.indexOf(activeTab);
                   const colors = [
                     '#f3a8cb', // Welcome - Light pink
                     '#b3c0e4', // Understanding - Light blue
                     '#cbde9a', // Healing - Light green
+                    '#fb7185', // Progress - Pink
                     '#f59e0b', // Programs - Orange
                     '#14b8a6', // Nutrition - Teal
                     '#c2b9a1', // Next Steps - Light brown
@@ -815,6 +823,10 @@ export default function HealYourCorePage() {
               navigateToPreviousTab={navigateToPreviousTab}
               getNavigationText={getNavigationText}
             />
+          </TabsContent>
+
+          <TabsContent value="progress">
+            <ProgressPage />
           </TabsContent>
 
           <TabsContent value="programs">
