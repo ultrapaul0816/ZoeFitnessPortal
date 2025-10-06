@@ -558,7 +558,7 @@ export default function Progress() {
 
       {/* Downloadable Progress Tracker */}
       <Card className="p-6 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200">
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-4 mb-6">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
             <Download className="w-6 h-6 text-white" />
           </div>
@@ -575,6 +575,147 @@ export default function Progress() {
               <Download className="w-4 h-4 mr-2" />
               Download Printable Tracker (PDF)
             </Button>
+          </div>
+        </div>
+
+        {/* Progress Tracker Table */}
+        <div id="progress-tracker-table" className="bg-white p-6 rounded-lg border-2" style={{borderColor: '#9aafdc'}}>
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-3">
+              ✨ PROGRESS TRACKER ✨
+            </h2>
+            <p className="text-gray-700 text-sm">
+              Track your healing journey, week by week. Use this table to note your progress, symptoms, and small wins—because every step matters.
+            </p>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-400">
+              <thead>
+                <tr>
+                  <th className="border border-gray-400 bg-gray-200 p-3 text-center font-bold text-gray-700" style={{width: '20%'}}>
+                    WEEK
+                  </th>
+                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                    WEEK 1
+                  </th>
+                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                    WEEK 2
+                  </th>
+                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                    WEEK 3
+                  </th>
+                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                    WEEK 4
+                  </th>
+                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                    WEEK 5
+                  </th>
+                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                    WEEK 6
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                    DR GAP MEASUREMENT<br/>
+                    <span className="text-xs font-normal">(Width/Depth at Navel, 2" Above, 2" Below)</span>
+                  </td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                    CORE CONNECTION<br/>
+                    <span className="text-xs font-normal">(Scale 1-5)</span>
+                  </td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                    PELVIC FLOOR SYMPTOMS<br/>
+                    <span className="text-xs font-normal">(Leaking, heaviness, bulging)</span>
+                  </td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                    POSTURE/BACK DISCOMFORT<br/>
+                    <span className="text-xs font-normal">(Scale 1-5)</span>
+                  </td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                    ENERGY LEVEL<br/>
+                    <span className="text-xs font-normal">(Scale 1-5)</span>
+                  </td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                    NUMBER OF WORKOUTS<br/>
+                    <span className="text-xs font-normal">Completed</span>
+                  </td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                    NOTES OR WINS<br/>
+                    <span className="text-xs font-normal">For the week</span>
+                  </td>
+                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
+                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Printing Tip */}
+          <div className="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">🖨️</span>
+              <div>
+                <p className="font-semibold text-gray-800 mb-1">Printing Tip:</p>
+                <p className="text-sm text-gray-700">
+                  Print this tracker in <strong>landscape mode</strong> for best results. Fill it out by hand weekly to document your healing journey.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </Card>
