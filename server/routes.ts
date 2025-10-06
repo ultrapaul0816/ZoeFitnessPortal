@@ -917,12 +917,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/progress-photos/:userId", upload.single('photo'), async (req, res) => {
     try {
       const { userId } = req.params;
+      console.log("[PHOTO UPLOAD] Starting upload for user:", userId);
 
       if (!req.file) {
+        console.log("[PHOTO UPLOAD] No file in request");
         return res.status(400).json({ message: "No photo file provided" });
       }
 
+      console.log("[PHOTO UPLOAD] File received:", {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      });
+
       const { photoType, programId, notes } = req.body;
+      console.log("[PHOTO UPLOAD] Photo type:", photoType);
 
       // Validate photo type
       const validatedData = insertProgressPhotoSchema.parse({
@@ -933,6 +942,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         notes: notes || null,
       });
 
+      console.log("[PHOTO UPLOAD] Starting Cloudinary upload...");
+      
       // Upload to Cloudinary
       const uploadPromise = new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
@@ -941,8 +952,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             resource_type: 'image',
           },
           (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
+            if (error) {
+              console.error("[PHOTO UPLOAD] Cloudinary error:", error);
+              reject(error);
+            } else {
+              console.log("[PHOTO UPLOAD] Cloudinary upload successful:", result?.public_id);
+              resolve(result);
+            }
           }
         );
         uploadStream.end(req.file!.buffer);
@@ -951,6 +967,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const cloudinaryResult: any = await uploadPromise;
 
       // Save to database with Cloudinary URL
+      console.log("[PHOTO UPLOAD] Saving to database...");
       const progressPhoto = await storage.createProgressPhoto({
         ...validatedData,
         fileUrl: cloudinaryResult.secure_url,
@@ -960,13 +977,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         height: cloudinaryResult.height,
       });
 
+      console.log("[PHOTO UPLOAD] Upload complete, photo ID:", progressPhoto.id);
       res.json(progressPhoto);
     } catch (error) {
-      console.error("Photo upload error:", error);
+      console.error("[PHOTO UPLOAD] Error:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.errors[0].message });
       }
-      res.status(500).json({ message: "Failed to upload photo" });
+      res.status(500).json({ message: "Failed to upload photo", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
