@@ -298,7 +298,7 @@ export default function Progress() {
             />
           </div>
           <p className="text-sm text-gray-600 text-center italic">
-            Front-facing, full body view in similar clothing for best comparison
+            Side-angle view showing body posture and core area clearly
           </p>
         </Card>
 
