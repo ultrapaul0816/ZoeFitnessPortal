@@ -552,6 +552,82 @@ export default function Progress() {
         </div>
       )}
 
+      {/* Side-by-Side Comparison - Only show if both photos uploaded */}
+      {startPhoto && finishPhoto && (
+        <Card className="p-4 md:p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-200">
+          <div className="text-center mb-4 md:mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2">
+              ✨ Your Transformation Journey ✨
+            </h2>
+            <p className="text-xs md:text-sm text-gray-700">
+              See your amazing progress side by side!
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+            {/* Start Photo Comparison */}
+            <div>
+              <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-pink-300 mb-3">
+                <img
+                  src={startPhoto.fileUrl}
+                  alt="Start - Before program"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2 left-2 bg-pink-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-semibold">
+                  📷 Start
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-gray-700 mb-2">Before Program</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => deleteMutation.mutate(startPhoto.id)}
+                  disabled={deleteMutation.isPending}
+                  className="border-pink-300 text-pink-600 hover:bg-pink-50 text-xs"
+                >
+                  <Trash2 className="w-3 h-3 mr-1" />
+                  {deleteMutation.isPending ? "Deleting..." : "Replace"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Finish Photo Comparison */}
+            <div>
+              <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-green-300 mb-3">
+                <img
+                  src={finishPhoto.fileUrl}
+                  alt="Finish - After program"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2 left-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-semibold">
+                  ✨ Finish
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-gray-700 mb-2">After 6 Weeks</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => deleteMutation.mutate(finishPhoto.id)}
+                  disabled={deleteMutation.isPending}
+                  className="border-green-300 text-green-600 hover:bg-green-50 text-xs"
+                >
+                  <Trash2 className="w-3 h-3 mr-1" />
+                  {deleteMutation.isPending ? "Deleting..." : "Replace"}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 md:mt-6 bg-white/50 border border-purple-200 rounded-lg p-3 md:p-4 text-center">
+            <p className="text-xs md:text-sm text-gray-600 italic">
+              🎉 Look at how far you've come! Your dedication and hard work are truly inspiring. Keep celebrating your progress!
+            </p>
+          </div>
+        </Card>
+      )}
+
       {/* Example Photo & Tips Section */}
       <div className="grid md:grid-cols-2 gap-4 md:gap-6">
         {/* Example Image */}
