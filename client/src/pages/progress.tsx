@@ -258,36 +258,36 @@ export default function Progress() {
   }
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-4 md:space-y-6 text-left px-2 md:px-0">
       {/* Header Section - Matching other tabs design */}
-      <div className="text-left mb-8">
-        <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
+      <div className="text-left mb-4 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold mb-2 md:mb-4 bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
           Progress Tracker
         </h1>
-        <p className="text-sm font-medium text-gray-600 border-l-4 border-pink-400 pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
+        <p className="text-xs md:text-sm font-medium text-gray-600 border-l-4 border-pink-400 pl-3 md:pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
           Document your transformation journey with photos and weekly progress tracking
         </p>
       </div>
 
       {/* Guidance Section */}
-      <Card className="bg-gradient-to-r from-pink-50 via-rose-50 to-pink-50 border-2 border-pink-200 p-6">
-        <div className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center flex-shrink-0">
-            <Info className="w-5 h-5 text-white" />
+      <Card className="bg-gradient-to-r from-pink-50 via-rose-50 to-pink-50 border-2 border-pink-200 p-4 md:p-6">
+        <div className="flex items-start gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center flex-shrink-0">
+            <Info className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">When to Take Your Photos</h3>
-            <div className="space-y-3 text-sm text-gray-700">
+            <h3 className="text-base md:text-lg font-bold text-gray-900 mb-2">When to Take Your Photos</h3>
+            <div className="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-700">
               <div className="flex items-start gap-2">
-                <span className="text-pink-600 font-bold mt-1">📷</span>
+                <span className="text-pink-600 font-bold mt-0.5">📷</span>
                 <div>
-                  <strong className="text-pink-600">Start Photo:</strong> Take this <strong>before beginning the 6-week program</strong>. This captures your starting point and helps you see how far you've come. Think of it as your "Day 1" snapshot of your postpartum recovery journey.
+                  <strong className="text-pink-600">Start Photo:</strong> Take this <strong>before beginning the 6-week program</strong>. This captures your starting point and helps you see how far you've come.
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-green-600 font-bold mt-1">✨</span>
+                <span className="text-green-600 font-bold mt-0.5">✨</span>
                 <div>
-                  <strong className="text-green-600">Finish Photo:</strong> Take this <strong>after completing the 6-week program</strong>. This celebrates your progress, strength gains, and transformation. You've worked hard—capture the results of your dedication!
+                  <strong className="text-green-600">Finish Photo:</strong> Take this <strong>after completing the 6-week program</strong>. This celebrates your progress, strength gains, and transformation!
                 </div>
               </div>
             </div>
@@ -301,16 +301,16 @@ export default function Progress() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-8">
           {/* Start Photo Card */}
-          <Card className="p-6 border-2 border-pink-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
-                <Camera className="w-6 h-6 text-white" />
+          <Card className="p-4 md:p-6 border-2 border-pink-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center flex-shrink-0">
+                <Camera className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Start Photo</h2>
-                <p className="text-sm text-gray-600">Your beginning (Day 1)</p>
+                <h2 className="text-lg md:text-2xl font-bold text-gray-900">Start Photo</h2>
+                <p className="text-xs md:text-sm text-gray-600">Your beginning (Day 1)</p>
               </div>
             </div>
 
@@ -350,16 +350,16 @@ export default function Progress() {
                 )}
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="border-2 border-dashed border-pink-300 rounded-lg p-8 text-center bg-gradient-to-b from-pink-50 to-white">
-                  <Camera className="w-16 h-16 text-pink-400 mx-auto mb-4" />
-                  <p className="text-gray-700 font-medium mb-4">Upload your starting photo</p>
-                  <p className="text-xs text-gray-500 mb-6">Take this before starting the program</p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <label htmlFor="start-photo-camera">
+              <div className="space-y-3 md:space-y-4">
+                <div className="border-2 border-dashed border-pink-300 rounded-lg p-4 md:p-8 text-center bg-gradient-to-b from-pink-50 to-white">
+                  <Camera className="w-12 h-12 md:w-16 md:h-16 text-pink-400 mx-auto mb-3 md:mb-4" />
+                  <p className="text-sm md:text-base text-gray-700 font-medium mb-2 md:mb-4">Upload your starting photo</p>
+                  <p className="text-xs text-gray-500 mb-4 md:mb-6">Take this before starting the program</p>
+                  <div className="flex flex-col gap-2 md:gap-3 justify-center">
+                    <label htmlFor="start-photo-camera" className="w-full">
                       <Button
                         type="button"
-                        className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 w-full sm:w-auto"
+                        className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 w-full text-sm md:text-base py-5 md:py-2"
                         onClick={() => {
                           const input = document.getElementById("start-photo-camera") as HTMLInputElement;
                           if (input) input.click();
@@ -380,11 +380,11 @@ export default function Progress() {
                       data-testid="input-camera-start"
                     />
                     
-                    <label htmlFor="start-photo-gallery">
+                    <label htmlFor="start-photo-gallery" className="w-full">
                       <Button
                         type="button"
                         variant="outline"
-                        className="border-pink-300 text-pink-600 hover:bg-pink-50 w-full sm:w-auto"
+                        className="border-pink-300 text-pink-600 hover:bg-pink-50 w-full text-sm md:text-base py-5 md:py-2"
                         onClick={() => {
                           const input = document.getElementById("start-photo-gallery") as HTMLInputElement;
                           if (input) input.click();
@@ -410,14 +410,14 @@ export default function Progress() {
           </Card>
 
           {/* Finish Photo Card */}
-          <Card className="p-6 border-2 border-green-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
+          <Card className="p-4 md:p-6 border-2 border-green-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Finish Photo</h2>
-                <p className="text-sm text-gray-600">Your progress (Week 6+)</p>
+                <h2 className="text-lg md:text-2xl font-bold text-gray-900">Finish Photo</h2>
+                <p className="text-xs md:text-sm text-gray-600">Your progress (Week 6+)</p>
               </div>
             </div>
 
@@ -457,16 +457,16 @@ export default function Progress() {
                 )}
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="border-2 border-dashed border-green-300 rounded-lg p-8 text-center bg-gradient-to-b from-green-50 to-white">
-                  <Sparkles className="w-16 h-16 text-green-400 mx-auto mb-4" />
-                  <p className="text-gray-700 font-medium mb-4">Upload your progress photo</p>
-                  <p className="text-xs text-gray-500 mb-6">Take this after completing the program</p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <label htmlFor="finish-photo-camera">
+              <div className="space-y-3 md:space-y-4">
+                <div className="border-2 border-dashed border-green-300 rounded-lg p-4 md:p-8 text-center bg-gradient-to-b from-green-50 to-white">
+                  <Sparkles className="w-12 h-12 md:w-16 md:h-16 text-green-400 mx-auto mb-3 md:mb-4" />
+                  <p className="text-sm md:text-base text-gray-700 font-medium mb-2 md:mb-4">Upload your progress photo</p>
+                  <p className="text-xs text-gray-500 mb-4 md:mb-6">Take this after completing the program</p>
+                  <div className="flex flex-col gap-2 md:gap-3 justify-center">
+                    <label htmlFor="finish-photo-camera" className="w-full">
                       <Button
                         type="button"
-                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 w-full sm:w-auto"
+                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 w-full text-sm md:text-base py-5 md:py-2"
                         onClick={() => {
                           const input = document.getElementById("finish-photo-camera") as HTMLInputElement;
                           if (input) input.click();
@@ -487,11 +487,11 @@ export default function Progress() {
                       data-testid="input-camera-finish"
                     />
                     
-                    <label htmlFor="finish-photo-gallery">
+                    <label htmlFor="finish-photo-gallery" className="w-full">
                       <Button
                         type="button"
                         variant="outline"
-                        className="border-green-300 text-green-600 hover:bg-green-50 w-full sm:w-auto"
+                        className="border-green-300 text-green-600 hover:bg-green-50 w-full text-sm md:text-base py-5 md:py-2"
                         onClick={() => {
                           const input = document.getElementById("finish-photo-gallery") as HTMLInputElement;
                           if (input) input.click();
@@ -519,14 +519,14 @@ export default function Progress() {
       )}
 
       {/* Example Photo & Tips Section */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-4 md:gap-6">
         {/* Example Image */}
-        <Card className="p-6 border-2 border-pink-300 bg-white">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 text-pink-600" />
-            <h3 className="text-lg font-bold text-gray-900">Example Photo Angle</h3>
+        <Card className="p-4 md:p-6 border-2 border-pink-300 bg-white">
+          <div className="flex items-center gap-2 mb-3 md:mb-4">
+            <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-pink-600" />
+            <h3 className="text-base md:text-lg font-bold text-gray-900">Example Photo Angle</h3>
           </div>
-          <div className="relative rounded-lg overflow-hidden mb-4 bg-gray-100">
+          <div className="relative rounded-lg overflow-hidden mb-3 md:mb-4 bg-gray-100">
             <img 
               src={examplePhotoImage} 
               alt="Example progress photo showing proper angle" 
@@ -534,18 +534,18 @@ export default function Progress() {
               data-testid="img-example-photo"
             />
           </div>
-          <p className="text-sm text-gray-600 text-center italic">
+          <p className="text-xs md:text-sm text-gray-600 text-center italic">
             Side-angle view showing body posture and core area clearly
           </p>
         </Card>
 
         {/* Photography Tips */}
-        <Card className="p-6 border-2 border-pink-300 bg-gradient-to-br from-pink-50 to-white">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-pink-600" />
-            <h3 className="text-lg font-bold text-gray-900">Photography Tips</h3>
+        <Card className="p-4 md:p-6 border-2 border-pink-300 bg-gradient-to-br from-pink-50 to-white">
+          <div className="flex items-center gap-2 mb-3 md:mb-4">
+            <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-pink-600" />
+            <h3 className="text-base md:text-lg font-bold text-gray-900">Photography Tips</h3>
           </div>
-          <ul className="space-y-3 text-sm text-gray-700">
+          <ul className="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-700">
             <li className="flex items-start gap-2">
               <span className="text-pink-600 font-bold">1.</span>
               <span><strong>Same Location & Lighting:</strong> Use the same spot with consistent lighting each time for accurate comparison</span>
@@ -571,19 +571,19 @@ export default function Progress() {
       </div>
 
       {/* Downloadable Progress Tracker */}
-      <Card className="p-6 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-            <Download className="w-6 h-6 text-white" />
+      <Card className="p-4 md:p-6 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200">
+        <div className="flex items-start gap-3 md:gap-4 mb-4 md:mb-6">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+            <Download className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Weekly Progress Tracker</h3>
-            <p className="text-sm text-gray-700 mb-4">
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">Weekly Progress Tracker</h3>
+            <p className="text-xs md:text-sm text-gray-700 mb-3 md:mb-4">
               Track your healing journey week by week. Download this printable PDF to note your progress, symptoms, and small wins—because every step matters.
             </p>
             <Button
               onClick={downloadProgressTracker}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all w-full md:w-auto text-sm md:text-base py-5 md:py-2"
               data-testid="button-download-tracker"
             >
               <Download className="w-4 h-4 mr-2" />
@@ -593,139 +593,139 @@ export default function Progress() {
         </div>
 
         {/* Progress Tracker Table */}
-        <div id="progress-tracker-table" className="bg-white p-6 rounded-lg border-2" style={{borderColor: '#9aafdc'}}>
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-3">
+        <div id="progress-tracker-table" className="bg-white p-3 md:p-6 rounded-lg border-2" style={{borderColor: '#9aafdc'}}>
+          <div className="text-center mb-4 md:mb-6">
+            <h2 className="text-lg md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-2 md:mb-3">
               ✨ PROGRESS TRACKER ✨
             </h2>
-            <p className="text-gray-700 text-sm">
+            <p className="text-gray-700 text-xs md:text-sm">
               Track your healing journey, week by week. Use this table to note your progress, symptoms, and small wins—because every step matters.
             </p>
           </div>
           
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-400">
+          <div className="overflow-x-auto -mx-3 md:mx-0">
+            <table className="w-full border-collapse border border-gray-400 min-w-[600px]">
               <thead>
                 <tr>
-                  <th className="border border-gray-400 bg-gray-200 p-3 text-center font-bold text-gray-700" style={{width: '20%'}}>
+                  <th className="border border-gray-400 bg-gray-200 p-2 md:p-3 text-center font-bold text-gray-700 text-xs md:text-sm" style={{width: '20%'}}>
                     WEEK
                   </th>
-                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                  <th className="border border-gray-400 bg-pink-100 p-2 md:p-3 text-center font-bold text-pink-700 text-xs md:text-sm">
                     WEEK 1
                   </th>
-                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                  <th className="border border-gray-400 bg-pink-100 p-2 md:p-3 text-center font-bold text-pink-700 text-xs md:text-sm">
                     WEEK 2
                   </th>
-                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                  <th className="border border-gray-400 bg-pink-100 p-2 md:p-3 text-center font-bold text-pink-700 text-xs md:text-sm">
                     WEEK 3
                   </th>
-                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                  <th className="border border-gray-400 bg-pink-100 p-2 md:p-3 text-center font-bold text-pink-700 text-xs md:text-sm">
                     WEEK 4
                   </th>
-                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                  <th className="border border-gray-400 bg-pink-100 p-2 md:p-3 text-center font-bold text-pink-700 text-xs md:text-sm">
                     WEEK 5
                   </th>
-                  <th className="border border-gray-400 bg-pink-100 p-3 text-center font-bold text-pink-700">
+                  <th className="border border-gray-400 bg-pink-100 p-2 md:p-3 text-center font-bold text-pink-700 text-xs md:text-sm">
                     WEEK 6
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                  <td className="border border-gray-400 bg-gray-100 p-2 md:p-3 font-semibold text-gray-700 text-xs md:text-sm">
                     DR GAP MEASUREMENT<br/>
-                    <span className="text-xs font-normal">(Width/Depth at Navel, 2" Above, 2" Below)</span>
+                    <span className="text-[10px] md:text-xs font-normal">(Width/Depth at Navel, 2" Above, 2" Below)</span>
                   </td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                  <td className="border border-gray-400 bg-gray-100 p-2 md:p-3 font-semibold text-gray-700 text-xs md:text-sm">
                     CORE CONNECTION<br/>
-                    <span className="text-xs font-normal">(Scale 1-5)</span>
+                    <span className="text-[10px] md:text-xs font-normal">(Scale 1-5)</span>
                   </td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                  <td className="border border-gray-400 bg-gray-100 p-2 md:p-3 font-semibold text-gray-700 text-xs md:text-sm">
                     PELVIC FLOOR SYMPTOMS<br/>
-                    <span className="text-xs font-normal">(Leaking, heaviness, bulging)</span>
+                    <span className="text-[10px] md:text-xs font-normal">(Leaking, heaviness, bulging)</span>
                   </td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                  <td className="border border-gray-400 bg-gray-100 p-2 md:p-3 font-semibold text-gray-700 text-xs md:text-sm">
                     POSTURE/BACK DISCOMFORT<br/>
-                    <span className="text-xs font-normal">(Scale 1-5)</span>
+                    <span className="text-[10px] md:text-xs font-normal">(Scale 1-5)</span>
                   </td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                  <td className="border border-gray-400 bg-gray-100 p-2 md:p-3 font-semibold text-gray-700 text-xs md:text-sm">
                     ENERGY LEVEL<br/>
-                    <span className="text-xs font-normal">(Scale 1-5)</span>
+                    <span className="text-[10px] md:text-xs font-normal">(Scale 1-5)</span>
                   </td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                  <td className="border border-gray-400 bg-gray-100 p-2 md:p-3 font-semibold text-gray-700 text-xs md:text-sm">
                     NUMBER OF WORKOUTS<br/>
-                    <span className="text-xs font-normal">Completed</span>
+                    <span className="text-[10px] md:text-xs font-normal">Completed</span>
                   </td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-12 md:h-16"></td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 bg-gray-100 p-3 font-semibold text-gray-700 text-sm">
+                  <td className="border border-gray-400 bg-gray-100 p-2 md:p-3 font-semibold text-gray-700 text-xs md:text-sm">
                     NOTES OR WINS<br/>
-                    <span className="text-xs font-normal">For the week</span>
+                    <span className="text-[10px] md:text-xs font-normal">For the week</span>
                   </td>
-                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
-                  <td className="border border-gray-400 p-3 bg-white h-24"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-16 md:h-24"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-16 md:h-24"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-16 md:h-24"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-16 md:h-24"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-16 md:h-24"></td>
+                  <td className="border border-gray-400 p-2 md:p-3 bg-white h-16 md:h-24"></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           {/* Printing Tip */}
-          <div className="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">🖨️</span>
+          <div className="mt-4 md:mt-6 bg-blue-50 border-l-4 border-blue-400 p-3 md:p-4 rounded-r-lg">
+            <div className="flex items-start gap-2 md:gap-3">
+              <span className="text-xl md:text-2xl">🖨️</span>
               <div>
-                <p className="font-semibold text-gray-800 mb-1">Printing Tip:</p>
-                <p className="text-sm text-gray-700">
+                <p className="font-semibold text-gray-800 mb-1 text-sm md:text-base">Printing Tip:</p>
+                <p className="text-xs md:text-sm text-gray-700">
                   Print this tracker in <strong>landscape mode</strong> for best results. Fill it out by hand weekly to document your healing journey.
                 </p>
               </div>
