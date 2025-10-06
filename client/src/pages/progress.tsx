@@ -85,9 +85,13 @@ export default function Progress() {
 
   const deleteMutation = useMutation({
     mutationFn: async (photoId: string) => {
-      return apiRequest(`/api/progress-photos/${user!.id}/${photoId}`, {
+      const response = await fetch(`/api/progress-photos/${user!.id}/${photoId}`, {
         method: "DELETE",
       });
+      if (!response.ok) {
+        throw new Error("Failed to delete photo");
+      }
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress-photos", user?.id] });
