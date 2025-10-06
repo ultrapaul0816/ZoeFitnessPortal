@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import examplePhotoImage from "@assets/Screenshot 2025-10-06 at 21.49.36_1759767641108.png";
+import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 
 function getInitialUser(): User | null {
   if (typeof window !== 'undefined') {
