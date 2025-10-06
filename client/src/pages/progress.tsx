@@ -160,6 +160,7 @@ export default function Progress() {
         format: 'a4'
       });
 
+      // Add title
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.text('PROGRESS TRACKER', 148.5, 20, { align: 'center' });
@@ -168,6 +169,7 @@ export default function Progress() {
       doc.setFont('helvetica', 'normal');
       doc.text('Track your healing journey, week by week. Use this table to note your progress, symptoms, and small wins.', 148.5, 28, { align: 'center' });
 
+      // Table data
       const tableData = [
         ['WEEK', 'WEEK 1', 'WEEK 2', 'WEEK 3', 'WEEK 4', 'WEEK 5', 'WEEK 6'],
         ['DR GAP MEASUREMENT\n(Width/Depth at Navel, 2" Above, 2" Below)', '', '', '', '', '', ''],
@@ -179,45 +181,57 @@ export default function Progress() {
         ['NOTES OR WINS\nFor the week', '', '', '', '', '', '']
       ];
 
+      // Draw table manually
       const startX = 10;
       const startY = 40;
-      const rowHeight = 18;
-      const columnWidths = [60, 34, 34, 34, 34, 34, 34];
+      const rowHeight = 15;
+      const colWidths = [60, 36, 36, 36, 36, 36, 36];
 
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-
+      // Draw rows
       for (let i = 0; i < tableData.length; i++) {
+        const y = startY + (i * rowHeight);
         let currentX = startX;
+
         for (let j = 0; j < tableData[i].length; j++) {
-          const width = columnWidths[j];
-          const cellY = startY + (i * rowHeight);
+          const width = colWidths[j];
           
-          doc.setDrawColor(100, 100, 100);
-          doc.rect(currentX, cellY, width, rowHeight);
-          
+          // Fill header row with colors
           if (i === 0) {
-            doc.setFillColor(220, 220, 220);
-            doc.rect(currentX, cellY, width, rowHeight, 'F');
-            doc.rect(currentX, cellY, width, rowHeight);
+            if (j === 0) {
+              doc.setFillColor(200, 200, 200); // Gray for "WEEK"
+            } else {
+              doc.setFillColor(242, 3, 139); // Pink for week columns
+            }
+            doc.rect(currentX, y, width, rowHeight, 'F');
+          } else if (j === 0) {
+            doc.setFillColor(230, 230, 230); // Light gray for labels
+            doc.rect(currentX, y, width, rowHeight, 'F');
           }
-          
-          if (j === 0) {
-            doc.setFillColor(240, 240, 240);
-            doc.rect(currentX, cellY, width, rowHeight, 'F');
-            doc.rect(currentX, cellY, width, rowHeight);
+
+          // Draw border
+          doc.setDrawColor(0);
+          doc.rect(currentX, y, width, rowHeight);
+
+          // Add text
+          if (tableData[i][j]) {
+            doc.setTextColor(i === 0 && j > 0 ? 255 : 0); // White text for pink headers
+            doc.setFontSize(i === 0 ? 9 : 8);
+            doc.setFont('helvetica', i === 0 ? 'bold' : 'normal');
+            
+            const lines = tableData[i][j].split('\n');
+            const lineHeight = 4;
+            const textStartY = y + (rowHeight / 2) - ((lines.length - 1) * lineHeight / 2) + 2;
+            
+            lines.forEach((line, lineIndex) => {
+              doc.text(line, currentX + 2, textStartY + (lineIndex * lineHeight), { maxWidth: width - 4 });
+            });
           }
-          
-          doc.setTextColor(0);
-          const text = tableData[i][j];
-          const lines = doc.splitTextToSize(text, width - 4);
-          const textY = cellY + rowHeight / 2 - (lines.length * 3) + 5;
-          doc.text(lines, currentX + width / 2, textY, { align: 'center' });
-          
+
           currentX += width;
         }
       }
 
+      // Footer
       doc.setTextColor(0);
       doc.setFontSize(9);
       doc.setFont('helvetica', 'italic');
