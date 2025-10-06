@@ -8,11 +8,11 @@ import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
 import MyLibrary from "@/pages/my-library";
-import Progress from "@/pages/progress";
 import NotFound from "@/pages/not-found";
 
-// Lazy load the heavy HealYourCorePage to fix bundle size
+// Lazy load heavy pages to improve initial load time
 const HealYourCorePage = lazy(() => import("@/pages/heal-your-core"));
+const Progress = lazy(() => import("@/pages/progress"));
 
 function Router() {
   return (
@@ -27,7 +27,13 @@ function Router() {
           <HealYourCorePage />
         </Suspense>
       )} />
-      <Route path="/progress" component={Progress} />
+      <Route path="/progress" component={() => (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+        </div>}>
+          <Progress />
+        </Suspense>
+      )} />
       <Route path="/my-library" component={MyLibrary} />
       <Route component={NotFound} />
     </Switch>
