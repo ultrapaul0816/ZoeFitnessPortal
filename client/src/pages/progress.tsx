@@ -323,6 +323,14 @@ export default function Progress() {
                     className="w-full h-full object-cover"
                     data-testid="img-start-photo"
                   />
+                  {uploadMutation.isPending && startPreview && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-3"></div>
+                        <p className="text-white font-semibold">Uploading...</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 {startPhoto && !startPreview && (
                   <Button
@@ -334,7 +342,7 @@ export default function Progress() {
                     data-testid="button-delete-start"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete & Replace
+                    {deleteMutation.isPending ? "Deleting..." : "Delete & Replace"}
                   </Button>
                 )}
                 {startPreview && (
@@ -344,8 +352,17 @@ export default function Progress() {
                     className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700"
                     data-testid="button-upload-start"
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {uploadMutation.isPending ? "Uploading..." : "Upload Photo"}
+                    {uploadMutation.isPending ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Photo
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
@@ -430,6 +447,14 @@ export default function Progress() {
                     className="w-full h-full object-cover"
                     data-testid="img-finish-photo"
                   />
+                  {uploadMutation.isPending && finishPreview && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-3"></div>
+                        <p className="text-white font-semibold">Uploading...</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 {finishPhoto && !finishPreview && (
                   <Button
@@ -441,7 +466,7 @@ export default function Progress() {
                     data-testid="button-delete-finish"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete & Replace
+                    {deleteMutation.isPending ? "Deleting..." : "Delete & Replace"}
                   </Button>
                 )}
                 {finishPreview && (
@@ -451,8 +476,17 @@ export default function Progress() {
                     className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                     data-testid="button-upload-finish"
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {uploadMutation.isPending ? "Uploading..." : "Upload Photo"}
+                    {uploadMutation.isPending ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Photo
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
