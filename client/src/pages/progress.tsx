@@ -5,7 +5,8 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { User, ProgressPhoto } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp, X, ZoomIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 
@@ -26,6 +27,7 @@ export default function Progress() {
   const [finishPhotoFile, setFinishPhotoFile] = useState<File | null>(null);
   const [startPreview, setStartPreview] = useState<string | null>(null);
   const [finishPreview, setFinishPreview] = useState<string | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<{ url: string; type: "start" | "finish" } | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -259,6 +261,34 @@ export default function Progress() {
 
   return (
     <div className="space-y-4 md:space-y-6 text-left px-2 md:px-0">
+      {/* Full-Size Photo Preview Dialog */}
+      <Dialog open={!!previewPhoto} onOpenChange={() => setPreviewPhoto(null)}>
+        <DialogContent className="max-w-4xl w-full p-2 md:p-6">
+          <DialogHeader>
+            <DialogTitle className="text-center text-lg md:text-xl font-bold">
+              {previewPhoto?.type === "start" ? "📷 Start Photo - Before Program" : "✨ Finish Photo - After 6 Weeks"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="relative">
+            <img
+              src={previewPhoto?.url}
+              alt={previewPhoto?.type === "start" ? "Start photo full view" : "Finish photo full view"}
+              className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+            />
+          </div>
+          <div className="flex justify-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setPreviewPhoto(null)}
+              className="w-full md:w-auto"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Header Section - Matching other tabs design */}
       <div className="text-left mb-4 md:mb-8">
         <h1 className="text-xl md:text-2xl font-bold mb-2 md:mb-4 bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
@@ -316,13 +346,23 @@ export default function Progress() {
 
             {startPhoto || startPreview ? (
               <div className="space-y-4">
-                <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-pink-200">
+                <div 
+                  className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-pink-200 cursor-pointer hover:border-pink-400 transition-all group"
+                  onClick={() => startPhoto && setPreviewPhoto({ url: startPhoto.fileUrl, type: "start" })}
+                >
                   <img
                     src={startPreview || startPhoto?.fileUrl}
                     alt="Start photo"
                     className="w-full h-full object-cover"
                     data-testid="img-start-photo"
                   />
+                  {startPhoto && !startPreview && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-3">
+                        <ZoomIn className="w-6 h-6 text-pink-600" />
+                      </div>
+                    </div>
+                  )}
                   {uploadMutation.isPending && startPreview && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                       <div className="text-center">
@@ -440,13 +480,23 @@ export default function Progress() {
 
             {finishPhoto || finishPreview ? (
               <div className="space-y-4">
-                <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-green-200">
+                <div 
+                  className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-green-200 cursor-pointer hover:border-green-400 transition-all group"
+                  onClick={() => finishPhoto && setPreviewPhoto({ url: finishPhoto.fileUrl, type: "finish" })}
+                >
                   <img
                     src={finishPreview || finishPhoto?.fileUrl}
                     alt="Finish photo"
                     className="w-full h-full object-cover"
                     data-testid="img-finish-photo"
                   />
+                  {finishPhoto && !finishPreview && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-3">
+                        <ZoomIn className="w-6 h-6 text-green-600" />
+                      </div>
+                    </div>
+                  )}
                   {uploadMutation.isPending && finishPreview && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                       <div className="text-center">
@@ -567,7 +617,10 @@ export default function Progress() {
           <div className="grid md:grid-cols-2 gap-4 md:gap-6">
             {/* Start Photo Comparison */}
             <div>
-              <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-pink-300 mb-3">
+              <div 
+                className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-pink-300 mb-3 cursor-pointer hover:border-pink-500 transition-all group"
+                onClick={() => setPreviewPhoto({ url: startPhoto.fileUrl, type: "start" })}
+              >
                 <img
                   src={startPhoto.fileUrl}
                   alt="Start - Before program"
@@ -575,6 +628,11 @@ export default function Progress() {
                 />
                 <div className="absolute top-2 left-2 bg-pink-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-semibold">
                   📷 Start
+                </div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-3">
+                    <ZoomIn className="w-6 h-6 text-pink-600" />
+                  </div>
                 </div>
               </div>
               <div className="text-center">
@@ -594,7 +652,10 @@ export default function Progress() {
 
             {/* Finish Photo Comparison */}
             <div>
-              <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-green-300 mb-3">
+              <div 
+                className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-green-300 mb-3 cursor-pointer hover:border-green-500 transition-all group"
+                onClick={() => setPreviewPhoto({ url: finishPhoto.fileUrl, type: "finish" })}
+              >
                 <img
                   src={finishPhoto.fileUrl}
                   alt="Finish - After program"
@@ -602,6 +663,11 @@ export default function Progress() {
                 />
                 <div className="absolute top-2 left-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-semibold">
                   ✨ Finish
+                </div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-3">
+                    <ZoomIn className="w-6 h-6 text-green-600" />
+                  </div>
                 </div>
               </div>
               <div className="text-center">
