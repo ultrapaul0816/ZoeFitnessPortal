@@ -71,6 +71,12 @@ The application features a comprehensive 6-week program structure with detailed 
 - **Asset Management**: Vite bundles all frontend assets.
 - **Static File Serving**: Configured Express middleware handles asset requests.
 
+### Performance Optimizations
+- **Code Splitting**: Heavy pages (Heal Your Core, Progress) use React.lazy() and Suspense for lazy loading, reducing initial bundle size
+- **Dynamic Imports**: jsPDF library (70+ KB) is dynamically imported only when users download the progress tracker PDF
+- **Optimized Logging**: Removed verbose server-side logging to reduce overhead during photo uploads
+- **Route-Level Splitting**: Each major page loads independently, improving first paint and time-to-interactive
+
 # External Dependencies
 - **Database**: PostgreSQL (managed by Neon Database via `@neondatabase/serverless` driver)
 - **Deployment Platform**: Replit
