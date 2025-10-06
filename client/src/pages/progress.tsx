@@ -5,8 +5,9 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { User, ProgressPhoto } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Upload, Trash2, Camera } from "lucide-react";
+import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import examplePhotoImage from "@assets/Screenshot 2025-10-06 at 21.49.36_1759767641108.png";
 
 function getInitialUser(): User | null {
   if (typeof window !== 'undefined') {
@@ -36,7 +37,6 @@ export default function Progress() {
     setUser(parsedUser);
   }, [setLocation]);
 
-  // Fetch existing progress photos
   const { data: photos = [], isLoading } = useQuery<ProgressPhoto[]>({
     queryKey: ["/api/progress-photos", user?.id],
     enabled: !!user?.id,
@@ -45,7 +45,6 @@ export default function Progress() {
   const startPhoto = photos.find((p) => p.photoType === "start");
   const finishPhoto = photos.find((p) => p.photoType === "finish");
 
-  // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async ({ file, photoType }: { file: File; photoType: "start" | "finish" }) => {
       const formData = new FormData();
@@ -84,7 +83,6 @@ export default function Progress() {
     },
   });
 
-  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (photoId: string) => {
       return apiRequest(`/api/progress-photos/${user!.id}/${photoId}`, {
@@ -149,204 +147,433 @@ export default function Progress() {
     uploadMutation.mutate({ file, photoType: type });
   };
 
+  const downloadProgressTracker = async () => {
+    try {
+      const jsPDF = await import('jspdf');
+      const doc = new jsPDF.jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PROGRESS TRACKER', 148.5, 20, { align: 'center' });
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Track your healing journey, week by week. Use this table to note your progress, symptoms, and small wins.', 148.5, 28, { align: 'center' });
+
+      const tableData = [
+        ['WEEK', 'WEEK 1', 'WEEK 2', 'WEEK 3', 'WEEK 4', 'WEEK 5', 'WEEK 6'],
+        ['DR GAP MEASUREMENT\n(Width/Depth at Navel, 2" Above, 2" Below)', '', '', '', '', '', ''],
+        ['CORE CONNECTION\n(Scale 1-5)', '', '', '', '', '', ''],
+        ['PELVIC FLOOR SYMPTOMS\n(Leaking, heaviness, bulging)', '', '', '', '', '', ''],
+        ['POSTURE/BACK DISCOMFORT\n(Scale 1-5)', '', '', '', '', '', ''],
+        ['ENERGY LEVEL\n(Scale 1-5)', '', '', '', '', '', ''],
+        ['NUMBER OF WORKOUTS\nCompleted', '', '', '', '', '', ''],
+        ['NOTES OR WINS\nFor the week', '', '', '', '', '', '']
+      ];
+
+      const startX = 10;
+      const startY = 40;
+      const rowHeight = 18;
+      const columnWidths = [60, 34, 34, 34, 34, 34, 34];
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+
+      for (let i = 0; i < tableData.length; i++) {
+        let currentX = startX;
+        for (let j = 0; j < tableData[i].length; j++) {
+          const width = columnWidths[j];
+          const cellY = startY + (i * rowHeight);
+          
+          doc.setDrawColor(100, 100, 100);
+          doc.rect(currentX, cellY, width, rowHeight);
+          
+          if (i === 0) {
+            doc.setFillColor(220, 220, 220);
+            doc.rect(currentX, cellY, width, rowHeight, 'F');
+            doc.rect(currentX, cellY, width, rowHeight);
+          }
+          
+          if (j === 0) {
+            doc.setFillColor(240, 240, 240);
+            doc.rect(currentX, cellY, width, rowHeight, 'F');
+            doc.rect(currentX, cellY, width, rowHeight);
+          }
+          
+          doc.setTextColor(0);
+          const text = tableData[i][j];
+          const lines = doc.splitTextToSize(text, width - 4);
+          const textY = cellY + rowHeight / 2 - (lines.length * 3) + 5;
+          doc.text(lines, currentX + width / 2, textY, { align: 'center' });
+          
+          currentX += width;
+        }
+      }
+
+      doc.setTextColor(0);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Printing Tip: Print in landscape mode for best results. Fill out by hand weekly.', startX, startY + (tableData.length * rowHeight) + 10);
+
+      doc.save('Progress-Tracker-Postpartum-Recovery.pdf');
+      
+      toast({
+        title: "Download Started",
+        description: "Your Progress Tracker PDF has been downloaded!",
+      });
+    } catch (error) {
+      console.error('PDF Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!user) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Your Progress Journey
-          </h1>
-          <p className="text-lg text-gray-600">
-            Track your transformation with before and after photos
-          </p>
+    <div className="space-y-6 text-left">
+      {/* Header Section - Matching other tabs design */}
+      <div className="text-left mb-8">
+        <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
+          Progress Tracker
+        </h1>
+        <p className="text-sm font-medium text-gray-600 border-l-4 border-pink-400 pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
+          Document your transformation journey with photos and weekly progress tracking
+        </p>
+      </div>
+
+      {/* Guidance Section */}
+      <Card className="bg-gradient-to-r from-pink-50 via-rose-50 to-pink-50 border-2 border-pink-200 p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center flex-shrink-0">
+            <Info className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">When to Take Your Photos</h3>
+            <div className="space-y-3 text-sm text-gray-700">
+              <div className="flex items-start gap-2">
+                <span className="text-pink-600 font-bold mt-1">📷</span>
+                <div>
+                  <strong className="text-pink-600">Start Photo:</strong> Take this <strong>before beginning the 6-week program</strong>. This captures your starting point and helps you see how far you've come. Think of it as your "Day 1" snapshot of your postpartum recovery journey.
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-green-600 font-bold mt-1">✨</span>
+                <div>
+                  <strong className="text-green-600">Finish Photo:</strong> Take this <strong>after completing the 6-week program</strong>. This celebrates your progress, strength gains, and transformation. You've worked hard—capture the results of your dedication!
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </Card>
 
-        {isLoading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+      {/* Example Photo & Tips Section */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Example Image */}
+        <Card className="p-6 border-2 border-pink-300 bg-white">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-pink-600" />
+            <h3 className="text-lg font-bold text-gray-900">Example Photo Angle</h3>
           </div>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Start Photo Card */}
-            <Card className="p-6 border-2 border-pink-200 bg-white shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
-                  <Camera className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Start Photo</h2>
-                  <p className="text-sm text-gray-600">Your beginning</p>
-                </div>
-              </div>
-
-              {startPhoto || startPreview ? (
-                <div className="space-y-4">
-                  <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100">
-                    <img
-                      src={startPreview || startPhoto?.fileUrl}
-                      alt="Start photo"
-                      className="w-full h-full object-cover"
-                      data-testid="img-start-photo"
-                    />
-                  </div>
-                  {startPhoto && !startPreview && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(startPhoto.id)}
-                      disabled={deleteMutation.isPending}
-                      className="w-full"
-                      data-testid="button-delete-start"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete & Replace
-                    </Button>
-                  )}
-                  {startPreview && (
-                    <Button
-                      onClick={() => handleUpload("start")}
-                      disabled={uploadMutation.isPending}
-                      className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700"
-                      data-testid="button-upload-start"
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {uploadMutation.isPending ? "Uploading..." : "Upload Photo"}
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed border-pink-300 rounded-lg p-12 text-center bg-pink-50">
-                    <Camera className="w-16 h-16 text-pink-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-4">Upload your starting photo</p>
-                    <label htmlFor="start-photo" className="cursor-pointer">
-                      <Button
-                        type="button"
-                        className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700"
-                        onClick={() => document.getElementById("start-photo")?.click()}
-                        data-testid="button-select-start"
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Select Photo
-                      </Button>
-                    </label>
-                    <input
-                      id="start-photo"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, "start")}
-                      data-testid="input-start-photo"
-                    />
-                  </div>
-                </div>
-              )}
-            </Card>
-
-            {/* Finish Photo Card */}
-            <Card className="p-6 border-2 border-green-200 bg-white shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                  <Camera className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Finish Photo</h2>
-                  <p className="text-sm text-gray-600">Your progress</p>
-                </div>
-              </div>
-
-              {finishPhoto || finishPreview ? (
-                <div className="space-y-4">
-                  <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100">
-                    <img
-                      src={finishPreview || finishPhoto?.fileUrl}
-                      alt="Finish photo"
-                      className="w-full h-full object-cover"
-                      data-testid="img-finish-photo"
-                    />
-                  </div>
-                  {finishPhoto && !finishPreview && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(finishPhoto.id)}
-                      disabled={deleteMutation.isPending}
-                      className="w-full"
-                      data-testid="button-delete-finish"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete & Replace
-                    </Button>
-                  )}
-                  {finishPreview && (
-                    <Button
-                      onClick={() => handleUpload("finish")}
-                      disabled={uploadMutation.isPending}
-                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                      data-testid="button-upload-finish"
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {uploadMutation.isPending ? "Uploading..." : "Upload Photo"}
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed border-green-300 rounded-lg p-12 text-center bg-green-50">
-                    <Camera className="w-16 h-16 text-green-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-4">Upload your progress photo</p>
-                    <label htmlFor="finish-photo" className="cursor-pointer">
-                      <Button
-                        type="button"
-                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                        onClick={() => document.getElementById("finish-photo")?.click()}
-                        data-testid="button-select-finish"
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Select Photo
-                      </Button>
-                    </label>
-                    <input
-                      id="finish-photo"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, "finish")}
-                      data-testid="input-finish-photo"
-                    />
-                  </div>
-                </div>
-              )}
-            </Card>
+          <div className="relative rounded-lg overflow-hidden mb-4 bg-gray-100">
+            <img 
+              src={examplePhotoImage} 
+              alt="Example progress photo showing proper angle" 
+              className="w-full h-auto object-contain"
+              data-testid="img-example-photo"
+            />
           </div>
-        )}
+          <p className="text-sm text-gray-600 text-center italic">
+            Front-facing, full body view in similar clothing for best comparison
+          </p>
+        </Card>
 
-        <Card className="mt-8 p-6 bg-gradient-to-r from-pink-100 to-rose-100 border-2 border-pink-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Tips for Great Progress Photos</h3>
-          <ul className="space-y-2 text-gray-700">
-            <li className="flex items-start">
-              <span className="text-pink-600 mr-2">•</span>
-              <span>Take photos in the same location and lighting for accurate comparison</span>
+        {/* Photography Tips */}
+        <Card className="p-6 border-2 border-pink-300 bg-gradient-to-br from-pink-50 to-white">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-pink-600" />
+            <h3 className="text-lg font-bold text-gray-900">Photography Tips</h3>
+          </div>
+          <ul className="space-y-3 text-sm text-gray-700">
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">1.</span>
+              <span><strong>Same Location & Lighting:</strong> Use the same spot with consistent lighting each time for accurate comparison</span>
             </li>
-            <li className="flex items-start">
-              <span className="text-pink-600 mr-2">•</span>
-              <span>Wear similar fitted clothing to show body changes clearly</span>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">2.</span>
+              <span><strong>Similar Clothing:</strong> Wear similar fitted clothing (sports bra, leggings) to clearly show body changes</span>
             </li>
-            <li className="flex items-start">
-              <span className="text-pink-600 mr-2">•</span>
-              <span>Stand in the same pose (front, side, or back view)</span>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">3.</span>
+              <span><strong>Consistent Pose:</strong> Stand naturally with feet hip-width apart, arms relaxed at your sides</span>
             </li>
-            <li className="flex items-start">
-              <span className="text-pink-600 mr-2">•</span>
-              <span>Your photos are private and only visible to you</span>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">4.</span>
+              <span><strong>Full Body View:</strong> Capture your entire body from head to toe, front-facing angle works best</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">5.</span>
+              <span><strong>Privacy Assured:</strong> Your photos are completely private and only visible to you—no one else can see them</span>
             </li>
           </ul>
         </Card>
       </div>
+
+      {/* Photo Upload Section */}
+      {isLoading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Start Photo Card */}
+          <Card className="p-6 border-2 border-pink-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
+                <Camera className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Start Photo</h2>
+                <p className="text-sm text-gray-600">Your beginning (Day 1)</p>
+              </div>
+            </div>
+
+            {startPhoto || startPreview ? (
+              <div className="space-y-4">
+                <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-pink-200">
+                  <img
+                    src={startPreview || startPhoto?.fileUrl}
+                    alt="Start photo"
+                    className="w-full h-full object-cover"
+                    data-testid="img-start-photo"
+                  />
+                </div>
+                {startPhoto && !startPreview && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => deleteMutation.mutate(startPhoto.id)}
+                    disabled={deleteMutation.isPending}
+                    className="w-full border-pink-300 text-pink-600 hover:bg-pink-50"
+                    data-testid="button-delete-start"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete & Replace
+                  </Button>
+                )}
+                {startPreview && (
+                  <Button
+                    onClick={() => handleUpload("start")}
+                    disabled={uploadMutation.isPending}
+                    className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700"
+                    data-testid="button-upload-start"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadMutation.isPending ? "Uploading..." : "Upload Photo"}
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-pink-300 rounded-lg p-8 text-center bg-gradient-to-b from-pink-50 to-white">
+                  <Camera className="w-16 h-16 text-pink-400 mx-auto mb-4" />
+                  <p className="text-gray-700 font-medium mb-4">Upload your starting photo</p>
+                  <p className="text-xs text-gray-500 mb-6">Take this before starting the program</p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <label htmlFor="start-photo-camera">
+                      <Button
+                        type="button"
+                        className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 w-full sm:w-auto"
+                        onClick={() => {
+                          const input = document.getElementById("start-photo-camera") as HTMLInputElement;
+                          if (input) input.click();
+                        }}
+                        data-testid="button-camera-start"
+                      >
+                        <Camera className="w-4 h-4 mr-2" />
+                        Take Photo
+                      </Button>
+                    </label>
+                    <input
+                      id="start-photo-camera"
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={(e) => handleFileChange(e, "start")}
+                      data-testid="input-camera-start"
+                    />
+                    
+                    <label htmlFor="start-photo-gallery">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="border-pink-300 text-pink-600 hover:bg-pink-50 w-full sm:w-auto"
+                        onClick={() => {
+                          const input = document.getElementById("start-photo-gallery") as HTMLInputElement;
+                          if (input) input.click();
+                        }}
+                        data-testid="button-gallery-start"
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        Choose from Gallery
+                      </Button>
+                    </label>
+                    <input
+                      id="start-photo-gallery"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleFileChange(e, "start")}
+                      data-testid="input-gallery-start"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </Card>
+
+          {/* Finish Photo Card */}
+          <Card className="p-6 border-2 border-green-200 bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Finish Photo</h2>
+                <p className="text-sm text-gray-600">Your progress (Week 6+)</p>
+              </div>
+            </div>
+
+            {finishPhoto || finishPreview ? (
+              <div className="space-y-4">
+                <div className="relative rounded-lg overflow-hidden aspect-[3/4] bg-gray-100 border-2 border-green-200">
+                  <img
+                    src={finishPreview || finishPhoto?.fileUrl}
+                    alt="Finish photo"
+                    className="w-full h-full object-cover"
+                    data-testid="img-finish-photo"
+                  />
+                </div>
+                {finishPhoto && !finishPreview && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => deleteMutation.mutate(finishPhoto.id)}
+                    disabled={deleteMutation.isPending}
+                    className="w-full border-green-300 text-green-600 hover:bg-green-50"
+                    data-testid="button-delete-finish"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete & Replace
+                  </Button>
+                )}
+                {finishPreview && (
+                  <Button
+                    onClick={() => handleUpload("finish")}
+                    disabled={uploadMutation.isPending}
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                    data-testid="button-upload-finish"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadMutation.isPending ? "Uploading..." : "Upload Photo"}
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-green-300 rounded-lg p-8 text-center bg-gradient-to-b from-green-50 to-white">
+                  <Sparkles className="w-16 h-16 text-green-400 mx-auto mb-4" />
+                  <p className="text-gray-700 font-medium mb-4">Upload your progress photo</p>
+                  <p className="text-xs text-gray-500 mb-6">Take this after completing the program</p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <label htmlFor="finish-photo-camera">
+                      <Button
+                        type="button"
+                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 w-full sm:w-auto"
+                        onClick={() => {
+                          const input = document.getElementById("finish-photo-camera") as HTMLInputElement;
+                          if (input) input.click();
+                        }}
+                        data-testid="button-camera-finish"
+                      >
+                        <Camera className="w-4 h-4 mr-2" />
+                        Take Photo
+                      </Button>
+                    </label>
+                    <input
+                      id="finish-photo-camera"
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={(e) => handleFileChange(e, "finish")}
+                      data-testid="input-camera-finish"
+                    />
+                    
+                    <label htmlFor="finish-photo-gallery">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="border-green-300 text-green-600 hover:bg-green-50 w-full sm:w-auto"
+                        onClick={() => {
+                          const input = document.getElementById("finish-photo-gallery") as HTMLInputElement;
+                          if (input) input.click();
+                        }}
+                        data-testid="button-gallery-finish"
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        Choose from Gallery
+                      </Button>
+                    </label>
+                    <input
+                      id="finish-photo-gallery"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleFileChange(e, "finish")}
+                      data-testid="input-gallery-finish"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Downloadable Progress Tracker */}
+      <Card className="p-6 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+            <Download className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Weekly Progress Tracker</h3>
+            <p className="text-sm text-gray-700 mb-4">
+              Track your healing journey week by week. Download this printable PDF to note your progress, symptoms, and small wins—because every step matters.
+            </p>
+            <Button
+              onClick={downloadProgressTracker}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+              data-testid="button-download-tracker"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download Printable Tracker (PDF)
+            </Button>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }
