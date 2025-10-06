@@ -172,6 +172,21 @@ export const reflectionNotes = pgTable("reflection_notes", {
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
+// Progress photos for before/after tracking
+export const progressPhotos = pgTable("progress_photos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  programId: varchar("program_id"),
+  photoType: text("photo_type").notNull(), // 'start' or 'finish'
+  fileUrl: text("file_url").notNull(),
+  cloudinaryPublicId: text("cloudinary_public_id"),
+  fileSize: integer("file_size"),
+  width: integer("width"),
+  height: integer("height"),
+  notes: text("notes"),
+  uploadedAt: timestamp("uploaded_at").default(sql`now()`),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -205,6 +220,13 @@ export const insertReflectionNoteSchema = createInsertSchema(reflectionNotes).om
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+export const insertProgressPhotoSchema = createInsertSchema(progressPhotos).omit({
+  id: true,
+  uploadedAt: true,
+}).extend({
+  photoType: z.enum(['start', 'finish']),
 });
 
 export const insertProgramSchema = createInsertSchema(programs).omit({
@@ -298,6 +320,8 @@ export type WeeklyWorkout = typeof weeklyWorkouts.$inferSelect;
 export type InsertWeeklyWorkout = z.infer<typeof insertWeeklyWorkoutSchema>;
 export type ReflectionNote = typeof reflectionNotes.$inferSelect;
 export type InsertReflectionNote = z.infer<typeof insertReflectionNoteSchema>;
+export type ProgressPhoto = typeof progressPhotos.$inferSelect;
+export type InsertProgressPhoto = z.infer<typeof insertProgressPhotoSchema>;
 export type Program = typeof programs.$inferSelect;
 export type InsertProgram = z.infer<typeof insertProgramSchema>;
 export type MemberProgram = typeof memberPrograms.$inferSelect;
