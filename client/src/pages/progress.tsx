@@ -578,19 +578,20 @@ export default function Progress() {
           </div>
           <div className="flex-1">
             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">Weekly Progress Tracker</h3>
-            <p className="text-xs md:text-sm text-gray-700 mb-3 md:mb-4">
+            <p className="text-xs md:text-sm text-gray-700">
               Track your healing journey week by week. Download this printable PDF to note your progress, symptoms, and small wins—because every step matters.
             </p>
-            <Button
-              onClick={downloadProgressTracker}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all w-full md:w-auto text-sm md:text-base py-5 md:py-2"
-              data-testid="button-download-tracker"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Download Printable Tracker (PDF)
-            </Button>
           </div>
         </div>
+        
+        <Button
+          onClick={downloadProgressTracker}
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all w-full text-sm md:text-base py-5 md:py-2 mb-4 md:mb-6"
+          data-testid="button-download-tracker"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Download Printable Tracker (PDF)
+        </Button>
 
         {/* Progress Tracker Table */}
         <div id="progress-tracker-table" className="bg-white p-3 md:p-6 rounded-lg border-2" style={{borderColor: '#9aafdc'}}>
