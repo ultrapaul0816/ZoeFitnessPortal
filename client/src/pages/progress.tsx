@@ -319,11 +319,11 @@ export default function Progress() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-pink-600 font-bold">3.</span>
-              <span><strong>Consistent Pose:</strong> Stand naturally with feet hip-width apart, arms relaxed at your sides</span>
+              <span><strong>Side-Angle Mirror Selfie:</strong> Take a side-profile photo using a mirror to clearly show your core and posture changes</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-pink-600 font-bold">4.</span>
-              <span><strong>Full Body View:</strong> Capture your entire body from head to toe, front-facing angle works best</span>
+              <span><strong>Consistent Distance & Angle:</strong> Stand at the same distance from the mirror each time, capturing from chest to upper thighs</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-pink-600 font-bold">5.</span>
