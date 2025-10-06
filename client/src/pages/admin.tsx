@@ -38,6 +38,7 @@ export default function Admin() {
   const [memberViewMode, setMemberViewMode] = useState<'view' | 'edit'>('view');
   const [selectedProgramForMember, setSelectedProgramForMember] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'name-asc' | 'name-desc'>('newest');
   const [passwordMode, setPasswordMode] = useState<'auto' | 'manual'>('auto');
   const [manualPassword, setManualPassword] = useState('');
   const [resetPasswordMode, setResetPasswordMode] = useState<'auto' | 'manual'>('auto');
@@ -74,7 +75,19 @@ export default function Admin() {
     setUser(parsedUser);
   }, [setLocation]);
 
-  const { data: adminStats } = useQuery<{ totalMembers: number; activeMembers: number; expiringSoon: number }>({
+  const { data: adminStats } = useQuery<{ 
+    totalMembers: number; 
+    activeMembers: number; 
+    expiringSoon: number;
+    expiringUsers: Array<{
+      userId: string;
+      userName: string;
+      programExpiring: boolean;
+      whatsAppExpiring: boolean;
+      programExpiryDate?: Date;
+      whatsAppExpiryDate?: Date;
+    }>;
+  }>({
     queryKey: ["/api/admin/stats"],
     enabled: !!user?.isAdmin,
   });
@@ -565,6 +578,17 @@ export default function Admin() {
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold text-foreground">Member Management</h3>
               <div className="flex space-x-3">
+                <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>
+                  <SelectTrigger className="w-48" data-testid="select-sort-order">
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Input
                   type="search"
                   placeholder="Search members..."
@@ -628,7 +652,35 @@ export default function Admin() {
                     member.lastName?.toLowerCase().includes(query) ||
                     member.email?.toLowerCase().includes(query)
                   );
-                }).map((member) => (
+                })
+                .sort((a, b) => {
+                  // Sorting logic
+                  switch (sortOrder) {
+                    case 'newest':
+                      // Sort by created date (newest first)
+                      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                      return dateB - dateA;
+                    case 'oldest':
+                      // Sort by created date (oldest first)
+                      const dateA2 = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                      const dateB2 = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                      return dateA2 - dateB2;
+                    case 'name-asc':
+                      // Sort by name A-Z
+                      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+                      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+                      return nameA.localeCompare(nameB);
+                    case 'name-desc':
+                      // Sort by name Z-A
+                      const nameA2 = `${a.firstName} ${a.lastName}`.toLowerCase();
+                      const nameB2 = `${b.firstName} ${b.lastName}`.toLowerCase();
+                      return nameB2.localeCompare(nameA2);
+                    default:
+                      return 0;
+                  }
+                })
+                .map((member) => (
                   <tr key={member.id} className="border-b border-border hover:bg-muted/30 transition-colors">
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-3">
