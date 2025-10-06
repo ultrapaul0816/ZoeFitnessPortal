@@ -295,58 +295,6 @@ export default function Progress() {
         </div>
       </Card>
 
-      {/* Example Photo & Tips Section */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Example Image */}
-        <Card className="p-6 border-2 border-pink-300 bg-white">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 text-pink-600" />
-            <h3 className="text-lg font-bold text-gray-900">Example Photo Angle</h3>
-          </div>
-          <div className="relative rounded-lg overflow-hidden mb-4 bg-gray-100">
-            <img 
-              src={examplePhotoImage} 
-              alt="Example progress photo showing proper angle" 
-              className="w-full h-auto object-contain"
-              data-testid="img-example-photo"
-            />
-          </div>
-          <p className="text-sm text-gray-600 text-center italic">
-            Side-angle view showing body posture and core area clearly
-          </p>
-        </Card>
-
-        {/* Photography Tips */}
-        <Card className="p-6 border-2 border-pink-300 bg-gradient-to-br from-pink-50 to-white">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-pink-600" />
-            <h3 className="text-lg font-bold text-gray-900">Photography Tips</h3>
-          </div>
-          <ul className="space-y-3 text-sm text-gray-700">
-            <li className="flex items-start gap-2">
-              <span className="text-pink-600 font-bold">1.</span>
-              <span><strong>Same Location & Lighting:</strong> Use the same spot with consistent lighting each time for accurate comparison</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-pink-600 font-bold">2.</span>
-              <span><strong>Similar Clothing:</strong> Wear similar fitted clothing (sports bra, leggings) to clearly show body changes</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-pink-600 font-bold">3.</span>
-              <span><strong>Side-Angle Mirror Selfie:</strong> Take a side-profile photo using a mirror to clearly show your core and posture changes</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-pink-600 font-bold">4.</span>
-              <span><strong>Consistent Distance & Angle:</strong> Stand at the same distance from the mirror each time, capturing from chest to upper thighs</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-pink-600 font-bold">5.</span>
-              <span><strong>Privacy Assured:</strong> Your photos are completely private and only visible to you—no one else can see them</span>
-            </li>
-          </ul>
-        </Card>
-      </div>
-
       {/* Photo Upload Section */}
       {isLoading ? (
         <div className="text-center py-12">
@@ -569,6 +517,58 @@ export default function Progress() {
           </Card>
         </div>
       )}
+
+      {/* Example Photo & Tips Section */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Example Image */}
+        <Card className="p-6 border-2 border-pink-300 bg-white">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-pink-600" />
+            <h3 className="text-lg font-bold text-gray-900">Example Photo Angle</h3>
+          </div>
+          <div className="relative rounded-lg overflow-hidden mb-4 bg-gray-100">
+            <img 
+              src={examplePhotoImage} 
+              alt="Example progress photo showing proper angle" 
+              className="w-full h-auto object-contain"
+              data-testid="img-example-photo"
+            />
+          </div>
+          <p className="text-sm text-gray-600 text-center italic">
+            Side-angle view showing body posture and core area clearly
+          </p>
+        </Card>
+
+        {/* Photography Tips */}
+        <Card className="p-6 border-2 border-pink-300 bg-gradient-to-br from-pink-50 to-white">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-pink-600" />
+            <h3 className="text-lg font-bold text-gray-900">Photography Tips</h3>
+          </div>
+          <ul className="space-y-3 text-sm text-gray-700">
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">1.</span>
+              <span><strong>Same Location & Lighting:</strong> Use the same spot with consistent lighting each time for accurate comparison</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">2.</span>
+              <span><strong>Similar Clothing:</strong> Wear similar fitted clothing (sports bra, leggings) to clearly show body changes</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">3.</span>
+              <span><strong>Side-Angle Mirror Selfie:</strong> Take a side-profile photo using a mirror to clearly show your core and posture changes</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">4.</span>
+              <span><strong>Consistent Distance & Angle:</strong> Stand at the same distance from the mirror each time, capturing from chest to upper thighs</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-600 font-bold">5.</span>
+              <span><strong>Privacy Assured:</strong> Your photos are completely private and only visible to you—no one else can see them</span>
+            </li>
+          </ul>
+        </Card>
+      </div>
 
       {/* Downloadable Progress Tracker */}
       <Card className="p-6 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200">
