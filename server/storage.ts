@@ -30,6 +30,8 @@ import {
   type InsertWeeklyWorkout,
   type ReflectionNote,
   type InsertReflectionNote,
+  type ProgressPhoto,
+  type InsertProgressPhoto,
 } from "@shared/schema";
 import {
   users,
@@ -47,6 +49,7 @@ import {
   exercises,
   weeklyWorkouts,
   reflectionNotes,
+  progressPhotos,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -169,6 +172,11 @@ export interface IStorage {
     noteText: string
   ): Promise<ReflectionNote>;
 
+  // Progress Photos
+  createProgressPhoto(photo: InsertProgressPhoto): Promise<ProgressPhoto>;
+  getProgressPhotos(userId: string): Promise<ProgressPhoto[]>;
+  deleteProgressPhoto(id: string): Promise<boolean>;
+
   // Assets
   assetDisplayNames?: Map<string, string>;
   getWeeklyWorkouts(
@@ -196,6 +204,7 @@ export class MemStorage implements IStorage {
   private exercises: Map<string, Exercise>;
   private weeklyWorkouts: Map<string, WeeklyWorkout>;
   private reflectionNotes: Map<string, ReflectionNote>;
+  private progressPhotos: Map<string, ProgressPhoto>;
   public assetDisplayNames: Map<string, string>;
 
   constructor() {
@@ -214,6 +223,7 @@ export class MemStorage implements IStorage {
     this.exercises = new Map();
     this.weeklyWorkouts = new Map();
     this.reflectionNotes = new Map();
+    this.progressPhotos = new Map();
     this.assetDisplayNames = new Map();
 
     this.initializeData();
@@ -1011,6 +1021,34 @@ export class MemStorage implements IStorage {
     }));
   }
 
+  // Progress Photos
+  async createProgressPhoto(photo: InsertProgressPhoto): Promise<ProgressPhoto> {
+    const id = randomUUID();
+    const newPhoto: ProgressPhoto = {
+      ...photo,
+      id,
+      programId: photo.programId || null,
+      notes: photo.notes || null,
+      cloudinaryPublicId: photo.cloudinaryPublicId || null,
+      fileSize: photo.fileSize || null,
+      width: photo.width || null,
+      height: photo.height || null,
+      uploadedAt: new Date(),
+    };
+    this.progressPhotos.set(id, newPhoto);
+    return newPhoto;
+  }
+
+  async getProgressPhotos(userId: string): Promise<ProgressPhoto[]> {
+    return Array.from(this.progressPhotos.values())
+      .filter((photo) => photo.userId === userId)
+      .sort((a, b) => b.uploadedAt!.getTime() - a.uploadedAt!.getTime());
+  }
+
+  async deleteProgressPhoto(id: string): Promise<boolean> {
+    return this.progressPhotos.delete(id);
+  }
+
   // Reflection Notes
   async createReflectionNote(
     note: InsertReflectionNote
@@ -1562,6 +1600,32 @@ class DatabaseStorage implements IStorage {
         noteText,
       });
     }
+  }
+
+  // Progress Photos
+  async createProgressPhoto(photo: InsertProgressPhoto): Promise<ProgressPhoto> {
+    const result = await this.db
+      .insert(progressPhotos)
+      .values(photo)
+      .returning();
+    return result[0];
+  }
+
+  async getProgressPhotos(userId: string): Promise<ProgressPhoto[]> {
+    const result = await this.db
+      .select()
+      .from(progressPhotos)
+      .where(eq(progressPhotos.userId, userId))
+      .orderBy(desc(progressPhotos.uploadedAt));
+    return result;
+  }
+
+  async deleteProgressPhoto(id: string): Promise<boolean> {
+    const result = await this.db
+      .delete(progressPhotos)
+      .where(eq(progressPhotos.id, id))
+      .returning();
+    return result.length > 0;
   }
 }
 

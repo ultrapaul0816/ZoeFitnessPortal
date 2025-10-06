@@ -63,6 +63,7 @@ The application features a comprehensive 6-week program structure with detailed 
 - **Nutrition Section**: Features modernized badge designs, enhanced readability, and color-coordinated card styling.
 - **Profile Personalization**: Extensive fields for postpartum-specific fitness customization.
 - **Program Access Control**: The `hasProgramAccess` function checks both the `programPurchases` table (for direct purchases) and the `memberPrograms` table (for admin enrollments), ensuring enrolled users can access program content.
+- **Progress Photo Tracking**: Dedicated page (`/progress`) for before/after photo uploads to track transformation progress. Photos are stored securely via Cloudinary with database metadata. Users can upload a "start" photo and a "finish" photo, with preview, delete, and replace functionality. Accessible via the hamburger menu navigation in the "Progress Photos" section.
 
 ### Deployment Architecture
 - **Development Mode**: Uses Vite dev server with HMR.
@@ -76,3 +77,4 @@ The application features a comprehensive 6-week program structure with detailed 
 - **Typography**: Google Fonts
 - **Video Integration**: YouTube API (for embedding and linking workout videos)
 - **PDF Generation**: jsPDF (for progress tracker download)
+- **Image Storage**: Cloudinary (for secure progress photo storage and delivery)

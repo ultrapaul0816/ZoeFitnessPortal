@@ -6,10 +6,36 @@ import {
   insertWorkoutCompletionSchema,
   updateUserProfileSchema,
   adminCreateUserSchema,
+  insertProgressPhotoSchema,
 } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Configure multer for memory storage (streaming upload)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  },
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve attached assets (use different path to avoid conflict with built assets)
@@ -883,6 +909,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Reset password error:", error);
       res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // Progress Photos
+  // Upload progress photo
+  app.post("/api/progress-photos/:userId", upload.single('photo'), async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No photo file provided" });
+      }
+
+      const { photoType, programId, notes } = req.body;
+
+      // Validate photo type
+      const validatedData = insertProgressPhotoSchema.parse({
+        userId,
+        programId: programId || null,
+        photoType,
+        fileUrl: '', // Temporary, will be updated with Cloudinary URL
+        notes: notes || null,
+      });
+
+      // Upload to Cloudinary
+      const uploadPromise = new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'progress-photos',
+            resource_type: 'image',
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(req.file!.buffer);
+      });
+
+      const cloudinaryResult: any = await uploadPromise;
+
+      // Save to database with Cloudinary URL
+      const progressPhoto = await storage.createProgressPhoto({
+        ...validatedData,
+        fileUrl: cloudinaryResult.secure_url,
+        cloudinaryPublicId: cloudinaryResult.public_id,
+        fileSize: cloudinaryResult.bytes,
+        width: cloudinaryResult.width,
+        height: cloudinaryResult.height,
+      });
+
+      res.json(progressPhoto);
+    } catch (error) {
+      console.error("Photo upload error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.errors[0].message });
+      }
+      res.status(500).json({ message: "Failed to upload photo" });
+    }
+  });
+
+  // Get user's progress photos
+  app.get("/api/progress-photos/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      const photos = await storage.getProgressPhotos(userId);
+      res.json(photos);
+    } catch (error) {
+      console.error("Get photos error:", error);
+      res.status(500).json({ message: "Failed to retrieve photos" });
+    }
+  });
+
+  // Delete progress photo
+  app.delete("/api/progress-photos/:userId/:id", async (req, res) => {
+    try {
+      const { userId, id } = req.params;
+
+      // Get the photo to delete from Cloudinary
+      const photos = await storage.getProgressPhotos(userId);
+      const photo = photos.find((p) => p.id === id);
+
+      if (!photo) {
+        return res.status(404).json({ message: "Photo not found" });
+      }
+
+      // Delete from Cloudinary if public ID exists
+      if (photo.cloudinaryPublicId) {
+        await cloudinary.uploader.destroy(photo.cloudinaryPublicId);
+      }
+
+      // Delete from database
+      const deleted = await storage.deleteProgressPhoto(id);
+
+      if (deleted) {
+        res.json({ message: "Photo deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Photo not found" });
+      }
+    } catch (error) {
+      console.error("Delete photo error:", error);
+      res.status(500).json({ message: "Failed to delete photo" });
     }
   });
 

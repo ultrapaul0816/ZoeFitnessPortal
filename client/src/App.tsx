@@ -8,6 +8,7 @@ import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
 import MyLibrary from "@/pages/my-library";
+import Progress from "@/pages/progress";
 import NotFound from "@/pages/not-found";
 
 // Lazy load the heavy HealYourCorePage to fix bundle size
@@ -26,6 +27,7 @@ function Router() {
           <HealYourCorePage />
         </Suspense>
       )} />
+      <Route path="/progress" component={Progress} />
       <Route path="/my-library" component={MyLibrary} />
       <Route component={NotFound} />
     </Switch>
