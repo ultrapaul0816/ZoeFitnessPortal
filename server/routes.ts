@@ -15,6 +15,40 @@ import fs from "fs";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import bcrypt from "bcrypt";
+import rateLimit from "express-rate-limit";
+
+// Rate limiting configurations
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 login attempts per windowMs
+  message: "Too many login attempts from this IP, please try again after 15 minutes",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const passwordResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 3, // Limit password reset attempts
+  message: "Too many password reset attempts, please try again after 15 minutes",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const adminOperationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // Allow more for admin operations but still prevent abuse
+  message: "Too many admin operations, please try again after 15 minutes",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const generalApiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Generous limit for general API use
+  message: "Too many requests, please try again after 15 minutes",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Helper function to generate a strong password that meets all requirements
 function generateStrongPassword(length: number = 12): string {
@@ -69,6 +103,9 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply general rate limiting to all API routes
+  app.use("/api", generalApiLimiter);
+  
   // Serve attached assets (use different path to avoid conflict with built assets)
   app.get("/attached-assets/:filename(*)", (req, res) => {
     try {
@@ -94,7 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Authentication
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login", loginLimiter, async (req, res) => {
     try {
       const { email, password, termsAccepted, disclaimerAccepted } = loginSchema.parse(
         req.body
@@ -718,7 +755,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new user (admin only)
-  app.post("/api/admin/users", async (req, res) => {
+  app.post("/api/admin/users", adminOperationLimiter, async (req, res) => {
     try {
       // Convert date strings to Date objects before validation
       const requestData = { ...req.body };
@@ -864,7 +901,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update user (admin)
-  app.put("/api/admin/users/:id", async (req, res) => {
+  app.put("/api/admin/users/:id", adminOperationLimiter, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = { ...req.body };
@@ -953,7 +990,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reset user password
-  app.post("/api/admin/users/:id/reset-password", async (req, res) => {
+  app.post("/api/admin/users/:id/reset-password", passwordResetLimiter, async (req, res) => {
     try {
       const { id } = req.params;
       const { password: manualPassword } = req.body;

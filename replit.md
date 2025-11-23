@@ -58,6 +58,13 @@ Authentication uses a session-based approach with robust password security. Pass
 - **Legacy Migration**: Automatic upgrade of plaintext passwords to hashed versions on user login
 - **Default Credentials**: Admin login: admin@strongerwithzoe.in / Admin@123, Test user: jane@example.com / Test@123
 
+### Rate Limiting Protection
+- **Login Endpoint**: Maximum 5 attempts per IP every 15 minutes (prevents brute force attacks)
+- **Password Reset**: Maximum 3 attempts per IP every 15 minutes
+- **Admin Operations**: Maximum 50 requests per IP every 15 minutes (user creation, updates)
+- **General API**: Maximum 200 requests per IP every 15 minutes (catch-all protection)
+- **Headers**: Rate limit information exposed via standard RateLimit headers
+
 ### Promotional Content Visibility
 WhatsApp Community promotional sections are conditionally displayed based on user subscription status:
 - Users **without** WhatsApp support see promotional sections encouraging them to join (in program pages and hamburger menu)
