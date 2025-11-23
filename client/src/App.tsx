@@ -15,6 +15,16 @@ import NotFound from "@/pages/not-found";
 const HealYourCorePage = lazy(() => import("@/pages/heal-your-core"));
 const Progress = lazy(() => import("@/pages/progress"));
 
+// Loading component for lazy-loaded pages
+function PageLoader({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-50 to-white">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
+      <p className="text-gray-600 font-medium">{message}</p>
+    </div>
+  );
+}
+
 function Router() {
   return (
     <Switch>
@@ -22,16 +32,12 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/heal-your-core" component={() => (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
-        </div>}>
+        <Suspense fallback={<PageLoader message="Loading your program..." />}>
           <HealYourCorePage />
         </Suspense>
       )} />
       <Route path="/progress" component={() => (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
-        </div>}>
+        <Suspense fallback={<PageLoader message="Loading progress tracker..." />}>
           <Progress />
         </Suspense>
       )} />

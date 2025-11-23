@@ -394,7 +394,8 @@ export default function Progress() {
       {/* Photo Upload Section */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-3"></div>
+          <p className="text-gray-600 font-medium">Loading your photos...</p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-4 md:gap-8">
