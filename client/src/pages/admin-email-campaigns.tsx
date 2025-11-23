@@ -77,48 +77,23 @@ export default function AdminEmailCampaigns() {
     { label: "90 days", value: "90" },
   ];
 
-  // Show loading state while session is being checked
-  if (sessionLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
-      </div>
-    );
-  }
-
-  // Redirect if not logged in or not admin
-  if (user === null) {
-    setLocation("/");
-    return null;
-  }
-  
-  if (user && !user.isAdmin) {
-    setLocation("/dashboard");
-    return null;
-  }
-
-  // Fetch templates
+  // Fetch templates - MUST be called before any conditional returns
   const { data: templates = [], isLoading: isLoadingTemplates, isError: isTemplatesError, error: templatesError } = useQuery<EmailTemplate[]>({
     queryKey: ["/api/admin/email-templates"],
     retry: false,
+    enabled: !sessionLoading && user !== null,
   });
 
-  // Fetch campaigns
+  // Fetch campaigns - MUST be called before any conditional returns
   const { data: campaigns = [], isError: isCampaignsError, error: campaignsError } = useQuery<EmailCampaign[]>({
     queryKey: ["/api/admin/email-campaigns"],
     retry: false,
+    enabled: !sessionLoading && user !== null,
   });
-
-  // Redirect to login on 401
-  if ((isTemplatesError && templatesError?.message?.includes('401')) ||
-      (isCampaignsError && campaignsError?.message?.includes('401'))) {
-    setLocation("/");
-    return null;
-  }
 
   const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
 
-  // Preview mutation
+  // Preview mutation - MUST be called before any conditional returns
   const previewMutation = useMutation({
     mutationFn: async (templateId: string) => {
       return apiRequest(`/api/admin/email-templates/${templateId}/preview`, "POST") as unknown as Promise<{ subject: string; content: string }>;
@@ -331,6 +306,33 @@ export default function AdminEmailCampaigns() {
     const openRate = totalSent > 0 ? Math.round((totalOpens / totalSent) * 100) : 0;
     return { totalSent, totalOpens, openRate };
   };
+
+  // Show loading state while session is being checked
+  if (sessionLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+      </div>
+    );
+  }
+
+  // Redirect if not logged in or not admin
+  if (user === null) {
+    setLocation("/");
+    return null;
+  }
+  
+  if (user && !user.isAdmin) {
+    setLocation("/dashboard");
+    return null;
+  }
+
+  // Redirect to login on 401
+  if ((isTemplatesError && templatesError?.message?.includes('401')) ||
+      (isCampaignsError && campaignsError?.message?.includes('401'))) {
+    setLocation("/");
+    return null;
+  }
 
   if (isLoadingTemplates) {
     return (

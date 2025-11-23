@@ -143,7 +143,7 @@ async function requireAdmin(req: any, res: any, next: any) {
   }
   
   try {
-    const user = await storage.getUserById(req.session.userId);
+    const user = await storage.getUser(req.session.userId);
     if (!user || !user.isAdmin) {
       return res.status(401).json({ message: "Unauthorized. Admin access required." });
     }
