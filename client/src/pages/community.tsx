@@ -111,12 +111,21 @@ export default function Community() {
   const { data: posts = [], isLoading } = useQuery<EnrichedPost[]>({
     queryKey: [
       "/api/community/posts",
-      { 
-        category: selectedCategory !== "all" ? selectedCategory : undefined,
-        weekNumber: selectedWeek !== "all" ? selectedWeek : undefined,
-        sortBy 
-      }
+      selectedCategory,
+      selectedWeek,
+      sortBy
     ],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (selectedCategory !== "all") params.append("category", selectedCategory);
+      if (selectedWeek !== "all") params.append("weekNumber", String(selectedWeek));
+      params.append("sortBy", sortBy);
+      
+      const url = `/api/community/posts?${params.toString()}`;
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch posts");
+      return res.json();
+    },
     enabled: !!user,
   });
 
