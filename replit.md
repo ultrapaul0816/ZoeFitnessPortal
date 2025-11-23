@@ -73,6 +73,13 @@ Authentication uses a session-based approach with robust password security. Pass
 - **File Uploads**: Strict mime type and extension validation (JPEG, PNG, WEBP, HEIC), 10MB size limit, single file only; user-friendly 400 error responses
 - **WhatsApp Duration**: Integer validation with maximum 36 months cap
 
+### Email Change Policy
+- **User-Facing Profile Forms**: Email field is displayed as read-only (disabled) to prevent user edits
+- **Rationale**: Email changes require verification flow and updates across authentication, newsletter systems, and integrations
+- **Admin-Only**: Email modifications should only be available through admin panel in future implementation
+- **Visual Indicators**: Read-only email fields show gray background with helper text "Email changes require admin approval"
+- **Files Affected**: `profile-settings.tsx`, `profile-modal.tsx`
+
 ### Promotional Content Visibility
 WhatsApp Community promotional sections are conditionally displayed based on user subscription status:
 - Users **without** WhatsApp support see promotional sections encouraging them to join (in program pages and hamburger menu)

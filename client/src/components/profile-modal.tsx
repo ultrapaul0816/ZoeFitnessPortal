@@ -177,8 +177,11 @@ export default function ProfileModal({ isOpen, onClose, user, onUserUpdate }: Pr
                 value={formData.email || ""}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 data-testid="input-email"
-                required
+                disabled
+                className="bg-gray-100 cursor-not-allowed text-gray-600"
+                title="Email cannot be changed. Contact admin for email updates."
               />
+              <p className="text-xs text-gray-500">Email changes require admin approval</p>
             </div>
 
             <div className="space-y-2">

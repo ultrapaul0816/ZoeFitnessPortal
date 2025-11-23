@@ -72,13 +72,20 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   useEffect(() => {
     if (isOpen) {
       const currentProfile = getCurrentProfileData();
-      setProfileData(currentProfile);
+      
+      // Sync email from user object (email is read-only for users)
+      const syncedProfile = {
+        ...currentProfile,
+        email: user.email || currentProfile.email
+      };
+      
+      setProfileData(syncedProfile);
       
       // Always sync selectedPhoto with stored data (clear if no photo saved)
-      setSelectedPhoto(currentProfile.photo || null);
+      setSelectedPhoto(syncedProfile.photo || null);
       
       // Evaluate completeness
-      const completeness = evaluateCompleteness(currentProfile);
+      const completeness = evaluateCompleteness(syncedProfile);
       setProfileCompleteness(completeness);
       
       setRenderOpen(true);
@@ -100,7 +107,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       }, 600); // Allow time for staggered exit animation
       return () => clearTimeout(timer);
     }
-  }, [isOpen, renderOpen]);
+  }, [isOpen, renderOpen, user.email]);
 
   // Update completeness when profile data changes
   useEffect(() => {
@@ -770,10 +777,13 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               <Input
                 id="email"
                 type="email"
-                value={profileData.email || ''}
-                onChange={(e) => setProfileData(prev => ({...prev, email: e.target.value}))}
-                className={!profileData.email ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
+                value={user.email || ''}
+                disabled
+                className="bg-gray-100 cursor-not-allowed text-gray-600"
+                title="Email cannot be changed. Contact admin for email updates."
+                data-testid="input-email-readonly"
               />
+              <p className="text-xs text-gray-500">Email changes require admin approval</p>
             </div>
 
           </div>
