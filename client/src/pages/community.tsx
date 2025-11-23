@@ -34,6 +34,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import type { User as UserType, CommunityPost, PostComment } from "@shared/schema";
 import { compressImage } from "@/lib/imageCompression";
+import { PhotoEditor } from "@/components/ui/photo-editor";
 
 // Category icons and labels
 const CATEGORIES = {
@@ -92,6 +93,10 @@ export default function Community() {
   const [postImagePreview, setPostImagePreview] = useState<string | null>(null);
   const [isSensitive, setIsSensitive] = useState(false);
   const [postWeek, setPostWeek] = useState<number | null>(null);
+  
+  // Photo editor states
+  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
+  const [rawImageForEditing, setRawImageForEditing] = useState<string | null>(null);
 
   // Comment input states
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
@@ -300,15 +305,27 @@ export default function Community() {
       return;
     }
 
+    // Convert to data URL and open photo editor
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setRawImageForEditing(reader.result as string);
+      setShowPhotoEditor(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePhotoEditorSave = async (editedImageBlob: Blob) => {
     try {
-      // Show loading toast
       toast({
-        title: "Compressing image...",
-        description: "This will just take a moment",
+        title: "Processing image...",
+        description: "Compressing and preparing your photo",
       });
 
-      // Compress image before storing
-      const compressedFile = await compressImage(file, 0.8, 1920, 0.85);
+      // Convert blob to file
+      const editedFile = new File([editedImageBlob], "edited-photo.jpg", { type: "image/jpeg" });
+      
+      // Compress the edited image
+      const compressedFile = await compressImage(editedFile, 0.8, 1920, 0.85);
       
       setPostImage(compressedFile);
       const reader = new FileReader();
@@ -317,24 +334,29 @@ export default function Community() {
       };
       reader.readAsDataURL(compressedFile);
 
+      setShowPhotoEditor(false);
+      setRawImageForEditing(null);
+
       toast({
         title: "Image ready!",
-        description: `Compressed from ${(file.size / 1024 / 1024).toFixed(2)}MB to ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`,
+        description: "Your edited photo is ready to post",
       });
     } catch (error) {
-      console.error("Image compression error:", error);
+      console.error("Image processing error:", error);
       toast({
-        title: "Compression failed",
-        description: "Using original image instead",
+        title: "Error",
+        description: "Failed to process image",
         variant: "destructive",
       });
-      // Fallback to original file
-      setPostImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPostImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePhotoEditorCancel = () => {
+    setShowPhotoEditor(false);
+    setRawImageForEditing(null);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -781,6 +803,16 @@ export default function Community() {
         <LikersModal
           postId={showLikers}
           onClose={() => setShowLikers(null)}
+        />
+      )}
+
+      {/* Photo Editor Modal */}
+      {showPhotoEditor && rawImageForEditing && (
+        <PhotoEditor
+          imageUrl={rawImageForEditing}
+          onSave={handlePhotoEditorSave}
+          onCancel={handlePhotoEditorCancel}
+          isOpen={showPhotoEditor}
         />
       )}
 

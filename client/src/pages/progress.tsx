@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 import { compressImage } from "@/lib/imageCompression";
 import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
+import { PhotoEditor } from "@/components/ui/photo-editor";
 
 function getInitialUser(): User | null {
   if (typeof window !== 'undefined') {
@@ -30,6 +31,11 @@ export default function Progress() {
   const [startPreview, setStartPreview] = useState<string | null>(null);
   const [finishPreview, setFinishPreview] = useState<string | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<{ url: string; type: "start" | "finish" } | null>(null);
+  
+  // Photo editor states
+  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
+  const [rawImageForEditing, setRawImageForEditing] = useState<string | null>(null);
+  const [editingPhotoType, setEditingPhotoType] = useState<"start" | "finish" | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -135,19 +141,34 @@ export default function Progress() {
       return;
     }
 
+    // Convert to data URL and open photo editor
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setRawImageForEditing(reader.result as string);
+      setEditingPhotoType(type);
+      setShowPhotoEditor(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePhotoEditorSave = async (editedImageBlob: Blob) => {
+    if (!editingPhotoType) return;
+
     try {
-      // Show loading toast
       toast({
-        title: "Compressing image...",
-        description: "Optimizing for faster upload",
+        title: "Processing image...",
+        description: "Compressing and preparing your photo",
       });
 
-      // Compress image before storing
-      const compressedFile = await compressImage(file, 0.8, 1920, 0.85);
+      // Convert blob to file
+      const editedFile = new File([editedImageBlob], "edited-photo.jpg", { type: "image/jpeg" });
+      
+      // Compress the edited image
+      const compressedFile = await compressImage(editedFile, 0.8, 1920, 0.85);
       
       const reader = new FileReader();
       reader.onloadend = () => {
-        if (type === "start") {
+        if (editingPhotoType === "start") {
           setStartPhotoFile(compressedFile);
           setStartPreview(reader.result as string);
         } else {
@@ -157,30 +178,28 @@ export default function Progress() {
       };
       reader.readAsDataURL(compressedFile);
 
+      setShowPhotoEditor(false);
+      setRawImageForEditing(null);
+      setEditingPhotoType(null);
+
       toast({
         title: "Image ready!",
-        description: `Reduced size by ${Math.round((1 - compressedFile.size / file.size) * 100)}%`,
+        description: "Your edited photo is ready to upload",
       });
     } catch (error) {
-      console.error("Image compression error:", error);
+      console.error("Image processing error:", error);
       toast({
-        title: "Compression failed",
-        description: "Using original image",
+        title: "Error",
+        description: "Failed to process image",
         variant: "destructive",
       });
-      // Fallback to original file
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (type === "start") {
-          setStartPhotoFile(file);
-          setStartPreview(reader.result as string);
-        } else {
-          setFinishPhotoFile(file);
-          setFinishPreview(reader.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
     }
+  };
+
+  const handlePhotoEditorCancel = () => {
+    setShowPhotoEditor(false);
+    setRawImageForEditing(null);
+    setEditingPhotoType(null);
   };
 
   const handleUpload = (type: "start" | "finish") => {
@@ -325,6 +344,16 @@ export default function Progress() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Photo Editor Modal */}
+      {showPhotoEditor && rawImageForEditing && (
+        <PhotoEditor
+          imageUrl={rawImageForEditing}
+          onSave={handlePhotoEditorSave}
+          onCancel={handlePhotoEditorCancel}
+          isOpen={showPhotoEditor}
+        />
+      )}
 
       {/* Header Section - Matching other tabs design */}
       <div className="text-left mb-4 md:mb-8">
