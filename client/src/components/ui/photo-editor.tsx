@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Crop, RotateCw, Sun, Contrast, Check, X, Shield } from "lucide-react";
+import { Crop, RotateCw, Sun, Contrast, Check, X, Shield, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BlurTool } from "@/components/ui/blur-tool";
+import { AnnotationTool } from "@/components/ui/annotation-tool";
 
 interface PhotoEditorProps {
   imageUrl: string;
@@ -29,10 +30,11 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(null);
-  const [activeTab, setActiveTab] = useState<"crop" | "adjust" | "privacy">("crop");
+  const [activeTab, setActiveTab] = useState<"crop" | "adjust" | "privacy" | "annotate">("crop");
   const [isProcessing, setIsProcessing] = useState(false);
   const [intermediateImage, setIntermediateImage] = useState<string | null>(null);
   const [blurredCanvas, setBlurredCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [annotatedCanvas, setAnnotatedCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const onCropComplete = useCallback((_: CropArea, croppedAreaPixels: CropArea) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -138,8 +140,15 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
   const handleSave = async () => {
     setIsProcessing(true);
     try {
-      // If user applied blur, use the blurred canvas
-      if (blurredCanvas) {
+      // Priority: annotated > blurred > cropped/adjusted
+      if (annotatedCanvas) {
+        const blob = await new Promise<Blob>((resolve) => {
+          annotatedCanvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+          }, "image/jpeg", 0.95);
+        });
+        onSave(blob);
+      } else if (blurredCanvas) {
         const blob = await new Promise<Blob>((resolve) => {
           blurredCanvas.toBlob((blob) => {
             if (blob) resolve(blob);
@@ -231,13 +240,36 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
               <Shield className="w-4 h-4 inline mr-2" />
               Privacy
             </button>
+            <button
+              onClick={() => {
+                setActiveTab("annotate");
+                generateIntermediateImage();
+              }}
+              className={cn(
+                "px-4 py-2 font-medium text-sm border-b-2 transition-colors",
+                activeTab === "annotate"
+                  ? "border-pink-600 text-pink-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              )}
+              data-testid="tab-annotate"
+            >
+              <Pencil className="w-4 h-4 inline mr-2" />
+              Annotate
+            </button>
           </div>
 
-          {/* Cropper Area or Blur Tool */}
+          {/* Cropper Area / Blur Tool / Annotation Tool */}
           {activeTab === "privacy" && intermediateImage ? (
             <BlurTool
               imageUrl={intermediateImage}
               onBlurComplete={setBlurredCanvas}
+              width={800}
+              height={1067}
+            />
+          ) : activeTab === "annotate" && intermediateImage ? (
+            <AnnotationTool
+              imageUrl={intermediateImage}
+              onAnnotationComplete={setAnnotatedCanvas}
               width={800}
               height={1067}
             />
