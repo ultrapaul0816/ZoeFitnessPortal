@@ -65,6 +65,14 @@ Authentication uses a session-based approach with robust password security. Pass
 - **General API**: Maximum 200 requests per IP every 15 minutes (catch-all protection)
 - **Headers**: Rate limit information exposed via standard RateLimit headers
 
+### Input Validation
+- **Phone Numbers**: International format support with 10-15 digit validation, accepts spaces, dashes, parentheses; truly optional (accepts null/undefined/empty)
+- **Email Addresses**: Proper email format validation with automatic lowercase conversion
+- **Date Ranges**: Realistic date bounds (max 10 years ahead, 10 years back for account validity) to support legacy accounts
+- **Names**: String length limits (1-100 characters) to prevent overflow
+- **File Uploads**: Strict mime type and extension validation (JPEG, PNG, WEBP, HEIC), 10MB size limit, single file only; user-friendly 400 error responses
+- **WhatsApp Duration**: Integer validation with maximum 36 months cap
+
 ### Promotional Content Visibility
 WhatsApp Community promotional sections are conditionally displayed based on user subscription status:
 - Users **without** WhatsApp support see promotional sections encouraging them to join (in program pages and hamburger menu)

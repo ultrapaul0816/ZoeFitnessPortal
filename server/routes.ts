@@ -86,21 +86,73 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
 });
 
-// Configure multer for memory storage (streaming upload)
+// Configure multer for memory storage (streaming upload) with enhanced validation
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
+    files: 1, // Only allow single file upload
   },
   fileFilter: (req, file, cb) => {
-    // Accept only image files
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
+    // Accept only image files with specific mime types
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/heic',
+      'image/heif'
+    ];
+    
+    if (allowedMimeTypes.includes(file.mimetype.toLowerCase())) {
+      // Additional check for file extension
+      const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif'];
+      const fileExtension = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
+      
+      if (allowedExtensions.includes(fileExtension)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid file extension. Allowed: JPG, JPEG, PNG, WEBP, HEIC, HEIF'));
+      }
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Invalid file type. Only image files (JPG, PNG, WEBP, HEIC) are allowed'));
     }
   },
 });
+
+// Multer error handling middleware - converts errors to proper 400 responses
+function handleMulterError(err: any, req: any, res: any, next: any) {
+  if (err instanceof multer.MulterError) {
+    // Multer-specific errors
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ 
+        message: 'File size too large. Maximum size is 10MB' 
+      });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ 
+        message: 'Too many files. Only one file allowed' 
+      });
+    }
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      return res.status(400).json({ 
+        message: 'Unexpected file field' 
+      });
+    }
+    // Other Multer errors
+    return res.status(400).json({ 
+      message: err.message || 'File upload error' 
+    });
+  }
+  
+  // Custom validation errors from fileFilter
+  if (err && err.message) {
+    return res.status(400).json({ message: err.message });
+  }
+  
+  // Pass other errors to next handler
+  next(err);
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply general rate limiting to all API routes
@@ -1034,7 +1086,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Progress Photos
   // Upload progress photo
-  app.post("/api/progress-photos/:userId", upload.single('photo'), async (req, res) => {
+  app.post("/api/progress-photos/:userId", upload.single('photo'), handleMulterError, async (req, res) => {
     try {
       const { userId } = req.params;
 

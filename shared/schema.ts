@@ -274,27 +274,90 @@ export const insertTermsSchema = createInsertSchema(terms).omit({
   createdAt: true,
 });
 
+// Reusable validation schemas
+
+// Phone number validation (flexible for international formats, truly optional)
+export const phoneSchema = z
+  .string()
+  .transform((val) => val?.trim() || "") // Normalize empty values
+  .refine(
+    (val) => {
+      // Allow empty/blank values (truly optional)
+      if (!val || val.length === 0) return true;
+      
+      // If provided, must match pattern
+      return /^[\d\s\-\+\(\)]+$/.test(val);
+    },
+    { message: "Phone number can only contain digits, spaces, and symbols: + - ( )" }
+  )
+  .refine(
+    (val) => {
+      // Allow empty values
+      if (!val || val.length === 0) return true;
+      
+      // If provided, check length
+      return val.length >= 10 && val.length <= 20;
+    },
+    { message: "Phone number must be 10-20 characters" }
+  )
+  .refine(
+    (val) => {
+      // Allow empty values
+      if (!val || val.length === 0) return true;
+      
+      // Count only digits
+      const digits = val.replace(/\D/g, "");
+      return digits.length >= 10 && digits.length <= 15;
+    },
+    { message: "Phone number must contain 10-15 digits" }
+  );
+
+// Date validation helpers
+export const futureDateSchema = (message = "Date must be in the future") =>
+  z.date().refine((date) => date > new Date(), { message });
+
+export const pastDateSchema = (message = "Date must be in the past") =>
+  z.date().refine((date) => date < new Date(), { message });
+
+export const dateRangeSchema = (
+  maxYearsAhead = 5,
+  maxYearsBehind = 10 // More reasonable default for legacy accounts
+) =>
+  z.date().refine(
+    (date) => {
+      const now = new Date();
+      const maxFuture = new Date();
+      maxFuture.setFullYear(now.getFullYear() + maxYearsAhead);
+      const maxPast = new Date();
+      maxPast.setFullYear(now.getFullYear() - maxYearsBehind);
+      return date <= maxFuture && date >= maxPast;
+    },
+    {
+      message: `Date must be within ${maxYearsBehind} years ago and ${maxYearsAhead} years ahead`,
+    }
+  );
+
 // Update user profile schema
 export const updateUserProfileSchema = z.object({
-  firstName: z.string().min(1, "First name is required").optional(),
-  lastName: z.string().min(1, "Last name is required").optional(),
+  firstName: z.string().min(1, "First name is required").max(100, "First name is too long").optional(),
+  lastName: z.string().min(1, "Last name is required").max(100, "Last name is too long").optional(),
   email: z.string().email("Please enter a valid email address").optional(),
-  phone: z.string().optional(),
+  phone: phoneSchema.optional(),
   profilePictureUrl: z.string().url("Please enter a valid URL").optional(),
 });
 
 // Admin create user schema
 export const adminCreateUserSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  phone: z.string().optional(),
+  email: z.string().email("Please enter a valid email address").toLowerCase(),
+  firstName: z.string().min(1, "First name is required").max(100, "First name is too long"),
+  lastName: z.string().min(1, "Last name is required").max(100, "Last name is too long"),
+  phone: phoneSchema.optional(),
   programId: z.string().min(1, "Please select a program"), // Required program enrollment
   isAdmin: z.boolean().default(false),
-  validFrom: z.date().optional(),
-  validUntil: z.date().optional(),
+  validFrom: dateRangeSchema(10, 10).optional(), // Allow legacy accounts (10 years back)
+  validUntil: dateRangeSchema(10, 10).optional(),
   hasWhatsAppSupport: z.boolean().default(false),
-  whatsAppSupportDuration: z.number().optional(),
+  whatsAppSupportDuration: z.number().int().positive().max(36, "Duration cannot exceed 36 months").optional(),
 }).refine((data) => {
   if (data.validFrom && data.validUntil) {
     return data.validFrom < data.validUntil;
