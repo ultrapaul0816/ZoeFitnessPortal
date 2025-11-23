@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
-import { Users, TrendingUp, Activity, Heart, Globe, Instagram, MessageCircle, ArrowLeft } from "lucide-react";
+import { Users, TrendingUp, Activity, Heart, Globe, Instagram, MessageCircle, ArrowLeft, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface Analytics {
   demographics: {
@@ -46,17 +48,46 @@ const COLORS = ['#FF69B4', '#FF85C1', '#FFA0CF', '#FFBCDD', '#FFD7EB', '#FFE8F3'
 
 export default function AdminAnalytics() {
   const [, setLocation] = useLocation();
-  const { data: analytics, isLoading } = useQuery<Analytics>({
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      setLocation("/");
+      return;
+    }
+    const parsedUser = JSON.parse(userData);
+    if (!parsedUser.isAdmin) {
+      setLocation("/dashboard");
+      return;
+    }
+    setUser(parsedUser);
+  }, [setLocation]);
+
+  const { data: analytics, isLoading, isError, error } = useQuery<Analytics>({
     queryKey: ["/api/admin/analytics"],
+    enabled: !!user?.isAdmin,
   });
+
+  if (!user?.isAdmin) return null;
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-6">
         <div className="max-w-7xl mx-auto space-y-6">
-          <div className="flex items-center gap-3 mb-6">
-            <TrendingUp className="h-8 w-8 text-pink-500" />
-            <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <TrendingUp className="h-8 w-8 text-pink-500" />
+              <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+            </div>
+            <Button 
+              onClick={() => setLocation("/admin")} 
+              variant="outline"
+              data-testid="button-back-admin"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Admin
+            </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
@@ -70,6 +101,36 @@ export default function AdminAnalytics() {
               </Card>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <TrendingUp className="h-8 w-8 text-pink-500" />
+              <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+            </div>
+            <Button 
+              onClick={() => setLocation("/admin")} 
+              variant="outline"
+              data-testid="button-back-admin"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Admin
+            </Button>
+          </div>
+          <Alert variant="destructive" data-testid="error-alert">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error Loading Analytics</AlertTitle>
+            <AlertDescription>
+              Failed to load analytics data. {error instanceof Error ? error.message : 'Please try again later.'}
+            </AlertDescription>
+          </Alert>
         </div>
       </div>
     );
