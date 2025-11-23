@@ -49,7 +49,14 @@ This reorganized structure prevents accidental changes to WhatsApp support (requ
 PostgreSQL serves as the primary database, accessed via Drizzle ORM for type-safe operations. The data model includes users, fitness programs, workouts, member enrollments, community posts, notifications, and terms/conditions. User profiles store extensive personalization fields, including fitness level, delivery type, number of children, breastfeeding status, medical clearance, available equipment, workout frequency, preferred workout time, personal fitness goals, and physical limitations. Database migrations are managed with Drizzle Kit.
 
 ## Authentication and Authorization
-Authentication uses a session-based approach, validating user credentials against the database. Role-based access control differentiates between regular users and administrators. The login flow includes mandatory acceptance of both terms and conditions and health disclaimer: users cannot log in until they accept both, which are then permanently saved to their profile. Both terms and disclaimer appear automatically during login for any user who hasn't yet accepted them, with distinct visual styling (blue gradient for terms, pink gradient for disclaimer).
+Authentication uses a session-based approach with robust password security. Passwords are hashed using bcrypt (cost factor 10) and validated for strength (minimum 8 characters, including uppercase, lowercase, and number). The system includes a transitional migration guard that automatically upgrades legacy plaintext passwords to hashed versions upon successful login, ensuring seamless user experience during security upgrades. Role-based access control differentiates between regular users and administrators. The login flow includes mandatory acceptance of both terms and conditions and health disclaimer: users cannot log in until they accept both, which are then permanently saved to their profile. Both terms and disclaimer appear automatically during login for any user who hasn't yet accepted them, with distinct visual styling (blue gradient for terms, pink gradient for disclaimer).
+
+### Password Security Features
+- **Bcrypt Hashing**: All passwords stored as bcrypt hashes with cost factor 10
+- **Password Strength Validation**: Enforces minimum 8 characters with uppercase, lowercase, and number requirements
+- **Strong Password Generation**: Auto-generated passwords (12 characters) guaranteed to meet all strength requirements
+- **Legacy Migration**: Automatic upgrade of plaintext passwords to hashed versions on user login
+- **Default Credentials**: Admin login: admin@strongerwithzoe.in / Admin@123, Test user: jane@example.com / Test@123
 
 ### Promotional Content Visibility
 WhatsApp Community promotional sections are conditionally displayed based on user subscription status:

@@ -7,12 +7,43 @@ import {
   updateUserProfileSchema,
   adminCreateUserSchema,
   insertProgressPhotoSchema,
+  passwordSchema,
 } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
+import bcrypt from "bcrypt";
+
+// Helper function to generate a strong password that meets all requirements
+function generateStrongPassword(length: number = 12): string {
+  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const numbers = '0123456789';
+  const special = '!@#$%^&*';
+  
+  // Ensure at least one of each required character type
+  const password = [
+    uppercase[Math.floor(Math.random() * uppercase.length)],
+    lowercase[Math.floor(Math.random() * lowercase.length)],
+    numbers[Math.floor(Math.random() * numbers.length)],
+  ];
+  
+  // Fill the rest with random characters from all sets
+  const allChars = lowercase + uppercase + numbers + special;
+  for (let i = password.length; i < length; i++) {
+    password.push(allChars[Math.floor(Math.random() * allChars.length)]);
+  }
+  
+  // Shuffle the password to avoid predictable patterns
+  for (let i = password.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [password[i], password[j]] = [password[j], password[i]];
+  }
+  
+  return password.join('');
+}
 
 // Configure Cloudinary
 cloudinary.config({
@@ -70,7 +101,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       const user = await storage.getUserByEmail(email);
-      if (!user || user.password !== password) {
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Handle transitional authentication for legacy plaintext passwords
+      let isPasswordValid = false;
+      const isBcryptHash = user.password.startsWith('$2b$') || user.password.startsWith('$2a$') || user.password.startsWith('$2y$');
+      
+      if (isBcryptHash) {
+        // Password is already hashed - use bcrypt comparison
+        isPasswordValid = await bcrypt.compare(password, user.password);
+      } else {
+        // Legacy plaintext password - compare directly
+        isPasswordValid = password === user.password;
+        
+        // If valid, immediately hash and update the password for security
+        if (isPasswordValid) {
+          const hashedPassword = await bcrypt.hash(password, 10);
+          await storage.updateUser(user.id, { password: hashedPassword });
+        }
+      }
+      
+      if (!isPasswordValid) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
@@ -681,8 +734,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const userData = adminCreateUserSchema.parse(requestData);
 
-      // Use manual password if provided, otherwise generate 6-digit password
-      const password = req.body.password || Math.floor(100000 + Math.random() * 900000).toString();
+      // Generate a strong password if none provided
+      const plainPassword = req.body.password || generateStrongPassword(12);
+
+      // Validate password strength if manually provided
+      if (req.body.password) {
+        try {
+          passwordSchema.parse(plainPassword);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            return res.status(400).json({
+              message: "Password does not meet security requirements",
+              errors: error.errors,
+            });
+          }
+        }
+      }
+      
+      // Hash the password before storing
+      const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
       // Set default validity dates if not provided
       const now = new Date();
@@ -698,7 +768,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const newUser = await storage.createUser({
         email: userData.email,
-        password: password,
+        password: hashedPassword,
         firstName: userData.firstName,
         lastName: userData.lastName,
         isAdmin: userData.isAdmin || false,
@@ -724,7 +794,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           validFrom: newUser.validFrom,
           validUntil: newUser.validUntil,
         },
-        password: password,
+        password: plainPassword, // Return plaintext password for admin to share with user
         message: "User created successfully",
       });
     } catch (error) {
@@ -894,17 +964,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Use manual password if provided, otherwise generate random password
-      const newPassword = manualPassword || Array.from({ length: 12 }, () => 
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'.charAt(
-          Math.floor(Math.random() * 68)
-        )
-      ).join('');
+      const plainPassword = manualPassword || generateStrongPassword(12);
 
-      await storage.updateUser(id, { password: newPassword });
+      // Validate password strength if manually provided
+      if (manualPassword) {
+        try {
+          passwordSchema.parse(plainPassword);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            return res.status(400).json({
+              message: "Password does not meet security requirements",
+              errors: error.errors,
+            });
+          }
+        }
+      }
+
+      // Hash the password before storing
+      const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
+      await storage.updateUser(id, { password: hashedPassword });
 
       res.json({ 
         message: "Password reset successfully",
-        password: newPassword
+        password: plainPassword // Return plaintext password for admin to share with user
       });
     } catch (error) {
       console.error("Reset password error:", error);

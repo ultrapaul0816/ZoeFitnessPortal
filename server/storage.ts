@@ -232,10 +232,11 @@ export class MemStorage implements IStorage {
   private initializeData() {
     // Create admin user
     const adminId = randomUUID();
+    // Default password: "Admin@123" - hashed with bcrypt
     const admin: User = {
       id: adminId,
       email: "admin@strongerwithzoe.in",
-      password: "admin123",
+      password: "$2b$10$PWTQam4rNdS4nvS7WTpWjO3ag3YxzUZjDXosgV.1PKGRpTUoBifJK",
       firstName: "Zoe",
       lastName: "Modgill",
       phone: null,
@@ -258,10 +259,11 @@ export class MemStorage implements IStorage {
 
     // Create test user
     const userId = randomUUID();
+    // Default password: "Test@123" - hashed with bcrypt
     const user: User = {
       id: userId,
       email: "jane@example.com",
-      password: "password123",
+      password: "$2b$10$Sn579BPuOvBaDEQxi9WT3u8Z3bWxacipG8nHla1B/KwNWd2Zfi6We",
       firstName: "Jane",
       lastName: "Doe",
       phone: null,
@@ -817,6 +819,7 @@ export class MemStorage implements IStorage {
     for (const user of users.filter(u => !u.isAdmin)) {
       const programExpiring = memberPrograms.some(mp => 
         mp.userId === user.id &&
+        mp.expiryDate &&
         mp.expiryDate > now &&
         mp.expiryDate <= oneWeekFromNow
       );
@@ -829,6 +832,7 @@ export class MemStorage implements IStorage {
       if (programExpiring || whatsAppExpiring) {
         const userProgram = memberPrograms.find(mp => 
           mp.userId === user.id &&
+          mp.expiryDate &&
           mp.expiryDate > now &&
           mp.expiryDate <= oneWeekFromNow
         );
@@ -1186,9 +1190,9 @@ class DatabaseStorage implements IStorage {
     const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
     // Get all member programs
-    const memberPrograms = await this.db
+    const allMemberPrograms = await this.db
       .select()
-      .from(memberProgramsTable)
+      .from(memberPrograms)
       .execute();
 
     const expiringUsers: Array<{
@@ -1202,7 +1206,7 @@ class DatabaseStorage implements IStorage {
 
     // Check each user for expiring programs or WhatsApp support
     for (const user of allUsers.filter(u => !u.isAdmin)) {
-      const programExpiring = memberPrograms.some(mp => 
+      const programExpiring = allMemberPrograms.some(mp => 
         mp.userId === user.id &&
         mp.expiryDate &&
         mp.expiryDate > now &&
@@ -1215,7 +1219,7 @@ class DatabaseStorage implements IStorage {
         user.whatsAppSupportExpiryDate <= oneWeekFromNow;
 
       if (programExpiring || whatsAppExpiring) {
-        const userProgram = memberPrograms.find(mp => 
+        const userProgram = allMemberPrograms.find(mp => 
           mp.userId === user.id &&
           mp.expiryDate &&
           mp.expiryDate > now &&

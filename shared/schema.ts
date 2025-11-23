@@ -341,10 +341,18 @@ export type InsertTerms = z.infer<typeof insertTermsSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 
+// Password validation schema with strength requirements
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number");
+
 // Login schema
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
+  password: z.string().min(1, "Password is required"), // Less strict for login
   termsAccepted: z.boolean().optional(),
   disclaimerAccepted: z.boolean().optional(),
 });
