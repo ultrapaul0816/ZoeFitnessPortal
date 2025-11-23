@@ -362,7 +362,7 @@ export type AudienceFilter = z.infer<typeof audienceFilterSchema>;
 // Manually define insert schema to ensure strict audienceFilter validation
 export const insertEmailCampaignSchema = z.object({
   name: z.string().min(1).max(255),
-  templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'whatsapp-invite']),
+  templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration']),
   subject: z.string().min(1).max(500),
   audienceFilter: audienceFilterSchema, // Strict validation - only allowed keys
   status: z.enum(['draft', 'scheduled', 'sending', 'sent', 'failed']).default('draft'),

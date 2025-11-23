@@ -23,8 +23,9 @@ export interface ProgramReminderEmailData {
   totalWorkouts: number;
 }
 
-export interface WhatsAppInviteEmailData {
+export interface CompletionCelebrationEmailData {
   firstName: string;
-  whatsAppLink: string;
-  expiryDate?: Date;
+  programName: string;
+  completionDate: Date;
+  weeksCompleted: number;
 }

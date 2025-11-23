@@ -5,11 +5,11 @@ import {
   createWelcomeEmail,
   createReEngagementEmail,
   createProgramReminderEmail,
-  createWhatsAppInviteEmail,
+  createCompletionCelebrationEmail,
   type WelcomeEmailData,
   type ReEngagementEmailData,
   type ProgramReminderEmailData,
-  type WhatsAppInviteEmailData,
+  type CompletionCelebrationEmailData,
 } from './templates';
 
 class EmailService {
@@ -75,11 +75,11 @@ class EmailService {
     });
   }
 
-  async sendWhatsAppInviteEmail(
+  async sendCompletionCelebrationEmail(
     user: User,
-    data: Omit<WhatsAppInviteEmailData, 'firstName'>
+    data: Omit<CompletionCelebrationEmailData, 'firstName'>
   ): Promise<EmailSendResult> {
-    const template = createWhatsAppInviteEmail({
+    const template = createCompletionCelebrationEmail({
       firstName: user.firstName,
       ...data,
     });
@@ -87,6 +87,50 @@ class EmailService {
     return this.send({
       to: { email: user.email, name: `${user.firstName} ${user.lastName}` },
       subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+  }
+
+  async sendTemplateTestEmail(templateType: 'welcome' | 're-engagement' | 'program-reminder' | 'completion-celebration', toEmail: string, customSubject?: string): Promise<EmailSendResult> {
+    let template;
+    
+    switch (templateType) {
+      case 'welcome':
+        template = createWelcomeEmail({
+          firstName: 'Zoe',
+          programName: 'Your Postpartum Strength Recovery Program',
+        });
+        break;
+      case 're-engagement':
+        template = createReEngagementEmail({
+          firstName: 'Zoe',
+          lastLoginDays: 30,
+          programProgress: 45,
+        });
+        break;
+      case 'program-reminder':
+        template = createProgramReminderEmail({
+          firstName: 'Zoe',
+          programName: 'Your Postpartum Strength Recovery Program',
+          weekNumber: 3,
+          workoutsCompleted: 8,
+          totalWorkouts: 18,
+        });
+        break;
+      case 'completion-celebration':
+        template = createCompletionCelebrationEmail({
+          firstName: 'Zoe',
+          programName: 'Your Postpartum Strength Recovery Program',
+          completionDate: new Date(),
+          weeksCompleted: 6,
+        });
+        break;
+    }
+
+    return this.send({
+      to: { email: toEmail, name: 'Test Recipient' },
+      subject: customSubject || template.subject,
       html: template.html,
       text: template.text,
     });

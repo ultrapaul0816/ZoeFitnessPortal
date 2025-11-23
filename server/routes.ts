@@ -1219,6 +1219,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Template test email endpoint
+  app.post("/api/admin/email-campaigns/send-test", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { templateType, email, subject } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      if (!templateType) {
+        return res.status(400).json({ message: "Template type is required" });
+      }
+
+      const validTemplates = ['welcome', 're-engagement', 'program-reminder', 'completion-celebration'];
+      if (!validTemplates.includes(templateType)) {
+        return res.status(400).json({ message: "Invalid template type" });
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email address" });
+      }
+
+      const result = await emailService.sendTemplateTestEmail(
+        templateType as 'welcome' | 're-engagement' | 'program-reminder' | 'completion-celebration',
+        email,
+        subject
+      );
+
+      if (!result.success) {
+        return res.status(500).json({ 
+          message: "Failed to send test email",
+          error: result.error 
+        });
+      }
+
+      res.json({ 
+        success: true,
+        message: "Test email sent successfully",
+        messageId: result.messageId
+      });
+    } catch (error) {
+      console.error("Template test email error:", error);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
   // Get all email campaigns
   app.get("/api/admin/email-campaigns", async (req, res) => {
     try {
