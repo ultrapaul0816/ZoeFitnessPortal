@@ -1386,10 +1386,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     totalWorkouts: 3,
                   });
                   break;
-                case "whatsapp-invite":
-                  result = await emailService.sendWhatsAppInviteEmail(user, {
-                    whatsAppLink: "https://www.strongerwithzoe.in/products/whatsapp-community",
-                    expiryDate: user.whatsAppSupportExpiryDate || undefined,
+                case "completion-celebration":
+                  result = await emailService.sendCompletionCelebrationEmail(user, {
+                    programName: "Your Postpartum Strength Recovery Program",
+                    completionDate: new Date(),
+                    weeksCompleted: 6,
                   });
                   break;
                 default:
