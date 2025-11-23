@@ -93,6 +93,7 @@ The application features a comprehensive 6-week program structure with detailed 
 - **Profile Personalization**: Extensive fields for postpartum-specific fitness customization.
 - **Program Access Control**: The `hasProgramAccess` function checks both the `programPurchases` table (for direct purchases) and the `memberPrograms` table (for admin enrollments), ensuring enrolled users can access program content.
 - **Progress Photo Tracking**: Integrated as "Progress Tracker" tab in main navigation (after Heal tab) for before/after photo uploads and weekly progress tracking. Photos are stored securely via Cloudinary with database metadata. Users can upload via camera or gallery, with example photos and photography tips. Includes downloadable PDF progress tracker for weekly symptom and measurement logging. Comprehensive guidance explains when to take photos (start: before program, finish: after 6 weeks).
+- **Community Feed**: Instagram-style social feed with photo uploads, categories (#Wins, #RealTalk, #Transformations, #WorkoutSelfies, #MomLife), week-based filtering, like/unlike, comments, Instagram share feature, and featured posts. Full CRUD operations with Cloudinary integration. Sample data includes 14 diverse posts across all categories (Weeks 1-6), 23 likes, and 13 supportive comments demonstrating authentic community engagement patterns.
 
 ### Deployment Architecture
 - **Development Mode**: Uses Vite dev server with HMR.
