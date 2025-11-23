@@ -14,6 +14,10 @@ import {
   type InsertSavedWorkout,
   type CommunityPost,
   type InsertCommunityPost,
+  type PostLike,
+  type InsertPostLike,
+  type PostComment,
+  type InsertPostComment,
   type Notification,
   type InsertNotification,
   type Terms,
@@ -41,6 +45,8 @@ import {
   workoutCompletions,
   savedWorkouts,
   communityPosts,
+  postLikes,
+  postComments,
   notifications,
   terms,
   programPurchases,
@@ -54,7 +60,7 @@ import {
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, sql, count, asc } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -95,13 +101,56 @@ export interface IStorage {
   createSavedWorkout(savedWorkout: InsertSavedWorkout): Promise<SavedWorkout>;
   deleteSavedWorkout(userId: string, workoutId: string): Promise<boolean>;
 
-  // Community
-  getCommunityPosts(
-    channel?: string
+  // Community Posts
+  getCommunityPosts(filters?: {
+    category?: string;
+    weekNumber?: number;
+    userId?: string;
+    sortBy?: 'newest' | 'mostLiked';
+  }): Promise<
+    (CommunityPost & {
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      likeCount: number;
+      commentCount: number;
+      isLikedByUser?: boolean;
+      likes?: Array<{ userId: string; userName: string }>;
+    })[]
+  >;
+  getPostById(
+    postId: string,
+    currentUserId?: string
   ): Promise<
-    (CommunityPost & { user: Pick<User, "firstName" | "lastName"> })[]
+    | (CommunityPost & {
+        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+        likeCount: number;
+        commentCount: number;
+        isLikedByUser: boolean;
+        likes: Array<{ userId: string; userName: string }>;
+      })
+    | undefined
   >;
   createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
+  deletePost(postId: string, userId: string): Promise<boolean>;
+  reportPost(postId: string): Promise<boolean>;
+  markPostAsFeatured(postId: string, featured: boolean): Promise<boolean>;
+
+  // Post Likes
+  likePost(userId: string, postId: string): Promise<PostLike>;
+  unlikePost(userId: string, postId: string): Promise<boolean>;
+  getPostLikes(postId: string): Promise<
+    Array<{ userId: string; userName: string; createdAt: Date }>
+  >;
+
+  // Post Comments
+  createComment(comment: InsertPostComment): Promise<PostComment>;
+  getPostComments(
+    postId: string
+  ): Promise<
+    (PostComment & {
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+    })[]
+  >;
+  deleteComment(commentId: string, userId: string): Promise<boolean>;
 
   // Notifications
   getUserNotifications(userId: string): Promise<Notification[]>;
@@ -196,6 +245,8 @@ export class MemStorage implements IStorage {
   private workoutCompletions: Map<string, WorkoutCompletion>;
   private savedWorkouts: Map<string, SavedWorkout>;
   private communityPosts: Map<string, CommunityPost>;
+  private postLikes: Map<string, PostLike>;
+  private postComments: Map<string, PostComment>;
   private notifications: Map<string, Notification>;
   private terms: Map<string, Terms>;
   private programPurchases: Map<string, ProgramPurchase>;
@@ -215,6 +266,8 @@ export class MemStorage implements IStorage {
     this.workoutCompletions = new Map();
     this.savedWorkouts = new Map();
     this.communityPosts = new Map();
+    this.postLikes = new Map();
+    this.postComments = new Map();
     this.notifications = new Map();
     this.terms = new Map();
     this.programPurchases = new Map();
@@ -702,22 +755,138 @@ export class MemStorage implements IStorage {
     return false;
   }
 
-  async getCommunityPosts(
-    channel?: string
-  ): Promise<
-    (CommunityPost & { user: Pick<User, "firstName" | "lastName"> })[]
+  // Community Posts - stub implementations
+  async getCommunityPosts(filters?: {
+    category?: string;
+    weekNumber?: number;
+    userId?: string;
+    sortBy?: 'newest' | 'mostLiked';
+  }): Promise<
+    (CommunityPost & {
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      likeCount: number;
+      commentCount: number;
+      isLikedByUser?: boolean;
+      likes?: Array<{ userId: string; userName: string }>;
+    })[]
   > {
-    const posts = Array.from(this.communityPosts.values())
-      .filter((post) => !channel || post.channel === channel)
-      .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
+    let posts = Array.from(this.communityPosts.values());
 
-    return posts.map((post) => ({
+    // Apply filters
+    if (filters?.category) {
+      posts = posts.filter((post) => post.category === filters.category);
+    }
+    if (filters?.weekNumber !== undefined) {
+      posts = posts.filter((post) => post.weekNumber === filters.weekNumber);
+    }
+    if (filters?.userId) {
+      posts = posts.filter((post) => post.userId === filters.userId);
+    }
+
+    // Calculate counts and likes for each post
+    const enrichedPosts = posts.map((post) => {
+      const postLikes = Array.from(this.postLikes.values()).filter(
+        (like) => like.postId === post.id
+      );
+      const postComments = Array.from(this.postComments.values()).filter(
+        (comment) => comment.postId === post.id
+      );
+      const user = this.users.get(post.userId);
+
+      return {
+        ...post,
+        user: {
+          id: user?.id || "",
+          firstName: user?.firstName || "Unknown",
+          lastName: user?.lastName || "User",
+          profilePictureUrl: user?.profilePictureUrl || null,
+        },
+        likeCount: postLikes.length,
+        commentCount: postComments.length,
+        likes: postLikes.map((like) => {
+          const likeUser = this.users.get(like.userId);
+          return {
+            userId: like.userId,
+            userName: likeUser
+              ? `${likeUser.firstName} ${likeUser.lastName}`
+              : "Unknown User",
+          };
+        }),
+      };
+    });
+
+    // Sort posts
+    const sortBy = filters?.sortBy || 'newest';
+    if (sortBy === 'mostLiked') {
+      enrichedPosts.sort((a, b) => {
+        // Featured posts at the top
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        // Then by like count
+        return b.likeCount - a.likeCount;
+      });
+    } else {
+      // Sort by newest (default)
+      enrichedPosts.sort((a, b) => {
+        // Featured posts at the top
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        // Then by date
+        return (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0);
+      });
+    }
+
+    return enrichedPosts;
+  }
+
+  async getPostById(
+    postId: string,
+    currentUserId?: string
+  ): Promise<
+    | (CommunityPost & {
+        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+        likeCount: number;
+        commentCount: number;
+        isLikedByUser: boolean;
+        likes: Array<{ userId: string; userName: string }>;
+      })
+    | undefined
+  > {
+    const post = this.communityPosts.get(postId);
+    if (!post) return undefined;
+
+    const postLikes = Array.from(this.postLikes.values()).filter(
+      (like) => like.postId === postId
+    );
+    const postComments = Array.from(this.postComments.values()).filter(
+      (comment) => comment.postId === postId
+    );
+    const user = this.users.get(post.userId);
+    const isLikedByUser = currentUserId
+      ? postLikes.some((like) => like.userId === currentUserId)
+      : false;
+
+    return {
       ...post,
       user: {
-        firstName: this.users.get(post.userId)?.firstName || "Unknown",
-        lastName: this.users.get(post.userId)?.lastName || "User",
+        id: user?.id || "",
+        firstName: user?.firstName || "Unknown",
+        lastName: user?.lastName || "User",
+        profilePictureUrl: user?.profilePictureUrl || null,
       },
-    }));
+      likeCount: postLikes.length,
+      commentCount: postComments.length,
+      isLikedByUser,
+      likes: postLikes.map((like) => {
+        const likeUser = this.users.get(like.userId);
+        return {
+          userId: like.userId,
+          userName: likeUser
+            ? `${likeUser.firstName} ${likeUser.lastName}`
+            : "Unknown User",
+        };
+      }),
+    };
   }
 
   async createCommunityPost(
@@ -727,12 +896,137 @@ export class MemStorage implements IStorage {
     const post: CommunityPost = {
       ...insertPost,
       id,
-      channel: insertPost.channel || "general",
+      imageUrl: insertPost.imageUrl || null,
+      cloudinaryPublicId: insertPost.cloudinaryPublicId || null,
+      weekNumber: insertPost.weekNumber || null,
+      category: insertPost.category || "general",
+      featured: insertPost.featured || false,
+      isReported: insertPost.isReported || false,
+      isSensitiveContent: insertPost.isSensitiveContent || false,
       createdAt: new Date(),
-      isModerated: false,
     };
     this.communityPosts.set(id, post);
     return post;
+  }
+
+  async deletePost(postId: string, userId: string): Promise<boolean> {
+    const post = this.communityPosts.get(postId);
+    if (!post || post.userId !== userId) {
+      return false;
+    }
+    this.communityPosts.delete(postId);
+    return true;
+  }
+
+  async reportPost(postId: string): Promise<boolean> {
+    const post = this.communityPosts.get(postId);
+    if (!post) return false;
+    post.isReported = true;
+    this.communityPosts.set(postId, post);
+    return true;
+  }
+
+  async markPostAsFeatured(postId: string, featured: boolean): Promise<boolean> {
+    const post = this.communityPosts.get(postId);
+    if (!post) return false;
+    post.featured = featured;
+    this.communityPosts.set(postId, post);
+    return true;
+  }
+
+  // Post Likes
+  async likePost(userId: string, postId: string): Promise<PostLike> {
+    // Check if already liked
+    const existingLike = Array.from(this.postLikes.values()).find(
+      (like) => like.userId === userId && like.postId === postId
+    );
+    if (existingLike) {
+      return existingLike;
+    }
+
+    const id = randomUUID();
+    const like: PostLike = {
+      id,
+      userId,
+      postId,
+      createdAt: new Date(),
+    };
+    this.postLikes.set(id, like);
+    return like;
+  }
+
+  async unlikePost(userId: string, postId: string): Promise<boolean> {
+    const like = Array.from(this.postLikes.values()).find(
+      (like) => like.userId === userId && like.postId === postId
+    );
+    if (!like) return false;
+    this.postLikes.delete(like.id);
+    return true;
+  }
+
+  async getPostLikes(postId: string): Promise<
+    Array<{ userId: string; userName: string; createdAt: Date }>
+  > {
+    const likes = Array.from(this.postLikes.values()).filter(
+      (like) => like.postId === postId
+    );
+
+    return likes.map((like) => {
+      const user = this.users.get(like.userId);
+      return {
+        userId: like.userId,
+        userName: user
+          ? `${user.firstName} ${user.lastName}`
+          : "Unknown User",
+        createdAt: like.createdAt || new Date(),
+      };
+    });
+  }
+
+  // Post Comments
+  async createComment(comment: InsertPostComment): Promise<PostComment> {
+    const id = randomUUID();
+    const newComment: PostComment = {
+      ...comment,
+      id,
+      createdAt: new Date(),
+    };
+    this.postComments.set(id, newComment);
+    return newComment;
+  }
+
+  async getPostComments(
+    postId: string
+  ): Promise<
+    (PostComment & {
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+    })[]
+  > {
+    const comments = Array.from(this.postComments.values())
+      .filter((comment) => comment.postId === postId)
+      .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
+
+    return comments.map((comment) => {
+      const user = this.users.get(comment.userId);
+      return {
+        ...comment,
+        user: {
+          id: user?.id || "",
+          firstName: user?.firstName || "Unknown",
+          lastName: user?.lastName || "User",
+          profilePictureUrl: user?.profilePictureUrl || null,
+        },
+      };
+    });
+  }
+
+  async deleteComment(commentId: string, userId: string): Promise<boolean> {
+    const comment = this.postComments.get(commentId);
+    if (!comment || comment.userId !== userId) {
+      return false;
+    }
+    this.postComments.delete(commentId);
+    return true;
   }
 
   async getUserNotifications(userId: string): Promise<Notification[]> {
@@ -1386,19 +1680,356 @@ class DatabaseStorage implements IStorage {
   ): Promise<boolean> {
     return false;
   }
-  async getCommunityPosts(
-    channel?: string
-  ): Promise<
-    (CommunityPost & { user: Pick<User, "firstName" | "lastName"> })[]
+
+  // Community Posts - Full implementations with Drizzle ORM
+  async getCommunityPosts(filters?: {
+    category?: string;
+    weekNumber?: number;
+    userId?: string;
+    sortBy?: 'newest' | 'mostLiked';
+  }): Promise<
+    (CommunityPost & {
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      likeCount: number;
+      commentCount: number;
+      isLikedByUser?: boolean;
+      likes?: Array<{ userId: string; userName: string }>;
+    })[]
   > {
-    return [];
+    // Build the where conditions
+    const conditions = [];
+    if (filters?.category) {
+      conditions.push(eq(communityPosts.category, filters.category));
+    }
+    if (filters?.weekNumber !== undefined) {
+      conditions.push(eq(communityPosts.weekNumber, filters.weekNumber));
+    }
+    if (filters?.userId) {
+      conditions.push(eq(communityPosts.userId, filters.userId));
+    }
+
+    // Get all posts with user info
+    const postsQuery = this.db
+      .select({
+        post: communityPosts,
+        user: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profilePictureUrl: users.profilePictureUrl,
+        },
+      })
+      .from(communityPosts)
+      .innerJoin(users, eq(communityPosts.userId, users.id));
+
+    // Apply filters if any
+    const postsWithUser = conditions.length > 0
+      ? await postsQuery.where(and(...conditions))
+      : await postsQuery;
+
+    // For each post, get like and comment counts
+    const enrichedPosts = await Promise.all(
+      postsWithUser.map(async ({ post, user }) => {
+        // Get like count
+        const likeCountResult = await this.db
+          .select({ count: count() })
+          .from(postLikes)
+          .where(eq(postLikes.postId, post.id));
+        const likeCount = likeCountResult[0]?.count || 0;
+
+        // Get comment count
+        const commentCountResult = await this.db
+          .select({ count: count() })
+          .from(postComments)
+          .where(eq(postComments.postId, post.id));
+        const commentCount = commentCountResult[0]?.count || 0;
+
+        // Get likes with user names
+        const likesResult = await this.db
+          .select({
+            userId: postLikes.userId,
+            firstName: users.firstName,
+            lastName: users.lastName,
+          })
+          .from(postLikes)
+          .innerJoin(users, eq(postLikes.userId, users.id))
+          .where(eq(postLikes.postId, post.id));
+
+        const likes = likesResult.map((like) => ({
+          userId: like.userId,
+          userName: `${like.firstName} ${like.lastName}`,
+        }));
+
+        return {
+          ...post,
+          user,
+          likeCount: Number(likeCount),
+          commentCount: Number(commentCount),
+          likes,
+        };
+      })
+    );
+
+    // Sort the posts
+    const sortBy = filters?.sortBy || 'newest';
+    if (sortBy === 'mostLiked') {
+      enrichedPosts.sort((a, b) => {
+        // Featured posts at the top
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        // Then by like count
+        return b.likeCount - a.likeCount;
+      });
+    } else {
+      // Sort by newest (default)
+      enrichedPosts.sort((a, b) => {
+        // Featured posts at the top
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        // Then by date
+        return (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0);
+      });
+    }
+
+    return enrichedPosts;
   }
+
+  async getPostById(
+    postId: string,
+    currentUserId?: string
+  ): Promise<
+    | (CommunityPost & {
+        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+        likeCount: number;
+        commentCount: number;
+        isLikedByUser: boolean;
+        likes: Array<{ userId: string; userName: string }>;
+      })
+    | undefined
+  > {
+    // Get post with user info
+    const postResult = await this.db
+      .select({
+        post: communityPosts,
+        user: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profilePictureUrl: users.profilePictureUrl,
+        },
+      })
+      .from(communityPosts)
+      .innerJoin(users, eq(communityPosts.userId, users.id))
+      .where(eq(communityPosts.id, postId))
+      .limit(1);
+
+    if (postResult.length === 0) return undefined;
+
+    const { post, user } = postResult[0];
+
+    // Get like count
+    const likeCountResult = await this.db
+      .select({ count: count() })
+      .from(postLikes)
+      .where(eq(postLikes.postId, postId));
+    const likeCount = Number(likeCountResult[0]?.count || 0);
+
+    // Get comment count
+    const commentCountResult = await this.db
+      .select({ count: count() })
+      .from(postComments)
+      .where(eq(postComments.postId, postId));
+    const commentCount = Number(commentCountResult[0]?.count || 0);
+
+    // Check if current user liked the post
+    let isLikedByUser = false;
+    if (currentUserId) {
+      const userLike = await this.db
+        .select()
+        .from(postLikes)
+        .where(
+          and(
+            eq(postLikes.postId, postId),
+            eq(postLikes.userId, currentUserId)
+          )
+        )
+        .limit(1);
+      isLikedByUser = userLike.length > 0;
+    }
+
+    // Get likes with user names
+    const likesResult = await this.db
+      .select({
+        userId: postLikes.userId,
+        firstName: users.firstName,
+        lastName: users.lastName,
+      })
+      .from(postLikes)
+      .innerJoin(users, eq(postLikes.userId, users.id))
+      .where(eq(postLikes.postId, postId));
+
+    const likes = likesResult.map((like) => ({
+      userId: like.userId,
+      userName: `${like.firstName} ${like.lastName}`,
+    }));
+
+    return {
+      ...post,
+      user,
+      likeCount,
+      commentCount,
+      isLikedByUser,
+      likes,
+    };
+  }
+
   async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
     const result = await this.db
       .insert(communityPosts)
       .values(post)
       .returning();
     return result[0];
+  }
+
+  async deletePost(postId: string, userId: string): Promise<boolean> {
+    const result = await this.db
+      .delete(communityPosts)
+      .where(
+        and(
+          eq(communityPosts.id, postId),
+          eq(communityPosts.userId, userId)
+        )
+      )
+      .returning();
+    return result.length > 0;
+  }
+
+  async reportPost(postId: string): Promise<boolean> {
+    const result = await this.db
+      .update(communityPosts)
+      .set({ isReported: true })
+      .where(eq(communityPosts.id, postId))
+      .returning();
+    return result.length > 0;
+  }
+
+  async markPostAsFeatured(postId: string, featured: boolean): Promise<boolean> {
+    const result = await this.db
+      .update(communityPosts)
+      .set({ featured })
+      .where(eq(communityPosts.id, postId))
+      .returning();
+    return result.length > 0;
+  }
+
+  // Post Likes
+  async likePost(userId: string, postId: string): Promise<PostLike> {
+    // Check if already liked
+    const existing = await this.db
+      .select()
+      .from(postLikes)
+      .where(
+        and(
+          eq(postLikes.userId, userId),
+          eq(postLikes.postId, postId)
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      return existing[0];
+    }
+
+    // Create new like
+    const result = await this.db
+      .insert(postLikes)
+      .values({ userId, postId })
+      .returning();
+    return result[0];
+  }
+
+  async unlikePost(userId: string, postId: string): Promise<boolean> {
+    const result = await this.db
+      .delete(postLikes)
+      .where(
+        and(
+          eq(postLikes.userId, userId),
+          eq(postLikes.postId, postId)
+        )
+      )
+      .returning();
+    return result.length > 0;
+  }
+
+  async getPostLikes(postId: string): Promise<
+    Array<{ userId: string; userName: string; createdAt: Date }>
+  > {
+    const result = await this.db
+      .select({
+        userId: postLikes.userId,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        createdAt: postLikes.createdAt,
+      })
+      .from(postLikes)
+      .innerJoin(users, eq(postLikes.userId, users.id))
+      .where(eq(postLikes.postId, postId));
+
+    return result.map((like) => ({
+      userId: like.userId,
+      userName: `${like.firstName} ${like.lastName}`,
+      createdAt: like.createdAt || new Date(),
+    }));
+  }
+
+  // Post Comments
+  async createComment(comment: InsertPostComment): Promise<PostComment> {
+    const result = await this.db
+      .insert(postComments)
+      .values(comment)
+      .returning();
+    return result[0];
+  }
+
+  async getPostComments(
+    postId: string
+  ): Promise<
+    (PostComment & {
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+    })[]
+  > {
+    const result = await this.db
+      .select({
+        comment: postComments,
+        user: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profilePictureUrl: users.profilePictureUrl,
+        },
+      })
+      .from(postComments)
+      .innerJoin(users, eq(postComments.userId, users.id))
+      .where(eq(postComments.postId, postId))
+      .orderBy(asc(postComments.createdAt));
+
+    return result.map(({ comment, user }) => ({
+      ...comment,
+      user,
+    }));
+  }
+
+  async deleteComment(commentId: string, userId: string): Promise<boolean> {
+    const result = await this.db
+      .delete(postComments)
+      .where(
+        and(
+          eq(postComments.id, commentId),
+          eq(postComments.userId, userId)
+        )
+      )
+      .returning();
+    return result.length > 0;
   }
   async getUserNotifications(userId: string): Promise<Notification[]> {
     return [];

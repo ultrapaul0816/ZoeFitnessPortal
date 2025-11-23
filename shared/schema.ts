@@ -79,10 +79,30 @@ export const savedWorkouts = pgTable("saved_workouts", {
 export const communityPosts = pgTable("community_posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
-  channel: text("channel").notNull().default("general"),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  cloudinaryPublicId: text("cloudinary_public_id"),
+  weekNumber: integer("week_number"), // 1-6 for Heal Your Core
+  category: text("category").notNull().default("general"), // wins, realtalk, transformations, workoutselfies, momlife, general
+  featured: boolean("featured").default(false),
+  isReported: boolean("is_reported").default(false),
+  isSensitiveContent: boolean("is_sensitive_content").default(false), // for blurred progress photos
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const postLikes = pgTable("post_likes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  postId: varchar("post_id").notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const postComments = pgTable("post_comments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  postId: varchar("post_id").notNull(),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").default(sql`now()`),
-  isModerated: boolean("is_moderated").default(false),
 });
 
 export const notifications = pgTable("notifications", {
@@ -261,7 +281,24 @@ export const insertSavedWorkoutSchema = createInsertSchema(savedWorkouts).omit({
 export const insertCommunityPostSchema = createInsertSchema(communityPosts).omit({
   id: true,
   createdAt: true,
-  isModerated: true,
+}).extend({
+  category: z.enum(['wins', 'realtalk', 'transformations', 'workoutselfies', 'momlife', 'general']).default('general'),
+  weekNumber: z.number().min(1).max(6).optional(),
+  imageUrl: z.string().url().optional(),
+  cloudinaryPublicId: z.string().optional(),
+  isSensitiveContent: z.boolean().default(false),
+});
+
+export const insertPostLikeSchema = createInsertSchema(postLikes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPostCommentSchema = createInsertSchema(postComments).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  content: z.string().min(1).max(500),
 });
 
 export const insertNotificationSchema = createInsertSchema(notifications).omit({
@@ -397,6 +434,10 @@ export type SavedWorkout = typeof savedWorkouts.$inferSelect;
 export type InsertSavedWorkout = z.infer<typeof insertSavedWorkoutSchema>;
 export type CommunityPost = typeof communityPosts.$inferSelect;
 export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
+export type PostLike = typeof postLikes.$inferSelect;
+export type InsertPostLike = z.infer<typeof insertPostLikeSchema>;
+export type PostComment = typeof postComments.$inferSelect;
+export type InsertPostComment = z.infer<typeof insertPostCommentSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Terms = typeof terms.$inferSelect;
