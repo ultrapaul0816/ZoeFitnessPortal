@@ -18,6 +18,7 @@ import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import bcrypt from "bcrypt";
 import rateLimit from "express-rate-limit";
+import { emailService } from "./email/service";
 
 // Rate limiting configurations
 const loginLimiter = rateLimit({
@@ -1172,6 +1173,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Analytics error:", error);
       res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
+  // Email test endpoint
+  app.post("/api/admin/email/send-test", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email address" });
+      }
+
+      const result = await emailService.sendTestEmail(email);
+
+      if (!result.success) {
+        return res.status(500).json({ 
+          message: "Failed to send test email",
+          error: result.error 
+        });
+      }
+
+      res.json({ 
+        success: true,
+        message: "Test email sent successfully",
+        messageId: result.messageId
+      });
+    } catch (error) {
+      console.error("Email test error:", error);
+      res.status(500).json({ message: "Failed to send test email" });
     }
   });
 
