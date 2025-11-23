@@ -137,6 +137,23 @@ function requireAuth(req: any, res: any, next: any) {
   next();
 }
 
+async function requireAdmin(req: any, res: any, next: any) {
+  if (!req.session?.userId) {
+    return res.status(401).json({ message: "Unauthorized. Please log in." });
+  }
+  
+  try {
+    const user = await storage.getUserById(req.session.userId);
+    if (!user || !user.isAdmin) {
+      return res.status(401).json({ message: "Unauthorized. Admin access required." });
+    }
+    next();
+  } catch (error) {
+    console.error("Error checking admin status:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 // Multer error handling middleware - converts errors to proper 400 responses
 function handleMulterError(err: any, req: any, res: any, next: any) {
   if (err instanceof multer.MulterError) {
@@ -1272,7 +1289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all email campaigns
-  app.get("/api/admin/email-campaigns", async (req, res) => {
+  app.get("/api/admin/email-campaigns", requireAdmin, async (req, res) => {
     try {
       const campaigns = await storage.getEmailCampaigns();
       res.json(campaigns);
@@ -1447,12 +1464,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Email Template Management Routes
 
   // Get all email templates with stats
-  app.get("/api/admin/email-templates", async (req, res) => {
+  app.get("/api/admin/email-templates", requireAdmin, async (req, res) => {
     try {
-      if (!req.isAuthenticated() || req.user?.role !== "admin") {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
       const templates = await storage.getEmailTemplates();
       res.json(templates);
     } catch (error) {
@@ -1462,12 +1475,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate preview with sample data
-  app.post("/api/admin/email-templates/:id/preview", async (req, res) => {
+  app.post("/api/admin/email-templates/:id/preview", requireAdmin, async (req, res) => {
     try {
-      if (!req.isAuthenticated() || req.user?.role !== "admin") {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
       const { id } = req.params;
       const template = await storage.getEmailTemplate(id);
 
@@ -1493,12 +1502,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Send test email to specified address
-  app.post("/api/admin/email-templates/:id/send-test", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/email-templates/:id/send-test", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
-      if (!req.isAuthenticated() || req.user?.role !== "admin") {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
       const { id } = req.params;
       const { email } = req.body;
 
@@ -1549,12 +1554,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Send campaign to targeted users
-  app.post("/api/admin/email-templates/:id/send-campaign", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/email-templates/:id/send-campaign", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
-      if (!req.isAuthenticated() || req.user?.role !== "admin") {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
       const { id } = req.params;
       const { audienceFilter, campaignName } = req.body;
 
@@ -1675,22 +1676,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update template subject/content
-  app.patch("/api/admin/email-templates/:id", adminOperationLimiter, async (req, res) => {
+  app.patch("/api/admin/email-templates/:id", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
-      if (!req.isAuthenticated() || req.user?.role !== "admin") {
-        return res.status(401).json({ message: "Unauthorized" });
+      const { id} = req.params;
+      const { subject, htmlContent } = req.body;
+
+      if (!subject && !htmlContent) {
+        return res.status(400).json({ message: "At least one field (subject or htmlContent) is required" });
       }
 
-      const { id } = req.params;
-      const { subject, content } = req.body;
-
-      if (!subject && !content) {
-        return res.status(400).json({ message: "At least one field (subject or content) is required" });
-      }
-
-      const updates: Partial<{ subject: string; content: string }> = {};
+      const updates: Partial<{ subject: string; htmlContent: string }> = {};
       if (subject) updates.subject = subject;
-      if (content) updates.content = content;
+      if (htmlContent) updates.htmlContent = htmlContent;
 
       const updatedTemplate = await storage.updateEmailTemplate(id, updates);
 
