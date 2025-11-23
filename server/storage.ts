@@ -294,6 +294,7 @@ export class MemStorage implements IStorage {
       lastName: "Modgill",
       phone: null,
       profilePictureUrl: null,
+      profilePictureThumbnailUrl: null,
       isAdmin: true,
       termsAccepted: true,
       termsAcceptedAt: new Date(),
@@ -306,6 +307,11 @@ export class MemStorage implements IStorage {
       hasWhatsAppSupport: false,
       whatsAppSupportDuration: null,
       whatsAppSupportExpiryDate: null,
+      country: null,
+      bio: null,
+      instagramHandle: null,
+      postpartumWeeks: null,
+      lastLoginAt: null,
       createdAt: new Date(),
     };
     this.users.set(adminId, admin);
@@ -321,6 +327,7 @@ export class MemStorage implements IStorage {
       lastName: "Doe",
       phone: null,
       profilePictureUrl: null,
+      profilePictureThumbnailUrl: null,
       isAdmin: false,
       termsAccepted: true,
       termsAcceptedAt: new Date(),
@@ -333,6 +340,11 @@ export class MemStorage implements IStorage {
       hasWhatsAppSupport: false,
       whatsAppSupportDuration: null,
       whatsAppSupportExpiryDate: null,
+      country: null,
+      bio: null,
+      instagramHandle: null,
+      postpartumWeeks: null,
+      lastLoginAt: null,
       createdAt: new Date(),
     };
     this.users.set(userId, user);
@@ -763,7 +775,7 @@ export class MemStorage implements IStorage {
     sortBy?: 'newest' | 'mostLiked';
   }): Promise<
     (CommunityPost & {
-      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
       likeCount: number;
       commentCount: number;
       isLikedByUser?: boolean;
@@ -800,6 +812,7 @@ export class MemStorage implements IStorage {
           firstName: user?.firstName || "Unknown",
           lastName: user?.lastName || "User",
           profilePictureUrl: user?.profilePictureUrl || null,
+          profilePictureThumbnailUrl: user?.profilePictureThumbnailUrl || null,
         },
         likeCount: postLikes.length,
         commentCount: postComments.length,
@@ -844,7 +857,7 @@ export class MemStorage implements IStorage {
     currentUserId?: string
   ): Promise<
     | (CommunityPost & {
-        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
         likeCount: number;
         commentCount: number;
         isLikedByUser: boolean;
@@ -873,6 +886,7 @@ export class MemStorage implements IStorage {
         firstName: user?.firstName || "Unknown",
         lastName: user?.lastName || "User",
         profilePictureUrl: user?.profilePictureUrl || null,
+        profilePictureThumbnailUrl: user?.profilePictureThumbnailUrl || null,
       },
       likeCount: postLikes.length,
       commentCount: postComments.length,
@@ -999,7 +1013,7 @@ export class MemStorage implements IStorage {
     postId: string
   ): Promise<
     (PostComment & {
-      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
     })[]
   > {
     const comments = Array.from(this.postComments.values())
@@ -1015,6 +1029,7 @@ export class MemStorage implements IStorage {
           firstName: user?.firstName || "Unknown",
           lastName: user?.lastName || "User",
           profilePictureUrl: user?.profilePictureUrl || null,
+          profilePictureThumbnailUrl: user?.profilePictureThumbnailUrl || null,
         },
       };
     });
@@ -1800,7 +1815,7 @@ class DatabaseStorage implements IStorage {
     currentUserId?: string
   ): Promise<
     | (CommunityPost & {
-        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
         likeCount: number;
         commentCount: number;
         isLikedByUser: boolean;
@@ -1997,7 +2012,7 @@ class DatabaseStorage implements IStorage {
     postId: string
   ): Promise<
     (PostComment & {
-      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
     })[]
   > {
     const result = await this.db
