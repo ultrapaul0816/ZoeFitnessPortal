@@ -48,7 +48,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   });
   
   const [profileData, setProfileData] = useState<ProfileData>({
-    country: '',
+    country: 'India',
     bio: '',
     socials: '',
     dueDate: '',
@@ -79,7 +79,9 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       const syncedProfile = {
         ...currentProfile,
         email: user.email || currentProfile.email,
-        fullName: userFullName || currentProfile.fullName
+        fullName: userFullName || currentProfile.fullName,
+        // Default to India if no country is saved yet
+        country: currentProfile.country || 'India'
       };
       
       setProfileData(syncedProfile);
