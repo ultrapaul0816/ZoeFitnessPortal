@@ -586,7 +586,7 @@ export default function Community() {
 
       {/* Create Post Modal */}
       <Dialog open={showCreatePost} onOpenChange={setShowCreatePost}>
-        <DialogContent className="sm:max-w-lg" data-testid="dialog-create-post">
+        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col" data-testid="dialog-create-post">
           <DialogHeader>
             <DialogTitle>Create Post</DialogTitle>
             <DialogDescription>
@@ -594,7 +594,7 @@ export default function Community() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-y-auto flex-1 pr-2">
             {/* Image preview */}
             {postImagePreview && (
               <div className="relative">
