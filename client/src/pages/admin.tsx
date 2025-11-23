@@ -430,12 +430,22 @@ export default function Admin() {
               </span>
             </div>
             
-            <Button
-              onClick={() => setLocation("/dashboard")}
-              data-testid="button-back-member"
-            >
-              Back to Member View
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setLocation("/admin/analytics")}
+                variant="outline"
+                data-testid="button-analytics"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Analytics
+              </Button>
+              <Button
+                onClick={() => setLocation("/dashboard")}
+                data-testid="button-back-member"
+              >
+                Back to Member View
+              </Button>
+            </div>
           </div>
         </div>
       </header>
