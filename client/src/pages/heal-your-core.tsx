@@ -59,9 +59,13 @@ export default function HealYourCorePage() {
         setAnimatingNumber(null);
       }, 900); // Animation duration
       
+      // Update ref before cleanup
+      prevActiveTabRef.current = activeTab;
+      
       return () => clearTimeout(timer);
     }
     
+    // Update ref for backward or same-tab navigation
     prevActiveTabRef.current = activeTab;
   }, [activeTab]);
   
@@ -78,7 +82,7 @@ export default function HealYourCorePage() {
     (activeTab === 'healing' || activeTab === 'nutrition' || activeTab === 'faqs');
 
   // Tab navigation helpers
-  const tabOrder = ["welcome", "understanding", "healing", "programs", "nutrition", "next-steps", "faqs"];
+  const tabOrder = ["welcome", "understanding", "healing", "progress", "programs", "nutrition", "next-steps", "faqs"];
   
   const navigateToNextTab = () => {
     const currentIndex = tabOrder.indexOf(activeTab);
@@ -109,6 +113,7 @@ export default function HealYourCorePage() {
       'welcome': 'Start Here',
       'understanding': 'Core Knowledge', 
       'healing': 'Healing',
+      'progress': 'Progress Tracker',
       'programs': 'Programs',
       'nutrition': 'Nutrition',
       'next-steps': "What's Next",
