@@ -177,6 +177,42 @@ export interface IStorage {
     }>;
   }>;
 
+  // Analytics
+  getAnalytics(): Promise<{
+    demographics: {
+      totalUsers: number;
+      byCountry: { country: string; count: number }[];
+      byPostpartumStage: { stage: string; count: number }[];
+      instagramHandlesCollected: number;
+    };
+    engagement: {
+      activeUsers: { last7Days: number; last30Days: number; last90Days: number };
+      dormantUsers: { dormant14Days: number; dormant30Days: number; dormant60Days: number };
+      averageLoginFrequency: number;
+    };
+    programPerformance: {
+      totalWorkoutCompletions: number;
+      averageWorkoutsPerUser: number;
+      completionRates: { completed: number; inProgress: number; notStarted: number };
+      progressDistribution: { range: string; count: number }[];
+      averageMood: number;
+      averageChallengeRating: number;
+    };
+    communityHealth: {
+      totalPosts: number;
+      totalLikes: number;
+      totalComments: number;
+      participationRate: number;
+      topCategories: { category: string; count: number }[];
+      topContributors: { userId: string; userName: string; postCount: number }[];
+    };
+    businessMetrics: {
+      whatsAppAdoption: number;
+      programCompletions: number;
+      averageCompletionTime: number;
+    };
+  }>;
+
   // Program Purchases (for premium programs like Heal Your Core)
   createProgramPurchase(
     purchase: InsertProgramPurchase
@@ -1165,6 +1201,171 @@ export class MemStorage implements IStorage {
     };
   }
 
+  async getAnalytics() {
+    const users = Array.from(this.users.values()).filter(u => !u.isAdmin);
+    const memberPrograms = Array.from(this.memberPrograms.values());
+    const workoutCompletions = Array.from(this.workoutCompletions.values());
+    const posts = Array.from(this.communityPosts.values());
+    const likes = Array.from(this.postLikes.values());
+    const comments = Array.from(this.postComments.values());
+    const now = new Date();
+
+    // Demographics
+    const byCountry = users.reduce((acc, user) => {
+      const country = user.country || 'Unknown';
+      acc[country] = (acc[country] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const byPostpartumStage = users.reduce((acc, user) => {
+      if (!user.postpartumWeeks) {
+        acc['Unknown'] = (acc['Unknown'] || 0) + 1;
+      } else if (user.postpartumWeeks < 12) {
+        acc['0-3 months'] = (acc['0-3 months'] || 0) + 1;
+      } else if (user.postpartumWeeks < 26) {
+        acc['3-6 months'] = (acc['3-6 months'] || 0) + 1;
+      } else if (user.postpartumWeeks < 52) {
+        acc['6-12 months'] = (acc['6-12 months'] || 0) + 1;
+      } else if (user.postpartumWeeks < 104) {
+        acc['1-2 years'] = (acc['1-2 years'] || 0) + 1;
+      } else {
+        acc['2+ years'] = (acc['2+ years'] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const instagramHandlesCollected = users.filter(u => u.instagramHandle).length;
+
+    // Engagement
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+
+    const activeUsers = {
+      last7Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= sevenDaysAgo).length,
+      last30Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= thirtyDaysAgo).length,
+      last90Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= ninetyDaysAgo).length,
+    };
+
+    const dormantUsers = {
+      dormant14Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < fourteenDaysAgo).length,
+      dormant30Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < thirtyDaysAgo).length,
+      dormant60Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < sixtyDaysAgo).length,
+    };
+
+    // Program Performance
+    const totalWorkoutCompletions = workoutCompletions.length;
+    const averageWorkoutsPerUser = users.length > 0 ? totalWorkoutCompletions / users.length : 0;
+
+    const completionRates = {
+      completed: memberPrograms.filter(mp => mp.completionPercentage === 100).length,
+      inProgress: memberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 0 && mp.completionPercentage < 100).length,
+      notStarted: memberPrograms.filter(mp => !mp.completionPercentage || mp.completionPercentage === 0).length,
+    };
+
+    const progressDistribution = [
+      { range: '0%', count: memberPrograms.filter(mp => !mp.completionPercentage || mp.completionPercentage === 0).length },
+      { range: '1-25%', count: memberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 0 && mp.completionPercentage <= 25).length },
+      { range: '26-50%', count: memberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 25 && mp.completionPercentage <= 50).length },
+      { range: '51-75%', count: memberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 50 && mp.completionPercentage <= 75).length },
+      { range: '76-99%', count: memberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 75 && mp.completionPercentage < 100).length },
+      { range: '100%', count: memberPrograms.filter(mp => mp.completionPercentage === 100).length },
+    ];
+
+    const moods = workoutCompletions.filter(wc => wc.mood).map(wc => {
+      const moodMap: Record<string, number> = { 'great': 5, 'good': 4, 'okay': 3, 'tired': 2, 'challenging': 1 };
+      return moodMap[wc.mood!] || 3;
+    });
+    const averageMood = moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
+
+    const ratings = workoutCompletions.filter(wc => wc.challengeRating).map(wc => wc.challengeRating!);
+    const averageChallengeRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
+
+    // Community Health
+    const totalPosts = posts.length;
+    const totalLikes = likes.length;
+    const totalComments = comments.length;
+    const usersWhoPosted = new Set(posts.map(p => p.userId));
+    const participationRate = users.length > 0 ? (usersWhoPosted.size / users.length) * 100 : 0;
+
+    const byCategory = posts.reduce((acc, post) => {
+      acc[post.category] = (acc[post.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const topCategories = Object.entries(byCategory)
+      .map(([category, count]) => ({ category, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    const postsByUser = posts.reduce((acc, post) => {
+      acc[post.userId] = (acc[post.userId] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const topContributors = Object.entries(postsByUser)
+      .map(([userId, postCount]) => {
+        const user = users.find(u => u.id === userId);
+        return {
+          userId,
+          userName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+          postCount,
+        };
+      })
+      .sort((a, b) => b.postCount - a.postCount)
+      .slice(0, 10);
+
+    // Business Metrics
+    const whatsAppAdoption = users.filter(u => u.hasWhatsAppSupport).length;
+    const programCompletions = memberPrograms.filter(mp => mp.completedAt).length;
+    
+    const completedPrograms = memberPrograms.filter(mp => mp.completedAt && mp.purchaseDate);
+    const avgCompletionTimeMs = completedPrograms.length > 0
+      ? completedPrograms.reduce((sum, mp) => {
+          const timeToComplete = mp.completedAt!.getTime() - mp.purchaseDate!.getTime();
+          return sum + timeToComplete;
+        }, 0) / completedPrograms.length
+      : 0;
+    const averageCompletionTime = avgCompletionTimeMs / (1000 * 60 * 60 * 24); // Convert to days
+
+    return {
+      demographics: {
+        totalUsers: users.length,
+        byCountry: Object.entries(byCountry).map(([country, count]) => ({ country, count })).sort((a, b) => b.count - a.count),
+        byPostpartumStage: Object.entries(byPostpartumStage).map(([stage, count]) => ({ stage, count })),
+        instagramHandlesCollected,
+      },
+      engagement: {
+        activeUsers,
+        dormantUsers,
+        averageLoginFrequency: 0, // Would need more granular tracking
+      },
+      programPerformance: {
+        totalWorkoutCompletions,
+        averageWorkoutsPerUser,
+        completionRates,
+        progressDistribution,
+        averageMood,
+        averageChallengeRating,
+      },
+      communityHealth: {
+        totalPosts,
+        totalLikes,
+        totalComments,
+        participationRate,
+        topCategories,
+        topContributors,
+      },
+      businessMetrics: {
+        whatsAppAdoption,
+        programCompletions,
+        averageCompletionTime,
+      },
+    };
+  }
+
   // Program Purchases methods
   async createProgramPurchase(
     insertPurchase: InsertProgramPurchase
@@ -1553,6 +1754,174 @@ class DatabaseStorage implements IStorage {
       ).length,
       expiringSoon: expiringUsers.length,
       expiringUsers,
+    };
+  }
+
+  async getAnalytics() {
+    const allUsers = await this.getAllUsers();
+    const users = allUsers.filter(u => !u.isAdmin);
+    
+    const allMemberPrograms = await this.db.select().from(memberPrograms).execute();
+    const allWorkoutCompletions = await this.db.select().from(workoutCompletions).execute();
+    const allPosts = await this.db.select().from(communityPosts).execute();
+    const allLikes = await this.db.select().from(postLikes).execute();
+    const allComments = await this.db.select().from(postComments).execute();
+    
+    const now = new Date();
+
+    // Demographics
+    const byCountry = users.reduce((acc, user) => {
+      const country = user.country || 'Unknown';
+      acc[country] = (acc[country] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const byPostpartumStage = users.reduce((acc, user) => {
+      if (!user.postpartumWeeks) {
+        acc['Unknown'] = (acc['Unknown'] || 0) + 1;
+      } else if (user.postpartumWeeks < 12) {
+        acc['0-3 months'] = (acc['0-3 months'] || 0) + 1;
+      } else if (user.postpartumWeeks < 26) {
+        acc['3-6 months'] = (acc['3-6 months'] || 0) + 1;
+      } else if (user.postpartumWeeks < 52) {
+        acc['6-12 months'] = (acc['6-12 months'] || 0) + 1;
+      } else if (user.postpartumWeeks < 104) {
+        acc['1-2 years'] = (acc['1-2 years'] || 0) + 1;
+      } else {
+        acc['2+ years'] = (acc['2+ years'] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const instagramHandlesCollected = users.filter(u => u.instagramHandle).length;
+
+    // Engagement
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+
+    const activeUsers = {
+      last7Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= sevenDaysAgo).length,
+      last30Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= thirtyDaysAgo).length,
+      last90Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= ninetyDaysAgo).length,
+    };
+
+    const dormantUsers = {
+      dormant14Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < fourteenDaysAgo).length,
+      dormant30Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < thirtyDaysAgo).length,
+      dormant60Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < sixtyDaysAgo).length,
+    };
+
+    // Program Performance
+    const totalWorkoutCompletions = allWorkoutCompletions.length;
+    const averageWorkoutsPerUser = users.length > 0 ? totalWorkoutCompletions / users.length : 0;
+
+    const completionRates = {
+      completed: allMemberPrograms.filter(mp => mp.completionPercentage === 100).length,
+      inProgress: allMemberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 0 && mp.completionPercentage < 100).length,
+      notStarted: allMemberPrograms.filter(mp => !mp.completionPercentage || mp.completionPercentage === 0).length,
+    };
+
+    const progressDistribution = [
+      { range: '0%', count: allMemberPrograms.filter(mp => !mp.completionPercentage || mp.completionPercentage === 0).length },
+      { range: '1-25%', count: allMemberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 0 && mp.completionPercentage <= 25).length },
+      { range: '26-50%', count: allMemberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 25 && mp.completionPercentage <= 50).length },
+      { range: '51-75%', count: allMemberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 50 && mp.completionPercentage <= 75).length },
+      { range: '76-99%', count: allMemberPrograms.filter(mp => mp.completionPercentage && mp.completionPercentage > 75 && mp.completionPercentage < 100).length },
+      { range: '100%', count: allMemberPrograms.filter(mp => mp.completionPercentage === 100).length },
+    ];
+
+    const moods = allWorkoutCompletions.filter(wc => wc.mood).map(wc => {
+      const moodMap: Record<string, number> = { 'great': 5, 'good': 4, 'okay': 3, 'tired': 2, 'challenging': 1 };
+      return moodMap[wc.mood!] || 3;
+    });
+    const averageMood = moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
+
+    const ratings = allWorkoutCompletions.filter(wc => wc.challengeRating).map(wc => wc.challengeRating!);
+    const averageChallengeRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
+
+    // Community Health
+    const totalPosts = allPosts.length;
+    const totalLikes = allLikes.length;
+    const totalComments = allComments.length;
+    const usersWhoPosted = new Set(allPosts.map(p => p.userId));
+    const participationRate = users.length > 0 ? (usersWhoPosted.size / users.length) * 100 : 0;
+
+    const byCategory = allPosts.reduce((acc, post) => {
+      acc[post.category] = (acc[post.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const topCategories = Object.entries(byCategory)
+      .map(([category, count]) => ({ category, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    const postsByUser = allPosts.reduce((acc, post) => {
+      acc[post.userId] = (acc[post.userId] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const topContributors = Object.entries(postsByUser)
+      .map(([userId, postCount]) => {
+        const user = users.find(u => u.id === userId);
+        return {
+          userId,
+          userName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+          postCount,
+        };
+      })
+      .sort((a, b) => b.postCount - a.postCount)
+      .slice(0, 10);
+
+    // Business Metrics
+    const whatsAppAdoption = users.filter(u => u.hasWhatsAppSupport).length;
+    const programCompletions = allMemberPrograms.filter(mp => mp.completedAt).length;
+    
+    const completedPrograms = allMemberPrograms.filter(mp => mp.completedAt && mp.purchaseDate);
+    const avgCompletionTimeMs = completedPrograms.length > 0
+      ? completedPrograms.reduce((sum, mp) => {
+          const timeToComplete = mp.completedAt!.getTime() - mp.purchaseDate!.getTime();
+          return sum + timeToComplete;
+        }, 0) / completedPrograms.length
+      : 0;
+    const averageCompletionTime = avgCompletionTimeMs / (1000 * 60 * 60 * 24); // Convert to days
+
+    return {
+      demographics: {
+        totalUsers: users.length,
+        byCountry: Object.entries(byCountry).map(([country, count]) => ({ country, count })).sort((a, b) => b.count - a.count),
+        byPostpartumStage: Object.entries(byPostpartumStage).map(([stage, count]) => ({ stage, count })),
+        instagramHandlesCollected,
+      },
+      engagement: {
+        activeUsers,
+        dormantUsers,
+        averageLoginFrequency: 0, // Would need more granular tracking
+      },
+      programPerformance: {
+        totalWorkoutCompletions,
+        averageWorkoutsPerUser,
+        completionRates,
+        progressDistribution,
+        averageMood,
+        averageChallengeRating,
+      },
+      communityHealth: {
+        totalPosts,
+        totalLikes,
+        totalComments,
+        participationRate,
+        topCategories,
+        topContributors,
+      },
+      businessMetrics: {
+        whatsAppAdoption,
+        programCompletions,
+        averageCompletionTime,
+      },
     };
   }
 
