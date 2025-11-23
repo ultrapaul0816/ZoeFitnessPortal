@@ -38,15 +38,14 @@ export interface PromptContext {
 }
 
 // Define required and optional fields for profile completion
+// Note: fullName and email are auto-synced from user account, so only country is manually required
 const REQUIRED_FIELDS = [
   { field: 'country' as keyof ProfileData, label: 'Country' },
-  { field: 'fullName' as keyof ProfileData, label: 'Full Name' },
-  { field: 'email' as keyof ProfileData, label: 'Email' },
 ] as const;
 
 const OPTIONAL_FIELDS = [
   { field: 'bio' as keyof ProfileData, label: 'Bio' },
-  { field: 'socials' as keyof ProfileData, label: 'Social Links' },
+  { field: 'socials' as keyof ProfileData, label: 'Instagram Handle' },
 ] as const;
 
 // Storage keys for prompt management
@@ -91,15 +90,19 @@ export function evaluateCompleteness(profileData: ProfileData): ProfileCompleten
   // Calculate completion
   const completedRequired = requiredFieldsStatus.filter(f => f.completed).length;
   const totalRequired = REQUIRED_FIELDS.length;
-  const requiredComplete = completedRequired === REQUIRED_FIELDS.length;
+  const requiredComplete = totalRequired > 0 ? completedRequired === totalRequired : true;
 
   const completedOptional = optionalFieldsStatus.filter(f => f.completed).length;
-  const optionalBonus = (completedOptional / OPTIONAL_FIELDS.length) * 10; // 10% bonus for optional fields
+  const totalOptional = OPTIONAL_FIELDS.length;
+  const optionalBonus = totalOptional > 0 ? (completedOptional / totalOptional) * 10 : 0;
 
-  const basePercentage = requiredComplete ? 100 : (completedRequired / totalRequired) * 100;
+  // Guard against division by zero if no required fields exist
+  const basePercentage = totalRequired > 0 
+    ? (requiredComplete ? 100 : (completedRequired / totalRequired) * 100)
+    : 100;
   const completionPercentage = Math.min(100, Math.round(basePercentage + optionalBonus));
 
-  const missingRequiredCount = REQUIRED_FIELDS.length - completedRequired;
+  const missingRequiredCount = totalRequired - completedRequired;
 
   return {
     isComplete: requiredComplete,

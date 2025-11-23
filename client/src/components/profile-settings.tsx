@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle, Target, Clock, Dumbbell, Play, Camera } from "lucide-react";
+import { SiInstagram } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -73,10 +74,12 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     if (isOpen) {
       const currentProfile = getCurrentProfileData();
       
-      // Sync email from user object (email is read-only for users)
+      // Sync email and fullName from user object (both are derived from account)
+      const userFullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
       const syncedProfile = {
         ...currentProfile,
-        email: user.email || currentProfile.email
+        email: user.email || currentProfile.email,
+        fullName: userFullName || currentProfile.fullName
       };
       
       setProfileData(syncedProfile);
@@ -107,7 +110,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       }, 600); // Allow time for staggered exit animation
       return () => clearTimeout(timer);
     }
-  }, [isOpen, renderOpen, user.email]);
+  }, [isOpen, renderOpen, user.email, user.firstName, user.lastName]);
 
   // Update completeness when profile data changes
   useEffect(() => {
@@ -675,37 +678,52 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               Shown when you participate in our community or comment on videos and live events.
             </p>
 
-            {/* Avatar */}
-            <div className="flex items-center space-x-4 mb-6">
-              {selectedPhoto ? (
-                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-200">
-                  <img 
-                    src={selectedPhoto} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover"
+            {/* Profile Photo with Guidance */}
+            <div className="mb-6">
+              <Label className="text-base font-semibold text-gray-900 mb-3 block">Profile Photo</Label>
+              <p className="text-sm text-gray-600 mb-4">
+                Upload a photo so the community can recognize you. This will be shown when you comment or interact.
+              </p>
+              
+              <div className="flex items-start space-x-4 mb-3">
+                {selectedPhoto ? (
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-200">
+                    <img 
+                      src={selectedPhoto} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-2xl font-medium">
+                    {user.firstName?.[0]}{user.lastName?.[0]}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                    data-testid="input-profile-photo"
                   />
+                  <Button 
+                    variant="secondary" 
+                    className="bg-gray-400 text-white hover:bg-gray-500 mb-2"
+                    onClick={handlePhotoClick}
+                    data-testid="button-change-photo"
+                  >
+                    <Camera className="w-4 h-4 mr-2" />
+                    Upload Photo
+                  </Button>
+                  <div className="text-xs text-gray-500 space-y-1">
+                    <p>✓ Use a clear headshot or photo where your face is visible</p>
+                    <p>✓ Square photos work best for profile pictures</p>
+                    <p>✓ Optional: Share a fitness photo to inspire others!</p>
+                  </div>
                 </div>
-              ) : (
-                <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 text-2xl font-medium">
-                  {user.firstName?.[0]}{user.lastName?.[0]}
-                </div>
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-                data-testid="input-profile-photo"
-              />
-              <Button 
-                variant="secondary" 
-                className="bg-gray-400 text-white hover:bg-gray-500"
-                onClick={handlePhotoClick}
-                data-testid="button-change-photo"
-              >
-                Change
-              </Button>
+              </div>
             </div>
 
             {/* Country */}
@@ -739,20 +757,22 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               />
             </div>
 
-            {/* Socials */}
+            {/* Instagram Handle */}
             <div className="space-y-2">
-              <Label htmlFor="socials">Socials</Label>
+              <Label htmlFor="socials">Instagram Handle (Optional)</Label>
               <div className="relative">
-                <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <SiInstagram className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-pink-500" />
                 <Input
                   id="socials"
-                  type="url"
-                  placeholder="http://example.com"
+                  type="text"
+                  placeholder="@yourhandle"
                   value={profileData.socials}
                   onChange={(e) => setProfileData(prev => ({...prev, socials: e.target.value}))}
                   className="pl-10"
+                  data-testid="input-instagram-handle"
                 />
               </div>
+              <p className="text-xs text-gray-500">Share your Instagram to connect with the community</p>
             </div>
           </div>
 
@@ -766,9 +786,12 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               <Input
                 id="fullName"
                 value={profileData.fullName || ''}
-                onChange={(e) => setProfileData(prev => ({...prev, fullName: e.target.value}))}
-                className={!profileData.fullName ? 'ring-2 ring-pink-500 ring-opacity-50' : ''}
+                disabled
+                className="bg-gray-100 cursor-not-allowed text-gray-600"
+                title="Name is synced from your account. Contact admin to update."
+                data-testid="input-fullname-readonly"
               />
+              <p className="text-xs text-gray-500">Name synced from your account</p>
             </div>
 
             {/* Email */}
