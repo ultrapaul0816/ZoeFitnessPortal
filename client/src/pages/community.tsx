@@ -55,6 +55,7 @@ type EnrichedPost = CommunityPost & {
     firstName: string;
     lastName: string;
     profilePictureUrl: string | null;
+    profilePictureThumbnailUrl: string | null;
   };
   likeCount: number;
   commentCount: number;
@@ -68,6 +69,7 @@ type CommentWithUser = PostComment & {
     firstName: string;
     lastName: string;
     profilePictureUrl: string | null;
+    profilePictureThumbnailUrl: string | null;
   };
 };
 
@@ -967,7 +969,7 @@ function PostCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={post.user.profilePictureUrl || undefined} />
+              <AvatarImage src={post.user.profilePictureThumbnailUrl || post.user.profilePictureUrl || undefined} />
               <AvatarFallback className="bg-pink-100 text-pink-700">
                 {post.user.firstName[0]}{post.user.lastName[0]}
               </AvatarFallback>
@@ -1153,7 +1155,7 @@ function CommentsModal({
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-3" data-testid={`comment-${comment.id}`}>
                 <Avatar className="w-8 h-8 shrink-0">
-                  <AvatarImage src={comment.user.profilePictureUrl || undefined} />
+                  <AvatarImage src={comment.user.profilePictureThumbnailUrl || comment.user.profilePictureUrl || undefined} />
                   <AvatarFallback className="bg-pink-100 text-pink-700 text-xs">
                     {comment.user.firstName[0]}{comment.user.lastName[0]}
                   </AvatarFallback>

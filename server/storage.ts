@@ -109,7 +109,7 @@ export interface IStorage {
     sortBy?: 'newest' | 'mostLiked';
   }): Promise<
     (CommunityPost & {
-      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
       likeCount: number;
       commentCount: number;
       isLikedByUser?: boolean;
@@ -121,7 +121,7 @@ export interface IStorage {
     currentUserId?: string
   ): Promise<
     | (CommunityPost & {
-        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+        user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
         likeCount: number;
         commentCount: number;
         isLikedByUser: boolean;
@@ -147,7 +147,7 @@ export interface IStorage {
     postId: string
   ): Promise<
     (PostComment & {
-      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
     })[]
   >;
   deleteComment(commentId: string, userId: string): Promise<boolean>;
@@ -1717,6 +1717,7 @@ class DatabaseStorage implements IStorage {
           firstName: users.firstName,
           lastName: users.lastName,
           profilePictureUrl: users.profilePictureUrl,
+          profilePictureThumbnailUrl: users.profilePictureThumbnailUrl,
         },
       })
       .from(communityPosts)
@@ -1816,6 +1817,7 @@ class DatabaseStorage implements IStorage {
           firstName: users.firstName,
           lastName: users.lastName,
           profilePictureUrl: users.profilePictureUrl,
+          profilePictureThumbnailUrl: users.profilePictureThumbnailUrl,
         },
       })
       .from(communityPosts)
@@ -2006,6 +2008,7 @@ class DatabaseStorage implements IStorage {
           firstName: users.firstName,
           lastName: users.lastName,
           profilePictureUrl: users.profilePictureUrl,
+          profilePictureThumbnailUrl: users.profilePictureThumbnailUrl,
         },
       })
       .from(postComments)
