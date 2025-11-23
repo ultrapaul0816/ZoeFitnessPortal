@@ -133,32 +133,81 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     window.location.href = "/";
   };
 
-  const handleSaveProfile = () => {
-    // Save profile data to localStorage
-    saveProfileData(profileData);
-    
-    const completeness = evaluateCompleteness(profileData);
-    
-    // Show success feedback
-    if (completeness.isComplete) {
-      toast({
-        title: "Profile Complete! 🎉",
-        description: "Your profile has been completed successfully. You're all set!",
-        duration: 4000,
+  const handleSaveProfile = async () => {
+    try {
+      // Always prepare API data (allow clearing fields with empty string or null)
+      const apiData: any = {
+        country: profileData.country || '',
+        bio: profileData.bio || '',
+        instagramHandle: profileData.socials || '', // socials field maps to instagramHandle
+        postpartumWeeks: null, // Default to null (clearing)
+      };
+      
+      // Convert postpartum time text to weeks
+      if (profileData.postpartumTime && profileData.postpartumTime.trim()) {
+        const postpartumText = profileData.postpartumTime.toLowerCase().trim();
+        // Match decimal or integer numbers
+        const match = postpartumText.match(/(\d+\.?\d*)/);
+        if (match) {
+          const value = parseFloat(match[1]);
+          if (postpartumText.includes('week')) {
+            apiData.postpartumWeeks = Math.round(value);
+          } else if (postpartumText.includes('month')) {
+            apiData.postpartumWeeks = Math.round(value * 4.33); // More accurate weeks per month
+          } else if (postpartumText.includes('year')) {
+            apiData.postpartumWeeks = Math.round(value * 52);
+          }
+        }
+      }
+      
+      // Always save to database via API (allows clearing fields)
+      const response = await fetch(`/api/users/${user.id}/profile`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(apiData),
       });
       
-      // Clear prompt state since profile is now complete
-      clearPromptState();
-    } else {
+      if (!response.ok) {
+        throw new Error('Failed to save profile');
+      }
+      
+      const updatedUser = await response.json();
+      onUserUpdate(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      
+      // Also save to localStorage for backward compatibility and non-DB fields
+      saveProfileData(profileData);
+      
+      const completeness = evaluateCompleteness(profileData);
+      
+      // Show success feedback
+      if (completeness.isComplete) {
+        toast({
+          title: "Profile Complete! 🎉",
+          description: "Your profile has been completed successfully. You're all set!",
+          duration: 4000,
+        });
+        
+        // Clear prompt state since profile is now complete
+        clearPromptState();
+      } else {
+        toast({
+          title: "Profile Updated",
+          description: `Profile saved. ${completeness.missingRequiredCount} required field${completeness.missingRequiredCount > 1 ? 's' : ''} remaining.`,
+          duration: 3000,
+        });
+      }
+      
+      // Update completeness state
+      setProfileCompleteness(completeness);
+    } catch (error) {
       toast({
-        title: "Profile Updated",
-        description: `Profile saved. ${completeness.missingRequiredCount} required field${completeness.missingRequiredCount > 1 ? 's' : ''} remaining.`,
+        title: "Error",
+        description: "Failed to save profile. Please try again.",
+        variant: "destructive",
         duration: 3000,
       });
     }
-    
-    // Update completeness state
-    setProfileCompleteness(completeness);
   };
 
   const handlePhotoClick = () => {

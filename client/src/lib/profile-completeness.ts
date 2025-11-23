@@ -229,7 +229,7 @@ export function clearPromptState(): void {
 }
 
 /**
- * Gets the current profile data from localStorage
+ * Gets the current profile data from localStorage and user object
  */
 export function getCurrentProfileData(): ProfileData {
   // Default profile data structure
@@ -248,17 +248,58 @@ export function getCurrentProfileData(): ProfileData {
     transactionalEmails: false,
   };
 
+  let profile = { ...defaultProfile };
+
   try {
-    // Try to get existing profile data from localStorage
+    // First, get legacy fields from localStorage (as fallback only)
     const stored = localStorage.getItem('profileData');
     if (stored) {
-      return { ...defaultProfile, ...JSON.parse(stored) };
+      const localData = JSON.parse(stored);
+      // Use localStorage values as fallback
+      if (localData.country) profile.country = localData.country;
+      if (localData.bio) profile.bio = localData.bio;
+      if (localData.socials) profile.socials = localData.socials;
+      if (localData.postpartumTime) profile.postpartumTime = localData.postpartumTime;
+      if (localData.photo) profile.photo = localData.photo;
+      if (localData.dueDate) profile.dueDate = localData.dueDate;
+      if (typeof localData.newsUpdates === 'boolean') profile.newsUpdates = localData.newsUpdates;
+      if (typeof localData.promotions === 'boolean') profile.promotions = localData.promotions;
+      if (typeof localData.communityUpdates === 'boolean') profile.communityUpdates = localData.communityUpdates;
+      if (typeof localData.transactionalEmails === 'boolean') profile.transactionalEmails = localData.transactionalEmails;
+    }
+
+    // Then, override with database values (database has priority)
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      
+      // Database fields override localStorage (this is authoritative)
+      if (user.country !== null && user.country !== undefined) profile.country = user.country;
+      if (user.bio !== null && user.bio !== undefined) profile.bio = user.bio;
+      if (user.instagramHandle !== null && user.instagramHandle !== undefined) profile.socials = user.instagramHandle;
+      if (user.postpartumWeeks) {
+        // Convert weeks back to readable format
+        const weeks = user.postpartumWeeks;
+        if (weeks < 8) {
+          profile.postpartumTime = `${weeks} weeks`;
+        } else if (weeks < 52) {
+          const months = Math.round(weeks / 4.33);
+          profile.postpartumTime = `${months} months`;
+        } else {
+          const years = Math.round(weeks / 52);
+          profile.postpartumTime = `${years} years`;
+        }
+      }
+      if (user.firstName && user.lastName) {
+        profile.fullName = `${user.firstName} ${user.lastName}`;
+      }
+      if (user.email) profile.email = user.email;
     }
   } catch (error) {
-    console.warn('Failed to parse profile data from localStorage:', error);
+    console.warn('Failed to parse profile data:', error);
   }
 
-  return defaultProfile;
+  return profile;
 }
 
 /**

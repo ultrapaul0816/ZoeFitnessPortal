@@ -245,6 +245,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updates.disclaimerAcceptedAt = new Date();
       }
 
+      // Always update last login timestamp
+      updates.lastLoginAt = new Date();
+
       if (Object.keys(updates).length > 0) {
         updatedUser = (await storage.updateUser(user.id, updates)) || user;
       }
@@ -263,6 +266,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
           whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
           phone: updatedUser.phone,
+          country: updatedUser.country,
+          bio: updatedUser.bio,
+          instagramHandle: updatedUser.instagramHandle,
+          postpartumWeeks: updatedUser.postpartumWeeks,
+          lastLoginAt: updatedUser.lastLoginAt,
         },
       });
     } catch (error) {

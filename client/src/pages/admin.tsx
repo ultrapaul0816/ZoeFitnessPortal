@@ -898,6 +898,53 @@ export default function Admin() {
                         <p className="text-sm font-medium mt-1">{selectedMember.phone}</p>
                       </div>
                     )}
+
+                    {selectedMember.country && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Country</Label>
+                        <p className="text-sm font-medium mt-1">{selectedMember.country}</p>
+                      </div>
+                    )}
+
+                    {selectedMember.instagramHandle && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Instagram</Label>
+                        <p className="text-sm font-medium mt-1">{selectedMember.instagramHandle}</p>
+                      </div>
+                    )}
+
+                    {selectedMember.postpartumWeeks && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Postpartum Stage</Label>
+                        <p className="text-sm font-medium mt-1">
+                          {selectedMember.postpartumWeeks < 8 
+                            ? `${selectedMember.postpartumWeeks} weeks`
+                            : selectedMember.postpartumWeeks < 52
+                            ? `${Math.round(selectedMember.postpartumWeeks / 4)} months`
+                            : `${Math.round(selectedMember.postpartumWeeks / 52)} years`}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedMember.bio && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Bio</Label>
+                        <p className="text-sm font-medium mt-1 text-gray-700">{selectedMember.bio}</p>
+                      </div>
+                    )}
+
+                    {selectedMember.lastLoginAt && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Last Login</Label>
+                        <p className="text-sm font-medium mt-1">
+                          {new Date(selectedMember.lastLoginAt).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })} at {new Date(selectedMember.lastLoginAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Acceptance Status */}
@@ -1000,7 +1047,7 @@ export default function Admin() {
                                       className="w-10 h-10 rounded object-cover"
                                     />
                                   )}
-                                  <div>
+                                  <div className="flex-1">
                                     <p className="text-sm font-medium">{program?.name || 'Unknown Program'}</p>
                                     <p className="text-xs text-muted-foreground">
                                       Enrolled: {enrollment.enrolledAt && !isNaN(new Date(enrollment.enrolledAt).getTime()) 
@@ -1009,6 +1056,24 @@ export default function Admin() {
                                           ? new Date(selectedMember.createdAt).toLocaleDateString()
                                           : 'Unknown'}
                                     </p>
+                                    {enrollment.completionPercentage > 0 && (
+                                      <div className="mt-1">
+                                        <div className="flex items-center gap-2">
+                                          <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                                            <div 
+                                              className="bg-green-500 h-1.5 rounded-full transition-all" 
+                                              style={{ width: `${enrollment.completionPercentage}%` }}
+                                            />
+                                          </div>
+                                          <span className="text-xs font-medium text-green-600">{enrollment.completionPercentage}%</span>
+                                        </div>
+                                        {enrollment.completedAt && (
+                                          <p className="text-xs text-green-600 mt-1">
+                                            ✓ Completed on {new Date(enrollment.completedAt).toLocaleDateString()}
+                                          </p>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                                 {enrollment.expiryDate && (
@@ -1129,6 +1194,39 @@ export default function Admin() {
                           type="tel"
                           defaultValue={selectedMember.phone || ''}
                           onChange={(e) => setSelectedMember({...selectedMember, phone: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label>Country</Label>
+                        <Input 
+                          defaultValue={selectedMember.country || ''}
+                          onChange={(e) => setSelectedMember({...selectedMember, country: e.target.value})}
+                          placeholder="e.g., India, United States"
+                        />
+                      </div>
+                      <div>
+                        <Label>Instagram Handle</Label>
+                        <Input 
+                          defaultValue={selectedMember.instagramHandle || ''}
+                          onChange={(e) => setSelectedMember({...selectedMember, instagramHandle: e.target.value})}
+                          placeholder="@username"
+                        />
+                      </div>
+                      <div>
+                        <Label>Postpartum Weeks</Label>
+                        <Input 
+                          type="number"
+                          defaultValue={selectedMember.postpartumWeeks || ''}
+                          onChange={(e) => setSelectedMember({...selectedMember, postpartumWeeks: parseInt(e.target.value) || 0})}
+                          placeholder="Number of weeks postpartum"
+                        />
+                      </div>
+                      <div>
+                        <Label>Bio</Label>
+                        <Input 
+                          defaultValue={selectedMember.bio || ''}
+                          onChange={(e) => setSelectedMember({...selectedMember, bio: e.target.value})}
+                          placeholder="Brief bio about the member"
                         />
                       </div>
                     </div>

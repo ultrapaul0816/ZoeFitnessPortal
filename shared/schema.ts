@@ -21,6 +21,11 @@ export const users = pgTable("users", {
   hasWhatsAppSupport: boolean("has_whatsapp_support").default(false),
   whatsAppSupportDuration: integer("whatsapp_support_duration"),
   whatsAppSupportExpiryDate: timestamp("whatsapp_support_expiry_date"),
+  country: text("country"),
+  bio: text("bio"),
+  instagramHandle: text("instagram_handle"),
+  postpartumWeeks: integer("postpartum_weeks"),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
@@ -46,6 +51,8 @@ export const memberPrograms = pgTable("member_programs", {
   expiryDate: timestamp("expiry_date").notNull(),
   isActive: boolean("is_active").default(true),
   progress: integer("progress").default(0), // completed workouts
+  completionPercentage: integer("completion_percentage").default(0), // 0-100
+  completedAt: timestamp("completed_at"), // when program was 100% completed
 });
 
 export const workouts = pgTable("workouts", {
@@ -381,6 +388,10 @@ export const updateUserProfileSchema = z.object({
   email: z.string().email("Please enter a valid email address").optional(),
   phone: phoneSchema.optional(),
   profilePictureUrl: z.string().url("Please enter a valid URL").optional(),
+  country: z.string().max(100, "Country name is too long").optional(),
+  bio: z.string().max(500, "Bio is too long").optional(),
+  instagramHandle: z.string().max(50, "Instagram handle is too long").optional(),
+  postpartumWeeks: z.union([z.number().int().positive().max(520, "Please enter a valid number of weeks"), z.null()]).optional(), // Max ~10 years, allow null for clearing
 });
 
 // Admin create user schema
