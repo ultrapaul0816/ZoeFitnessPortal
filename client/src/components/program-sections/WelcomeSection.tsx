@@ -337,20 +337,18 @@ export default function WelcomeSection({
           <div className="space-y-0">
             {/* Topic 1: Welcome from Zoe */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div 
+                className="flex items-center justify-between py-5 cursor-pointer hover:bg-pink-50/50 rounded-lg transition-colors duration-200 px-2 -mx-2"
+                onClick={() => toggleTopic('welcome-zoe')}
+                data-testid="button-toggle-welcome-zoe"
+              >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
                   <h3 className="text-[15px] font-semibold text-left">Welcome from Zoe</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleTopic('welcome-zoe')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-welcome-zoe"
-                >
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['welcome-zoe'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['welcome-zoe'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
@@ -412,20 +410,18 @@ export default function WelcomeSection({
 
             {/* Topic 2: How This Program Works */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div 
+                className="flex items-center justify-between py-5 cursor-pointer hover:bg-pink-50/50 rounded-lg transition-colors duration-200 px-2 -mx-2"
+                onClick={() => toggleTopic('how-program-works')}
+                data-testid="button-toggle-how-program-works"
+              >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">2</span>
                   <h3 className="text-[15px] font-semibold text-left">How This Program Works</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleTopic('how-program-works')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-how-program-works"
-                >
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['how-program-works'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['how-program-works'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
@@ -470,20 +466,18 @@ export default function WelcomeSection({
 
             {/* Topic 3: Who This Program Is For */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div 
+                className="flex items-center justify-between py-5 cursor-pointer hover:bg-pink-50/50 rounded-lg transition-colors duration-200 px-2 -mx-2"
+                onClick={() => toggleTopic('who-program-for')}
+                data-testid="button-toggle-who-program-for"
+              >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">3</span>
                   <h3 className="text-[15px] font-semibold text-left">Who This Program Is For</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleTopic('who-program-for')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-who-program-for"
-                >
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['who-program-for'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['who-program-for'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
@@ -521,20 +515,18 @@ export default function WelcomeSection({
 
             {/* Topic 4: Before You Begin: What You Need to Know */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div 
+                className="flex items-center justify-between py-5 cursor-pointer hover:bg-pink-50/50 rounded-lg transition-colors duration-200 px-2 -mx-2"
+                onClick={() => toggleTopic('before-you-begin')}
+                data-testid="button-toggle-before-you-begin"
+              >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">4</span>
                   <h3 className="text-[15px] font-semibold text-left">Before You Begin: What You Need to Know</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleTopic('before-you-begin')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-before-you-begin"
-                >
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['before-you-begin'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['before-you-begin'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
@@ -574,20 +566,18 @@ export default function WelcomeSection({
 
             {/* Topic 5: Program Essentials: What You Need */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div 
+                className="flex items-center justify-between py-5 cursor-pointer hover:bg-pink-50/50 rounded-lg transition-colors duration-200 px-2 -mx-2"
+                onClick={() => toggleTopic('program-essentials')}
+                data-testid="button-toggle-program-essentials"
+              >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">5</span>
                   <h3 className="text-[15px] font-semibold text-left">Program Essentials: What You Need</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleTopic('program-essentials')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-program-essentials"
-                >
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['program-essentials'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['program-essentials'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
@@ -632,20 +622,18 @@ export default function WelcomeSection({
 
             {/* Topic 6: Equipment Showcase */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div 
+                className="flex items-center justify-between py-5 cursor-pointer hover:bg-pink-50/50 rounded-lg transition-colors duration-200 px-2 -mx-2"
+                onClick={() => toggleTopic('equipment-showcase')}
+                data-testid="button-toggle-equipment-showcase"
+              >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">6</span>
                   <h3 className="text-[15px] font-semibold text-left">Equipment Showcase</h3>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleTopic('equipment-showcase')}
-                  className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 p-0"
-                  data-testid="button-toggle-equipment-showcase"
-                >
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                   <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${expandedTopics['equipment-showcase'] ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
               </div>
               {expandedTopics['equipment-showcase'] && (
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">

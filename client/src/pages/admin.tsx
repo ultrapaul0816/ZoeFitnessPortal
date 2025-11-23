@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -438,6 +438,14 @@ export default function Admin() {
               >
                 <TrendingUp className="w-4 h-4 mr-2" />
                 Analytics
+              </Button>
+              <Button
+                onClick={() => setLocation("/admin-email-campaigns")}
+                variant="outline"
+                data-testid="button-email-campaigns"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Email Campaigns
               </Button>
               <Button
                 onClick={() => setLocation("/dashboard")}

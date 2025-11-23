@@ -215,6 +215,36 @@ export const progressPhotos = pgTable("progress_photos", {
   uploadedAt: timestamp("uploaded_at").default(sql`now()`),
 });
 
+// Email campaigns for member outreach
+export const emailCampaigns = pgTable("email_campaigns", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(), // Internal name for the campaign
+  templateType: text("template_type").notNull(), // 'welcome', 're-engagement', 'program-reminder', 'whatsapp-invite'
+  subject: text("subject").notNull(), // Email subject line
+  audienceFilter: jsonb("audience_filter").notNull(), // JSON object with targeting criteria
+  status: text("status").notNull().default("draft"), // 'draft', 'scheduled', 'sending', 'sent', 'failed'
+  scheduledFor: timestamp("scheduled_for"), // When to send (null = send immediately)
+  sentAt: timestamp("sent_at"), // When actually sent
+  recipientCount: integer("recipient_count").default(0), // Total recipients targeted
+  sentCount: integer("sent_count").default(0), // Successfully sent
+  failedCount: integer("failed_count").default(0), // Failed to send
+  createdBy: varchar("created_by").notNull(), // Admin user ID
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+// Tracking individual recipients of email campaigns
+export const emailCampaignRecipients = pgTable("email_campaign_recipients", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  campaignId: varchar("campaign_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  email: text("email").notNull(), // Stored for record keeping
+  status: text("status").notNull().default("pending"), // 'pending', 'sent', 'failed'
+  sentAt: timestamp("sent_at"),
+  errorMessage: text("error_message"), // If failed, store error
+  messageId: text("message_id"), // From email provider (Resend)
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -317,6 +347,35 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
 export const insertTermsSchema = createInsertSchema(terms).omit({
   id: true,
   createdAt: true,
+});
+
+// Strict schema for email campaign audience filters
+export const audienceFilterSchema = z.object({
+  dormantDays: z.number().int().positive().optional(),
+  hasWhatsAppSupport: z.boolean().optional(),
+  country: z.string().min(1).max(100).optional(),
+  programCompletionStatus: z.enum(['completed', 'in-progress', 'not-started']).optional(),
+}).strict(); // Reject any unknown keys
+
+export type AudienceFilter = z.infer<typeof audienceFilterSchema>;
+
+// Manually define insert schema to ensure strict audienceFilter validation
+export const insertEmailCampaignSchema = z.object({
+  name: z.string().min(1).max(255),
+  templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'whatsapp-invite']),
+  subject: z.string().min(1).max(500),
+  audienceFilter: audienceFilterSchema, // Strict validation - only allowed keys
+  status: z.enum(['draft', 'scheduled', 'sending', 'sent', 'failed']).default('draft'),
+  scheduledFor: z.date().optional(),
+  createdBy: z.string(),
+});
+
+export const insertEmailCampaignRecipientSchema = createInsertSchema(emailCampaignRecipients).omit({
+  id: true,
+  createdAt: true,
+  sentAt: true,
+}).extend({
+  status: z.enum(['pending', 'sent', 'failed']).default('pending'),
 });
 
 // Reusable validation schemas
@@ -454,6 +513,10 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Terms = typeof terms.$inferSelect;
 export type InsertTerms = z.infer<typeof insertTermsSchema>;
+export type EmailCampaign = typeof emailCampaigns.$inferSelect;
+export type InsertEmailCampaign = z.infer<typeof insertEmailCampaignSchema>;
+export type EmailCampaignRecipient = typeof emailCampaignRecipients.$inferSelect;
+export type InsertEmailCampaignRecipient = z.infer<typeof insertEmailCampaignRecipientSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 

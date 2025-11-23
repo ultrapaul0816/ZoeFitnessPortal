@@ -36,6 +36,10 @@ import {
   type InsertReflectionNote,
   type ProgressPhoto,
   type InsertProgressPhoto,
+  type EmailCampaign,
+  type InsertEmailCampaign,
+  type EmailCampaignRecipient,
+  type InsertEmailCampaignRecipient,
 } from "@shared/schema";
 import {
   users,
@@ -56,6 +60,8 @@ import {
   weeklyWorkouts,
   reflectionNotes,
   progressPhotos,
+  emailCampaigns,
+  emailCampaignRecipients,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -261,6 +267,17 @@ export interface IStorage {
   createProgressPhoto(photo: InsertProgressPhoto): Promise<ProgressPhoto>;
   getProgressPhotos(userId: string): Promise<ProgressPhoto[]>;
   deleteProgressPhoto(id: string): Promise<boolean>;
+
+  // Email Campaigns
+  createEmailCampaign(campaign: InsertEmailCampaign): Promise<EmailCampaign>;
+  getEmailCampaigns(): Promise<EmailCampaign[]>;
+  getEmailCampaign(id: string): Promise<EmailCampaign | undefined>;
+  updateEmailCampaign(id: string, updates: Partial<EmailCampaign>): Promise<EmailCampaign | undefined>;
+  deleteEmailCampaign(id: string): Promise<boolean>;
+  getTargetedUsers(audienceFilter: import("@shared/schema").AudienceFilter): Promise<User[]>;
+  createCampaignRecipients(recipients: InsertEmailCampaignRecipient[]): Promise<EmailCampaignRecipient[]>;
+  getCampaignRecipients(campaignId: string): Promise<EmailCampaignRecipient[]>;
+  updateRecipientStatus(recipientId: string, status: string, sentAt?: Date, errorMessage?: string, messageId?: string): Promise<void>;
 
   // Assets
   assetDisplayNames?: Map<string, string>;
@@ -1608,6 +1625,43 @@ export class MemStorage implements IStorage {
       });
     }
   }
+
+  // Email Campaigns (stub implementations for in-memory storage)
+  async createEmailCampaign(campaign: InsertEmailCampaign): Promise<EmailCampaign> {
+    throw new Error("Email campaigns not supported in MemStorage");
+  }
+
+  async getEmailCampaigns(): Promise<EmailCampaign[]> {
+    return [];
+  }
+
+  async getEmailCampaign(id: string): Promise<EmailCampaign | undefined> {
+    return undefined;
+  }
+
+  async updateEmailCampaign(id: string, updates: Partial<EmailCampaign>): Promise<EmailCampaign | undefined> {
+    return undefined;
+  }
+
+  async deleteEmailCampaign(id: string): Promise<boolean> {
+    return false;
+  }
+
+  async getTargetedUsers(audienceFilter: import("@shared/schema").AudienceFilter): Promise<User[]> {
+    return [];
+  }
+
+  async createCampaignRecipients(recipients: InsertEmailCampaignRecipient[]): Promise<EmailCampaignRecipient[]> {
+    return [];
+  }
+
+  async getCampaignRecipients(campaignId: string): Promise<EmailCampaignRecipient[]> {
+    return [];
+  }
+
+  async updateRecipientStatus(recipientId: string, status: string, sentAt?: Date, errorMessage?: string, messageId?: string): Promise<void> {
+    // No-op for MemStorage
+  }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -2648,6 +2702,119 @@ class DatabaseStorage implements IStorage {
       .where(eq(progressPhotos.id, id))
       .returning();
     return result.length > 0;
+  }
+
+  // Email Campaigns
+  async createEmailCampaign(campaign: InsertEmailCampaign): Promise<EmailCampaign> {
+    const result = await this.db
+      .insert(emailCampaigns)
+      .values(campaign)
+      .returning();
+    return result[0];
+  }
+
+  async getEmailCampaigns(): Promise<EmailCampaign[]> {
+    const result = await this.db
+      .select()
+      .from(emailCampaigns)
+      .orderBy(desc(emailCampaigns.createdAt));
+    return result;
+  }
+
+  async getEmailCampaign(id: string): Promise<EmailCampaign | undefined> {
+    const result = await this.db
+      .select()
+      .from(emailCampaigns)
+      .where(eq(emailCampaigns.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async updateEmailCampaign(id: string, updates: Partial<EmailCampaign>): Promise<EmailCampaign | undefined> {
+    const result = await this.db
+      .update(emailCampaigns)
+      .set(updates)
+      .where(eq(emailCampaigns.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteEmailCampaign(id: string): Promise<boolean> {
+    const result = await this.db
+      .delete(emailCampaigns)
+      .where(eq(emailCampaigns.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
+  async getTargetedUsers(audienceFilter: import("@shared/schema").AudienceFilter): Promise<User[]> {
+    // Build query based on audience filter criteria
+    const conditions = [];
+
+    if (audienceFilter.dormantDays) {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - audienceFilter.dormantDays);
+      conditions.push(sql`${users.lastLoginAt} < ${cutoffDate} OR ${users.lastLoginAt} IS NULL`);
+    }
+
+    if (audienceFilter.hasWhatsAppSupport !== undefined) {
+      conditions.push(eq(users.hasWhatsAppSupport, audienceFilter.hasWhatsAppSupport));
+    }
+
+    if (audienceFilter.programCompletionStatus) {
+      // Would need to join with memberPrograms table
+      // For simplicity, we'll handle this client-side for now
+    }
+
+    if (audienceFilter.country) {
+      conditions.push(eq(users.country, audienceFilter.country));
+    }
+
+    let query = this.db.select().from(users);
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as any;
+    }
+
+    const result = await query;
+    return result;
+  }
+
+  async createCampaignRecipients(recipients: InsertEmailCampaignRecipient[]): Promise<EmailCampaignRecipient[]> {
+    if (recipients.length === 0) return [];
+    
+    const result = await this.db
+      .insert(emailCampaignRecipients)
+      .values(recipients)
+      .returning();
+    return result;
+  }
+
+  async getCampaignRecipients(campaignId: string): Promise<EmailCampaignRecipient[]> {
+    const result = await this.db
+      .select()
+      .from(emailCampaignRecipients)
+      .where(eq(emailCampaignRecipients.campaignId, campaignId))
+      .orderBy(desc(emailCampaignRecipients.createdAt));
+    return result;
+  }
+
+  async updateRecipientStatus(
+    recipientId: string,
+    status: string,
+    sentAt?: Date,
+    errorMessage?: string,
+    messageId?: string
+  ): Promise<void> {
+    const updates: any = { status };
+    if (sentAt) updates.sentAt = sentAt;
+    if (errorMessage) updates.errorMessage = errorMessage;
+    if (messageId) updates.messageId = messageId;
+
+    await this.db
+      .update(emailCampaignRecipients)
+      .set(updates)
+      .where(eq(emailCampaignRecipients.id, recipientId));
   }
 }
 

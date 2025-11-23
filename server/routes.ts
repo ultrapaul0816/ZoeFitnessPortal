@@ -10,6 +10,7 @@ import {
   insertCommunityPostSchema,
   insertPostCommentSchema,
   passwordSchema,
+  insertEmailCampaignSchema,
 } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
@@ -27,6 +28,7 @@ const loginLimiter = rateLimit({
   message: "Too many login attempts from this IP, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
 });
 
 const passwordResetLimiter = rateLimit({
@@ -35,6 +37,7 @@ const passwordResetLimiter = rateLimit({
   message: "Too many password reset attempts, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
 });
 
 const adminOperationLimiter = rateLimit({
@@ -43,6 +46,7 @@ const adminOperationLimiter = rateLimit({
   message: "Too many admin operations, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
 });
 
 const generalApiLimiter = rateLimit({
@@ -51,6 +55,7 @@ const generalApiLimiter = rateLimit({
   message: "Too many requests, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
 });
 
 // Helper function to generate a strong password that meets all requirements
@@ -1211,6 +1216,178 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Email test error:", error);
       res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  // Get all email campaigns
+  app.get("/api/admin/email-campaigns", async (req, res) => {
+    try {
+      const campaigns = await storage.getEmailCampaigns();
+      res.json(campaigns);
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+      res.status(500).json({ message: "Failed to fetch campaigns" });
+    }
+  });
+
+  // Create email campaign
+  app.post("/api/admin/email-campaigns", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Validate request body with Zod schema (omit createdBy since server controls it)
+      const validationResult = insertEmailCampaignSchema.omit({ createdBy: true }).safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid campaign data", 
+          errors: validationResult.error.errors 
+        });
+      }
+
+      // Use server-side user ID for audit trail (server controls createdBy)
+      const campaignData = {
+        ...validationResult.data,
+        createdBy: req.user.id,
+      };
+
+      const campaign = await storage.createEmailCampaign(campaignData);
+
+      res.json(campaign);
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      res.status(500).json({ message: "Failed to create campaign" });
+    }
+  });
+
+  // Send email campaign
+  app.post("/api/admin/email-campaigns/:id/send", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const campaign = await storage.getEmailCampaign(id);
+
+      if (!campaign) {
+        return res.status(404).json({ message: "Campaign not found" });
+      }
+
+      if (campaign.status !== "draft") {
+        return res.status(400).json({ message: "Campaign has already been sent or is not in draft status" });
+      }
+
+      // Update status to sending
+      await storage.updateEmailCampaign(id, { status: "sending" });
+
+      // Get targeted users based on audience filter
+      const targetedUsers = await storage.getTargetedUsers(campaign.audienceFilter);
+
+      if (targetedUsers.length === 0) {
+        await storage.updateEmailCampaign(id, { status: "failed", recipientCount: 0 });
+        return res.status(400).json({ message: "No users match the target audience" });
+      }
+
+      // Create recipient records
+      const recipients = targetedUsers.map(user => ({
+        campaignId: id,
+        userId: user.id,
+        email: user.email,
+        status: "pending" as const,
+      }));
+
+      await storage.createCampaignRecipients(recipients);
+
+      // Update campaign with recipient count
+      await storage.updateEmailCampaign(id, {
+        recipientCount: targetedUsers.length,
+      });
+
+      // Send emails asynchronously (fire and forget) with error handling
+      setImmediate(async () => {
+        try {
+          let sentCount = 0;
+          let failedCount = 0;
+
+          for (const recipient of recipients) {
+            try {
+              const user = targetedUsers.find(u => u.id === recipient.userId);
+              if (!user) continue;
+
+              let result;
+              switch (campaign.templateType) {
+                case "welcome":
+                  result = await emailService.sendWelcomeEmail(user, "Heal Your Core");
+                  break;
+                case "re-engagement":
+                  result = await emailService.sendReEngagementEmail(user, {
+                    lastLoginDays: Math.floor((Date.now() - (user.lastLoginAt?.getTime() || Date.now())) / (1000 * 60 * 60 * 24)),
+                    programProgress: undefined,
+                  });
+                  break;
+                case "program-reminder":
+                  result = await emailService.sendProgramReminderEmail(user, {
+                    programName: "Heal Your Core",
+                    weekNumber: 1,
+                    workoutsCompleted: 0,
+                    totalWorkouts: 3,
+                  });
+                  break;
+                case "whatsapp-invite":
+                  result = await emailService.sendWhatsAppInviteEmail(user, {
+                    whatsAppLink: "https://www.strongerwithzoe.in/products/whatsapp-community",
+                    expiryDate: user.whatsAppSupportExpiryDate || undefined,
+                  });
+                  break;
+                default:
+                  result = { success: false, error: "Unknown template type" };
+              }
+
+              if (result.success) {
+                sentCount++;
+                await storage.updateRecipientStatus(recipient.id!, "sent", new Date(), undefined, result.messageId);
+              } else {
+                failedCount++;
+                await storage.updateRecipientStatus(recipient.id!, "failed", undefined, result.error);
+              }
+            } catch (error) {
+              failedCount++;
+              console.error(`Error sending email to ${recipient.email}:`, error);
+              await storage.updateRecipientStatus(recipient.id!, "failed", undefined, error instanceof Error ? error.message : "Unknown error");
+            }
+          }
+
+          // Update campaign final status
+          await storage.updateEmailCampaign(id, {
+            status: failedCount === targetedUsers.length ? "failed" : "sent",
+            sentAt: new Date(),
+            sentCount,
+            failedCount,
+          });
+          
+          console.log(`Campaign ${id} completed: ${sentCount} sent, ${failedCount} failed`);
+        } catch (error) {
+          // Catch any unexpected errors in the email sending process
+          console.error(`Fatal error in campaign ${id} send process:`, error);
+          await storage.updateEmailCampaign(id, {
+            status: "failed",
+            sentAt: new Date(),
+            failedCount: targetedUsers.length,
+          }).catch(err => console.error("Failed to update campaign status after error:", err));
+        }
+      });
+
+      res.json({ 
+        success: true,
+        message: "Campaign is being sent",
+        recipientCount: targetedUsers.length
+      });
+    } catch (error) {
+      console.error("Error sending campaign:", error);
+      await storage.updateEmailCampaign(req.params.id, { status: "failed" });
+      res.status(500).json({ message: "Failed to send campaign" });
     }
   });
 
