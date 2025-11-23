@@ -267,6 +267,11 @@ export function getCurrentProfileData(): ProfileData {
 export function saveProfileData(profileData: ProfileData): void {
   localStorage.setItem('profileData', JSON.stringify(profileData));
   
+  // Dispatch custom event for same-tab detection (storage event only fires cross-tab)
+  window.dispatchEvent(new CustomEvent('profileDataChanged', { 
+    detail: { profileData, timestamp: Date.now() } 
+  }));
+  
   // Check if profile is now complete and clear prompts
   const completeness = evaluateCompleteness(profileData);
   if (completeness.isComplete) {

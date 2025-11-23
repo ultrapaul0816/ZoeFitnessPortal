@@ -51,8 +51,23 @@ export default function ProfileBanner({
       }
     };
 
+    // Listen for custom event (same-tab changes)
+    const handleProfileDataChanged = () => {
+      const profileData = getCurrentProfileData();
+      const completeness = evaluateCompleteness(profileData);
+      setProfileCompleteness(completeness);
+      
+      // Simple logic: show banner if profile is incomplete
+      setIsVisible(!completeness.isComplete);
+    };
+
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('profileDataChanged', handleProfileDataChanged);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('profileDataChanged', handleProfileDataChanged);
+    };
   }, [context]);
 
   const handleCompleteProfile = () => {
