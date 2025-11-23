@@ -48,29 +48,54 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      setLocation("/");
-      return;
+    // Check session with server on mount
+    async function checkAuth() {
+      try {
+        const response = await fetch("/api/auth/session");
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          
+          // Check if this is the first login for profile completion banner
+          const lastLogin = localStorage.getItem("lastLoginDate");
+          const today = new Date().toDateString();
+          
+          if (!lastLogin || lastLogin !== today) {
+            setIsFirstLogin(true);
+            localStorage.setItem("lastLoginDate", today);
+          }
+          
+          // Initialize profile data with user info
+          setProfileData(prev => ({
+            ...prev,
+            fullName: `${data.user.firstName} ${data.user.lastName}`,
+            email: data.user.email
+          }));
+        } else {
+          // No valid session - redirect to login
+          localStorage.removeItem("user");
+          setLocation("/");
+        }
+      } catch (error) {
+        // On error, try localStorage as fallback
+        const userData = localStorage.getItem("user");
+        if (!userData) {
+          setLocation("/");
+          return;
+        }
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        
+        setProfileData(prev => ({
+          ...prev,
+          fullName: `${parsedUser.firstName} ${parsedUser.lastName}`,
+          email: parsedUser.email
+        }));
+      }
     }
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
     
-    // Check if this is the first login for profile completion banner
-    const lastLogin = localStorage.getItem("lastLoginDate");
-    const today = new Date().toDateString();
-    
-    if (!lastLogin || lastLogin !== today) {
-      setIsFirstLogin(true);
-      localStorage.setItem("lastLoginDate", today);
-    }
-    
-    // Initialize profile data with user info
-    setProfileData(prev => ({
-      ...prev,
-      fullName: `${parsedUser.firstName} ${parsedUser.lastName}`,
-      email: parsedUser.email
-    }));
+    checkAuth();
   }, [setLocation]);
 
 

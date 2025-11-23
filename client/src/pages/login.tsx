@@ -33,7 +33,11 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      const response = await apiRequest("POST", "/api/auth/login", data);
+      // Include profile data from localStorage for one-time migration to database
+      const profileDataStr = localStorage.getItem('profileData');
+      const requestData = profileDataStr ? { ...data, profileData: JSON.parse(profileDataStr) } : data;
+      
+      const response = await apiRequest("POST", "/api/auth/login", requestData);
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Login failed');

@@ -127,10 +127,18 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
 
   if (!renderOpen) return null;
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    onClose();
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      // Call logout endpoint to destroy server session
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Clear local storage and redirect regardless of API response
+      localStorage.removeItem("user");
+      onClose();
+      window.location.href = "/";
+    }
   };
 
   const handleSaveProfile = async () => {
