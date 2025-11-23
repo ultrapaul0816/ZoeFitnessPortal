@@ -452,6 +452,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Upload profile photo
+  app.post("/api/users/:id/profile-photo", upload.single('photo'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const file = req.file;
+
+      if (!file) {
+        return res.status(400).json({ message: "No photo file provided" });
+      }
+
+      // Upload full-size photo to Cloudinary
+      const fullSizeResult: any = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "profile_photos",
+            resource_type: "image",
+            transformation: [
+              { width: 800, height: 800, crop: "limit" },
+              { quality: "auto" },
+            ],
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(file.buffer);
+      });
+
+      // Upload thumbnail version to Cloudinary
+      const thumbnailResult: any = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "profile_photos/thumbnails",
+            resource_type: "image",
+            transformation: [
+              { width: 150, height: 150, crop: "fill", gravity: "face" },
+              { quality: "auto" },
+            ],
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(file.buffer);
+      });
+
+      // Update user with both URLs
+      const updatedUser = await storage.updateUser(id, {
+        profilePictureUrl: fullSizeResult.secure_url,
+        profilePictureThumbnailUrl: thumbnailResult.secure_url,
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Return user without password
+      const { password, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Profile photo upload error:", error);
+      res.status(500).json({ message: "Failed to upload profile photo" });
+    }
+  });
+
   // Get active terms
   app.get("/api/terms", async (req, res) => {
     try {

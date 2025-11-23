@@ -227,7 +227,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     fileInputRef.current?.click();
   };
 
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Check file type
@@ -260,20 +260,64 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
         return;
       }
       
-      // Create preview URL
+      // Create preview URL immediately for better UX
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setSelectedPhoto(result);
-        // Save photo to profileData for persistence
-        setProfileData(prev => ({ ...prev, photo: result }));
+      };
+      reader.readAsDataURL(file);
+      
+      // Upload to Cloudinary
+      try {
         toast({
-          title: "Photo Updated",
+          title: "Uploading Photo...",
+          description: "Please wait while we upload your photo.",
+          duration: 2000,
+        });
+        
+        const formData = new FormData();
+        formData.append('photo', file);
+        
+        const response = await fetch(`/api/users/${user.id}/profile-photo`, {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to upload photo');
+        }
+        
+        const data = await response.json();
+        
+        // Store both URLs in profileData
+        setProfileData(prev => ({ 
+          ...prev, 
+          profilePictureUrl: data.profilePictureUrl,
+          profilePictureThumbnailUrl: data.profilePictureThumbnailUrl
+        }));
+        
+        // Update user object to reflect the new photos
+        const updatedUser = { ...user, ...data };
+        onUserUpdate(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        
+        toast({
+          title: "Photo Uploaded!",
           description: "Your profile photo has been updated successfully!",
           duration: 3000,
         });
-      };
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Photo upload error:', error);
+        toast({
+          title: "Upload Failed",
+          description: "Failed to upload photo. Please try again.",
+          variant: "destructive",
+          duration: 3000,
+        });
+        // Reset preview on error
+        setSelectedPhoto(null);
+      }
     }
     
     // Reset the file input so same file can be selected again
