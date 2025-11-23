@@ -53,8 +53,8 @@ export default function Login() {
       }
       
       toast({
-        title: "Welcome back!",
-        description: "Successfully signed in to your account.",
+        title: `Welcome back, ${data.user.firstName}! 💪`,
+        description: "Let's get stronger together, mama!",
       });
       if (data.user.isAdmin) {
         setLocation("/admin");

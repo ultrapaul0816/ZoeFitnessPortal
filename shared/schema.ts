@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   lastName: text("last_name").notNull(),
   phone: text("phone"),
   profilePictureUrl: text("profile_picture_url"),
+  profilePictureThumbnailUrl: text("profile_picture_thumbnail_url"),
   isAdmin: boolean("is_admin").default(false),
   termsAccepted: boolean("terms_accepted").default(false),
   termsAcceptedAt: timestamp("terms_accepted_at"),
