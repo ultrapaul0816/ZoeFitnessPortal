@@ -215,12 +215,30 @@ export const progressPhotos = pgTable("progress_photos", {
   uploadedAt: timestamp("uploaded_at").default(sql`now()`),
 });
 
+// Email templates for member outreach
+export const emailTemplates = pgTable("email_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  type: text("type").notNull().unique(), // 'welcome', 're-engagement', 'program-reminder', 'completion-celebration'
+  name: text("name").notNull(), // Display name for the template
+  description: text("description").notNull(), // Short description of when to use this template
+  subject: text("subject").notNull(), // Default email subject line (editable)
+  htmlContent: text("html_content").notNull(), // HTML template with {{variables}}
+  variables: text("variables").array().notNull(), // List of available variables: ['userName', 'firstName', 'programName', 'weekNumber']
+  lastSentAt: timestamp("last_sent_at"), // When this template was last used
+  totalSends: integer("total_sends").default(0), // Total times this template has been sent
+  totalOpens: integer("total_opens").default(0), // Total email opens tracked
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 // Email campaigns for member outreach
 export const emailCampaigns = pgTable("email_campaigns", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  templateId: varchar("template_id").notNull(), // Reference to email template
   name: text("name").notNull(), // Internal name for the campaign
-  templateType: text("template_type").notNull(), // 'welcome', 're-engagement', 'program-reminder', 'whatsapp-invite'
-  subject: text("subject").notNull(), // Email subject line
+  templateType: text("template_type").notNull(), // 'welcome', 're-engagement', 'program-reminder', 'completion-celebration'
+  subject: text("subject").notNull(), // Email subject line (can be customized from template default)
+  htmlContent: text("html_content").notNull(), // HTML content (can be customized from template default)
   audienceFilter: jsonb("audience_filter").notNull(), // JSON object with targeting criteria
   status: text("status").notNull().default("draft"), // 'draft', 'scheduled', 'sending', 'sent', 'failed'
   scheduledFor: timestamp("scheduled_for"), // When to send (null = send immediately)
@@ -228,6 +246,7 @@ export const emailCampaigns = pgTable("email_campaigns", {
   recipientCount: integer("recipient_count").default(0), // Total recipients targeted
   sentCount: integer("sent_count").default(0), // Successfully sent
   failedCount: integer("failed_count").default(0), // Failed to send
+  openCount: integer("open_count").default(0), // Unique opens tracked
   createdBy: varchar("created_by").notNull(), // Admin user ID
   createdAt: timestamp("created_at").default(sql`now()`),
 });
@@ -243,6 +262,17 @@ export const emailCampaignRecipients = pgTable("email_campaign_recipients", {
   errorMessage: text("error_message"), // If failed, store error
   messageId: text("message_id"), // From email provider (Resend)
   createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+// Tracking email opens via pixel tracking
+export const emailOpens = pgTable("email_opens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  campaignId: varchar("campaign_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  recipientId: varchar("recipient_id").notNull(), // Reference to emailCampaignRecipients
+  openedAt: timestamp("opened_at").default(sql`now()`),
+  ipAddress: text("ip_address"), // For analytics
+  userAgent: text("user_agent"), // For analytics
 });
 
 // Insert schemas
@@ -359,11 +389,25 @@ export const audienceFilterSchema = z.object({
 
 export type AudienceFilter = z.infer<typeof audienceFilterSchema>;
 
+// Email template insert schema
+export const insertEmailTemplateSchema = createInsertSchema(emailTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastSentAt: true,
+  totalSends: true,
+  totalOpens: true,
+}).extend({
+  type: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration']),
+});
+
 // Manually define insert schema to ensure strict audienceFilter validation
 export const insertEmailCampaignSchema = z.object({
+  templateId: z.string(),
   name: z.string().min(1).max(255),
   templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration']),
   subject: z.string().min(1).max(500),
+  htmlContent: z.string().min(1), // HTML content for the email
   audienceFilter: audienceFilterSchema, // Strict validation - only allowed keys
   status: z.enum(['draft', 'scheduled', 'sending', 'sent', 'failed']).default('draft'),
   scheduledFor: z.date().optional(),
@@ -376,6 +420,11 @@ export const insertEmailCampaignRecipientSchema = createInsertSchema(emailCampai
   sentAt: true,
 }).extend({
   status: z.enum(['pending', 'sent', 'failed']).default('pending'),
+});
+
+export const insertEmailOpenSchema = createInsertSchema(emailOpens).omit({
+  id: true,
+  openedAt: true,
 });
 
 // Reusable validation schemas
@@ -513,10 +562,14 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Terms = typeof terms.$inferSelect;
 export type InsertTerms = z.infer<typeof insertTermsSchema>;
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type InsertEmailTemplate = z.infer<typeof insertEmailTemplateSchema>;
 export type EmailCampaign = typeof emailCampaigns.$inferSelect;
 export type InsertEmailCampaign = z.infer<typeof insertEmailCampaignSchema>;
 export type EmailCampaignRecipient = typeof emailCampaignRecipients.$inferSelect;
 export type InsertEmailCampaignRecipient = z.infer<typeof insertEmailCampaignRecipientSchema>;
+export type EmailOpen = typeof emailOpens.$inferSelect;
+export type InsertEmailOpen = z.infer<typeof insertEmailOpenSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 
