@@ -7,6 +7,8 @@ import {
   updateUserProfileSchema,
   adminCreateUserSchema,
   insertProgressPhotoSchema,
+  insertCommunityPostSchema,
+  insertPostCommentSchema,
   passwordSchema,
 } from "@shared/schema";
 import { z } from "zod";
@@ -647,30 +649,290 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Community posts
+  // Community Feed Routes
+  
+  // Get community posts with filtering and sorting
   app.get("/api/community/posts", async (req, res) => {
     try {
-      const { channel } = req.query;
-      const posts = await storage.getCommunityPosts(channel as string);
+      const { category, weekNumber, userId, sortBy } = req.query;
+      
+      const posts = await storage.getCommunityPosts({
+        category: category as string | undefined,
+        weekNumber: weekNumber ? parseInt(weekNumber as string) : undefined,
+        userId: userId as string | undefined,
+        sortBy: sortBy as 'newest' | 'mostLiked' | undefined,
+      });
+      
       res.json(posts);
     } catch (error) {
+      console.error("Error fetching community posts:", error);
       res.status(500).json({ message: "Failed to fetch community posts" });
     }
   });
 
-  app.post("/api/community/posts", async (req, res) => {
+  // Get single post by ID
+  app.get("/api/community/posts/:id", async (req, res) => {
     try {
-      const { userId, channel, content } = req.body;
+      const { id } = req.params;
+      const { userId } = req.query;
+      
+      const post = await storage.getPostById(id, userId as string);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+      res.status(500).json({ message: "Failed to fetch post" });
+    }
+  });
 
-      const post = await storage.createCommunityPost({
+  // Create new community post with image upload
+  app.post(
+    "/api/community/posts",
+    upload.single("image"),
+    handleMulterError,
+    async (req, res) => {
+      try {
+        const { userId, content, category, weekNumber, isSensitiveContent } = req.body;
+        
+        // Validate required fields
+        if (!userId || !content) {
+          return res.status(400).json({ message: "User ID and content are required" });
+        }
+
+        let imageUrl: string | undefined;
+        let cloudinaryPublicId: string | undefined;
+
+        // Upload image to Cloudinary if provided
+        if (req.file) {
+          const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                folder: "community_posts",
+                resource_type: "image",
+                transformation: [
+                  { width: 1080, height: 1080, crop: "limit" },
+                  { quality: "auto" },
+                ],
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            uploadStream.end(req.file!.buffer);
+          });
+
+          imageUrl = (uploadResult as any).secure_url;
+          cloudinaryPublicId = (uploadResult as any).public_id;
+        }
+
+        // Validate with schema
+        const postData = insertCommunityPostSchema.parse({
+          userId,
+          content,
+          category: category || 'general',
+          weekNumber: weekNumber ? parseInt(weekNumber) : undefined,
+          imageUrl,
+          cloudinaryPublicId,
+          isSensitiveContent: isSensitiveContent === 'true',
+        });
+
+        const post = await storage.createCommunityPost(postData);
+        res.status(201).json(post);
+      } catch (error) {
+        console.error("Error creating post:", error);
+        if (error instanceof z.ZodError) {
+          return res.status(400).json({ 
+            message: "Validation error", 
+            errors: error.errors 
+          });
+        }
+        res.status(500).json({ message: "Failed to create post" });
+      }
+    }
+  );
+
+  // Delete post (user can delete their own posts)
+  app.delete("/api/community/posts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const success = await storage.deletePost(id, userId);
+      
+      if (!success) {
+        return res.status(403).json({ message: "Unauthorized or post not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      res.status(500).json({ message: "Failed to delete post" });
+    }
+  });
+
+  // Report post
+  app.post("/api/community/posts/:id/report", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const success = await storage.reportPost(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error reporting post:", error);
+      res.status(500).json({ message: "Failed to report post" });
+    }
+  });
+
+  // Mark post as featured (admin only)
+  app.patch("/api/community/posts/:id/featured", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { featured } = req.body;
+      
+      const success = await storage.markPostAsFeatured(id, featured);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating featured status:", error);
+      res.status(500).json({ message: "Failed to update post" });
+    }
+  });
+
+  // Like a post
+  app.post("/api/community/posts/:id/like", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const like = await storage.likePost(userId, id);
+      res.status(201).json(like);
+    } catch (error) {
+      console.error("Error liking post:", error);
+      res.status(500).json({ message: "Failed to like post" });
+    }
+  });
+
+  // Unlike a post
+  app.delete("/api/community/posts/:id/like", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const success = await storage.unlikePost(userId, id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Like not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error unliking post:", error);
+      res.status(500).json({ message: "Failed to unlike post" });
+    }
+  });
+
+  // Get post likes
+  app.get("/api/community/posts/:id/likes", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const likes = await storage.getPostLikes(id);
+      res.json(likes);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+      res.status(500).json({ message: "Failed to fetch likes" });
+    }
+  });
+
+  // Create comment on post
+  app.post("/api/community/posts/:id/comments", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId, content } = req.body;
+      
+      if (!userId || !content) {
+        return res.status(400).json({ message: "User ID and content are required" });
+      }
+
+      const commentData = insertPostCommentSchema.parse({
         userId,
-        channel: channel || "general",
+        postId: id,
         content,
       });
 
-      res.json(post);
+      const comment = await storage.createComment(commentData);
+      res.status(201).json(comment);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create post" });
+      console.error("Error creating comment:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create comment" });
+    }
+  });
+
+  // Get post comments
+  app.get("/api/community/posts/:id/comments", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const comments = await storage.getPostComments(id);
+      res.json(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  // Delete comment (user can delete their own comments)
+  app.delete("/api/community/comments/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const success = await storage.deleteComment(id, userId);
+      
+      if (!success) {
+        return res.status(403).json({ message: "Unauthorized or comment not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      res.status(500).json({ message: "Failed to delete comment" });
     }
   });
 

@@ -8,6 +8,7 @@ import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
 import MyLibrary from "@/pages/my-library";
+import Community from "@/pages/community";
 import NotFound from "@/pages/not-found";
 
 // Lazy load heavy pages to improve initial load time
@@ -35,6 +36,7 @@ function Router() {
         </Suspense>
       )} />
       <Route path="/my-library" component={MyLibrary} />
+      <Route path="/community" component={Community} />
       <Route component={NotFound} />
     </Switch>
   );
