@@ -40,6 +40,10 @@ import {
   type InsertEmailCampaign,
   type EmailCampaignRecipient,
   type InsertEmailCampaignRecipient,
+  type EmailTemplate,
+  type InsertEmailTemplate,
+  type EmailOpen,
+  type InsertEmailOpen,
 } from "@shared/schema";
 import {
   users,
@@ -62,6 +66,8 @@ import {
   progressPhotos,
   emailCampaigns,
   emailCampaignRecipients,
+  emailTemplates,
+  emailOpens,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -268,6 +274,13 @@ export interface IStorage {
   getProgressPhotos(userId: string): Promise<ProgressPhoto[]>;
   deleteProgressPhoto(id: string): Promise<boolean>;
 
+  // Email Templates
+  getEmailTemplates(): Promise<EmailTemplate[]>;
+  getEmailTemplate(id: string): Promise<EmailTemplate | undefined>;
+  getEmailTemplateByType(type: string): Promise<EmailTemplate | undefined>;
+  updateEmailTemplate(id: string, updates: Partial<EmailTemplate>): Promise<EmailTemplate | undefined>;
+  incrementTemplateSends(templateId: string): Promise<void>;
+  
   // Email Campaigns
   createEmailCampaign(campaign: InsertEmailCampaign): Promise<EmailCampaign>;
   getEmailCampaigns(): Promise<EmailCampaign[]>;
@@ -278,6 +291,10 @@ export interface IStorage {
   createCampaignRecipients(recipients: InsertEmailCampaignRecipient[]): Promise<EmailCampaignRecipient[]>;
   getCampaignRecipients(campaignId: string): Promise<EmailCampaignRecipient[]>;
   updateRecipientStatus(recipientId: string, status: string, sentAt?: Date, errorMessage?: string, messageId?: string): Promise<void>;
+  
+  // Email Tracking
+  recordEmailOpen(open: InsertEmailOpen): Promise<EmailOpen>;
+  getEmailOpens(campaignId: string): Promise<EmailOpen[]>;
 
   // Assets
   assetDisplayNames?: Map<string, string>;
@@ -1626,6 +1643,27 @@ export class MemStorage implements IStorage {
     }
   }
 
+  // Email Templates (stub implementations for in-memory storage)
+  async getEmailTemplates(): Promise<EmailTemplate[]> {
+    return [];
+  }
+
+  async getEmailTemplate(id: string): Promise<EmailTemplate | undefined> {
+    return undefined;
+  }
+
+  async getEmailTemplateByType(type: string): Promise<EmailTemplate | undefined> {
+    return undefined;
+  }
+
+  async updateEmailTemplate(id: string, updates: Partial<EmailTemplate>): Promise<EmailTemplate | undefined> {
+    return undefined;
+  }
+
+  async incrementTemplateSends(templateId: string): Promise<void> {
+    // No-op
+  }
+
   // Email Campaigns (stub implementations for in-memory storage)
   async createEmailCampaign(campaign: InsertEmailCampaign): Promise<EmailCampaign> {
     throw new Error("Email campaigns not supported in MemStorage");
@@ -1661,6 +1699,14 @@ export class MemStorage implements IStorage {
 
   async updateRecipientStatus(recipientId: string, status: string, sentAt?: Date, errorMessage?: string, messageId?: string): Promise<void> {
     // No-op for MemStorage
+  }
+
+  async recordEmailOpen(open: InsertEmailOpen): Promise<EmailOpen> {
+    throw new Error("Email tracking not supported in MemStorage");
+  }
+
+  async getEmailOpens(campaignId: string): Promise<EmailOpen[]> {
+    return [];
   }
 }
 
@@ -2815,6 +2861,98 @@ class DatabaseStorage implements IStorage {
       .update(emailCampaignRecipients)
       .set(updates)
       .where(eq(emailCampaignRecipients.id, recipientId));
+  }
+
+  // Email Templates
+  async getEmailTemplates(): Promise<EmailTemplate[]> {
+    const result = await this.db
+      .select()
+      .from(emailTemplates)
+      .orderBy(asc(emailTemplates.type));
+    return result;
+  }
+
+  async getEmailTemplate(id: string): Promise<EmailTemplate | undefined> {
+    const result = await this.db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async getEmailTemplateByType(type: string): Promise<EmailTemplate | undefined> {
+    const result = await this.db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.type, type))
+      .limit(1);
+    return result[0];
+  }
+
+  async updateEmailTemplate(id: string, updates: Partial<EmailTemplate>): Promise<EmailTemplate | undefined> {
+    const result = await this.db
+      .update(emailTemplates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(emailTemplates.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async incrementTemplateSends(templateId: string): Promise<void> {
+    await this.db
+      .update(emailTemplates)
+      .set({
+        totalSends: sql`${emailTemplates.totalSends} + 1`,
+        lastSentAt: new Date(),
+      })
+      .where(eq(emailTemplates.id, templateId));
+  }
+
+  // Email Tracking
+  async recordEmailOpen(open: InsertEmailOpen): Promise<EmailOpen> {
+    const result = await this.db
+      .insert(emailOpens)
+      .values(open)
+      .returning();
+    
+    // Increment template opens count
+    const recipient = await this.db
+      .select()
+      .from(emailCampaignRecipients)
+      .where(eq(emailCampaignRecipients.id, open.recipientId))
+      .limit(1);
+    
+    if (recipient[0]) {
+      const campaign = await this.getEmailCampaign(open.campaignId);
+      if (campaign && campaign.templateId) {
+        await this.db
+          .update(emailTemplates)
+          .set({
+            totalOpens: sql`${emailTemplates.totalOpens} + 1`,
+          })
+          .where(eq(emailTemplates.id, campaign.templateId));
+      }
+      
+      // Increment campaign open count
+      await this.db
+        .update(emailCampaigns)
+        .set({
+          openCount: sql`${emailCampaigns.openCount} + 1`,
+        })
+        .where(eq(emailCampaigns.id, open.campaignId));
+    }
+    
+    return result[0];
+  }
+
+  async getEmailOpens(campaignId: string): Promise<EmailOpen[]> {
+    const result = await this.db
+      .select()
+      .from(emailOpens)
+      .where(eq(emailOpens.campaignId, campaignId))
+      .orderBy(desc(emailOpens.openedAt));
+    return result;
   }
 }
 

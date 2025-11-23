@@ -20,6 +20,7 @@ import { v2 as cloudinary } from "cloudinary";
 import bcrypt from "bcrypt";
 import rateLimit from "express-rate-limit";
 import { emailService } from "./email/service";
+import { replaceTemplateVariables, generateUserVariables, generateSampleVariables } from "./email/template-variables";
 
 // Rate limiting configurations
 const loginLimiter = rateLimit({
@@ -1362,7 +1363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let sentCount = 0;
           let failedCount = 0;
 
-          for (const recipient of recipients) {
+          for (const recipient of createdRecipients) {
             try {
               const user = targetedUsers.find(u => u.id === recipient.userId);
               if (!user) continue;
@@ -1440,6 +1441,305 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error sending campaign:", error);
       await storage.updateEmailCampaign(req.params.id, { status: "failed" });
       res.status(500).json({ message: "Failed to send campaign" });
+    }
+  });
+
+  // Email Template Management Routes
+
+  // Get all email templates with stats
+  app.get("/api/admin/email-templates", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const templates = await storage.getEmailTemplates();
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching email templates:", error);
+      res.status(500).json({ message: "Failed to fetch email templates" });
+    }
+  });
+
+  // Generate preview with sample data
+  app.post("/api/admin/email-templates/:id/preview", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const template = await storage.getEmailTemplate(id);
+
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+      const sampleVariables = generateSampleVariables(baseUrl);
+
+      const previewSubject = replaceTemplateVariables(template.subject, sampleVariables);
+      const previewContent = replaceTemplateVariables(template.htmlContent, sampleVariables);
+
+      res.json({
+        subject: previewSubject,
+        content: previewContent,
+        variables: sampleVariables,
+      });
+    } catch (error) {
+      console.error("Error generating preview:", error);
+      res.status(500).json({ message: "Failed to generate preview" });
+    }
+  });
+
+  // Send test email to specified address
+  app.post("/api/admin/email-templates/:id/send-test", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email address" });
+      }
+
+      const template = await storage.getEmailTemplate(id);
+
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+      const sampleVariables = generateSampleVariables(baseUrl);
+
+      const subject = replaceTemplateVariables(template.subject, sampleVariables);
+      const html = replaceTemplateVariables(template.htmlContent, sampleVariables);
+
+      const result = await emailService.send({
+        to: { email, name: 'Test Recipient' },
+        subject,
+        html,
+        text: html.replace(/<[^>]*>/g, ''),
+      });
+
+      if (!result.success) {
+        return res.status(500).json({
+          message: "Failed to send test email",
+          error: result.error,
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Test email sent successfully",
+        messageId: result.messageId,
+      });
+    } catch (error) {
+      console.error("Error sending test email:", error);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  // Send campaign to targeted users
+  app.post("/api/admin/email-templates/:id/send-campaign", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const { audienceFilter, campaignName } = req.body;
+
+      if (!audienceFilter) {
+        return res.status(400).json({ message: "Audience filter is required" });
+      }
+
+      if (!campaignName) {
+        return res.status(400).json({ message: "Campaign name is required" });
+      }
+
+      const template = await storage.getEmailTemplate(id);
+
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      const targetedUsers = await storage.getTargetedUsers(audienceFilter);
+
+      if (targetedUsers.length === 0) {
+        return res.status(400).json({ message: "No users match the target audience" });
+      }
+
+      const campaign = await storage.createEmailCampaign({
+        templateId: template.id,
+        name: campaignName,
+        templateType: template.type as "welcome" | "re-engagement" | "program-reminder" | "completion-celebration",
+        subject: template.subject,
+        htmlContent: template.htmlContent,
+        audienceFilter,
+        status: "sending",
+        recipientCount: targetedUsers.length,
+        createdBy: req.user.id,
+      });
+
+      const recipientsToCreate = targetedUsers.map(user => ({
+        campaignId: campaign.id!,
+        userId: user.id,
+        email: user.email,
+        status: "pending" as const,
+      }));
+
+      const createdRecipients = await storage.createCampaignRecipients(recipientsToCreate);
+
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+
+      setImmediate(async () => {
+        try {
+          let sentCount = 0;
+          let failedCount = 0;
+
+          for (const recipient of createdRecipients) {
+            try {
+              const user = targetedUsers.find(u => u.id === recipient.userId);
+              if (!user) continue;
+
+              const userVariables = generateUserVariables(user, {
+                programName: 'Heal Your Core',
+                campaignId: campaign.id,
+                recipientId: recipient.id,
+                baseUrl,
+              });
+
+              const subject = replaceTemplateVariables(template.subject, userVariables);
+              const html = replaceTemplateVariables(template.htmlContent, userVariables);
+
+              const result = await emailService.send({
+                to: { email: user.email, name: `${user.firstName} ${user.lastName}` },
+                subject,
+                html,
+                text: html.replace(/<[^>]*>/g, ''),
+              });
+
+              if (result.success) {
+                sentCount++;
+                await storage.updateRecipientStatus(recipient.id!, "sent", new Date(), undefined, result.messageId);
+              } else {
+                failedCount++;
+                await storage.updateRecipientStatus(recipient.id!, "failed", undefined, result.error);
+              }
+            } catch (error) {
+              failedCount++;
+              console.error(`Error sending email to ${recipient.email}:`, error);
+              await storage.updateRecipientStatus(recipient.id!, "failed", undefined, error instanceof Error ? error.message : "Unknown error");
+            }
+          }
+
+          await storage.updateEmailCampaign(campaign.id!, {
+            status: failedCount === targetedUsers.length ? "failed" : "sent",
+            sentAt: new Date(),
+            sentCount,
+            failedCount,
+          });
+
+          await storage.incrementTemplateSends(template.id!);
+
+          console.log(`Campaign ${campaign.id} completed: ${sentCount} sent, ${failedCount} failed`);
+        } catch (error) {
+          console.error(`Fatal error in campaign ${campaign.id} send process:`, error);
+          await storage.updateEmailCampaign(campaign.id!, {
+            status: "failed",
+            sentAt: new Date(),
+            failedCount: targetedUsers.length,
+          }).catch(err => console.error("Failed to update campaign status after error:", err));
+        }
+      });
+
+      res.json({
+        success: true,
+        message: "Campaign is being sent",
+        campaignId: campaign.id,
+        recipientCount: targetedUsers.length,
+      });
+    } catch (error) {
+      console.error("Error sending campaign:", error);
+      res.status(500).json({ message: "Failed to send campaign" });
+    }
+  });
+
+  // Update template subject/content
+  app.patch("/api/admin/email-templates/:id", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const { subject, content } = req.body;
+
+      if (!subject && !content) {
+        return res.status(400).json({ message: "At least one field (subject or content) is required" });
+      }
+
+      const updates: Partial<{ subject: string; content: string }> = {};
+      if (subject) updates.subject = subject;
+      if (content) updates.content = content;
+
+      const updatedTemplate = await storage.updateEmailTemplate(id, updates);
+
+      if (!updatedTemplate) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      res.json(updatedTemplate);
+    } catch (error) {
+      console.error("Error updating template:", error);
+      res.status(500).json({ message: "Failed to update template" });
+    }
+  });
+
+  // Tracking pixel endpoint
+  app.get("/api/email-track/:campaignId/:recipientId", async (req, res) => {
+    try {
+      const { campaignId, recipientId } = req.params;
+
+      await storage.recordEmailOpen({
+        campaignId,
+        recipientId,
+        openedAt: new Date(),
+      });
+
+      const pixel = Buffer.from(
+        'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+        'base64'
+      );
+
+      res.writeHead(200, {
+        'Content-Type': 'image/gif',
+        'Content-Length': pixel.length,
+        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      });
+      res.end(pixel);
+    } catch (error) {
+      console.error("Error recording email open:", error);
+      const pixel = Buffer.from(
+        'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+        'base64'
+      );
+      res.writeHead(200, {
+        'Content-Type': 'image/gif',
+        'Content-Length': pixel.length,
+      });
+      res.end(pixel);
     }
   });
 
