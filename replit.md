@@ -106,6 +106,12 @@ The application features a comprehensive 6-week program structure with detailed 
 - **Dynamic Imports**: jsPDF library (70+ KB) is dynamically imported only when users download the progress tracker PDF
 - **Optimized Logging**: Removed verbose server-side logging to reduce overhead during photo uploads
 - **Route-Level Splitting**: Each major page loads independently, improving first paint and time-to-interactive
+- **Client-Side Image Compression**: All photo uploads (community posts, progress photos) are automatically compressed before upload using canvas API. Images are resized to max 1920px dimension and compressed to ~800KB target size with 85% JPEG quality, significantly reducing upload times and bandwidth usage especially on mobile connections.
+
+### Mobile UX Enhancements
+- **Toast Notifications**: Enhanced close button with 44x44px touch target (Apple's recommended minimum), always visible instead of hover-only, larger icon (20px), subtle hover background, active state feedback, and 5-second auto-dismiss. Radix UI toast supports native swipe-to-dismiss gesture on mobile.
+- **Scrollable Dialogs**: Create post dialog has max 90vh height with scrollable content area, ensuring form submission buttons are accessible on all screen sizes.
+- **Floating Action Buttons**: Community feed uses mobile-optimized FAB (bottom-right) for quick post creation on touch devices.
 
 # External Dependencies
 - **Database**: PostgreSQL (managed by Neon Database via `@neondatabase/serverless` driver)
