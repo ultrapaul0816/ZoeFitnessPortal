@@ -42,7 +42,7 @@ export default function AdminEmailCampaigns() {
   const [testEmailAddress, setTestEmailAddress] = useState("me@zoemodgill.in");
   const [showTestDialog, setShowTestDialog] = useState(false);
   const [audienceFilters, setAudienceFilters] = useState({
-    dormantDays: "",
+    dormantDays: "0",
     hasWhatsAppSupport: "any",
     countries: [] as string[],
   });
@@ -52,7 +52,7 @@ export default function AdminEmailCampaigns() {
 
   // Preset dormant days options
   const dormantDaysPresets = [
-    { label: "Any", value: "" },
+    { label: "Any", value: "0" },
     { label: "7 days", value: "7" },
     { label: "14 days", value: "14" },
     { label: "30 days", value: "30" },
@@ -141,7 +141,7 @@ export default function AdminEmailCampaigns() {
     setEmailSubject("");
     setSelectedTemplate("welcome");
     setAudienceFilters({
-      dormantDays: "",
+      dormantDays: "0",
       hasWhatsAppSupport: "any",
       countries: [],
     });
@@ -158,7 +158,7 @@ export default function AdminEmailCampaigns() {
     }
 
     const audienceFilter: any = {};
-    if (audienceFilters.dormantDays) {
+    if (audienceFilters.dormantDays && audienceFilters.dormantDays !== "0") {
       audienceFilter.dormantDays = parseInt(audienceFilters.dormantDays);
     }
     if (audienceFilters.hasWhatsAppSupport !== "any") {
@@ -294,30 +294,10 @@ export default function AdminEmailCampaigns() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="welcome">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{getTemplateLabel("welcome")}</span>
-                      <span className="text-xs text-gray-500">{getTemplateDescription("welcome")}</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="re-engagement">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{getTemplateLabel("re-engagement")}</span>
-                      <span className="text-xs text-gray-500">{getTemplateDescription("re-engagement")}</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="program-reminder">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{getTemplateLabel("program-reminder")}</span>
-                      <span className="text-xs text-gray-500">{getTemplateDescription("program-reminder")}</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="completion-celebration">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{getTemplateLabel("completion-celebration")}</span>
-                      <span className="text-xs text-gray-500">{getTemplateDescription("completion-celebration")}</span>
-                    </div>
-                  </SelectItem>
+                  <SelectItem value="welcome">{getTemplateLabel("welcome")}</SelectItem>
+                  <SelectItem value="re-engagement">{getTemplateLabel("re-engagement")}</SelectItem>
+                  <SelectItem value="program-reminder">{getTemplateLabel("program-reminder")}</SelectItem>
+                  <SelectItem value="completion-celebration">{getTemplateLabel("completion-celebration")}</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-sm text-gray-600 mt-2">{getTemplateDescription(selectedTemplate)}</p>
