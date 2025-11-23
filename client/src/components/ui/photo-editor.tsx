@@ -8,6 +8,7 @@ import { Crop, RotateCw, Sun, Contrast, Check, X, Shield, Pencil } from "lucide-
 import { cn } from "@/lib/utils";
 import { BlurTool } from "@/components/ui/blur-tool";
 import { AnnotationTool } from "@/components/ui/annotation-tool";
+import { GridOverlay } from "@/components/ui/grid-overlay";
 
 interface PhotoEditorProps {
   imageUrl: string;
@@ -35,6 +36,7 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
   const [intermediateImage, setIntermediateImage] = useState<string | null>(null);
   const [blurredCanvas, setBlurredCanvas] = useState<HTMLCanvasElement | null>(null);
   const [annotatedCanvas, setAnnotatedCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [showGrid, setShowGrid] = useState(false);
 
   const onCropComplete = useCallback((_: CropArea, croppedAreaPixels: CropArea) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -291,6 +293,7 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
                     },
                   }}
                 />
+                <GridOverlay isActive={showGrid} onToggle={() => setShowGrid(!showGrid)} />
               </div>
 
               {/* Controls */}
