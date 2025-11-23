@@ -122,6 +122,14 @@ const upload = multer({
   },
 });
 
+// Session validation middleware
+function requireAuth(req: any, res: any, next: any) {
+  if (!req.session?.userId) {
+    return res.status(401).json({ message: "Unauthorized. Please log in." });
+  }
+  next();
+}
+
 // Multer error handling middleware - converts errors to proper 400 responses
 function handleMulterError(err: any, req: any, res: any, next: any) {
   if (err instanceof multer.MulterError) {
@@ -252,7 +260,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updatedUser = (await storage.updateUser(user.id, updates)) || user;
       }
 
-      // Simple session - in production would use proper session management
+      // One-time migration: If user has profile data in request, save it to database
+      const { profileData } = req.body;
+      if (profileData && typeof profileData === 'object') {
+        const profileUpdates: any = {};
+        if (profileData.country && !updatedUser.country) profileUpdates.country = profileData.country;
+        if (profileData.bio && !updatedUser.bio) profileUpdates.bio = profileData.bio;
+        if (profileData.socials && !updatedUser.instagramHandle) profileUpdates.instagramHandle = profileData.socials;
+        if (profileData.postpartumTime && !updatedUser.postpartumWeeks) {
+          // Convert postpartum time to weeks
+          const postpartumText = profileData.postpartumTime.toLowerCase().trim();
+          const match = postpartumText.match(/(\d+\.?\d*)/);
+          if (match) {
+            const value = parseFloat(match[1]);
+            if (postpartumText.includes('week')) {
+              profileUpdates.postpartumWeeks = Math.round(value);
+            } else if (postpartumText.includes('month')) {
+              profileUpdates.postpartumWeeks = Math.round(value * 4.33);
+            } else if (postpartumText.includes('year')) {
+              profileUpdates.postpartumWeeks = Math.round(value * 52);
+            }
+          }
+        }
+        if (Object.keys(profileUpdates).length > 0) {
+          updatedUser = (await storage.updateUser(user.id, profileUpdates)) || updatedUser;
+        }
+      }
+
+      // Create server-side session
+      req.session.userId = updatedUser.id;
+
       res.json({
         user: {
           id: updatedUser.id,
@@ -276,6 +313,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(400).json({ message: "Invalid request data" });
     }
+  });
+
+  // Check current session and return user if logged in
+  app.get("/api/auth/session", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        // Session exists but user doesn't - clear invalid session
+        req.session.destroy(() => {});
+        return res.status(401).json({ message: "Invalid session" });
+      }
+
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isAdmin: user.isAdmin,
+          termsAccepted: user.termsAccepted,
+          disclaimerAccepted: user.disclaimerAccepted,
+          hasWhatsAppSupport: user.hasWhatsAppSupport,
+          whatsAppSupportDuration: user.whatsAppSupportDuration,
+          whatsAppSupportExpiryDate: user.whatsAppSupportExpiryDate,
+          phone: user.phone,
+          country: user.country,
+          bio: user.bio,
+          instagramHandle: user.instagramHandle,
+          postpartumWeeks: user.postpartumWeeks,
+          lastLoginAt: user.lastLoginAt,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to retrieve session" });
+    }
+  });
+
+  // Logout endpoint
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Failed to logout" });
+      }
+      res.clearCookie('connect.sid'); // Clear the session cookie
+      res.json({ message: "Logged out successfully" });
+    });
   });
 
   // Accept terms
