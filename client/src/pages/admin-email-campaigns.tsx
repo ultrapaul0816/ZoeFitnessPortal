@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSession } from "@/hooks/use-session";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,9 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Send, Users, Calendar, Check, X, Loader2, Plus, Eye } from "lucide-react";
+import { Mail, Send, Users, Calendar, Check, X, Loader2, Plus, Eye, TestTube } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface EmailCampaign {
@@ -37,11 +39,26 @@ export default function AdminEmailCampaigns() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("welcome");
   const [campaignName, setCampaignName] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
+  const [testEmailAddress, setTestEmailAddress] = useState("me@zoemodgill.in");
+  const [showTestDialog, setShowTestDialog] = useState(false);
   const [audienceFilters, setAudienceFilters] = useState({
     dormantDays: "",
     hasWhatsAppSupport: "any",
-    country: "",
+    countries: [] as string[],
   });
+
+  // Available countries (you can expand this list)
+  const availableCountries = ["India", "USA", "UK", "Canada", "Australia", "Singapore", "UAE"];
+
+  // Preset dormant days options
+  const dormantDaysPresets = [
+    { label: "Any", value: "" },
+    { label: "7 days", value: "7" },
+    { label: "14 days", value: "14" },
+    { label: "30 days", value: "30" },
+    { label: "60 days", value: "60" },
+    { label: "90 days", value: "90" },
+  ];
 
   // Redirect if not admin
   if (user && !user.isAdmin) {
@@ -98,6 +115,27 @@ export default function AdminEmailCampaigns() {
     },
   });
 
+  // Send test email mutation
+  const sendTestEmailMutation = useMutation({
+    mutationFn: async ({ templateType, email, subject }: { templateType: string; email: string; subject?: string }) => {
+      return apiRequest("/api/admin/email-campaigns/send-test", "POST", { templateType, email, subject });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Test Email Sent",
+        description: `Test email sent to ${testEmailAddress}`,
+      });
+      setShowTestDialog(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send test email",
+        variant: "destructive",
+      });
+    },
+  });
+
   const resetForm = () => {
     setCampaignName("");
     setEmailSubject("");
@@ -105,7 +143,7 @@ export default function AdminEmailCampaigns() {
     setAudienceFilters({
       dormantDays: "",
       hasWhatsAppSupport: "any",
-      country: "",
+      countries: [],
     });
   };
 
@@ -126,8 +164,11 @@ export default function AdminEmailCampaigns() {
     if (audienceFilters.hasWhatsAppSupport !== "any") {
       audienceFilter.hasWhatsAppSupport = audienceFilters.hasWhatsAppSupport === "true";
     }
-    if (audienceFilters.country) {
-      audienceFilter.country = audienceFilters.country;
+    // Only include country filter if specific countries are selected
+    if (audienceFilters.countries.length > 0 && audienceFilters.countries.length < availableCountries.length) {
+      // For now, we'll use the first selected country (backend currently supports single country)
+      // TODO: Update backend to support multiple countries
+      audienceFilter.country = audienceFilters.countries[0];
     }
 
     createCampaignMutation.mutate({
@@ -139,14 +180,41 @@ export default function AdminEmailCampaigns() {
     });
   };
 
+  const handleSendTestEmail = () => {
+    if (!testEmailAddress) {
+      toast({
+        title: "Missing Email",
+        description: "Please provide an email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    sendTestEmailMutation.mutate({
+      templateType: selectedTemplate,
+      email: testEmailAddress,
+      subject: emailSubject || undefined,
+    });
+  };
+
   const getTemplateLabel = (type: string) => {
     const labels: Record<string, string> = {
-      welcome: "Welcome Email",
-      "re-engagement": "Re-engagement Email",
-      "program-reminder": "Program Reminder",
-      "whatsapp-invite": "WhatsApp Invite",
+      welcome: "Welcome to Your Journey",
+      "re-engagement": "We Miss You",
+      "program-reminder": "Midpoint Motivation",
+      "completion-celebration": "Program Completion Celebration",
     };
     return labels[type] || type;
+  };
+
+  const getTemplateDescription = (type: string) => {
+    const descriptions: Record<string, string> = {
+      welcome: "Welcome new members to the program with warmth and guidance",
+      "re-engagement": "Gently bring back dormant users with motivational messaging",
+      "program-reminder": "Boost motivation at Week 3 with progress celebration",
+      "completion-celebration": "Celebrate 6-week program graduates and encourage next steps",
+    };
+    return descriptions[type] || "";
   };
 
   const getStatusColor = (status: string) => {
@@ -226,12 +294,33 @@ export default function AdminEmailCampaigns() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="welcome">Welcome Email</SelectItem>
-                  <SelectItem value="re-engagement">Re-engagement Email</SelectItem>
-                  <SelectItem value="program-reminder">Program Reminder</SelectItem>
-                  <SelectItem value="whatsapp-invite">WhatsApp Invite</SelectItem>
+                  <SelectItem value="welcome">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{getTemplateLabel("welcome")}</span>
+                      <span className="text-xs text-gray-500">{getTemplateDescription("welcome")}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="re-engagement">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{getTemplateLabel("re-engagement")}</span>
+                      <span className="text-xs text-gray-500">{getTemplateDescription("re-engagement")}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="program-reminder">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{getTemplateLabel("program-reminder")}</span>
+                      <span className="text-xs text-gray-500">{getTemplateDescription("program-reminder")}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="completion-celebration">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{getTemplateLabel("completion-celebration")}</span>
+                      <span className="text-xs text-gray-500">{getTemplateDescription("completion-celebration")}</span>
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-sm text-gray-600 mt-2">{getTemplateDescription(selectedTemplate)}</p>
             </div>
 
             {/* Email Subject */}
@@ -247,25 +336,37 @@ export default function AdminEmailCampaigns() {
             </div>
 
             {/* Audience Filters */}
-            <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold text-sm">Target Audience</h3>
+            <div className="space-y-4 p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-pink-100">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm flex items-center">
+                  <Users className="w-4 h-4 mr-2 text-pink-500" />
+                  Target Audience
+                </h3>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="dormant-days">Dormant Days</Label>
-                  <Input
-                    id="dormant-days"
-                    type="number"
+                  <Label htmlFor="dormant-days">Inactivity Period</Label>
+                  <Select
                     value={audienceFilters.dormantDays}
-                    onChange={(e) => setAudienceFilters({ ...audienceFilters, dormantDays: e.target.value })}
-                    placeholder="e.g., 14"
-                    data-testid="input-dormant-days"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Users inactive for X days</p>
+                    onValueChange={(value) => setAudienceFilters({ ...audienceFilters, dormantDays: value })}
+                  >
+                    <SelectTrigger id="dormant-days" data-testid="select-dormant-days">
+                      <SelectValue placeholder="Select inactive period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {dormantDaysPresets.map((preset) => (
+                        <SelectItem key={preset.value} value={preset.value}>
+                          {preset.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">Target users who haven't logged in for this many days</p>
                 </div>
 
                 <div>
-                  <Label htmlFor="whatsapp-support">WhatsApp Support</Label>
+                  <Label htmlFor="whatsapp-support">WhatsApp Community Access</Label>
                   <Select
                     value={audienceFilters.hasWhatsAppSupport}
                     onValueChange={(value) => setAudienceFilters({ ...audienceFilters, hasWhatsAppSupport: value })}
@@ -275,27 +376,68 @@ export default function AdminEmailCampaigns() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      <SelectItem value="true">Has WhatsApp</SelectItem>
-                      <SelectItem value="false">No WhatsApp</SelectItem>
+                      <SelectItem value="true">Has WhatsApp Access</SelectItem>
+                      <SelectItem value="false">No WhatsApp Access</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-gray-500 mt-1">Filter by WhatsApp community membership</p>
                 </div>
+              </div>
 
-                <div>
-                  <Label htmlFor="country">Country</Label>
-                  <Input
-                    id="country"
-                    value={audienceFilters.country}
-                    onChange={(e) => setAudienceFilters({ ...audienceFilters, country: e.target.value })}
-                    placeholder="e.g., India"
-                    data-testid="input-country"
-                  />
+              <div>
+                <Label>Countries</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="country-all"
+                      checked={audienceFilters.countries.length === 0}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setAudienceFilters({ ...audienceFilters, countries: [] });
+                        }
+                      }}
+                      data-testid="checkbox-country-all"
+                    />
+                    <label htmlFor="country-all" className="text-sm font-medium">
+                      All Countries
+                    </label>
+                  </div>
+                  {availableCountries.map((country) => (
+                    <div key={country} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`country-${country}`}
+                        checked={audienceFilters.countries.includes(country)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setAudienceFilters({
+                              ...audienceFilters,
+                              countries: [...audienceFilters.countries, country],
+                            });
+                          } else {
+                            setAudienceFilters({
+                              ...audienceFilters,
+                              countries: audienceFilters.countries.filter((c) => c !== country),
+                            });
+                          }
+                        }}
+                        data-testid={`checkbox-country-${country}`}
+                      />
+                      <label htmlFor={`country-${country}`} className="text-sm">
+                        {country}
+                      </label>
+                    </div>
+                  ))}
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {audienceFilters.countries.length === 0
+                    ? "All countries selected"
+                    : `Selected: ${audienceFilters.countries.join(", ")}`}
+                </p>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button
                 onClick={handleCreateCampaign}
                 disabled={createCampaignMutation.isPending}
@@ -314,6 +456,65 @@ export default function AdminEmailCampaigns() {
                   </>
                 )}
               </Button>
+              
+              <Dialog open={showTestDialog} onOpenChange={setShowTestDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="border-pink-200 text-pink-600 hover:bg-pink-50" data-testid="button-test-email">
+                    <TestTube className="w-4 h-4 mr-2" />
+                    Send Test Email
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Send Test Email</DialogTitle>
+                    <DialogDescription>
+                      Preview this email template in your inbox before sending to your audience
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <div>
+                      <Label htmlFor="test-email">Email Address</Label>
+                      <Input
+                        id="test-email"
+                        type="email"
+                        value={testEmailAddress}
+                        onChange={(e) => setTestEmailAddress(e.target.value)}
+                        placeholder="your@email.com"
+                        data-testid="input-test-email"
+                      />
+                    </div>
+                    <div className="bg-pink-50 p-3 rounded-md">
+                      <p className="text-sm text-gray-700">
+                        <strong>Template:</strong> {getTemplateLabel(selectedTemplate)}
+                      </p>
+                      {emailSubject && (
+                        <p className="text-sm text-gray-700 mt-1">
+                          <strong>Subject:</strong> {emailSubject}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      onClick={handleSendTestEmail}
+                      disabled={sendTestEmailMutation.isPending}
+                      className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                      data-testid="button-send-test"
+                    >
+                      {sendTestEmailMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Test Email
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
               <Button
                 variant="outline"
                 onClick={() => {
