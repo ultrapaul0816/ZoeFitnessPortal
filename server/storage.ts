@@ -896,8 +896,8 @@ export class MemStorage implements IStorage {
     const post: CommunityPost = {
       ...insertPost,
       id,
-      imageUrl: insertPost.imageUrl || null,
-      cloudinaryPublicId: insertPost.cloudinaryPublicId || null,
+      imageUrls: insertPost.imageUrls || null,
+      cloudinaryPublicIds: insertPost.cloudinaryPublicIds || null,
       weekNumber: insertPost.weekNumber || null,
       category: insertPost.category || "general",
       featured: insertPost.featured || false,

@@ -35,6 +35,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { User as UserType, CommunityPost, PostComment } from "@shared/schema";
 import { compressImage } from "@/lib/imageCompression";
 import { PhotoEditor } from "@/components/ui/photo-editor";
+import { ImageCarousel } from "@/components/ui/image-carousel";
 
 // Category icons and labels
 const CATEGORIES = {
@@ -89,14 +90,17 @@ export default function Community() {
   // Create post form states
   const [postContent, setPostContent] = useState("");
   const [postCategory, setPostCategory] = useState<CategoryKey>("general");
-  const [postImage, setPostImage] = useState<File | null>(null);
-  const [postImagePreview, setPostImagePreview] = useState<string | null>(null);
+  const [postImages, setPostImages] = useState<File[]>([]);
+  const [postImagePreviews, setPostImagePreviews] = useState<string[]>([]);
   const [isSensitive, setIsSensitive] = useState(false);
   const [postWeek, setPostWeek] = useState<number | null>(null);
   
   // Photo editor states
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   const [rawImageForEditing, setRawImageForEditing] = useState<string | null>(null);
+  const [editingImageIndex, setEditingImageIndex] = useState<number>(-1);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [isProcessingQueue, setIsProcessingQueue] = useState(false);
 
   // Comment input states
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
@@ -292,24 +296,88 @@ export default function Community() {
     },
   });
 
-  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Centralized queue processor using useEffect
+  useEffect(() => {
+    // Only process if there are pending files, no editor is open, and not currently processing
+    if (pendingFiles.length > 0 && !showPhotoEditor && !isProcessingQueue) {
+      processNextPendingFile(pendingFiles);
+    }
+  }, [pendingFiles, showPhotoEditor, isProcessingQueue]);
 
-    if (file.size > 10 * 1024 * 1024) {
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    // Check total count including pending files (max 4 images total)
+    const currentTotal = postImages.length + pendingFiles.length + files.length;
+    if (currentTotal > 4) {
       toast({
-        title: "File too large",
-        description: "Please select an image under 10MB",
+        title: "Too many images",
+        description: `You can upload a maximum of 4 images per post (currently have ${postImages.length} added, ${pendingFiles.length} pending)`,
         variant: "destructive",
       });
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       return;
     }
 
-    // Convert to data URL and open photo editor
+    // Validate each file
+    for (const file of files) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: `${file.name} exceeds 10MB limit`,
+          variant: "destructive",
+        });
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+    }
+
+    // Reset file input immediately so same files can be re-selected later
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    // Append to pending queue - useEffect will automatically process
+    setPendingFiles(prev => [...prev, ...files]);
+  };
+
+  const processNextPendingFile = (filesToProcess: File[]) => {
+    if (filesToProcess.length === 0) {
+      setIsProcessingQueue(false);
+      return;
+    }
+
+    // Set processing guard to prevent useEffect re-triggering
+    setIsProcessingQueue(true);
+
+    // Read the first file (DON'T dequeue yet - dequeue happens after save/cancel)
+    const file = filesToProcess[0];
+
+    // Open the editor for this file
     const reader = new FileReader();
     reader.onloadend = () => {
       setRawImageForEditing(reader.result as string);
+      setEditingImageIndex(-1); // -1 means new image being added
       setShowPhotoEditor(true);
+      setIsProcessingQueue(false); // Clear guard once editor is open
+    };
+    reader.onerror = () => {
+      // Handle FileReader errors
+      console.error("FileReader error");
+      setIsProcessingQueue(false);
+      setPendingFiles(prev => prev.slice(1)); // Skip this file and continue
+      toast({
+        title: "Error",
+        description: "Failed to load image. Skipping to next file.",
+        variant: "destructive",
+      });
     };
     reader.readAsDataURL(file);
   };
@@ -322,30 +390,58 @@ export default function Community() {
       });
 
       // Convert blob to file
-      const editedFile = new File([editedImageBlob], "edited-photo.jpg", { type: "image/jpeg" });
+      const editedFile = new File([editedImageBlob], `edited-photo-${Date.now()}.jpg`, { type: "image/jpeg" });
       
       // Compress the edited image
       const compressedFile = await compressImage(editedFile, 0.8, 1920, 0.85);
       
-      setPostImage(compressedFile);
+      // Add to images array
+      let newImagesCount = 0;
+      setPostImages(prev => {
+        const updated = [...prev, compressedFile];
+        newImagesCount = updated.length;
+        return updated;
+      });
+      
+      // Generate preview
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPostImagePreview(reader.result as string);
+        setPostImagePreviews(prev => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(compressedFile);
 
+      // Close editor and reset processing state
       setShowPhotoEditor(false);
       setRawImageForEditing(null);
+      setEditingImageIndex(-1);
+      setIsProcessingQueue(false); // Clear processing flag to allow next file
 
-      toast({
-        title: "Image ready!",
-        description: "Your edited photo is ready to post",
+      // Dequeue the file AFTER successful save - this triggers useEffect to process next
+      setPendingFiles(prev => {
+        const remainingFiles = prev.slice(1);
+        
+        // Show toast
+        setTimeout(() => {
+          if (remainingFiles.length > 0) {
+            toast({
+              title: "Image added!",
+              description: `${newImagesCount}/4 added. ${remainingFiles.length} more to edit.`,
+            });
+          } else {
+            toast({
+              title: "All images added!",
+              description: `${newImagesCount}/4 images ready to post`,
+            });
+          }
+        }, 100);
+        
+        return remainingFiles;
       });
     } catch (error) {
       console.error("Image processing error:", error);
       toast({
         title: "Error",
-        description: "Failed to process image",
+        description: "Failed to process image. Please try again.",
         variant: "destructive",
       });
     }
@@ -354,6 +450,12 @@ export default function Community() {
   const handlePhotoEditorCancel = () => {
     setShowPhotoEditor(false);
     setRawImageForEditing(null);
+    setEditingImageIndex(-1);
+    setIsProcessingQueue(false); // Clear processing flag
+    
+    // Dequeue the current file and clear remaining queue on cancel
+    setPendingFiles([]);
+    
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -364,10 +466,11 @@ export default function Community() {
     setShowCreatePost(false);
     setPostContent("");
     setPostCategory("general");
-    setPostImage(null);
-    setPostImagePreview(null);
+    setPostImages([]);
+    setPostImagePreviews([]);
     setIsSensitive(false);
     setPostWeek(null);
+    setPendingFiles([]);
   };
 
   const handleCreatePost = () => {
@@ -384,9 +487,12 @@ export default function Community() {
     formData.append("userId", user!.id);
     formData.append("content", postContent);
     formData.append("category", postCategory);
-    if (postImage) {
-      formData.append("image", postImage);
-    }
+    
+    // Append all images with field name "images" (matches backend upload.array("images", 4))
+    postImages.forEach((image) => {
+      formData.append("images", image);
+    });
+    
     if (postWeek) {
       formData.append("weekNumber", postWeek.toString());
     }
@@ -410,10 +516,10 @@ export default function Community() {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, 1080, 1080);
 
-      if (post.imageUrl) {
+      if (post.imageUrls && post.imageUrls.length > 0) {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.src = post.imageUrl;
+        img.src = post.imageUrls[0]; // Use first image for Instagram share
         await new Promise((resolve) => {
           img.onload = resolve;
         });
@@ -649,54 +755,53 @@ export default function Community() {
           </DialogHeader>
 
           <div className="space-y-4 overflow-y-auto flex-1 pr-2">
-            {/* Image preview */}
-            {postImagePreview && (
-              <div className="relative">
-                <img 
-                  src={postImagePreview} 
-                  alt="Preview" 
-                  className="w-full h-64 object-cover rounded-lg"
-                />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    setPostImage(null);
-                    setPostImagePreview(null);
-                  }}
-                  data-testid="button-remove-image"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+            {/* Image previews (grid layout for multiple images) */}
+            {postImagePreviews.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {postImagePreviews.map((preview, index) => (
+                  <div key={index} className="relative">
+                    <img 
+                      src={preview} 
+                      alt={`Preview ${index + 1}`} 
+                      className="w-full h-32 object-cover rounded-lg"
+                      data-testid={`image-preview-${index}`}
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => {
+                        setPostImages(prev => prev.filter((_, i) => i !== index));
+                        setPostImagePreviews(prev => prev.filter((_, i) => i !== index));
+                      }}
+                      data-testid={`button-remove-image-${index}`}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ))}
               </div>
             )}
 
-            {/* Image upload buttons */}
-            {!postImagePreview && (
-              <div className="flex gap-2">
+            {/* Image upload button */}
+            {postImagePreviews.length < 4 && (
+              <div className="space-y-2">
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  className="w-full"
                   onClick={() => fileInputRef.current?.click()}
                   data-testid="button-upload-image"
                 >
                   <ImageIcon className="w-4 h-4 mr-2" />
-                  Gallery
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => fileInputRef.current?.click()}
-                  data-testid="button-camera"
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Camera
+                  {postImagePreviews.length === 0 
+                    ? "Add Photos (up to 4)" 
+                    : `Add More (${postImagePreviews.length}/4)`}
                 </Button>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
+                  multiple={postImagePreviews.length === 0}
                   className="hidden"
                   onChange={handleImageSelect}
                 />
@@ -915,8 +1020,8 @@ function PostCard({
           {category.label}
         </Badge>
 
-        {/* Image */}
-        {post.imageUrl && (
+        {/* Image(s) */}
+        {post.imageUrls && post.imageUrls.length > 0 && (
           <div className="relative">
             {post.isSensitiveContent && !showSensitive ? (
               <div 
@@ -933,11 +1038,10 @@ function PostCard({
                 </div>
               </div>
             ) : (
-              <img 
-                src={post.imageUrl} 
+              <ImageCarousel 
+                images={post.imageUrls} 
                 alt="Post" 
-                className="w-full h-auto rounded-lg max-h-96 object-cover"
-                data-testid="post-image"
+                className="rounded-lg max-h-96"
               />
             )}
           </div>

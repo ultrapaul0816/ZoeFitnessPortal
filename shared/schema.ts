@@ -80,8 +80,8 @@ export const communityPosts = pgTable("community_posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   content: text("content").notNull(),
-  imageUrl: text("image_url"),
-  cloudinaryPublicId: text("cloudinary_public_id"),
+  imageUrls: text("image_urls").array(), // Support multiple images (2-4)
+  cloudinaryPublicIds: text("cloudinary_public_ids").array(), // Corresponding cloudinary IDs
   weekNumber: integer("week_number"), // 1-6 for Heal Your Core
   category: text("category").notNull().default("general"), // wins, realtalk, transformations, workoutselfies, momlife, general
   featured: boolean("featured").default(false),
@@ -284,8 +284,8 @@ export const insertCommunityPostSchema = createInsertSchema(communityPosts).omit
 }).extend({
   category: z.enum(['wins', 'realtalk', 'transformations', 'workoutselfies', 'momlife', 'general']).default('general'),
   weekNumber: z.number().min(1).max(6).optional(),
-  imageUrl: z.string().url().optional(),
-  cloudinaryPublicId: z.string().optional(),
+  imageUrls: z.array(z.string().url()).min(1).max(4).optional(), // 1-4 images
+  cloudinaryPublicIds: z.array(z.string()).optional(),
   isSensitiveContent: z.boolean().default(false),
 });
 

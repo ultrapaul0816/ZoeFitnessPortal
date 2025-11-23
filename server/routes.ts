@@ -92,8 +92,8 @@ cloudinary.config({
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
-    files: 1, // Only allow single file upload
+    fileSize: 10 * 1024 * 1024, // 10MB limit per file
+    files: 4, // Allow up to 4 files for community posts
   },
   fileFilter: (req, file, cb) => {
     // Accept only image files with specific mime types
@@ -133,7 +133,7 @@ function handleMulterError(err: any, req: any, res: any, next: any) {
     }
     if (err.code === 'LIMIT_FILE_COUNT') {
       return res.status(400).json({ 
-        message: 'Too many files. Only one file allowed' 
+        message: 'Too many files. Maximum 4 images allowed per post' 
       });
     }
     if (err.code === 'LIMIT_UNEXPECTED_FILE') {
@@ -689,10 +689,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new community post with image upload
+  // Create new community post with multiple image uploads (max 4)
   app.post(
     "/api/community/posts",
-    upload.single("image"),
+    upload.array("images", 4),
     handleMulterError,
     async (req, res) => {
       try {
@@ -703,31 +703,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: "User ID and content are required" });
         }
 
-        let imageUrl: string | undefined;
-        let cloudinaryPublicId: string | undefined;
+        let imageUrls: string[] | undefined;
+        let cloudinaryPublicIds: string[] | undefined;
 
-        // Upload image to Cloudinary if provided
-        if (req.file) {
-          const uploadResult = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-              {
-                folder: "community_posts",
-                resource_type: "image",
-                transformation: [
-                  { width: 1080, height: 1080, crop: "limit" },
-                  { quality: "auto" },
-                ],
-              },
-              (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-              }
-            );
-            uploadStream.end(req.file!.buffer);
+        // Upload images to Cloudinary if provided (support multiple)
+        const files = req.files as Express.Multer.File[] | undefined;
+        if (files && files.length > 0) {
+          const uploadPromises = files.map((file) => {
+            return new Promise((resolve, reject) => {
+              const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                  folder: "community_posts",
+                  resource_type: "image",
+                  transformation: [
+                    { width: 1080, height: 1080, crop: "limit" },
+                    { quality: "auto" },
+                  ],
+                },
+                (error, result) => {
+                  if (error) reject(error);
+                  else resolve(result);
+                }
+              );
+              uploadStream.end(file.buffer);
+            });
           });
 
-          imageUrl = (uploadResult as any).secure_url;
-          cloudinaryPublicId = (uploadResult as any).public_id;
+          const uploadResults = await Promise.all(uploadPromises);
+          imageUrls = uploadResults.map((result: any) => result.secure_url);
+          cloudinaryPublicIds = uploadResults.map((result: any) => result.public_id);
         }
 
         // Validate with schema
@@ -736,8 +740,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content,
           category: category || 'general',
           weekNumber: weekNumber ? parseInt(weekNumber) : undefined,
-          imageUrl,
-          cloudinaryPublicId,
+          imageUrls,
+          cloudinaryPublicIds,
           isSensitiveContent: isSensitiveContent === 'true',
         });
 
