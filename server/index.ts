@@ -6,8 +6,8 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.set('trust proxy', true);
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Session configuration with PostgreSQL store
 const PgSession = connectPgSimple(session);
