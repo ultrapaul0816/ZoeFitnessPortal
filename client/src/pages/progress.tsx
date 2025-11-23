@@ -10,6 +10,7 @@ import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, T
 import { useToast } from "@/hooks/use-toast";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 import { compressImage } from "@/lib/imageCompression";
+import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
 
 function getInitialUser(): User | null {
   if (typeof window !== 'undefined') {
@@ -638,16 +639,42 @@ export default function Progress() {
         </div>
       )}
 
-      {/* Side-by-Side Comparison - Only show if both photos uploaded */}
+      {/* Interactive Before/After Slider - Only show if both photos uploaded */}
       {startPhoto && finishPhoto && (
         <Card className="p-4 md:p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-200">
           <div className="text-center mb-4 md:mb-6">
             <h2 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2">
               ✨ Your Transformation Journey ✨
             </h2>
-            <p className="text-xs md:text-sm text-gray-700">
-              See your amazing progress side by side!
+            <p className="text-xs md:text-sm text-gray-700 mb-4">
+              Drag the slider to reveal your amazing progress!
             </p>
+          </div>
+
+          {/* Interactive Slider */}
+          <div className="max-w-2xl mx-auto mb-6 md:mb-8">
+            <BeforeAfterSlider
+              beforeImage={startPhoto.fileUrl}
+              afterImage={finishPhoto.fileUrl}
+              beforeLabel="Start"
+              afterLabel="Finish"
+              className="shadow-xl"
+            />
+            <p className="text-center text-xs text-gray-500 mt-3 italic">
+              💡 Tip: Drag the slider left and right to see your transformation
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div className="relative my-6 md:my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-purple-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 text-gray-500 font-medium">
+                Or view side by side
+              </span>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4 md:gap-6">
