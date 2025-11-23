@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { User as UserType, CommunityPost, PostComment } from "@shared/schema";
+import { compressImage } from "@/lib/imageCompression";
 
 // Category icons and labels
 const CATEGORIES = {
@@ -286,17 +287,48 @@ export default function Community() {
     },
   });
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: "Please select an image under 10MB",
-          variant: "destructive",
-        });
-        return;
-      }
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image under 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Show loading toast
+      toast({
+        title: "Compressing image...",
+        description: "This will just take a moment",
+      });
+
+      // Compress image before storing
+      const compressedFile = await compressImage(file, 0.8, 1920, 0.85);
+      
+      setPostImage(compressedFile);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPostImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(compressedFile);
+
+      toast({
+        title: "Image ready!",
+        description: `Compressed from ${(file.size / 1024 / 1024).toFixed(2)}MB to ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`,
+      });
+    } catch (error) {
+      console.error("Image compression error:", error);
+      toast({
+        title: "Compression failed",
+        description: "Using original image instead",
+        variant: "destructive",
+      });
+      // Fallback to original file
       setPostImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp, X, ZoomIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
+import { compressImage } from "@/lib/imageCompression";
 
 function getInitialUser(): User | null {
   if (typeof window !== 'undefined') {
@@ -111,7 +112,7 @@ export default function Progress() {
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "start" | "finish") => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: "start" | "finish") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -133,17 +134,52 @@ export default function Progress() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === "start") {
-        setStartPhotoFile(file);
-        setStartPreview(reader.result as string);
-      } else {
-        setFinishPhotoFile(file);
-        setFinishPreview(reader.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Show loading toast
+      toast({
+        title: "Compressing image...",
+        description: "Optimizing for faster upload",
+      });
+
+      // Compress image before storing
+      const compressedFile = await compressImage(file, 0.8, 1920, 0.85);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (type === "start") {
+          setStartPhotoFile(compressedFile);
+          setStartPreview(reader.result as string);
+        } else {
+          setFinishPhotoFile(compressedFile);
+          setFinishPreview(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(compressedFile);
+
+      toast({
+        title: "Image ready!",
+        description: `Reduced size by ${Math.round((1 - compressedFile.size / file.size) * 100)}%`,
+      });
+    } catch (error) {
+      console.error("Image compression error:", error);
+      toast({
+        title: "Compression failed",
+        description: "Using original image",
+        variant: "destructive",
+      });
+      // Fallback to original file
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (type === "start") {
+          setStartPhotoFile(file);
+          setStartPreview(reader.result as string);
+        } else {
+          setFinishPhotoFile(file);
+          setFinishPreview(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleUpload = (type: "start" | "finish") => {
