@@ -1,11 +1,12 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Crop, RotateCw, Sun, Contrast, Check, X } from "lucide-react";
+import { Crop, RotateCw, Sun, Contrast, Check, X, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BlurTool } from "@/components/ui/blur-tool";
 
 interface PhotoEditorProps {
   imageUrl: string;
@@ -28,8 +29,10 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(null);
-  const [activeTab, setActiveTab] = useState<"crop" | "adjust">("crop");
+  const [activeTab, setActiveTab] = useState<"crop" | "adjust" | "privacy">("crop");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [intermediateImage, setIntermediateImage] = useState<string | null>(null);
+  const [blurredCanvas, setBlurredCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const onCropComplete = useCallback((_: CropArea, croppedAreaPixels: CropArea) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -109,10 +112,9 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
     });
   };
 
-  const handleSave = async () => {
+  const generateIntermediateImage = async () => {
     if (!croppedAreaPixels) return;
     
-    setIsProcessing(true);
     try {
       const croppedImage = await getCroppedImg(
         imageUrl,
@@ -121,7 +123,41 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
         brightness,
         contrast
       );
-      onSave(croppedImage);
+      
+      // Convert blob to data URL for blur tool
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setIntermediateImage(reader.result as string);
+      };
+      reader.readAsDataURL(croppedImage);
+    } catch (e) {
+      console.error("Error generating intermediate image:", e);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsProcessing(true);
+    try {
+      // If user applied blur, use the blurred canvas
+      if (blurredCanvas) {
+        const blob = await new Promise<Blob>((resolve) => {
+          blurredCanvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+          }, "image/jpeg", 0.95);
+        });
+        onSave(blob);
+      } else {
+        // Otherwise use cropped/adjusted image
+        if (!croppedAreaPixels) return;
+        const croppedImage = await getCroppedImg(
+          imageUrl,
+          croppedAreaPixels,
+          rotation,
+          brightness,
+          contrast
+        );
+        onSave(croppedImage);
+      }
     } catch (e) {
       console.error("Error processing image:", e);
     } finally {
@@ -179,30 +215,55 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
               <Sun className="w-4 h-4 inline mr-2" />
               Adjust
             </button>
-          </div>
-
-          {/* Cropper Area */}
-          <div className="relative w-full h-[400px] bg-gray-100 rounded-lg overflow-hidden">
-            <Cropper
-              image={imageUrl}
-              crop={crop}
-              zoom={zoom}
-              rotation={rotation}
-              aspect={3 / 4}
-              onCropChange={setCrop}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
-              style={{
-                containerStyle: {
-                  filter: `brightness(${brightness}%) contrast(${contrast}%)`,
-                },
+            <button
+              onClick={() => {
+                setActiveTab("privacy");
+                generateIntermediateImage();
               }}
-            />
+              className={cn(
+                "px-4 py-2 font-medium text-sm border-b-2 transition-colors",
+                activeTab === "privacy"
+                  ? "border-pink-600 text-pink-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              )}
+              data-testid="tab-privacy"
+            >
+              <Shield className="w-4 h-4 inline mr-2" />
+              Privacy
+            </button>
           </div>
 
-          {/* Controls */}
-          <Card className="p-4 space-y-4">
-            {activeTab === "crop" ? (
+          {/* Cropper Area or Blur Tool */}
+          {activeTab === "privacy" && intermediateImage ? (
+            <BlurTool
+              imageUrl={intermediateImage}
+              onBlurComplete={setBlurredCanvas}
+              width={800}
+              height={1067}
+            />
+          ) : (
+            <>
+              <div className="relative w-full h-[400px] bg-gray-100 rounded-lg overflow-hidden">
+                <Cropper
+                  image={imageUrl}
+                  crop={crop}
+                  zoom={zoom}
+                  rotation={rotation}
+                  aspect={3 / 4}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                  style={{
+                    containerStyle: {
+                      filter: `brightness(${brightness}%) contrast(${contrast}%)`,
+                    },
+                  }}
+                />
+              </div>
+
+              {/* Controls */}
+              <Card className="p-4 space-y-4">
+                {activeTab === "crop" ? (
               <>
                 {/* Zoom Control */}
                 <div className="space-y-2">
@@ -274,8 +335,10 @@ export function PhotoEditor({ imageUrl, onSave, onCancel, isOpen }: PhotoEditorP
                   />
                 </div>
               </>
-            )}
-          </Card>
+                )}
+              </Card>
+            </>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-3">
