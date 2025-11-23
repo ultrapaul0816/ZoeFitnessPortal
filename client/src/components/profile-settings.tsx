@@ -178,7 +178,9 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       // Also save to localStorage for backward compatibility and non-DB fields
       saveProfileData(profileData);
       
-      const completeness = evaluateCompleteness(profileData);
+      // Re-read profile data from storage to get the freshly saved values
+      const freshProfileData = getCurrentProfileData();
+      const completeness = evaluateCompleteness(freshProfileData);
       
       // Show success feedback
       if (completeness.isComplete) {
@@ -200,6 +202,9 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       
       // Update completeness state
       setProfileCompleteness(completeness);
+      
+      // Close the profile settings after successful save
+      onClose();
     } catch (error) {
       toast({
         title: "Error",
@@ -877,7 +882,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
             </div>
           </div>
 
-          {/* Save Changes Button */}
+          {/* Save & Close Button */}
           <Button 
             onClick={handleSaveProfile}
             className="w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
@@ -886,7 +891,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
             <svg className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Save Changes</span>
+            <span>Save & Close</span>
           </Button>
         </div>
       </div>
