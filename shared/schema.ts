@@ -275,6 +275,21 @@ export const emailOpens = pgTable("email_opens", {
   userAgent: text("user_agent"), // For analytics
 });
 
+// Email automation rules for trigger-based campaigns
+export const emailAutomationRules = pgTable("email_automation_rules", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  triggerType: text("trigger_type").notNull().unique(), // 'user_signup', 'program_completion', 'user_inactivity'
+  name: text("name").notNull(), // Display name: "Welcome Email", "Completion Email", etc.
+  description: text("description").notNull(), // Description of what this automation does
+  templateId: varchar("template_id").notNull(), // Which email template to use
+  enabled: boolean("enabled").notNull().default(false), // Can be toggled on/off by admin
+  config: jsonb("config").notNull(), // JSON config: { inactivityDays: 30, delayMinutes: 0 }
+  totalSent: integer("total_sent").default(0), // How many automated emails sent via this rule
+  lastTriggeredAt: timestamp("last_triggered_at"), // When this automation last fired
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -427,6 +442,17 @@ export const insertEmailOpenSchema = createInsertSchema(emailOpens).omit({
   openedAt: true,
 });
 
+export const insertEmailAutomationRuleSchema = createInsertSchema(emailAutomationRules).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  totalSent: true,
+  lastTriggeredAt: true,
+}).extend({
+  triggerType: z.enum(['user_signup', 'program_completion', 'user_inactivity']),
+  enabled: z.boolean().default(false),
+});
+
 // Reusable validation schemas
 
 // Phone number validation (flexible for international formats, truly optional)
@@ -570,6 +596,8 @@ export type EmailCampaignRecipient = typeof emailCampaignRecipients.$inferSelect
 export type InsertEmailCampaignRecipient = z.infer<typeof insertEmailCampaignRecipientSchema>;
 export type EmailOpen = typeof emailOpens.$inferSelect;
 export type InsertEmailOpen = z.infer<typeof insertEmailOpenSchema>;
+export type EmailAutomationRule = typeof emailAutomationRules.$inferSelect;
+export type InsertEmailAutomationRule = z.infer<typeof insertEmailAutomationRuleSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 
