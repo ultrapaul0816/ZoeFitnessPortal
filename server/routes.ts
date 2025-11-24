@@ -1740,6 +1740,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email Automation Rules Routes
+  
+  // Get all automation rules
+  app.get("/api/admin/automation-rules", requireAdmin, async (req, res) => {
+    try {
+      const rules = await storage.getEmailAutomationRules();
+      res.json(rules);
+    } catch (error) {
+      console.error("Error fetching automation rules:", error);
+      res.status(500).json({ message: "Failed to fetch automation rules" });
+    }
+  });
+
+  // Update automation rule (toggle enabled, or update subject/content)
+  app.patch("/api/admin/automation-rules/:id", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { enabled, subject, htmlContent } = req.body;
+
+      if (enabled === undefined && !subject && !htmlContent) {
+        return res.status(400).json({ 
+          message: "At least one field (enabled, subject, or htmlContent) is required" 
+        });
+      }
+
+      const updates: Partial<{ enabled: boolean; subject: string; htmlContent: string; updatedAt: Date }> = {};
+      if (enabled !== undefined) updates.enabled = enabled;
+      if (subject) updates.subject = subject;
+      if (htmlContent) updates.htmlContent = htmlContent;
+      updates.updatedAt = new Date();
+
+      const updatedRule = await storage.updateEmailAutomationRule(id, updates);
+
+      if (!updatedRule) {
+        return res.status(404).json({ message: "Automation rule not found" });
+      }
+
+      res.json(updatedRule);
+    } catch (error) {
+      console.error("Error updating automation rule:", error);
+      res.status(500).json({ message: "Failed to update automation rule" });
+    }
+  });
+
   // Email Analytics Routes
   app.get("/api/admin/analytics/email-campaigns", requireAdmin, async (req, res) => {
     try {

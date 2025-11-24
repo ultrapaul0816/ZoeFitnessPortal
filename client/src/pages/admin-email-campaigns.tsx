@@ -358,15 +358,26 @@ export default function AdminEmailCampaigns() {
             Select a template to preview, test, or send to your members
           </p>
         </div>
-        <Button
-          onClick={() => setLocation("/admin-email-analytics")}
-          variant="outline"
-          className="flex items-center gap-2"
-          data-testid="button-view-analytics"
-        >
-          <TrendingUp className="w-4 h-4" />
-          View Analytics
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => setLocation("/admin-automation-settings")}
+            variant="outline"
+            className="flex items-center gap-2"
+            data-testid="button-automation-settings"
+          >
+            <Mail className="w-4 h-4" />
+            Automation Settings
+          </Button>
+          <Button
+            onClick={() => setLocation("/admin-email-analytics")}
+            variant="outline"
+            className="flex items-center gap-2"
+            data-testid="button-view-analytics"
+          >
+            <TrendingUp className="w-4 h-4" />
+            View Analytics
+          </Button>
+        </div>
       </div>
 
       {/* Template Cards Grid */}

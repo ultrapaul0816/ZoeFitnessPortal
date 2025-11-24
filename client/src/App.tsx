@@ -10,6 +10,7 @@ import Admin from "@/pages/admin";
 import AdminAnalytics from "@/pages/admin-analytics";
 import AdminEmailCampaigns from "@/pages/admin-email-campaigns";
 import AdminEmailAnalytics from "@/pages/admin-email-analytics";
+import AdminAutomationSettings from "@/pages/admin-automation-settings";
 import MyLibrary from "@/pages/my-library";
 import Community from "@/pages/community";
 import NotFound from "@/pages/not-found";
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/admin/analytics" component={AdminAnalytics} />
       <Route path="/admin-email-campaigns" component={AdminEmailCampaigns} />
       <Route path="/admin-email-analytics" component={AdminEmailAnalytics} />
+      <Route path="/admin-automation-settings" component={AdminAutomationSettings} />
       <Route path="/heal-your-core" component={() => (
         <Suspense fallback={<PageLoader message="Loading your program..." />}>
           <HealYourCorePage />
