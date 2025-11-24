@@ -1784,6 +1784,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send test email for automation rule
+  app.post("/api/admin/automation-rules/:id/test", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const testEmail = "me@zoemodgill.in";
+
+      const rule = await storage.getEmailAutomationRule(id);
+      if (!rule) {
+        return res.status(404).json({ message: "Automation rule not found" });
+      }
+
+      // Replace variables with test data
+      const testData = {
+        userName: "Jane Smith",
+        firstName: "Jane",
+        programName: "Your Postpartum Strength Recovery Program",
+        weekNumber: "3",
+      };
+
+      let subject = rule.subject;
+      let htmlContent = rule.htmlContent;
+
+      Object.entries(testData).forEach(([key, value]) => {
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        subject = subject.replace(regex, value);
+        htmlContent = htmlContent.replace(regex, value);
+      });
+
+      // Send via email service
+      await emailService.sendEmail({
+        to: testEmail,
+        subject: `[TEST] ${subject}`,
+        html: htmlContent,
+      });
+
+      res.json({ 
+        message: `Test email sent to ${testEmail}`,
+        sentTo: testEmail 
+      });
+    } catch (error) {
+      console.error("Error sending test automation email:", error);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
   // Email Analytics Routes
   app.get("/api/admin/analytics/email-campaigns", requireAdmin, async (req, res) => {
     try {
