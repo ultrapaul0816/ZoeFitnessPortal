@@ -1553,6 +1553,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Preview campaign (get recipients and email preview without sending)
+  app.post("/api/admin/email-templates/:id/preview-campaign", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { audienceFilter } = req.body;
+
+      if (!audienceFilter) {
+        return res.status(400).json({ message: "Audience filter is required" });
+      }
+
+      const template = await storage.getEmailTemplate(id);
+
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      const targetedUsers = await storage.getTargetedUsers(audienceFilter);
+
+      if (targetedUsers.length === 0) {
+        return res.status(400).json({ 
+          message: "No users match the target audience",
+          recipientCount: 0,
+          recipients: [],
+        });
+      }
+
+      // Generate preview with first user's data
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+      const firstUser = targetedUsers[0];
+      const userVariables = generateUserVariables(firstUser, {
+        programName: 'Your Postpartum Strength Recovery Program',
+        campaignId: 'preview',
+        recipientId: 'preview',
+        baseUrl,
+      });
+
+      const previewSubject = replaceTemplateVariables(template.subject, userVariables);
+      const previewHtml = replaceTemplateVariables(template.htmlContent, userVariables);
+
+      // Return recipient list and preview
+      const recipients = targetedUsers.map(user => ({
+        id: user.id,
+        email: user.email,
+        name: `${user.firstName} ${user.lastName}`,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      }));
+
+      res.json({
+        recipientCount: targetedUsers.length,
+        recipients,
+        preview: {
+          subject: previewSubject,
+          html: previewHtml,
+          sampleRecipient: {
+            name: `${firstUser.firstName} ${firstUser.lastName}`,
+            email: firstUser.email,
+          },
+        },
+        template: {
+          id: template.id,
+          name: template.name,
+          type: template.type,
+        },
+      });
+    } catch (error) {
+      console.error("Error previewing campaign:", error);
+      res.status(500).json({ message: "Failed to preview campaign" });
+    }
+  });
+
   // Send campaign to targeted users
   app.post("/api/admin/email-templates/:id/send-campaign", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
