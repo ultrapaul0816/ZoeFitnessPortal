@@ -106,6 +106,27 @@ export default function AdminAutomationSettings() {
     },
   });
 
+  // Send test email mutation
+  const sendTestMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/automation-rules/${id}/test`, {});
+      return await response.json();
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Test Email Sent",
+        description: `Test email has been sent to ${data.sentTo}`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send test email",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleToggle = (rule: EmailAutomationRule) => {
     toggleRuleMutation.mutate({ id: rule.id, enabled: !rule.enabled });
   };
@@ -325,6 +346,26 @@ export default function AdminAutomationSettings() {
                             data-testid={`switch-toggle-${rule.id}`}
                           />
                         </div>
+
+                        <Button
+                          variant="outline"
+                          onClick={() => sendTestMutation.mutate(rule.id)}
+                          disabled={sendTestMutation.isPending}
+                          className="border-green-300 hover:bg-green-50 text-green-700"
+                          data-testid={`button-test-${rule.id}`}
+                        >
+                          {sendTestMutation.isPending ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              <Mail className="h-4 w-4 mr-2" />
+                              Send Test
+                            </>
+                          )}
+                        </Button>
 
                         <Button
                           variant="outline"
