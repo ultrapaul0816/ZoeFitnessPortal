@@ -235,6 +235,7 @@ export const emailTemplates = pgTable("email_templates", {
 export const emailCampaigns = pgTable("email_campaigns", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   templateId: varchar("template_id").notNull(), // Reference to email template
+  automationRuleId: varchar("automation_rule_id"), // Reference to automation rule if this was auto-triggered (null for manual campaigns)
   name: text("name").notNull(), // Internal name for the campaign
   templateType: text("template_type").notNull(), // 'welcome', 're-engagement', 'program-reminder', 'completion-celebration'
   subject: text("subject").notNull(), // Email subject line (can be customized from template default)
@@ -278,10 +279,12 @@ export const emailOpens = pgTable("email_opens", {
 // Email automation rules for trigger-based campaigns
 export const emailAutomationRules = pgTable("email_automation_rules", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  triggerType: text("trigger_type").notNull().unique(), // 'user_signup', 'program_completion', 'user_inactivity'
+  triggerType: text("trigger_type").notNull().unique(), // 'user_signup', 'program_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_21d', 'user_inactivity_30d'
   name: text("name").notNull(), // Display name: "Welcome Email", "Completion Email", etc.
   description: text("description").notNull(), // Description of what this automation does
   templateId: varchar("template_id").notNull(), // Which email template to use
+  subject: text("subject").notNull(), // Customizable subject line (initialized from template)
+  htmlContent: text("html_content").notNull(), // Customizable HTML content (initialized from template)
   enabled: boolean("enabled").notNull().default(false), // Can be toggled on/off by admin
   config: jsonb("config").notNull(), // JSON config: { inactivityDays: 30, delayMinutes: 0 }
   totalSent: integer("total_sent").default(0), // How many automated emails sent via this rule
@@ -449,7 +452,7 @@ export const insertEmailAutomationRuleSchema = createInsertSchema(emailAutomatio
   totalSent: true,
   lastTriggeredAt: true,
 }).extend({
-  triggerType: z.enum(['user_signup', 'program_completion', 'user_inactivity']),
+  triggerType: z.enum(['user_signup', 'program_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_21d', 'user_inactivity_30d']),
   enabled: z.boolean().default(false),
 });
 

@@ -44,6 +44,7 @@ import {
   type InsertEmailTemplate,
   type EmailOpen,
   type InsertEmailOpen,
+  type EmailAutomationRule,
 } from "@shared/schema";
 import {
   users,
@@ -68,6 +69,7 @@ import {
   emailCampaignRecipients,
   emailTemplates,
   emailOpens,
+  emailAutomationRules,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -295,6 +297,13 @@ export interface IStorage {
   // Email Tracking
   recordEmailOpen(open: InsertEmailOpen): Promise<EmailOpen>;
   getEmailOpens(campaignId: string): Promise<EmailOpen[]>;
+
+  // Email Automation Rules
+  getEmailAutomationRules(): Promise<EmailAutomationRule[]>;
+  getEmailAutomationRule(id: string): Promise<EmailAutomationRule | undefined>;
+  getEmailAutomationRuleByTriggerType(triggerType: string): Promise<EmailAutomationRule | undefined>;
+  updateEmailAutomationRule(id: string, updates: Partial<EmailAutomationRule>): Promise<EmailAutomationRule | undefined>;
+  incrementAutomationRuleSent(id: string): Promise<void>;
 
   // Assets
   assetDisplayNames?: Map<string, string>;
@@ -1708,6 +1717,26 @@ export class MemStorage implements IStorage {
   async getEmailOpens(campaignId: string): Promise<EmailOpen[]> {
     return [];
   }
+
+  async getEmailAutomationRules(): Promise<EmailAutomationRule[]> {
+    return [];
+  }
+
+  async getEmailAutomationRule(id: string): Promise<EmailAutomationRule | undefined> {
+    return undefined;
+  }
+
+  async getEmailAutomationRuleByTriggerType(triggerType: string): Promise<EmailAutomationRule | undefined> {
+    return undefined;
+  }
+
+  async updateEmailAutomationRule(id: string, updates: Partial<EmailAutomationRule>): Promise<EmailAutomationRule | undefined> {
+    return undefined;
+  }
+
+  async incrementAutomationRuleSent(id: string): Promise<void> {
+    // No-op
+  }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -2953,6 +2982,55 @@ class DatabaseStorage implements IStorage {
       .where(eq(emailOpens.campaignId, campaignId))
       .orderBy(desc(emailOpens.openedAt));
     return result;
+  }
+
+  // Email Automation Rules
+  async getEmailAutomationRules(): Promise<EmailAutomationRule[]> {
+    const result = await this.db
+      .select()
+      .from(emailAutomationRules)
+      .orderBy(asc(emailAutomationRules.triggerType));
+    return result;
+  }
+
+  async getEmailAutomationRule(id: string): Promise<EmailAutomationRule | undefined> {
+    const result = await this.db
+      .select()
+      .from(emailAutomationRules)
+      .where(eq(emailAutomationRules.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async getEmailAutomationRuleByTriggerType(triggerType: string): Promise<EmailAutomationRule | undefined> {
+    const result = await this.db
+      .select()
+      .from(emailAutomationRules)
+      .where(eq(emailAutomationRules.triggerType, triggerType))
+      .limit(1);
+    return result[0];
+  }
+
+  async updateEmailAutomationRule(id: string, updates: Partial<EmailAutomationRule>): Promise<EmailAutomationRule | undefined> {
+    const result = await this.db
+      .update(emailAutomationRules)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(emailAutomationRules.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async incrementAutomationRuleSent(id: string): Promise<void> {
+    await this.db
+      .update(emailAutomationRules)
+      .set({
+        totalSent: sql`${emailAutomationRules.totalSent} + 1`,
+        lastTriggeredAt: new Date(),
+      })
+      .where(eq(emailAutomationRules.id, id));
   }
 }
 
