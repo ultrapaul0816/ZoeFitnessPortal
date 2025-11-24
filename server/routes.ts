@@ -1813,8 +1813,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Send via email service
-      await emailService.sendEmail({
-        to: testEmail,
+      await emailService.send({
+        to: { email: testEmail, name: "Test User" },
         subject: `[TEST] ${subject}`,
         html: htmlContent,
       });
