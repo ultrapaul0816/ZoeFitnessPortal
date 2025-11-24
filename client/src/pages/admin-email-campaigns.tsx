@@ -96,7 +96,8 @@ export default function AdminEmailCampaigns() {
   // Preview mutation - MUST be called before any conditional returns
   const previewMutation = useMutation({
     mutationFn: async (templateId: string) => {
-      return apiRequest(`/api/admin/email-templates/${templateId}/preview`, "POST") as unknown as Promise<{ subject: string; content: string }>;
+      const response = await apiRequest("POST", `/api/admin/email-templates/${templateId}/preview`);
+      return await response.json() as { subject: string; content: string };
     },
     onSuccess: (data) => {
       setPreviewData(data);
@@ -114,7 +115,8 @@ export default function AdminEmailCampaigns() {
   // Send test email mutation
   const sendTestMutation = useMutation({
     mutationFn: async ({ templateId, email }: { templateId: string; email: string }) => {
-      return apiRequest(`/api/admin/email-templates/${templateId}/send-test`, "POST", { email });
+      const response = await apiRequest("POST", `/api/admin/email-templates/${templateId}/send-test`, { email });
+      return await response.json();
     },
     onSuccess: () => {
       toast({
@@ -140,10 +142,11 @@ export default function AdminEmailCampaigns() {
       campaignName: string;
       audienceFilter: any;
     }) => {
-      return apiRequest(`/api/admin/email-templates/${templateId}/send-campaign`, "POST", {
+      const response = await apiRequest("POST", `/api/admin/email-templates/${templateId}/send-campaign`, {
         campaignName,
         audienceFilter,
-      }) as unknown as Promise<{ success: boolean; recipientCount: number; message: string }>;
+      });
+      return await response.json() as { success: boolean; recipientCount: number; message: string };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/email-campaigns"] });
@@ -175,10 +178,11 @@ export default function AdminEmailCampaigns() {
       subject: string;
       htmlContent: string;
     }) => {
-      return apiRequest(`/api/admin/email-templates/${templateId}`, "PATCH", {
+      const response = await apiRequest("PATCH", `/api/admin/email-templates/${templateId}`, {
         subject,
         htmlContent,
       });
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/email-templates"] });
