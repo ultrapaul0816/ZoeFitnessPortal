@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Send, Users, Eye, TestTube, Loader2, Edit, TrendingUp, Calendar, Check } from "lucide-react";
+import { Mail, Send, Users, Eye, TestTube, Loader2, Edit, TrendingUp, Calendar, Check, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface EmailTemplate {
@@ -53,6 +54,7 @@ export default function AdminEmailCampaigns() {
   const [showPreview, setShowPreview] = useState(false);
   const [showTestDialog, setShowTestDialog] = useState(false);
   const [showSendDialog, setShowSendDialog] = useState(false);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   
   const [testEmailAddress, setTestEmailAddress] = useState("me@zoemodgill.in");
@@ -60,6 +62,12 @@ export default function AdminEmailCampaigns() {
   const [editSubject, setEditSubject] = useState("");
   const [editContent, setEditContent] = useState("");
   const [previewData, setPreviewData] = useState<{ subject: string; content: string } | null>(null);
+  const [campaignPreviewData, setCampaignPreviewData] = useState<{
+    recipientCount: number;
+    recipients: Array<{ id: number; name: string; email: string }>;
+    preview: { subject: string; html: string; sampleRecipient: string };
+    template: { name: string; type: string };
+  } | null>(null);
   
   const [audienceFilters, setAudienceFilters] = useState({
     dormantDays: "0",
@@ -135,6 +143,36 @@ export default function AdminEmailCampaigns() {
     },
   });
 
+  // Preview campaign mutation
+  const previewCampaignMutation = useMutation({
+    mutationFn: async ({ templateId, audienceFilter }: {
+      templateId: string;
+      audienceFilter: any;
+    }) => {
+      const response = await apiRequest("POST", `/api/admin/email-templates/${templateId}/preview-campaign`, {
+        audienceFilter,
+      });
+      return await response.json() as {
+        recipientCount: number;
+        recipients: Array<{ id: number; name: string; email: string }>;
+        preview: { subject: string; html: string; sampleRecipient: string };
+        template: { name: string; type: string };
+      };
+    },
+    onSuccess: (data) => {
+      setCampaignPreviewData(data);
+      setShowSendDialog(false);
+      setShowPreviewDialog(true);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to generate campaign preview",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Send campaign mutation
   const sendCampaignMutation = useMutation({
     mutationFn: async ({ templateId, campaignName, audienceFilter }: {
@@ -154,13 +192,14 @@ export default function AdminEmailCampaigns() {
         title: "Campaign Sending",
         description: `Email campaign is being sent to ${data.recipientCount} recipients`,
       });
-      setShowSendDialog(false);
+      setShowPreviewDialog(false);
       setCampaignName("");
       setAudienceFilters({
         dormantDays: "0",
         hasWhatsAppSupport: "any",
         countries: [],
       });
+      setCampaignPreviewData(null);
     },
     onError: (error: any) => {
       toast({
@@ -230,7 +269,7 @@ export default function AdminEmailCampaigns() {
     setShowSendDialog(true);
   };
 
-  const handleSendCampaign = () => {
+  const handlePreviewCampaign = () => {
     if (!campaignName) {
       toast({
         title: "Missing Information",
@@ -251,11 +290,34 @@ export default function AdminEmailCampaigns() {
       audienceFilter.country = audienceFilters.countries[0];
     }
 
+    previewCampaignMutation.mutate({
+      templateId: selectedTemplateId,
+      audienceFilter,
+    });
+  };
+
+  const handleSendCampaign = () => {
+    const audienceFilter: any = {};
+    if (audienceFilters.dormantDays && audienceFilters.dormantDays !== "0") {
+      audienceFilter.dormantDays = parseInt(audienceFilters.dormantDays);
+    }
+    if (audienceFilters.hasWhatsAppSupport !== "any") {
+      audienceFilter.hasWhatsAppSupport = audienceFilters.hasWhatsAppSupport === "true";
+    }
+    if (audienceFilters.countries.length > 0 && audienceFilters.countries.length < availableCountries.length) {
+      audienceFilter.country = audienceFilters.countries[0];
+    }
+
     sendCampaignMutation.mutate({
       templateId: selectedTemplateId,
       campaignName,
       audienceFilter,
     });
+  };
+
+  const handleBackToEdit = () => {
+    setShowPreviewDialog(false);
+    setShowSendDialog(true);
   };
 
   const handleOpenEditDialog = (template: EmailTemplate) => {
@@ -461,8 +523,8 @@ export default function AdminEmailCampaigns() {
                     className={`bg-gradient-to-r ${getTemplateColor(template.type)} hover:opacity-90 text-white`}
                     data-testid={`button-send-${template.type}`}
                   >
-                    <Send className="w-4 h-4 mr-2" />
-                    Send to Users
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview Campaign
                   </Button>
                 </div>
               </CardContent>
@@ -743,20 +805,20 @@ export default function AdminEmailCampaigns() {
             </div>
 
             <Button
-              onClick={handleSendCampaign}
-              disabled={sendCampaignMutation.isPending}
+              onClick={handlePreviewCampaign}
+              disabled={previewCampaignMutation.isPending}
               className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
-              data-testid="button-confirm-send"
+              data-testid="button-preview-campaign"
             >
-              {sendCampaignMutation.isPending ? (
+              {previewCampaignMutation.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Sending...
+                  Loading Preview...
                 </>
               ) : (
                 <>
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Campaign
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview Campaign
                 </>
               )}
             </Button>
@@ -820,6 +882,153 @@ export default function AdminEmailCampaigns() {
               )}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Campaign Preview Dialog */}
+      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-2xl bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              Campaign Preview
+            </DialogTitle>
+            <DialogDescription>
+              Review your campaign details before sending
+            </DialogDescription>
+          </DialogHeader>
+          
+          {campaignPreviewData && (
+            <div className="flex-1 overflow-y-auto space-y-6 pt-4">
+              {/* Campaign Summary Section */}
+              <div className="bg-gradient-to-br from-pink-50 to-purple-50 p-6 rounded-lg border-2 border-pink-200">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2" data-testid="text-campaign-name">
+                  {campaignName}
+                </h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-sm text-gray-600">Template:</span>
+                  <span className="font-semibold text-gray-800" data-testid="text-template-name">
+                    {campaignPreviewData.template.name}
+                  </span>
+                  <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white" data-testid="badge-template-type">
+                    {campaignPreviewData.template.type}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="w-8 h-8 text-pink-500" />
+                  <div>
+                    <div className="text-4xl font-bold text-pink-600" data-testid="text-recipient-count">
+                      {campaignPreviewData.recipientCount}
+                    </div>
+                    <div className="text-sm text-gray-600">recipients</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recipient List Section */}
+              <div>
+                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-purple-500" />
+                  Target Recipients
+                </h3>
+                <div className="border rounded-lg bg-white">
+                  <ScrollArea className="h-48">
+                    <div className="p-4 space-y-2">
+                      {campaignPreviewData.recipients.slice(0, 20).map((recipient, index) => (
+                        <div 
+                          key={recipient.id} 
+                          className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded"
+                          data-testid={`recipient-${index}`}
+                        >
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 flex items-center justify-center text-white font-semibold text-sm">
+                            {recipient.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-sm text-gray-800" data-testid={`recipient-name-${index}`}>
+                              {recipient.name}
+                            </div>
+                            <div className="text-xs text-gray-500" data-testid={`recipient-email-${index}`}>
+                              {recipient.email}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {campaignPreviewData.recipientCount > 20 && (
+                        <div className="p-2 text-center text-sm text-gray-500 italic" data-testid="text-more-recipients">
+                          ... and {campaignPreviewData.recipientCount - 20} more recipients
+                        </div>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
+
+              {/* Email Preview Section */}
+              <div>
+                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-pink-500" />
+                  Email Preview
+                </h3>
+                
+                {/* Subject Line */}
+                <div className="mb-4">
+                  <Label className="text-sm font-semibold text-gray-700">Subject Line</Label>
+                  <div className="mt-1 p-3 bg-gradient-to-r from-pink-50 to-purple-50 rounded-md border border-pink-200">
+                    <p className="text-sm font-medium" data-testid="text-preview-subject">
+                      {campaignPreviewData.preview.subject}
+                    </p>
+                  </div>
+                </div>
+
+                {/* HTML Preview */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-700 mb-2 block">Email Content</Label>
+                  <div className="bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+                    <ScrollArea className="h-96">
+                      <div 
+                        className="p-6 prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: campaignPreviewData.preview.html }}
+                        data-testid="preview-html-content"
+                      />
+                    </ScrollArea>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 italic" data-testid="text-sample-recipient">
+                    Preview shown with data from: {campaignPreviewData.preview.sampleRecipient}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-4 pt-4 pb-2 sticky bottom-0 bg-white border-t">
+                <Button
+                  variant="outline"
+                  onClick={handleBackToEdit}
+                  className="border-gray-300 hover:bg-gray-50"
+                  data-testid="button-back-to-edit"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Edit
+                </Button>
+                <Button
+                  onClick={handleSendCampaign}
+                  disabled={sendCampaignMutation.isPending}
+                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+                  data-testid="button-confirm-send"
+                >
+                  {sendCampaignMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Confirm & Send Campaign
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
