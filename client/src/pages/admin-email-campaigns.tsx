@@ -349,13 +349,24 @@ export default function AdminEmailCampaigns() {
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-          Email Campaign Templates
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Select a template to preview, test, or send to your members
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            Email Campaign Templates
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Select a template to preview, test, or send to your members
+          </p>
+        </div>
+        <Button
+          onClick={() => setLocation("/admin-email-analytics")}
+          variant="outline"
+          className="flex items-center gap-2"
+          data-testid="button-view-analytics"
+        >
+          <TrendingUp className="w-4 h-4" />
+          View Analytics
+        </Button>
       </div>
 
       {/* Template Cards Grid */}

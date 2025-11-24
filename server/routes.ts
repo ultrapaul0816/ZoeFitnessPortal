@@ -1740,6 +1740,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email Analytics Routes
+  app.get("/api/admin/analytics/email-campaigns", requireAdmin, async (req, res) => {
+    try {
+      const campaigns = await storage.getEmailCampaigns();
+      const templates = await storage.getEmailTemplates();
+
+      const totalCampaigns = campaigns.length;
+      const totalSent = campaigns.reduce((sum, c) => sum + (c.sentCount || 0), 0);
+      const totalOpens = campaigns.reduce((sum, c) => sum + (c.openCount || 0), 0);
+      const averageOpenRate = totalSent > 0 ? Math.round((totalOpens / totalSent) * 100) : 0;
+
+      const templateStats = templates.map(template => {
+        const templateCampaigns = campaigns.filter(c => c.templateType === template.type);
+        const sent = templateCampaigns.reduce((sum, c) => sum + (c.sentCount || 0), 0);
+        const opens = templateCampaigns.reduce((sum, c) => sum + (c.openCount || 0), 0);
+        const openRate = sent > 0 ? Math.round((opens / sent) * 100) : 0;
+
+        return {
+          templateId: template.id,
+          templateType: template.type,
+          templateName: template.name,
+          totalSent: sent,
+          totalOpens: opens,
+          openRate,
+          campaigns: templateCampaigns.length,
+        };
+      });
+
+      const recentCampaigns = campaigns
+        .slice(0, 10)
+        .map(campaign => ({
+          id: campaign.id,
+          name: campaign.name,
+          templateType: campaign.templateType,
+          status: campaign.status,
+          sentAt: campaign.sentAt,
+          recipientCount: campaign.recipientCount,
+          sentCount: campaign.sentCount || 0,
+          openCount: campaign.openCount || 0,
+          openRate: (campaign.sentCount || 0) > 0
+            ? Math.round(((campaign.openCount || 0) / (campaign.sentCount || 0)) * 100)
+            : 0,
+        }));
+
+      res.json({
+        overview: {
+          totalCampaigns,
+          totalSent,
+          totalOpens,
+          averageOpenRate,
+        },
+        templateStats,
+        recentCampaigns,
+      });
+    } catch (error) {
+      console.error("Error fetching email analytics:", error);
+      res.status(500).json({ message: "Failed to fetch email analytics" });
+    }
+  });
+
   // Get all assets
   app.get("/api/admin/assets", async (req, res) => {
     try {
