@@ -319,9 +319,9 @@ export default function Login() {
                             type="button"
                             onClick={handleForgotPasswordOpen}
                             className="text-xs text-pink-600 hover:text-pink-700 font-medium transition-colors"
-                            data-testid="link-forgot-password"
+                            data-testid="link-login-with-otp"
                           >
-                            Forgot password?
+                            Login with OTP
                           </button>
                         </div>
                         <FormControl>
@@ -463,7 +463,7 @@ export default function Login() {
         </Card>
       </div>
 
-      {/* Forgot Password Dialog */}
+      {/* Login with OTP Dialog */}
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
@@ -471,7 +471,7 @@ export default function Login() {
               {forgotPasswordStep === 'email' && (
                 <>
                   <Mail className="w-5 h-5 text-pink-500" />
-                  Forgot Password
+                  Login with OTP
                 </>
               )}
               {forgotPasswordStep === 'code' && (
@@ -483,7 +483,7 @@ export default function Login() {
               {forgotPasswordStep === 'options' && (
                 <>
                   <KeyRound className="w-5 h-5 text-pink-500" />
-                  Code Verified!
+                  Almost there!
                 </>
               )}
               {forgotPasswordStep === 'newPassword' && (
@@ -494,9 +494,9 @@ export default function Login() {
               )}
             </DialogTitle>
             <DialogDescription className="text-gray-600">
-              {forgotPasswordStep === 'email' && "Enter your email and we'll send you a 6-digit code"}
-              {forgotPasswordStep === 'code' && "Check your email for the 6-digit code"}
-              {forgotPasswordStep === 'options' && "Choose how you'd like to continue"}
+              {forgotPasswordStep === 'email' && "Enter your email and we'll send you a 6-digit code to log in"}
+              {forgotPasswordStep === 'code' && "Enter the 6-digit code sent to your email"}
+              {forgotPasswordStep === 'options' && "You can log in now or set a new password"}
               {forgotPasswordStep === 'newPassword' && "Create a new password for your account"}
             </DialogDescription>
           </DialogHeader>
@@ -559,21 +559,38 @@ export default function Login() {
                   <p className="text-xs text-gray-500 text-center">Code expires in 10 minutes</p>
                 </div>
                 <Button
-                  onClick={handleProceedToOptions}
-                  disabled={otpCode.length !== 6}
+                  onClick={handleLoginWithOtp}
+                  disabled={otpCode.length !== 6 || verifyOtpMutation.isPending}
                   className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl"
                   data-testid="button-verify-code"
                 >
-                  Continue
+                  {verifyOtpMutation.isPending ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Logging in...</span>
+                    </div>
+                  ) : (
+                    "Log In"
+                  )}
                 </Button>
-                <button
-                  type="button"
-                  onClick={() => setForgotPasswordStep('email')}
-                  className="w-full text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to email
-                </button>
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setForgotPasswordStep('email')}
+                    className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleProceedToOptions}
+                    className="text-sm text-pink-600 hover:text-pink-700"
+                    disabled={otpCode.length !== 6}
+                  >
+                    Reset password instead?
+                  </button>
+                </div>
               </>
             )}
 
