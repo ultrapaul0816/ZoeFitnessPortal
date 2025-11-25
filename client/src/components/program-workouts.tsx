@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,6 +86,28 @@ export default function ProgramWorkouts({ program, memberProgram, userId, onClos
   };
 
   const nextWorkout = getNextWorkout();
+
+  // Prefetch next workout content when viewing workouts
+  useEffect(() => {
+    if (nextWorkout) {
+      // Find the workout after next to prefetch
+      const sortedWorkouts = workouts.sort((a, b) => a.day - b.day);
+      const nextIndex = sortedWorkouts.findIndex(w => w.id === nextWorkout.id);
+      const workoutAfterNext = sortedWorkouts[nextIndex + 1];
+      
+      if (workoutAfterNext) {
+        // Prefetch the workout after next's content
+        queryClient.prefetchQuery({
+          queryKey: ["/api/workout-content", workoutAfterNext.id],
+          queryFn: async () => {
+            const response = await fetch(`/api/workouts/${program.id}`);
+            return response.json();
+          },
+          staleTime: 5 * 60 * 1000, // Consider fresh for 5 minutes
+        });
+      }
+    }
+  }, [nextWorkout?.id, workouts, queryClient, program.id]);
 
   const getWorkoutTypeFromName = (name: string) => {
     if (name.toLowerCase().includes('strength')) return 'Strength Training';

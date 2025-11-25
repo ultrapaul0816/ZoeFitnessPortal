@@ -6,7 +6,7 @@ import type { User, ProgressPhoto } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
+import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp, X, ZoomIn, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
@@ -465,7 +465,7 @@ export default function Progress() {
                       <div className="text-center w-3/4">
                         <Loader2 className="w-10 h-10 text-white animate-spin mx-auto mb-3" />
                         <p className="text-white font-semibold mb-2">Uploading... {uploadProgress.start}%</p>
-                        <Progress value={uploadProgress.start} className="h-2 bg-white/30" />
+                        <ProgressBar value={uploadProgress.start} className="h-2 bg-white/30" />
                       </div>
                     </div>
                   )}
@@ -600,7 +600,7 @@ export default function Progress() {
                       <div className="text-center w-3/4">
                         <Loader2 className="w-10 h-10 text-white animate-spin mx-auto mb-3" />
                         <p className="text-white font-semibold mb-2">Uploading... {uploadProgress.finish}%</p>
-                        <Progress value={uploadProgress.finish} className="h-2 bg-white/30" />
+                        <ProgressBar value={uploadProgress.finish} className="h-2 bg-white/30" />
                       </div>
                     </div>
                   )}
