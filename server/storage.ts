@@ -400,6 +400,7 @@ export interface IStorage {
     email: string;
     lastLoginAt: Date | null;
     daysSinceLogin: number;
+    lastReengagementEmailAt: Date | null;
   }>>;
   getMembersWithoutProgressPhotos(): Promise<Array<{
     id: string;
@@ -1994,6 +1995,7 @@ export class MemStorage implements IStorage {
     email: string;
     lastLoginAt: Date | null;
     daysSinceLogin: number;
+    lastReengagementEmailAt: Date | null;
   }>> {
     return [];
   }
@@ -3833,6 +3835,7 @@ class DatabaseStorage implements IStorage {
     email: string;
     lastLoginAt: Date | null;
     daysSinceLogin: number;
+    lastReengagementEmailAt: Date | null;
   }>> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysInactive);
@@ -3857,6 +3860,32 @@ class DatabaseStorage implements IStorage {
       )
       .orderBy(asc(users.lastLoginAt));
 
+    // Get user IDs to query their last re-engagement email
+    const userIds = results.map(r => r.id);
+    
+    // Find last re-engagement email sent to each user
+    const reengagementEmails = await this.db
+      .select({
+        userId: emailCampaignRecipients.userId,
+        sentAt: sql<Date>`MAX(${emailCampaignRecipients.sentAt})`.as('last_sent'),
+      })
+      .from(emailCampaignRecipients)
+      .innerJoin(emailCampaigns, eq(emailCampaignRecipients.campaignId, emailCampaigns.id))
+      .where(
+        and(
+          inArray(emailCampaignRecipients.userId, userIds.length > 0 ? userIds : ['']),
+          eq(emailCampaigns.templateType, 're-engagement'),
+          eq(emailCampaignRecipients.status, 'sent')
+        )
+      )
+      .groupBy(emailCampaignRecipients.userId);
+
+    // Create a map for quick lookup
+    const emailMap = new Map<string, Date | null>();
+    reengagementEmails.forEach(e => {
+      emailMap.set(e.userId, e.sentAt);
+    });
+
     return results.map(r => ({
       id: r.id,
       firstName: r.firstName,
@@ -3866,6 +3895,7 @@ class DatabaseStorage implements IStorage {
       daysSinceLogin: r.lastLoginAt 
         ? Math.floor((new Date().getTime() - new Date(r.lastLoginAt).getTime()) / (1000 * 60 * 60 * 24))
         : 999,
+      lastReengagementEmailAt: emailMap.get(r.id) || null,
     }));
   }
 
