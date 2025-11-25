@@ -11,6 +11,7 @@ import {
   insertPostCommentSchema,
   passwordSchema,
   insertEmailCampaignSchema,
+  insertUserCheckinSchema,
 } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
@@ -288,8 +289,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updates.disclaimerAcceptedAt = new Date();
       }
 
-      // Always update last login timestamp
+      // Always update last login timestamp and increment login count
       updates.lastLoginAt = new Date();
+      updates.loginCount = (user.loginCount || 0) + 1;
 
       if (Object.keys(updates).length > 0) {
         updatedUser = (await storage.updateUser(user.id, updates)) || user;
@@ -345,6 +347,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           instagramHandle: updatedUser.instagramHandle,
           postpartumWeeks: updatedUser.postpartumWeeks,
           lastLoginAt: updatedUser.lastLoginAt,
+          loginCount: updatedUser.loginCount,
+          lastCheckinPromptAt: updatedUser.lastCheckinPromptAt,
         },
       });
     } catch (error: any) {
@@ -614,6 +618,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error(`[PASSWORD-RESET] Reset error:`, error?.message || error);
       res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // User Check-ins
+  app.post("/api/checkins", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const checkinData = insertUserCheckinSchema.parse({
+        ...req.body,
+        userId: req.session.userId,
+      });
+
+      const checkin = await storage.createUserCheckin(checkinData);
+
+      // Update lastCheckinPromptAt for the user
+      await storage.updateUser(req.session.userId, {
+        lastCheckinPromptAt: new Date(),
+      });
+
+      res.status(201).json(checkin);
+    } catch (error: any) {
+      console.error(`[CHECKIN] Error creating check-in:`, error?.message || error);
+      res.status(400).json({ message: error?.message || "Failed to create check-in" });
+    }
+  });
+
+  app.get("/api/checkins", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const checkins = await storage.getUserCheckins(req.session.userId);
+      res.json(checkins);
+    } catch (error: any) {
+      console.error(`[CHECKIN] Error fetching check-ins:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch check-ins" });
+    }
+  });
+
+  // Mark check-in prompt as dismissed (updates lastCheckinPromptAt without creating a check-in)
+  app.post("/api/checkins/dismiss", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      await storage.updateUser(req.session.userId, {
+        lastCheckinPromptAt: new Date(),
+      });
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error(`[CHECKIN] Error dismissing check-in:`, error?.message || error);
+      res.status(500).json({ message: "Failed to dismiss check-in" });
     }
   });
 
