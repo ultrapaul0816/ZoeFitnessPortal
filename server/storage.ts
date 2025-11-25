@@ -1763,7 +1763,11 @@ class DatabaseStorage implements IStorage {
   private cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
-    const connectionString = process.env.DATABASE_URL;
+    // Use PROD_DATABASE_URL for production deployments, fallback to DATABASE_URL for development
+    const isProduction = process.env.NODE_ENV === "production";
+    const connectionString = isProduction 
+      ? (process.env.PROD_DATABASE_URL || process.env.DATABASE_URL)
+      : process.env.DATABASE_URL;
     if (!connectionString) {
       throw new Error("DATABASE_URL environment variable is required");
     }

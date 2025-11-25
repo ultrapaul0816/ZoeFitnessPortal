@@ -26,7 +26,9 @@ Email automation includes 8 trigger-based rules: Welcome Email (user signup), Co
 
 # External Dependencies
 - **Database**: PostgreSQL (managed by Neon Database)
-- **Deployment**: Replit
+  - Development: Uses DATABASE_URL (Replit-managed)
+  - Production: Uses PROD_DATABASE_URL (external Neon database with real user data)
+- **Deployment**: Replit (autoscale configuration)
 - **Typography**: Google Fonts
 - **Video**: YouTube API
 - **PDF Generation**: jsPDF

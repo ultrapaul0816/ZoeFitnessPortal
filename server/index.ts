@@ -10,11 +10,16 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Session configuration with PostgreSQL store
+// Use PROD_DATABASE_URL for production deployments, fallback to DATABASE_URL for development
+const isProduction = process.env.NODE_ENV === "production";
+const dbConnectionString = isProduction 
+  ? (process.env.PROD_DATABASE_URL || process.env.DATABASE_URL)
+  : process.env.DATABASE_URL;
 const PgSession = connectPgSimple(session);
 app.use(
   session({
     store: new PgSession({
-      conString: process.env.DATABASE_URL,
+      conString: dbConnectionString,
       tableName: "session", // PostgreSQL table name for sessions
       createTableIfMissing: true, // Auto-create session table
     }),
