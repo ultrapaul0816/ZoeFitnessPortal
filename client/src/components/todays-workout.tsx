@@ -29,6 +29,7 @@ import {
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { workoutPrograms, ProgramData, Exercise } from "@/data/workoutPrograms";
+import { SpotifyWidget } from "@/components/spotify-widget";
 
 interface TodaysWorkoutProps {
   userId: string;
@@ -854,6 +855,9 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                     <strong>How to do it:</strong> Complete all {exercises.length} exercises below, then repeat 2 more times (3 rounds total). Rest 30 sec - 1 min between movements.
                   </p>
                 </div>
+
+                {/* Spotify Workout Music Widget */}
+                <SpotifyWidget currentWeek={progress.currentWeek} />
 
                 {/* Exercise Progress */}
                 <div className="flex items-center justify-between">
