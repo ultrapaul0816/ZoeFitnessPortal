@@ -1729,6 +1729,209 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Actionable dashboard data endpoints
+  app.get("/api/admin/actionable/dormant-members", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 7;
+      const dormantMembers = await storage.getDormantMembers(days);
+      res.json(dormantMembers);
+    } catch (error) {
+      console.error("Dormant members error:", error);
+      res.status(500).json({ message: "Failed to fetch dormant members" });
+    }
+  });
+
+  app.get("/api/admin/actionable/no-photos", async (req, res) => {
+    try {
+      const membersWithoutPhotos = await storage.getMembersWithoutProgressPhotos();
+      res.json(membersWithoutPhotos);
+    } catch (error) {
+      console.error("Members without photos error:", error);
+      res.status(500).json({ message: "Failed to fetch members without photos" });
+    }
+  });
+
+  app.get("/api/admin/actionable/recent-completers", async (req, res) => {
+    try {
+      const hours = parseInt(req.query.hours as string) || 48;
+      const recentCompleters = await storage.getRecentWorkoutCompleters(hours);
+      res.json(recentCompleters);
+    } catch (error) {
+      console.error("Recent completers error:", error);
+      res.status(500).json({ message: "Failed to fetch recent completers" });
+    }
+  });
+
+  // Quick-send email endpoint for dashboard actions
+  app.post("/api/admin/actionable/send-email", adminOperationLimiter, async (req, res) => {
+    try {
+      const { userId, emailType } = req.body;
+      
+      if (!userId || !emailType) {
+        return res.status(400).json({ message: "User ID and email type are required" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      let result;
+      switch (emailType) {
+        case 're-engagement':
+          // Calculate days since last login
+          const daysSinceLogin = user.lastLoginAt 
+            ? Math.floor((new Date().getTime() - new Date(user.lastLoginAt).getTime()) / (1000 * 60 * 60 * 24))
+            : 30;
+          
+          // Get program progress
+          const memberPrograms = await storage.getMemberPrograms(userId);
+          const progress = memberPrograms.length > 0 
+            ? memberPrograms[0].completionPercentage || memberPrograms[0].progress || 0
+            : 0;
+          
+          result = await emailService.sendReEngagementEmail(user, {
+            lastLoginDays: daysSinceLogin,
+            programProgress: progress,
+          });
+          break;
+          
+        case 'photo-reminder':
+          // Custom photo reminder email
+          result = await emailService.send({
+            to: { email: user.email, name: `${user.firstName} ${user.lastName}` },
+            subject: `${user.firstName}, capture your progress! 📸`,
+            html: `
+              <!DOCTYPE html>
+              <html>
+              <head><meta charset="utf-8"></head>
+              <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fdf2f8;">
+                <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fdf2f8;">
+                  <tr>
+                    <td align="center" style="padding: 40px 20px;">
+                      <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <tr>
+                          <td style="background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Time to Capture Your Progress! 📸</h1>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 40px 30px;">
+                            <p style="color: #1f2937; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                              Hi ${user.firstName}! 👋
+                            </p>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                              You've been doing amazing work in your postpartum recovery journey. We noticed you haven't uploaded any progress photos yet - they're a great way to see how far you've come!
+                            </p>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                              Progress photos help you:
+                            </p>
+                            <ul style="color: #4b5563; font-size: 16px; line-height: 1.8; margin: 0 0 20px; padding-left: 20px;">
+                              <li>See your transformation over time</li>
+                              <li>Stay motivated on challenging days</li>
+                              <li>Celebrate your achievements</li>
+                            </ul>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0;">
+                              Head to the <strong>Progress Tracker</strong> tab in your dashboard to upload your first photo. You've got this, mama! 💪
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="background-color: #fdf2f8; padding: 30px; text-align: center; border-radius: 0 0 16px 16px;">
+                            <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 0;">
+                              © ${new Date().getFullYear()} Stronger With Zoe. All rights reserved.
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </body>
+              </html>
+            `,
+            text: `Hi ${user.firstName}! You've been doing amazing work in your postpartum recovery journey. We noticed you haven't uploaded any progress photos yet - head to the Progress Tracker tab in your dashboard to upload your first photo!`,
+          });
+          break;
+          
+        case 'congratulations':
+          // Get workout completions for context
+          const completions = await storage.getWorkoutCompletions(userId);
+          const totalWorkouts = completions.length;
+          
+          result = await emailService.send({
+            to: { email: user.email, name: `${user.firstName} ${user.lastName}` },
+            subject: `Amazing work, ${user.firstName}! 🎉`,
+            html: `
+              <!DOCTYPE html>
+              <html>
+              <head><meta charset="utf-8"></head>
+              <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fdf2f8;">
+                <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fdf2f8;">
+                  <tr>
+                    <td align="center" style="padding: 40px 20px;">
+                      <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <tr>
+                          <td style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">You're Crushing It! 🎉</h1>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 40px 30px;">
+                            <p style="color: #1f2937; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                              Hi ${user.firstName}! 👋
+                            </p>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                              Congratulations on your recent workout! You've now completed <strong>${totalWorkouts} workout${totalWorkouts !== 1 ? 's' : ''}</strong> in your postpartum recovery journey. That's incredible dedication!
+                            </p>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                              Every workout is a step towards a stronger you. Keep up the amazing work - your body will thank you!
+                            </p>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0;">
+                              Remember, consistency is key. See you at the next workout! 💪
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="background-color: #fdf2f8; padding: 30px; text-align: center; border-radius: 0 0 16px 16px;">
+                            <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 0;">
+                              © ${new Date().getFullYear()} Stronger With Zoe. All rights reserved.
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </body>
+              </html>
+            `,
+            text: `Hi ${user.firstName}! Congratulations on your recent workout! You've now completed ${totalWorkouts} workout${totalWorkouts !== 1 ? 's' : ''} in your postpartum recovery journey. Keep up the amazing work!`,
+          });
+          break;
+          
+        default:
+          return res.status(400).json({ message: "Invalid email type" });
+      }
+
+      if (!result.success) {
+        return res.status(500).json({ 
+          message: "Failed to send email",
+          error: result.error 
+        });
+      }
+
+      res.json({ 
+        success: true,
+        message: `${emailType} email sent successfully to ${user.firstName}`,
+        messageId: result.messageId
+      });
+    } catch (error) {
+      console.error("Quick send email error:", error);
+      res.status(500).json({ message: "Failed to send email" });
+    }
+  });
+
   // Email test endpoint
   app.post("/api/admin/email/send-test", adminOperationLimiter, async (req, res) => {
     try {

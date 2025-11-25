@@ -86,7 +86,7 @@ import {
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { eq, and, desc, sql, count, asc, gte } from "drizzle-orm";
+import { eq, and, desc, sql, count, asc, gte, or, isNull, lt, notInArray, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -367,6 +367,32 @@ export interface IStorage {
     metadata: Record<string, any> | null;
     createdAt: Date | null;
     user: Pick<User, 'id' | 'firstName' | 'lastName' | 'profilePictureUrl'>;
+  }>>;
+
+  // Actionable Dashboard Data
+  getDormantMembers(daysInactive?: number): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    lastLoginAt: Date | null;
+    daysSinceLogin: number;
+  }>>;
+  getMembersWithoutProgressPhotos(): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    lastLoginAt: Date | null;
+    workoutsCompleted: number;
+  }>>;
+  getRecentWorkoutCompleters(hours?: number): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    workoutName: string;
+    completedAt: Date | null;
   }>>;
 }
 
@@ -3596,6 +3622,156 @@ class DatabaseStorage implements IStorage {
       metadata: r.metadata as Record<string, any> | null,
       createdAt: r.createdAt,
       user: r.user || { id: r.userId, firstName: 'Unknown', lastName: 'User', profilePictureUrl: null },
+    }));
+  }
+
+  // Actionable Dashboard Data
+  async getDormantMembers(daysInactive: number = 7): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    lastLoginAt: Date | null;
+    daysSinceLogin: number;
+  }>> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysInactive);
+
+    const results = await this.db
+      .select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        lastLoginAt: users.lastLoginAt,
+      })
+      .from(users)
+      .where(
+        and(
+          eq(users.isAdmin, false),
+          or(
+            isNull(users.lastLoginAt),
+            lt(users.lastLoginAt, cutoffDate)
+          )
+        )
+      )
+      .orderBy(asc(users.lastLoginAt));
+
+    return results.map(r => ({
+      id: r.id,
+      firstName: r.firstName,
+      lastName: r.lastName,
+      email: r.email,
+      lastLoginAt: r.lastLoginAt,
+      daysSinceLogin: r.lastLoginAt 
+        ? Math.floor((new Date().getTime() - new Date(r.lastLoginAt).getTime()) / (1000 * 60 * 60 * 24))
+        : 999,
+    }));
+  }
+
+  async getMembersWithoutProgressPhotos(): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    lastLoginAt: Date | null;
+    workoutsCompleted: number;
+  }>> {
+    // Get users who have completed at least 1 workout but don't have progress photos
+    const usersWithPhotos = this.db
+      .select({ userId: progressPhotos.userId })
+      .from(progressPhotos);
+
+    const results = await this.db
+      .select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        lastLoginAt: users.lastLoginAt,
+      })
+      .from(users)
+      .where(
+        and(
+          eq(users.isAdmin, false),
+          notInArray(users.id, usersWithPhotos)
+        )
+      )
+      .orderBy(desc(users.lastLoginAt))
+      .limit(50);
+
+    // Get workout completion counts for these users
+    const userIds = results.map(r => r.id);
+    const completionCounts = await this.db
+      .select({
+        userId: workoutCompletions.userId,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(workoutCompletions)
+      .where(inArray(workoutCompletions.userId, userIds))
+      .groupBy(workoutCompletions.userId);
+
+    const countMap = new Map(completionCounts.map(c => [c.userId, c.count]));
+
+    return results
+      .map(r => ({
+        id: r.id,
+        firstName: r.firstName,
+        lastName: r.lastName,
+        email: r.email,
+        lastLoginAt: r.lastLoginAt,
+        workoutsCompleted: countMap.get(r.id) || 0,
+      }))
+      .filter(r => r.workoutsCompleted > 0); // Only show users who have done at least 1 workout
+  }
+
+  async getRecentWorkoutCompleters(hours: number = 48): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    workoutName: string;
+    completedAt: Date | null;
+  }>> {
+    const cutoffDate = new Date();
+    cutoffDate.setHours(cutoffDate.getHours() - hours);
+
+    const results = await this.db
+      .select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        workoutId: workoutCompletions.workoutId,
+        completedAt: workoutCompletions.completedAt,
+      })
+      .from(workoutCompletions)
+      .innerJoin(users, eq(workoutCompletions.userId, users.id))
+      .where(
+        and(
+          eq(users.isAdmin, false),
+          gte(workoutCompletions.completedAt, cutoffDate)
+        )
+      )
+      .orderBy(desc(workoutCompletions.completedAt))
+      .limit(20);
+
+    // Get workout names
+    const workoutIds = Array.from(new Set(results.map(r => r.workoutId)));
+    const workoutNames = await this.db
+      .select({ id: workouts.id, name: workouts.name })
+      .from(workouts)
+      .where(inArray(workouts.id, workoutIds));
+    
+    const nameMap = new Map(workoutNames.map(w => [w.id, w.name]));
+
+    return results.map(r => ({
+      id: r.id,
+      firstName: r.firstName,
+      lastName: r.lastName,
+      email: r.email,
+      workoutName: nameMap.get(r.workoutId) || 'Unknown Workout',
+      completedAt: r.completedAt,
     }));
   }
 }
