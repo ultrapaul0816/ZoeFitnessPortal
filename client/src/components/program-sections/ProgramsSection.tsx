@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, ChevronLeft, Play } from "lucide-react";
-import { workoutPrograms, ProgramData } from "@/data/workoutPrograms";
+import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2 } from "lucide-react";
+import { ProgramData } from "@/data/workoutPrograms";
+import { useWorkoutContent } from "@/hooks/useWorkoutContent";
 
 interface NavigationProps {
   programId: string;
@@ -186,6 +187,8 @@ export default function ProgramsSection({
 }: NavigationProps) {
   const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({});
   const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
+  
+  const { data: workoutPrograms = [], isLoading } = useWorkoutContent();
 
   const toggleProgram = (programId: string) => {
     setExpandedPrograms(prev => ({
@@ -193,6 +196,15 @@ export default function ProgramsSection({
       [programId]: !prev[programId]
     }));
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+        <span className="ml-2 text-gray-600">Loading workout programs...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
