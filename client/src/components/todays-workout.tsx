@@ -15,13 +15,13 @@ import {
   MessageCircle,
   Send,
   Loader2,
-  ChevronDown,
-  ChevronUp,
-  RefreshCw,
   Calendar,
-  X,
   Youtube,
-  Star
+  Star,
+  Clock,
+  Dumbbell,
+  Info,
+  Heart
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -50,12 +50,40 @@ interface ChatMessage {
   action?: { type: "swap_workout"; week: number };
 }
 
-const quickPrompts = [
-  "I'm feeling tired today",
-  "Suggest a lighter workout",
-  "Can I swap today's workout?",
-  "What's the goal of this week?",
-];
+const SWAPS_PER_WEEK = 2;
+
+const programOverviews: Record<number, { focus: string; duration: string; howItWorks: string }> = {
+  1: {
+    focus: "Reconnecting with your breath and core",
+    duration: "15-20 minutes",
+    howItWorks: "Gentle movements to wake up your deep core muscles. Focus on breathing and form - not speed."
+  },
+  2: {
+    focus: "Building core stability",
+    duration: "20-25 minutes",
+    howItWorks: "We add light resistance. Move slowly, feel each muscle engage. Rest when needed."
+  },
+  3: {
+    focus: "Core strength foundations",
+    duration: "25-30 minutes",
+    howItWorks: "Longer holds, more reps. Your core is getting stronger! Listen to your body."
+  },
+  4: {
+    focus: "Full body integration",
+    duration: "25-30 minutes",
+    howItWorks: "Core meets full body. These exercises build real functional strength for daily life."
+  },
+  5: {
+    focus: "Building power",
+    duration: "30-35 minutes",
+    howItWorks: "More challenging movements. You've built the foundation - now we push a little harder."
+  },
+  6: {
+    focus: "Putting it all together",
+    duration: "30-35 minutes",
+    howItWorks: "The grand finale! Full routines combining everything you've learned. You've got this!"
+  }
+};
 
 function getYouTubeThumbnail(url: string): string {
   const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)?.[1];
@@ -69,7 +97,6 @@ function getYouTubeEmbedUrl(url: string): string {
 
 export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = false }: TodaysWorkoutProps) {
   const [showZoeChat, setShowZoeChat] = useState(false);
-  const [showSwapDialog, setShowSwapDialog] = useState(false);
   const [showVideoPlayer, setShowVideoPlayer] = useState<string | null>(null);
   const [showTomorrowPreview, setShowTomorrowPreview] = useState(false);
   const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
@@ -78,6 +105,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [isZoeTyping, setIsZoeTyping] = useState(false);
   const [challengeRating, setChallengeRating] = useState(0);
   const [showWelcome, setShowWelcome] = useState(isFirstLogin);
+  const [swapsUsedThisWeek, setSwapsUsedThisWeek] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -97,8 +125,9 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
           currentDay: progress?.currentDay || 1,
           workoutsCompleted: progress?.totalWorkoutsCompleted || 0,
           currentProgram: currentProgram.title,
-          exercises: currentProgram.part2.exercises.map(e => e.name).join(", "),
-          canSwapWorkout: true,
+          exercises: currentProgram.part2.exercises.map(e => `${e.name} (${e.reps})`).join(", "),
+          swapsRemaining: SWAPS_PER_WEEK - swapsUsedThisWeek,
+          canSwapWorkout: swapsUsedThisWeek < SWAPS_PER_WEEK,
         }
       });
       return response.json();
@@ -107,7 +136,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
       const reply = data.reply;
       const newMessage: ChatMessage = { role: "assistant", content: reply };
       
-      if (reply.toLowerCase().includes("week 1") && reply.toLowerCase().includes("gentle")) {
+      if (reply.toLowerCase().includes("week 1") && reply.toLowerCase().includes("switch")) {
         newMessage.action = { type: "swap_workout", week: 1 };
       }
       
@@ -164,14 +193,23 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   };
 
   const handleSwapWorkout = (targetWeek: number) => {
-    setShowSwapDialog(false);
+    if (swapsUsedThisWeek >= SWAPS_PER_WEEK) {
+      toast({
+        variant: "destructive",
+        title: "No swaps remaining",
+        description: "You've used all your workout swaps this week. Stay consistent!",
+      });
+      return;
+    }
+    
+    setSwapsUsedThisWeek(prev => prev + 1);
     setShowZoeChat(false);
     if (onStartWorkout) {
       onStartWorkout(targetWeek);
     }
     toast({
-      title: "Workout Swapped",
-      description: `Switched to Week ${targetWeek} workout. Take it at your pace!`,
+      title: "Workout Changed",
+      description: `Switched to Week ${targetWeek}. You have ${SWAPS_PER_WEEK - swapsUsedThisWeek - 1} swap${SWAPS_PER_WEEK - swapsUsedThisWeek - 1 === 1 ? '' : 's'} left this week.`,
     });
   };
 
@@ -192,6 +230,13 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
       challengeRating,
       notes: `Completed ${completedExercises.size} exercises`,
     });
+  };
+
+  const openZoeWithSwapRequest = () => {
+    setShowZoeChat(true);
+    setTimeout(() => {
+      handleSendMessage("I'm not feeling up to today's workout. Can I do something different?");
+    }, 300);
   };
 
   if (isLoading) {
@@ -218,6 +263,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const isWorkoutCompletedToday = progress.completedWorkoutIds?.includes(
     `week${progress.currentWeek}-day${progress.currentDay}`
   );
+  const programInfo = programOverviews[progress.currentWeek] || programOverviews[1];
 
   const tomorrowProgram = progress.currentDay < (progress.currentWeek === 1 ? 4 : 3)
     ? currentProgram
@@ -300,32 +346,51 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             </div>
           ) : (
             <>
-              <div className={`p-3 rounded-lg ${currentProgram.colorScheme.bgColor} border ${currentProgram.colorScheme.borderColor}`}>
-                <h4 className={`font-bold ${currentProgram.colorScheme.textColor}`}>
-                  {currentProgram.title}
-                </h4>
-                <p className="text-sm text-gray-600 mt-1">{currentProgram.coachNote}</p>
+              {/* Program Overview Section */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <Info className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-purple-800">{currentProgram.title}</h4>
+                    <p className="text-sm text-purple-600">{programInfo.focus}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="flex items-center gap-2 bg-white/60 rounded-lg px-3 py-2">
+                    <Clock className="w-4 h-4 text-pink-500" />
+                    <span className="text-sm font-medium text-gray-700">{programInfo.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/60 rounded-lg px-3 py-2">
+                    <Dumbbell className="w-4 h-4 text-pink-500" />
+                    <span className="text-sm font-medium text-gray-700">{exercises.length} exercises</span>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 bg-white/60 rounded-lg p-3">
+                  <strong>How it works:</strong> {programInfo.howItWorks}
+                </p>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h5 className="font-semibold text-gray-700 flex items-center gap-2">
-                    <Play className="w-4 h-4 text-pink-500" />
-                    Exercises ({completedExercises.size}/{exercises.length} done)
-                  </h5>
-                  <Button
-                    onClick={() => setShowSwapDialog(true)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                    data-testid="button-swap-workout"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-1" />
-                    Swap
-                  </Button>
+              {/* Coach Note */}
+              <div className={`p-3 rounded-lg ${currentProgram.colorScheme.bgColor} border ${currentProgram.colorScheme.borderColor}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Heart className="w-4 h-4 text-pink-500" />
+                  <span className="text-xs font-semibold text-pink-600 uppercase tracking-wide">Coach Note</span>
                 </div>
+                <p className="text-sm text-gray-700">{currentProgram.coachNote}</p>
+              </div>
 
-                <div className="space-y-2">
+              {/* Exercises Section */}
+              <div className="space-y-3">
+                <h5 className="font-semibold text-gray-700 flex items-center gap-2">
+                  <Play className="w-4 h-4 text-pink-500" />
+                  Your Exercises ({completedExercises.size}/{exercises.length} done)
+                </h5>
+
+                <div className="space-y-3">
                   {exercises.map((exercise, idx) => (
                     <div 
                       key={idx}
@@ -359,10 +424,12 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                         </button>
 
                         <div className="flex-1 min-w-0">
-                          <p className={`font-medium text-sm ${completedExercises.has(exercise.num) ? 'text-green-700 line-through' : 'text-gray-800'}`}>
+                          <p className={`font-semibold ${completedExercises.has(exercise.num) ? 'text-green-700 line-through' : 'text-gray-800'}`}>
                             {exercise.name}
                           </p>
-                          <p className="text-xs text-gray-500">{exercise.reps}</p>
+                          <p className={`text-base font-bold mt-1 ${completedExercises.has(exercise.num) ? 'text-green-600' : 'text-pink-600'}`}>
+                            {exercise.reps}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -407,16 +474,46 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
               )}
 
-              <Button
-                onClick={() => setShowZoeChat(true)}
-                variant="outline"
-                className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
-                data-testid="button-ask-zoe"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Ask Zoe for Help
-                <Sparkles className="w-4 h-4 ml-2 text-purple-400" />
-              </Button>
+              {/* Zoe Check-in Section */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-700 mb-3">
+                      <strong className="text-purple-700">Ready to crush it?</strong> 💪 I've got your workout ready! 
+                      If you're having a rough day, I can suggest something gentler - but I don't usually let my mamas skip their scheduled workout!
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        onClick={() => setShowZoeChat(true)}
+                        variant="outline"
+                        size="sm"
+                        className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                        data-testid="button-ask-zoe"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-1" />
+                        Chat with Zoe
+                      </Button>
+                      <Button
+                        onClick={openZoeWithSwapRequest}
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-500 hover:text-purple-600"
+                        data-testid="button-need-different"
+                      >
+                        I need something different today
+                      </Button>
+                    </div>
+                    {swapsUsedThisWeek > 0 && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        {SWAPS_PER_WEEK - swapsUsedThisWeek} workout swap{SWAPS_PER_WEEK - swapsUsedThisWeek === 1 ? '' : 's'} remaining this week
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
 
               <button
                 onClick={() => setShowTomorrowPreview(true)}
@@ -443,64 +540,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 allowFullScreen
               />
             )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Swap Workout Dialog */}
-      <Dialog open={showSwapDialog} onOpenChange={setShowSwapDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <RefreshCw className="w-5 h-5 text-purple-500" />
-              Swap Today's Workout
-            </DialogTitle>
-            <DialogDescription>
-              Choose an alternative workout based on how you're feeling
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-3 pt-4">
-            {workoutPrograms.slice(0, progress.currentWeek).map((program) => (
-              <button
-                key={program.week}
-                onClick={() => handleSwapWorkout(program.week)}
-                className={`w-full p-4 rounded-xl border-2 text-left transition-all hover:scale-[1.02] ${
-                  program.week === progress.currentWeek
-                    ? 'border-pink-300 bg-pink-50'
-                    : 'border-gray-200 bg-white hover:border-purple-300'
-                }`}
-                data-testid={`swap-week-${program.week}`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-gray-800">Week {program.week}</p>
-                    <p className="text-sm text-gray-500">{program.subtitle}</p>
-                  </div>
-                  {program.week === progress.currentWeek && (
-                    <Badge className="bg-pink-100 text-pink-700">Current</Badge>
-                  )}
-                  {program.week === 1 && progress.currentWeek > 1 && (
-                    <Badge className="bg-purple-100 text-purple-700">Gentle</Badge>
-                  )}
-                </div>
-              </button>
-            ))}
-            
-            <div className="pt-2">
-              <Button
-                onClick={() => {
-                  setShowSwapDialog(false);
-                  setShowZoeChat(true);
-                  handleSendMessage("I need help choosing a workout today");
-                }}
-                variant="outline"
-                className="w-full border-purple-200 text-purple-600"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Let Zoe Suggest One
-              </Button>
-            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -534,7 +573,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </span>
                   <div>
                     <p className="text-sm font-medium text-gray-700">{exercise.name}</p>
-                    <p className="text-xs text-gray-500">{exercise.reps}</p>
+                    <p className="text-sm font-bold text-pink-600">{exercise.reps}</p>
                   </div>
                 </div>
               ))}
@@ -557,9 +596,9 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <DialogTitle className="text-white">Ask Zoe</DialogTitle>
+                <DialogTitle className="text-white">Coach Zoe</DialogTitle>
                 <DialogDescription className="text-purple-100">
-                  Your personal postpartum fitness coach
+                  Your postpartum fitness coach
                 </DialogDescription>
               </div>
             </div>
@@ -570,21 +609,40 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               {chatMessages.length === 0 && (
                 <div className="text-center py-6">
                   <Sparkles className="w-10 h-10 text-purple-300 mx-auto mb-3" />
-                  <h3 className="font-semibold text-gray-700 mb-2">Hi, I'm Zoe!</h3>
+                  <h3 className="font-semibold text-gray-700 mb-2">Hi mama! I'm Zoe.</h3>
                   <p className="text-sm text-gray-500 mb-4">
-                    I can help with workout swaps, exercise tips, or just chat!
+                    I'm here to support you - but I also believe in you! Consistency is key to your recovery. 
+                    That said, I get it - some days are harder than others.
                   </p>
+                  <div className="bg-purple-50 rounded-lg p-3 text-left mb-4">
+                    <p className="text-xs text-purple-600 font-medium mb-1">💡 Good to know:</p>
+                    <p className="text-xs text-gray-600">
+                      I allow {SWAPS_PER_WEEK} workout swaps per week for those really tough days. 
+                      You have {SWAPS_PER_WEEK - swapsUsedThisWeek} remaining this week.
+                    </p>
+                  </div>
                   <div className="space-y-2">
-                    {quickPrompts.map((prompt, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleSendMessage(prompt)}
-                        className="block w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm text-purple-700 transition-colors"
-                        data-testid={`quick-prompt-${idx}`}
-                      >
-                        "{prompt}"
-                      </button>
-                    ))}
+                    <button
+                      onClick={() => handleSendMessage("What's the goal of this week's workout?")}
+                      className="block w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm text-purple-700 transition-colors"
+                      data-testid="quick-prompt-goal"
+                    >
+                      "What's the goal of this week?"
+                    </button>
+                    <button
+                      onClick={() => handleSendMessage("How do I know if I'm doing the exercises correctly?")}
+                      className="block w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm text-purple-700 transition-colors"
+                      data-testid="quick-prompt-form"
+                    >
+                      "How do I know if I'm doing it right?"
+                    </button>
+                    <button
+                      onClick={() => handleSendMessage("I'm feeling tired and low energy today")}
+                      className="block w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm text-purple-700 transition-colors"
+                      data-testid="quick-prompt-tired"
+                    >
+                      "I'm feeling tired today"
+                    </button>
                   </div>
                 </div>
               )}
@@ -603,7 +661,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                     </div>
                   </div>
                   
-                  {msg.action?.type === "swap_workout" && (
+                  {msg.action?.type === "swap_workout" && swapsUsedThisWeek < SWAPS_PER_WEEK && (
                     <div className="mt-2 ml-2">
                       <Button
                         onClick={() => handleSwapWorkout(msg.action!.week)}
@@ -611,7 +669,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                         className="bg-purple-500 hover:bg-purple-600 text-white"
                         data-testid="zoe-swap-suggestion"
                       >
-                        <RefreshCw className="w-3 h-3 mr-1" />
                         Switch to Week {msg.action.week}
                       </Button>
                     </div>
