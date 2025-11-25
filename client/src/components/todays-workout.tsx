@@ -21,7 +21,9 @@ import {
   Clock,
   Dumbbell,
   Info,
-  Heart
+  Heart,
+  Eye,
+  ChevronDown
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -107,6 +109,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [showZoeChat, setShowZoeChat] = useState(false);
   const [showVideoPlayer, setShowVideoPlayer] = useState<string | null>(null);
   const [showTomorrowPreview, setShowTomorrowPreview] = useState(false);
+  const [showProgramInfo, setShowProgramInfo] = useState(false);
   const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -418,49 +421,47 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
               </div>
 
-              {/* Tomorrow's Preview - Inline */}
-              <div className="p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border border-pink-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-5 h-5 text-pink-500" />
-                  <h4 className="font-bold text-gray-800">
-                    {isTomorrowNewWeek ? "Coming Up: New Week!" : "Tomorrow's Focus"}
-                  </h4>
+              {/* Next Workout - Clear Tomorrow Message */}
+              <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-purple-800 text-lg">
+                      {isTomorrowNewWeek 
+                        ? `Next: Week ${progress.currentWeek + 1}, Day 1`
+                        : `Next: Week ${progress.currentWeek}, Day ${progress.currentDay + 1}`
+                      }
+                    </h4>
+                    <p className="text-purple-600 text-sm font-medium">
+                      See you tomorrow! 
+                    </p>
+                  </div>
                 </div>
                 
-                {isTomorrowNewWeek ? (
-                  <div className="space-y-3">
-                    <div className={`p-3 rounded-lg ${tomorrowProgram.colorScheme.bgColor} border ${tomorrowProgram.colorScheme.borderColor}`}>
-                      <h5 className={`font-bold ${tomorrowProgram.colorScheme.textColor}`}>{tomorrowProgram.title}</h5>
-                      <p className="text-sm text-gray-600 mt-1">{tomorrowProgram.subtitle}</p>
+                <div className="mt-3 pt-3 border-t border-purple-100">
+                  {isTomorrowNewWeek ? (
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-gray-700">{tomorrowProgram.title}</p>
+                      <p className="text-xs text-gray-500">{tomorrowProgram.subtitle} • {tomorrowProgram.schedule}</p>
                     </div>
+                  ) : (
                     <p className="text-sm text-gray-600">
-                      <strong>What's new:</strong> {tomorrowProgram.coachNote}
+                      Same workout, building your strength one day at a time
                     </p>
-                    <p className="text-sm text-pink-600 font-medium">{tomorrowProgram.schedule}</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600">
-                      Continue <span className="font-semibold text-pink-600">{currentProgram.title}</span>
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Day {progress.currentDay + 1} of {progress.weeklyWorkoutsTotal} • Same exercises, building your strength
-                    </p>
-                    <div className="flex items-center gap-2 text-sm text-purple-600 mt-2">
-                      <Heart className="w-4 h-4" />
-                      <span>Consistency is how we heal, mama!</span>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
                 
                 <Button
                   onClick={() => setShowTomorrowPreview(true)}
                   variant="outline"
                   size="sm"
-                  className="mt-3 border-pink-200 text-pink-600 hover:bg-pink-50"
+                  className="mt-3 w-full border-purple-200 text-purple-600 hover:bg-purple-50"
                   data-testid="button-preview-tomorrow"
                 >
-                  See Full Workout Details
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview Tomorrow's Workout
                 </Button>
               </div>
 
@@ -551,42 +552,47 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             </div>
           ) : (
             <>
-              {/* Program Overview Section */}
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <Info className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-purple-800">{currentProgram.title}</h4>
-                    <p className="text-sm text-purple-600">{programInfo.focus}</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="flex items-center gap-2 bg-white/60 rounded-lg px-3 py-2">
+              {/* Compact Program Info Bar */}
+              <div className="flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg px-4 py-3 border border-purple-100">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-pink-500" />
                     <span className="text-sm font-medium text-gray-700">{programInfo.duration}</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/60 rounded-lg px-3 py-2">
+                  <div className="w-px h-4 bg-purple-200"></div>
+                  <div className="flex items-center gap-2">
                     <Dumbbell className="w-4 h-4 text-pink-500" />
                     <span className="text-sm font-medium text-gray-700">{exercises.length} exercises</span>
                   </div>
                 </div>
-                
-                <p className="text-sm text-gray-600 bg-white/60 rounded-lg p-3">
-                  <strong>How it works:</strong> {programInfo.howItWorks}
-                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowProgramInfo(!showProgramInfo)}
+                  className="text-purple-600 hover:bg-purple-100 text-xs px-2"
+                  data-testid="button-toggle-program-info"
+                >
+                  {showProgramInfo ? "Less" : "More"}
+                  <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${showProgramInfo ? 'rotate-180' : ''}`} />
+                </Button>
               </div>
-
-              {/* Coach Note */}
-              <div className={`p-3 rounded-lg ${currentProgram.colorScheme.bgColor} border ${currentProgram.colorScheme.borderColor}`}>
-                <div className="flex items-center gap-2 mb-1">
-                  <Heart className="w-4 h-4 text-pink-500" />
-                  <span className="text-xs font-semibold text-pink-600 uppercase tracking-wide">Coach Note</span>
+              
+              {/* Expandable Program Details */}
+              {showProgramInfo && (
+                <div className="space-y-3 animate-in slide-in-from-top-2 duration-200">
+                  <div className="bg-white/80 rounded-lg p-3 border border-gray-100">
+                    <h4 className="font-bold text-purple-800 text-sm">{currentProgram.title}</h4>
+                    <p className="text-xs text-gray-600 mt-1">{programInfo.howItWorks}</p>
+                  </div>
+                  <div className={`p-3 rounded-lg ${currentProgram.colorScheme.bgColor} border ${currentProgram.colorScheme.borderColor}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Heart className="w-4 h-4 text-pink-500" />
+                      <span className="text-xs font-semibold text-pink-600 uppercase tracking-wide">Coach Note</span>
+                    </div>
+                    <p className="text-xs text-gray-700">{currentProgram.coachNote}</p>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-700">{currentProgram.coachNote}</p>
-              </div>
+              )}
 
               {/* PART 1: Breathing/Healing Section - START HERE */}
               <div className="relative">
