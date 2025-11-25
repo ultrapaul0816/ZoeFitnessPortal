@@ -47,11 +47,17 @@ The application provides a 6-week program with detailed exercises, coach notes, 
 **Ask Zoe AI Coach**: An AI-powered chat interface where users can get personalized coaching:
 - Powered by OpenAI via Replit AI Integrations (no API key needed, uses Replit credits)
 - Zoe personality: warm, supportive, knowledgeable about postpartum recovery
+- **Comprehensive context includes**:
+  - User profile (name, postpartum weeks, country, bio)
+  - Complete workout history with dates and ratings (last 10 completions)
+  - Full 6-week program content (all exercises, reps, video URLs for every week)
+  - Current progress (week, day, total completions)
 - Context-aware: knows user's current week, day, workout progress, and exercises
 - Quick prompts: "I'm feeling tired today", "Suggest a lighter workout", "How do I do this exercise correctly?", "What's the goal of this week?"
 - Suggests gentler alternatives when users are tired/stressed
-- Encourages proper form and watching exercise videos
+- Encourages proper form and watching exercise videos with direct video links
 - Never gives medical advice, always encourages consulting healthcare providers
+- Uses user's first name for personalized responses
 - The `/api/ask-zoe` endpoint handles AI conversations with full workout context
 
 **Database-Driven Workout Content**: Workout program content is now stored in PostgreSQL with two tables: `workout_program_content` (program metadata, coach notes, colors, equipment as JSONB) and `workout_content_exercises` (individual exercises with sectionType, orderNum, name, reps, URL). A hybrid fetch approach is used where the frontend tries the database API first (`/api/workout-content`) and falls back to static data (`client/src/data/workoutPrograms.ts`) if unavailable. Admin users can manage workout content through the "Workouts" tab in the admin panel, including editing program details, exercise names, reps, video URLs, and adding/deleting exercises.
