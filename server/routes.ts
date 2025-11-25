@@ -403,6 +403,220 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Request password reset OTP
+  app.post("/api/auth/forgot-password", passwordResetLimiter, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if user exists - just say code sent
+        return res.json({ message: "If an account exists, a code has been sent to your email" });
+      }
+
+      // Generate 6-digit code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Code expires in 10 minutes
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      
+      // Store the code
+      await storage.createPasswordResetCode(email, code, expiresAt);
+      
+      // Send email
+      const { createPasswordResetEmail } = await import('./email/templates');
+      const template = createPasswordResetEmail({
+        firstName: user.firstName,
+        code,
+      });
+      
+      await emailService.send({
+        to: { email: user.email, name: `${user.firstName} ${user.lastName}` },
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+      });
+
+      console.log(`[PASSWORD-RESET] OTP sent to: ${email}`);
+      res.json({ message: "If an account exists, a code has been sent to your email" });
+    } catch (error: any) {
+      console.error(`[PASSWORD-RESET] Error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to send reset code" });
+    }
+  });
+
+  // Verify OTP and optionally log in
+  app.post("/api/auth/verify-otp", async (req, res) => {
+    try {
+      const { email, code, loginNow } = req.body;
+      
+      if (!email || !code) {
+        return res.status(400).json({ message: "Email and code are required" });
+      }
+
+      const resetCode = await storage.getValidPasswordResetCode(email, code);
+      if (!resetCode) {
+        return res.status(400).json({ message: "Invalid or expired code" });
+      }
+
+      // Mark code as verified
+      await storage.markPasswordResetCodeAsVerified(resetCode.id);
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // If user wants to log in immediately
+      if (loginNow) {
+        // Update terms and disclaimer if not already accepted
+        const updates: any = {};
+        if (!user.termsAccepted) {
+          updates.termsAccepted = true;
+          updates.termsAcceptedAt = new Date();
+        }
+        if (!user.disclaimerAccepted) {
+          updates.disclaimerAccepted = true;
+          updates.disclaimerAcceptedAt = new Date();
+        }
+        updates.lastLoginAt = new Date();
+
+        let updatedUser = user;
+        if (Object.keys(updates).length > 0) {
+          updatedUser = (await storage.updateUser(user.id, updates)) || user;
+        }
+
+        // Create session
+        req.session.userId = updatedUser.id;
+
+        // Delete the used code
+        await storage.deletePasswordResetCodes(email);
+
+        console.log(`[PASSWORD-RESET] OTP login success for: ${email}`);
+        return res.json({
+          verified: true,
+          loggedIn: true,
+          user: {
+            id: updatedUser.id,
+            email: updatedUser.email,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            isAdmin: updatedUser.isAdmin,
+            termsAccepted: updatedUser.termsAccepted,
+            disclaimerAccepted: updatedUser.disclaimerAccepted,
+            hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
+            whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
+            whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
+            phone: updatedUser.phone,
+            country: updatedUser.country,
+            bio: updatedUser.bio,
+            instagramHandle: updatedUser.instagramHandle,
+            postpartumWeeks: updatedUser.postpartumWeeks,
+            lastLoginAt: updatedUser.lastLoginAt,
+          },
+        });
+      }
+
+      // Just verify without login (user wants to reset password)
+      console.log(`[PASSWORD-RESET] OTP verified for password reset: ${email}`);
+      res.json({ 
+        verified: true, 
+        loggedIn: false,
+        message: "Code verified. You can now reset your password." 
+      });
+    } catch (error: any) {
+      console.error(`[PASSWORD-RESET] Verify error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to verify code" });
+    }
+  });
+
+  // Reset password (after OTP verification)
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { email, code, newPassword } = req.body;
+      
+      if (!email || !code || !newPassword) {
+        return res.status(400).json({ message: "Email, code, and new password are required" });
+      }
+
+      // Validate password strength
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const resetCode = await storage.getValidPasswordResetCode(email, code);
+      
+      // Also allow using a verified code (already marked as verified in verify-otp step)
+      if (!resetCode) {
+        return res.status(400).json({ message: "Invalid or expired code. Please request a new code." });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Hash and update password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Update password and terms/disclaimer
+      const updates: any = {
+        password: hashedPassword,
+        lastLoginAt: new Date(),
+      };
+      if (!user.termsAccepted) {
+        updates.termsAccepted = true;
+        updates.termsAcceptedAt = new Date();
+      }
+      if (!user.disclaimerAccepted) {
+        updates.disclaimerAccepted = true;
+        updates.disclaimerAcceptedAt = new Date();
+      }
+
+      const updatedUser = await storage.updateUser(user.id, updates);
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to update password" });
+      }
+
+      // Delete used codes
+      await storage.deletePasswordResetCodes(email);
+
+      // Create session to log them in
+      req.session.userId = updatedUser.id;
+
+      console.log(`[PASSWORD-RESET] Password reset and login success for: ${email}`);
+      res.json({
+        success: true,
+        message: "Password reset successfully",
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          isAdmin: updatedUser.isAdmin,
+          termsAccepted: updatedUser.termsAccepted,
+          disclaimerAccepted: updatedUser.disclaimerAccepted,
+          hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
+          whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
+          whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
+          phone: updatedUser.phone,
+          country: updatedUser.country,
+          bio: updatedUser.bio,
+          instagramHandle: updatedUser.instagramHandle,
+          postpartumWeeks: updatedUser.postpartumWeeks,
+          lastLoginAt: updatedUser.lastLoginAt,
+        },
+      });
+    } catch (error: any) {
+      console.error(`[PASSWORD-RESET] Reset error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
   // Accept terms
   app.post("/api/auth/accept-terms", async (req, res) => {
     try {

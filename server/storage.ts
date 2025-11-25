@@ -45,6 +45,7 @@ import {
   type EmailOpen,
   type InsertEmailOpen,
   type EmailAutomationRule,
+  type PasswordResetCode,
 } from "@shared/schema";
 import {
   users,
@@ -70,11 +71,12 @@ import {
   emailTemplates,
   emailOpens,
   emailAutomationRules,
+  passwordResetCodes,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { eq, and, desc, sql, count, asc } from "drizzle-orm";
+import { eq, and, desc, sql, count, asc, gte } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -314,6 +316,12 @@ export interface IStorage {
   getAllWeeklyWorkouts(
     programId: string
   ): Promise<(WeeklyWorkout & { exercise: Exercise })[]>;
+
+  // Password Reset Codes
+  createPasswordResetCode(email: string, code: string, expiresAt: Date): Promise<PasswordResetCode>;
+  getValidPasswordResetCode(email: string, code: string): Promise<PasswordResetCode | undefined>;
+  markPasswordResetCodeAsVerified(id: string): Promise<void>;
+  deletePasswordResetCodes(email: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -1745,6 +1753,23 @@ export class MemStorage implements IStorage {
   async incrementAutomationRuleSent(id: string): Promise<void> {
     // No-op
   }
+
+  // Password Reset Codes (MemStorage stubs)
+  async createPasswordResetCode(email: string, code: string, expiresAt: Date): Promise<PasswordResetCode> {
+    throw new Error("Password reset not supported in MemStorage");
+  }
+
+  async getValidPasswordResetCode(email: string, code: string): Promise<PasswordResetCode | undefined> {
+    return undefined;
+  }
+
+  async markPasswordResetCodeAsVerified(id: string): Promise<void> {
+    // No-op
+  }
+
+  async deletePasswordResetCodes(email: string): Promise<void> {
+    // No-op
+  }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -3058,6 +3083,55 @@ class DatabaseStorage implements IStorage {
         lastTriggeredAt: new Date(),
       })
       .where(eq(emailAutomationRules.id, id));
+  }
+
+  // Password Reset Codes
+  async createPasswordResetCode(email: string, code: string, expiresAt: Date): Promise<PasswordResetCode> {
+    // First, delete any existing codes for this email
+    await this.db
+      .delete(passwordResetCodes)
+      .where(eq(passwordResetCodes.email, email.toLowerCase()));
+    
+    // Create new code
+    const result = await this.db
+      .insert(passwordResetCodes)
+      .values({
+        email: email.toLowerCase(),
+        code,
+        expiresAt,
+        isVerified: false,
+      })
+      .returning();
+    return result[0];
+  }
+
+  async getValidPasswordResetCode(email: string, code: string): Promise<PasswordResetCode | undefined> {
+    const result = await this.db
+      .select()
+      .from(passwordResetCodes)
+      .where(
+        and(
+          eq(passwordResetCodes.email, email.toLowerCase()),
+          eq(passwordResetCodes.code, code),
+          eq(passwordResetCodes.isVerified, false),
+          gte(passwordResetCodes.expiresAt, new Date())
+        )
+      )
+      .limit(1);
+    return result[0];
+  }
+
+  async markPasswordResetCodeAsVerified(id: string): Promise<void> {
+    await this.db
+      .update(passwordResetCodes)
+      .set({ isVerified: true })
+      .where(eq(passwordResetCodes.id, id));
+  }
+
+  async deletePasswordResetCodes(email: string): Promise<void> {
+    await this.db
+      .delete(passwordResetCodes)
+      .where(eq(passwordResetCodes.email, email.toLowerCase()));
   }
 }
 
