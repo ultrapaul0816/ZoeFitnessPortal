@@ -1,28 +1,8 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2 } from "lucide-react";
-
-interface Exercise {
-  id: string;
-  name: string;
-  description: string | null;
-  videoUrl: string | null;
-  category: string | null;
-  coachNotes: string | null;
-}
-
-interface WeeklyWorkout {
-  id: string;
-  programId: string;
-  week: number;
-  day: number;
-  exerciseId: string;
-  orderIndex: number | null;
-  isOptional: boolean | null;
-  exercise: Exercise;
-}
+import { ChevronDown, ChevronRight, ChevronLeft, Play } from "lucide-react";
+import { workoutPrograms, ProgramData } from "@/data/workoutPrograms";
 
 interface NavigationProps {
   programId: string;
@@ -31,6 +11,169 @@ interface NavigationProps {
   navigateToNextTab: () => void;
   navigateToPreviousTab: () => void;
   getNavigationText: (direction: 'prev' | 'next') => string;
+}
+
+function StaticProgramCard({ program, isExpanded, onToggle }: { program: ProgramData; isExpanded: boolean; onToggle: () => void }) {
+  const { colorScheme } = program;
+  
+  return (
+    <Card className={`overflow-hidden border-l-4 ${colorScheme.borderColor}`}>
+      <CardHeader className={`${colorScheme.bgColor} cursor-pointer`} onClick={onToggle}>
+        <div className="block lg:hidden">
+          <div className="mb-4">
+            <div className={`${colorScheme.sectionClass} text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg`}>
+              WEEK {program.week}
+            </div>
+          </div>
+          <div className="mb-3">
+            <CardTitle className="text-base text-gray-900 font-bold mb-2">{program.title}</CardTitle>
+            <CardDescription className={`${colorScheme.accentColor} font-semibold text-sm`}>Workout Schedule: {program.schedule}</CardDescription>
+            <p className="text-xs text-gray-600 mt-1">{program.scheduleDetail}</p>
+          </div>
+          <div>
+            <div className="text-xs text-gray-700 font-bold uppercase tracking-wide mb-2">Equipment Needed</div>
+            <div className="flex flex-wrap gap-2">
+              {program.equipment.map((eq, idx) => (
+                <span key={idx} className={`${eq.colorClass} px-3 py-1.5 rounded-full text-xs font-medium shadow-sm`}>{eq.name}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className={`${colorScheme.sectionClass} text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap`}>
+              WEEK {program.week}
+            </div>
+            <div className="min-w-0">
+              <CardTitle className="text-lg text-gray-900">{program.title}</CardTitle>
+              <CardDescription className={`${colorScheme.accentColor} font-semibold text-sm`}>Workout Schedule: {program.schedule}</CardDescription>
+              <p className="text-xs text-gray-600 mt-1">{program.scheduleDetail}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-3">
+              <div className="text-xs text-gray-600 font-medium uppercase tracking-wide">Equipment Needed</div>
+              <div className="flex flex-wrap gap-2 justify-end">
+                {program.equipment.map((eq, idx) => (
+                  <span key={idx} className={`${eq.colorClass} px-3 py-1.5 rounded-full text-xs font-medium shadow-sm`}>{eq.name}</span>
+                ))}
+              </div>
+            </div>
+            <ChevronDown className={`w-5 h-5 ${colorScheme.textColor} transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+          </div>
+        </div>
+      </CardHeader>
+      
+      {isExpanded && (
+        <CardContent className="p-4">
+          <div className={`mb-4 ${colorScheme.bgColor} p-4 rounded-xl border-l-4 ${colorScheme.borderColor} shadow-sm`}>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full`} style={{backgroundColor: colorScheme.borderColor.replace('border-', '')}}></div>
+                <span className={`${colorScheme.textColor} font-bold text-sm uppercase tracking-wide`}>Coach's Note</span>
+              </div>
+              <p className="text-gray-700 text-sm leading-relaxed pl-4">{program.coachNote}</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <div className={`${colorScheme.sectionClass} p-3 rounded-t-lg`}>
+              <div className="flex items-center gap-2">
+                <h4 className="font-bold text-white text-sm uppercase tracking-wide">{program.part1.title}</h4>
+              </div>
+            </div>
+            <div className={`${colorScheme.bgColor} p-4 rounded-b-lg border ${colorScheme.borderColor} space-y-3`}>
+              {program.part1.exercises.map((ex, idx) => (
+                <div key={idx} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  {ex.url ? (
+                    <a href={ex.url} target="_blank" rel="noopener noreferrer" className={`${colorScheme.textColor} font-semibold underline cursor-pointer text-sm`}>
+                      {ex.name}
+                    </a>
+                  ) : (
+                    <span className={`${colorScheme.textColor} font-semibold text-sm`}>{ex.name}</span>
+                  )}
+                  <span className={`${colorScheme.textColor} font-bold text-sm ${colorScheme.bgColor} px-3 py-1 rounded-full`}>{ex.reps}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <div className={`${colorScheme.sectionClass} p-3 rounded-t-lg`}>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
+                </div>
+                <Button className={`${colorScheme.buttonColor} text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center`}>
+                  <Play className="w-4 h-4" />
+                  <a href={program.part2.playlistUrl} target="_blank" rel="noopener noreferrer">PLAY ALL</a>
+                </Button>
+              </div>
+            </div>
+            <div className="bg-white rounded-b-lg border border-gray-200 p-4">
+              <div className="space-y-3">
+                {program.part2.exercises.map((exercise) => (
+                  <div key={exercise.num} className={`bg-gray-50 rounded-lg p-4 border-l-4 ${colorScheme.borderColor} ${colorScheme.hoverBg} transition-colors`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className={`w-8 h-8 ${colorScheme.sectionClass} text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0`}>
+                          {exercise.num}
+                        </div>
+                        <a href={exercise.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm">
+                          {exercise.name}
+                        </a>
+                      </div>
+                      <div className="text-gray-700 font-bold text-sm bg-white px-3 py-1.5 rounded-full border flex-shrink-0">
+                        {exercise.reps} ×3
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className={`${colorScheme.bgColor} p-4 rounded-xl border-l-4 ${colorScheme.borderColor} shadow-sm`}>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full`} style={{backgroundColor: colorScheme.borderColor.replace('border-', '')}}></div>
+                <h4 className={`font-bold ${colorScheme.textColor} text-sm uppercase tracking-wide`}>How To Use</h4>
+              </div>
+              <div className="pl-4 space-y-3">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
+                  <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
+                  playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
+                </p>
+                <div className={`${colorScheme.bgColor} p-3 rounded-lg border ${colorScheme.borderColor}`}>
+                  <p className={`${colorScheme.textColor} text-sm font-medium`}>
+                    <span className="font-bold">Rest:</span> Rest a minimum of 30 secs - ONE minute between movements. Rest more if needed.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-orange-50 p-4 rounded-xl border-l-4 border-orange-500 shadow-sm mt-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <h4 className="font-bold text-orange-800 text-sm uppercase tracking-wide">Important Safety</h4>
+              </div>
+              <div className="pl-4 bg-orange-100 p-3 rounded-lg">
+                <p className="text-orange-800 text-sm leading-relaxed">
+                  <span className="font-semibold">Listen to Your Body:</span> Always pay attention to how you feel and adjust accordingly. | 
+                  <span className="font-semibold">Take Options Given:</span> Utilize the modifications provided to suit your comfort level. | 
+                  <span className="font-semibold">Reduce Reps/Rounds:</span> Don't hesitate to reduce the number of repetitions or rounds if needed. | 
+                  <span className="font-semibold">Adjust Weights:</span> Opt for lighter weights or no weights at all if you feel any discomfort.
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      )}
+    </Card>
+  );
 }
 
 export default function ProgramsSection({ 
@@ -43,46 +186,6 @@ export default function ProgramsSection({
 }: NavigationProps) {
   const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({});
   const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
-
-  const { data: weeklyWorkouts = [], isLoading: isLoadingWorkouts } = useQuery<WeeklyWorkout[]>({
-    queryKey: ["/api/weekly-workouts", programId],
-    enabled: !!programId,
-  });
-
-  const workoutsByWeek = weeklyWorkouts.reduce((acc, workout) => {
-    if (!acc[workout.week]) {
-      acc[workout.week] = {};
-    }
-    if (!acc[workout.week][workout.day]) {
-      acc[workout.week][workout.day] = [];
-    }
-    acc[workout.week][workout.day].push(workout);
-    return acc;
-  }, {} as Record<number, Record<number, WeeklyWorkout[]>>);
-
-  const toggleWeek = (week: number) => {
-    setExpandedWeeks(prev => ({
-      ...prev,
-      [week]: !prev[week]
-    }));
-  };
-
-  const getDayName = (day: number) => {
-    const days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return days[day] || `Day ${day}`;
-  };
-
-  const getWeekColors = (week: number) => {
-    const colors = [
-      { bg: 'from-pink-100 to-rose-100', border: 'border-pink-300', text: 'text-pink-700', accent: 'text-pink-500' },
-      { bg: 'from-purple-100 to-violet-100', border: 'border-purple-300', text: 'text-purple-700', accent: 'text-purple-500' },
-      { bg: 'from-blue-100 to-indigo-100', border: 'border-blue-300', text: 'text-blue-700', accent: 'text-blue-500' },
-      { bg: 'from-teal-100 to-cyan-100', border: 'border-teal-300', text: 'text-teal-700', accent: 'text-teal-500' },
-      { bg: 'from-amber-100 to-orange-100', border: 'border-amber-300', text: 'text-amber-700', accent: 'text-amber-500' },
-      { bg: 'from-emerald-100 to-green-100', border: 'border-emerald-300', text: 'text-emerald-700', accent: 'text-emerald-500' },
-    ];
-    return colors[(week - 1) % colors.length];
-  };
 
   const toggleProgram = (programId: string) => {
     setExpandedPrograms(prev => ({
@@ -565,89 +668,15 @@ export default function ProgramsSection({
 
         {expandedPrograms['6-week-program'] && (
           <CardContent className="p-6 border-t border-pink-100">
-            <div className="space-y-4">
-              {isLoadingWorkouts ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
-                  <span className="ml-2 text-gray-600">Loading workouts...</span>
-                </div>
-              ) : Object.keys(workoutsByWeek).length === 0 ? (
-                <p className="text-gray-700 text-center italic py-8">No workout content available yet. Please check back soon!</p>
-              ) : (
-                Object.keys(workoutsByWeek).sort((a, b) => Number(a) - Number(b)).map(weekNum => {
-                  const week = Number(weekNum);
-                  const days = workoutsByWeek[week];
-                  const colors = getWeekColors(week);
-                  
-                  return (
-                    <Card key={week} className={`overflow-hidden border-2 ${colors.border}`}>
-                      <div 
-                        className={`bg-gradient-to-r ${colors.bg} p-4 cursor-pointer hover:opacity-90 transition-opacity`}
-                        onClick={() => toggleWeek(week)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <h4 className={`font-bold ${colors.text} text-lg`}>Week {week}</h4>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">{Object.keys(days).length} days</span>
-                            <ChevronDown className={`w-5 h-5 ${colors.text} transition-transform duration-200 ${expandedWeeks[week] ? 'rotate-180' : ''}`} />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {expandedWeeks[week] && (
-                        <div className="p-4 space-y-4">
-                          {Object.keys(days).sort((a, b) => Number(a) - Number(b)).map(dayNum => {
-                            const day = Number(dayNum);
-                            const exercises = days[day];
-                            
-                            return (
-                              <div key={day} className="border rounded-lg overflow-hidden">
-                                <div className="bg-gray-50 px-4 py-2 border-b">
-                                  <h5 className="font-semibold text-gray-700">{getDayName(day)}</h5>
-                                </div>
-                                <div className="p-4 space-y-3">
-                                  {exercises.map((workout, idx) => (
-                                    <div key={workout.id} className="flex items-start gap-3 p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow">
-                                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-pink-400 to-pink-600 flex-shrink-0`}>
-                                        {idx + 1}
-                                      </span>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                          <h6 className="font-semibold text-gray-800">{workout.exercise.name}</h6>
-                                          {workout.isOptional && (
-                                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">Optional</span>
-                                          )}
-                                        </div>
-                                        {workout.exercise.description && (
-                                          <p className="text-sm text-gray-600 mt-1">{workout.exercise.description}</p>
-                                        )}
-                                        {workout.exercise.coachNotes && (
-                                          <p className="text-xs text-pink-600 mt-1 italic">Coach's tip: {workout.exercise.coachNotes}</p>
-                                        )}
-                                        {workout.exercise.videoUrl && (
-                                          <a 
-                                            href={workout.exercise.videoUrl} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2"
-                                          >
-                                            <Play className="w-4 h-4" />
-                                            Watch Video
-                                          </a>
-                                        )}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </Card>
-                  );
-                })
-              )}
+            <div className="space-y-6">
+              {workoutPrograms.map((program) => (
+                <StaticProgramCard
+                  key={program.week}
+                  program={program}
+                  isExpanded={expandedWeeks[program.week] || false}
+                  onToggle={() => setExpandedWeeks(prev => ({ ...prev, [program.week]: !prev[program.week] }))}
+                />
+              ))}
             </div>
           </CardContent>
         )}
