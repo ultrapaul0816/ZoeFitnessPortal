@@ -35,7 +35,10 @@ The application provides a 6-week program with detailed exercises, coach notes, 
 
 Email campaign management includes a template library stored in the PostgreSQL database with reusable templates (Welcome, Re-engagement, Photo Reminder, Workout Congratulations, Completion Celebration, Complete Your Signup), dynamic variable replacement via `generateUserVariables()` and `replaceTemplateVariables()` utilities, email open tracking via pixel tracking, audience targeting with filters (including Pending Signup filter for incomplete registrations), test email functionality, campaign scheduling for future delivery, and a comprehensive Email Analytics Dashboard with performance metrics, template statistics, and campaign history visualization. **Database templates are the single source of truth** - both dashboard quick-send actions and email campaigns fetch templates from the `email_templates` table and use shared template variable processing.
 
-Email automation includes 8 trigger-based rules: Welcome Email (user signup), Completion Celebration (program completion), Re-engagement emails at 7/14/21/30 days of inactivity, and Incomplete Signup Reminder (3 days after account creation if Terms & Conditions or Health Disclaimer not accepted). Automation rules can be enabled/disabled and customized by admin.
+Email automation includes 7 trigger-based rules:
+- **Trigger-based (instant)**: Welcome Email (user signup), Workout Congratulations (workout completion, 24-hour cooldown per user), Completion Celebration (program completion), Incomplete Signup Reminder (3 days after account if terms not accepted)
+- **Scheduled (cascading)**: Re-engagement emails at 7, 14, and 30 days of inactivity with cascade logic - 14-day requires 7-day sent at least 7 days prior, 30-day requires 14-day sent at least 16 days prior. Each re-engagement email only sends once per user.
+Storage methods `checkReengagementEligibility()`, `checkWorkoutEmailCooldown()`, and `hasReceivedAutomationEmail()` enforce the cascade logic and cooldowns. Automation rules can be enabled/disabled and customized by admin.
 
 # External Dependencies
 - **Database**: PostgreSQL (managed by Neon Database)
