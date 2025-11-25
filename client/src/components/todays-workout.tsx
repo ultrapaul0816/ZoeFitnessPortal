@@ -109,6 +109,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [showConfetti, setShowConfetti] = useState(false);
   const prevCompletedCount = useRef(0);
   const [swapsUsedThisWeek, setSwapsUsedThisWeek] = useState(0);
+  const [showZoeIntroExpanded, setShowZoeIntroExpanded] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -383,8 +384,11 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
                   <CheckCircle className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-green-700">You Did It, Mama!</h3>
+                <h3 className="text-xl font-bold text-green-700">You Did Amazing Today! 🌟</h3>
                 <p className="text-green-600 text-sm mt-1">Day {progress.currentDay} of Week {progress.currentWeek} complete</p>
+                <p className="text-gray-600 text-xs mt-2 italic">
+                  Your body is healing and getting stronger. Rest well, mama!
+                </p>
                 
                 {/* Stats Row */}
                 <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-green-200">
@@ -573,8 +577,63 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 <p className="text-sm text-gray-700">{currentProgram.coachNote}</p>
               </div>
 
-              {/* Exercises Section */}
+              {/* PART 1: Breathing/Healing Section - START HERE */}
+              <div className="relative">
+                <Badge className="absolute -top-2 left-3 bg-green-500 text-white text-xs px-2 py-0.5 z-10">
+                  START HERE
+                </Badge>
+                <div className="bg-gradient-to-r from-pink-100 to-rose-100 rounded-xl p-4 border-2 border-pink-300">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold">1</div>
+                    <h5 className="font-bold text-pink-700 uppercase tracking-wide text-sm">
+                      {currentProgram.part1.title}
+                    </h5>
+                  </div>
+                  <p className="text-xs text-pink-600 mb-3 italic">
+                    Always begin with your healing breath work before exercises
+                  </p>
+                  {currentProgram.part1.exercises.map((breathExercise, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2">
+                      <span className="text-sm font-medium text-gray-700">{breathExercise.name}</span>
+                      <span className="text-sm font-bold text-pink-600">{breathExercise.reps}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* PART 2: Main Workout Section */}
               <div className="space-y-3">
+                {/* Part 2 Header */}
+                <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-t-xl p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold">2</div>
+                      <h5 className="font-bold text-white uppercase tracking-wide text-sm">
+                        Main Workout (3 Rounds)
+                      </h5>
+                    </div>
+                    {currentProgram.part2.playlistUrl && (
+                      <a
+                        href={currentProgram.part2.playlistUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-1.5 rounded-full transition-colors"
+                      >
+                        <Play className="w-3 h-3" />
+                        PLAY ALL
+                      </a>
+                    )}
+                  </div>
+                </div>
+                
+                {/* 3 Rounds Instruction */}
+                <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-sm">
+                  <p className="text-amber-800">
+                    <strong>How to do it:</strong> Complete all {exercises.length} exercises below, then repeat 2 more times (3 rounds total). Rest 30 sec - 1 min between movements.
+                  </p>
+                </div>
+
+                {/* Exercise Progress */}
                 <div className="flex items-center justify-between">
                   <h5 className="font-semibold text-gray-700 flex items-center gap-2">
                     <Play className="w-4 h-4 text-pink-500" />
@@ -635,7 +694,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                             {exercise.name}
                           </p>
                           <p className={`text-base font-bold mt-1 ${completedExercises.has(exercise.num) ? 'text-green-600' : 'text-pink-600'}`}>
-                            {exercise.reps}
+                            {exercise.reps} <span className="text-gray-400 font-normal">×3</span>
                           </p>
                         </div>
                       </div>
@@ -681,17 +740,33 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
               )}
 
-              {/* Zoe Check-in Section */}
+              {/* Zoe Check-in Section - Collapsible */}
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center flex-shrink-0">
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-700 mb-3">
-                      <strong className="text-purple-700">Ready to crush it?</strong> 💪 I've got your workout ready! 
-                      If you're having a rough day, I can suggest something gentler - but I don't usually let my mamas skip their scheduled workout!
+                    {/* Short default text */}
+                    <p className="text-sm text-gray-700 mb-2">
+                      <strong className="text-purple-700">Need help?</strong> I'm here for you, mama! 💪
                     </p>
+                    
+                    {/* Expandable full message */}
+                    {showZoeIntroExpanded && (
+                      <p className="text-sm text-gray-600 mb-3 bg-white/50 rounded-lg p-2">
+                        If you're having a rough day, I can suggest something gentler - but I don't usually let my mamas skip their scheduled workout! 
+                        Consistency is how we heal. I allow {SWAPS_PER_WEEK} workout swaps per week for those really tough days.
+                      </p>
+                    )}
+                    
+                    <button
+                      onClick={() => setShowZoeIntroExpanded(!showZoeIntroExpanded)}
+                      className="text-xs text-purple-500 hover:text-purple-700 mb-3 underline"
+                    >
+                      {showZoeIntroExpanded ? "Show less" : "Read more about swaps..."}
+                    </button>
+                    
                     <div className="flex flex-wrap gap-2">
                       <Button
                         onClick={() => setShowZoeChat(true)}
