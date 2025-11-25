@@ -859,10 +859,21 @@ export default function Admin() {
                     ? `${activity.user.firstName} ${activity.user.lastName}`
                     : 'Unknown User';
 
+                  const getQuickEmailType = (activityType: string) => {
+                    switch (activityType) {
+                      case 'workout_complete':
+                        return 'congratulations';
+                      case 'login':
+                        return 're-engagement';
+                      default:
+                        return 're-engagement';
+                    }
+                  };
+
                   return (
                     <div 
                       key={activity.id} 
-                      className={`flex items-start gap-3 p-3 rounded-lg border ${getActivityColor(activity.activityType)}`}
+                      className={`flex items-start gap-3 p-3 rounded-lg border ${getActivityColor(activity.activityType)} group hover:shadow-sm transition-shadow`}
                       data-testid={`activity-item-${activity.id}`}
                     >
                       <div className="flex-shrink-0 mt-0.5">
@@ -876,8 +887,64 @@ export default function Admin() {
                           {getActivityDescription(activity.activityType, activity.metadata || {})}
                         </p>
                       </div>
-                      <div className="flex-shrink-0 text-xs text-gray-400">
-                        {timeAgo(activity.createdAt)}
+                      <div className="flex items-center gap-2">
+                        <span className="flex-shrink-0 text-xs text-gray-400">
+                          {timeAgo(activity.createdAt)}
+                        </span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              data-testid={`activity-action-${activity.id}`}
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem 
+                              onClick={() => {
+                                const member = allUsers.find(u => u.id === activity.userId);
+                                if (member) {
+                                  setSelectedMember(member);
+                                  setMemberViewMode('view');
+                                }
+                              }}
+                              data-testid={`view-member-${activity.userId}`}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Member
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {activity.activityType === 'workout_complete' && (
+                              <DropdownMenuItem
+                                onClick={() => quickSendEmailMutation.mutate({ userId: activity.userId, emailType: 'congratulations' })}
+                                disabled={quickSendEmailMutation.isPending}
+                                data-testid={`send-congrats-activity-${activity.id}`}
+                              >
+                                <Sparkles className="w-4 h-4 mr-2 text-green-500" />
+                                Send Congratulations
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              onClick={() => quickSendEmailMutation.mutate({ userId: activity.userId, emailType: 're-engagement' })}
+                              disabled={quickSendEmailMutation.isPending}
+                              data-testid={`send-reengagement-activity-${activity.id}`}
+                            >
+                              <Send className="w-4 h-4 mr-2 text-blue-500" />
+                              Send Re-engagement Email
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => quickSendEmailMutation.mutate({ userId: activity.userId, emailType: 'photo-reminder' })}
+                              disabled={quickSendEmailMutation.isPending}
+                              data-testid={`send-photo-activity-${activity.id}`}
+                            >
+                              <Camera className="w-4 h-4 mr-2 text-purple-500" />
+                              Send Photo Reminder
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   );
