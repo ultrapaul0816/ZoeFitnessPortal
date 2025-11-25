@@ -2755,17 +2755,27 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
   async getKnowledgeArticles(programId: string): Promise<KnowledgeArticle[]> {
-    return [];
+    const result = await this.db
+      .select()
+      .from(knowledgeArticles)
+      .where(eq(knowledgeArticles.programId, programId));
+    return result;
   }
   async createExercise(exercise: InsertExercise): Promise<Exercise> {
     const result = await this.db.insert(exercises).values(exercise).returning();
     return result[0];
   }
   async getExercises(): Promise<Exercise[]> {
-    return [];
+    const result = await this.db.select().from(exercises);
+    return result;
   }
   async getExercise(id: string): Promise<Exercise | undefined> {
-    return undefined;
+    const result = await this.db
+      .select()
+      .from(exercises)
+      .where(eq(exercises.id, id))
+      .limit(1);
+    return result[0];
   }
   async createWeeklyWorkout(
     workout: InsertWeeklyWorkout
@@ -2780,12 +2790,43 @@ class DatabaseStorage implements IStorage {
     programId: string,
     week: number
   ): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
-    return [];
+    const workoutsData = await this.db
+      .select()
+      .from(weeklyWorkouts)
+      .where(
+        and(
+          eq(weeklyWorkouts.programId, programId),
+          eq(weeklyWorkouts.week, week)
+        )
+      )
+      .orderBy(asc(weeklyWorkouts.day), asc(weeklyWorkouts.orderIndex));
+
+    const result: (WeeklyWorkout & { exercise: Exercise })[] = [];
+    for (const workout of workoutsData) {
+      const exercise = await this.getExercise(workout.exerciseId);
+      if (exercise) {
+        result.push({ ...workout, exercise });
+      }
+    }
+    return result;
   }
   async getAllWeeklyWorkouts(
     programId: string
   ): Promise<(WeeklyWorkout & { exercise: Exercise })[]> {
-    return [];
+    const workoutsData = await this.db
+      .select()
+      .from(weeklyWorkouts)
+      .where(eq(weeklyWorkouts.programId, programId))
+      .orderBy(asc(weeklyWorkouts.week), asc(weeklyWorkouts.day), asc(weeklyWorkouts.orderIndex));
+
+    const result: (WeeklyWorkout & { exercise: Exercise })[] = [];
+    for (const workout of workoutsData) {
+      const exercise = await this.getExercise(workout.exerciseId);
+      if (exercise) {
+        result.push({ ...workout, exercise });
+      }
+    }
+    return result;
   }
 
   // Reflection Notes

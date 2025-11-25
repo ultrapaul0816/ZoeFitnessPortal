@@ -676,6 +676,7 @@ export default function HealYourCorePage() {
 
           <TabsContent value="programs">
             <ProgramsSection 
+              programId={programId}
               canGoNext={canGoNext}
               canGoPrevious={canGoPrevious}
               navigateToNextTab={navigateToNextTab}

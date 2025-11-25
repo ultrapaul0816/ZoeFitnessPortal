@@ -1,9 +1,31 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, ChevronLeft, Play } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2 } from "lucide-react";
+
+interface Exercise {
+  id: string;
+  name: string;
+  description: string | null;
+  videoUrl: string | null;
+  category: string | null;
+  coachNotes: string | null;
+}
+
+interface WeeklyWorkout {
+  id: string;
+  programId: string;
+  week: number;
+  day: number;
+  exerciseId: string;
+  orderIndex: number | null;
+  isOptional: boolean | null;
+  exercise: Exercise;
+}
 
 interface NavigationProps {
+  programId: string;
   canGoNext: () => boolean;
   canGoPrevious: () => boolean;
   navigateToNextTab: () => void;
@@ -12,6 +34,7 @@ interface NavigationProps {
 }
 
 export default function ProgramsSection({ 
+  programId,
   canGoNext, 
   canGoPrevious, 
   navigateToNextTab, 
@@ -19,6 +42,47 @@ export default function ProgramsSection({
   getNavigationText 
 }: NavigationProps) {
   const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({});
+  const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
+
+  const { data: weeklyWorkouts = [], isLoading: isLoadingWorkouts } = useQuery<WeeklyWorkout[]>({
+    queryKey: ["/api/weekly-workouts", programId],
+    enabled: !!programId,
+  });
+
+  const workoutsByWeek = weeklyWorkouts.reduce((acc, workout) => {
+    if (!acc[workout.week]) {
+      acc[workout.week] = {};
+    }
+    if (!acc[workout.week][workout.day]) {
+      acc[workout.week][workout.day] = [];
+    }
+    acc[workout.week][workout.day].push(workout);
+    return acc;
+  }, {} as Record<number, Record<number, WeeklyWorkout[]>>);
+
+  const toggleWeek = (week: number) => {
+    setExpandedWeeks(prev => ({
+      ...prev,
+      [week]: !prev[week]
+    }));
+  };
+
+  const getDayName = (day: number) => {
+    const days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    return days[day] || `Day ${day}`;
+  };
+
+  const getWeekColors = (week: number) => {
+    const colors = [
+      { bg: 'from-pink-100 to-rose-100', border: 'border-pink-300', text: 'text-pink-700', accent: 'text-pink-500' },
+      { bg: 'from-purple-100 to-violet-100', border: 'border-purple-300', text: 'text-purple-700', accent: 'text-purple-500' },
+      { bg: 'from-blue-100 to-indigo-100', border: 'border-blue-300', text: 'text-blue-700', accent: 'text-blue-500' },
+      { bg: 'from-teal-100 to-cyan-100', border: 'border-teal-300', text: 'text-teal-700', accent: 'text-teal-500' },
+      { bg: 'from-amber-100 to-orange-100', border: 'border-amber-300', text: 'text-amber-700', accent: 'text-amber-500' },
+      { bg: 'from-emerald-100 to-green-100', border: 'border-emerald-300', text: 'text-emerald-700', accent: 'text-emerald-500' },
+    ];
+    return colors[(week - 1) % colors.length];
+  };
 
   const toggleProgram = (programId: string) => {
     setExpandedPrograms(prev => ({
@@ -501,8 +565,89 @@ export default function ProgramsSection({
 
         {expandedPrograms['6-week-program'] && (
           <CardContent className="p-6 border-t border-pink-100">
-            <div className="space-y-8">
-              <p className="text-gray-700 text-center italic">Detailed weekly programs (Programs 1-6) are included in the full version. Each program contains specific exercises, video links, equipment needs, and coaching notes for progressive core recovery.</p>
+            <div className="space-y-4">
+              {isLoadingWorkouts ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+                  <span className="ml-2 text-gray-600">Loading workouts...</span>
+                </div>
+              ) : Object.keys(workoutsByWeek).length === 0 ? (
+                <p className="text-gray-700 text-center italic py-8">No workout content available yet. Please check back soon!</p>
+              ) : (
+                Object.keys(workoutsByWeek).sort((a, b) => Number(a) - Number(b)).map(weekNum => {
+                  const week = Number(weekNum);
+                  const days = workoutsByWeek[week];
+                  const colors = getWeekColors(week);
+                  
+                  return (
+                    <Card key={week} className={`overflow-hidden border-2 ${colors.border}`}>
+                      <div 
+                        className={`bg-gradient-to-r ${colors.bg} p-4 cursor-pointer hover:opacity-90 transition-opacity`}
+                        onClick={() => toggleWeek(week)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <h4 className={`font-bold ${colors.text} text-lg`}>Week {week}</h4>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">{Object.keys(days).length} days</span>
+                            <ChevronDown className={`w-5 h-5 ${colors.text} transition-transform duration-200 ${expandedWeeks[week] ? 'rotate-180' : ''}`} />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {expandedWeeks[week] && (
+                        <div className="p-4 space-y-4">
+                          {Object.keys(days).sort((a, b) => Number(a) - Number(b)).map(dayNum => {
+                            const day = Number(dayNum);
+                            const exercises = days[day];
+                            
+                            return (
+                              <div key={day} className="border rounded-lg overflow-hidden">
+                                <div className="bg-gray-50 px-4 py-2 border-b">
+                                  <h5 className="font-semibold text-gray-700">{getDayName(day)}</h5>
+                                </div>
+                                <div className="p-4 space-y-3">
+                                  {exercises.map((workout, idx) => (
+                                    <div key={workout.id} className="flex items-start gap-3 p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow">
+                                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-pink-400 to-pink-600 flex-shrink-0`}>
+                                        {idx + 1}
+                                      </span>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                          <h6 className="font-semibold text-gray-800">{workout.exercise.name}</h6>
+                                          {workout.isOptional && (
+                                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">Optional</span>
+                                          )}
+                                        </div>
+                                        {workout.exercise.description && (
+                                          <p className="text-sm text-gray-600 mt-1">{workout.exercise.description}</p>
+                                        )}
+                                        {workout.exercise.coachNotes && (
+                                          <p className="text-xs text-pink-600 mt-1 italic">Coach's tip: {workout.exercise.coachNotes}</p>
+                                        )}
+                                        {workout.exercise.videoUrl && (
+                                          <a 
+                                            href={workout.exercise.videoUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2"
+                                          >
+                                            <Play className="w-4 h-4" />
+                                            Watch Video
+                                          </a>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </Card>
+                  );
+                })
+              )}
             </div>
           </CardContent>
         )}
