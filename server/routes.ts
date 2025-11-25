@@ -1050,6 +1050,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get user's workout progress for Today's Workout feature
   app.get("/api/workout-progress/:userId", async (req, res) => {
+    // Prevent HTTP caching to ensure fresh data after workout completion
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
     try {
       const { userId } = req.params;
       
