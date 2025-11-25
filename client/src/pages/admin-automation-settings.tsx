@@ -245,15 +245,24 @@ export default function AdminAutomationSettings() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => setLocation("/admin-email-campaigns")}
-            className="mb-4"
-            data-testid="button-back"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Email Campaigns
-          </Button>
+          <div className="flex gap-2 mb-4">
+            <Button
+              variant="outline"
+              onClick={() => setLocation("/admin")}
+              data-testid="button-back-admin"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Admin
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setLocation("/admin-email-campaigns")}
+              data-testid="button-back-campaigns"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Campaigns
+            </Button>
+          </div>
           
           <div className="flex items-center gap-3 mb-2">
             <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-xl">

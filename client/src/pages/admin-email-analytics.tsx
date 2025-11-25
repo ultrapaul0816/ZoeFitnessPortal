@@ -76,14 +76,24 @@ export default function AdminEmailAnalytics() {
                 Email Campaign Analytics
               </h1>
             </div>
-            <Button
-              onClick={() => setLocation("/admin-email-campaigns")}
-              variant="outline"
-              data-testid="button-back"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Campaigns
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setLocation("/admin")}
+                variant="outline"
+                data-testid="button-back-admin"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Admin
+              </Button>
+              <Button
+                onClick={() => setLocation("/admin-email-campaigns")}
+                variant="ghost"
+                data-testid="button-back-campaigns"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Campaigns
+              </Button>
+            </div>
           </div>
           <div className="flex items-center justify-center h-64">
             <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
@@ -106,14 +116,24 @@ export default function AdminEmailAnalytics() {
               Email Campaign Analytics
             </h1>
           </div>
-          <Button
-            onClick={() => setLocation("/admin-email-campaigns")}
-            variant="outline"
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Campaigns
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setLocation("/admin")}
+              variant="outline"
+              data-testid="button-back-admin"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Admin
+            </Button>
+            <Button
+              onClick={() => setLocation("/admin-email-campaigns")}
+              variant="ghost"
+              data-testid="button-back-campaigns"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Campaigns
+            </Button>
+          </div>
         </div>
 
         {/* Overview Cards */}
