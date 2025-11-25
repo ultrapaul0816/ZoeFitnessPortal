@@ -16,7 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell } from "lucide-react";
+import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -463,7 +464,7 @@ export default function Admin() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview" data-testid="tab-overview">
               <TrendingUp className="w-4 h-4 mr-2" />
               Overview
@@ -483,6 +484,10 @@ export default function Admin() {
             <TabsTrigger value="assets" data-testid="tab-assets">
               <Image className="w-4 h-4 mr-2" />
               Assets
+            </TabsTrigger>
+            <TabsTrigger value="workouts" data-testid="tab-workouts">
+              <FolderOpen className="w-4 h-4 mr-2" />
+              Workouts
             </TabsTrigger>
           </TabsList>
 
@@ -2072,6 +2077,10 @@ export default function Admin() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="workouts" className="space-y-6">
+            <WorkoutContentManager />
           </TabsContent>
         </Tabs>
       </div>

@@ -8,7 +8,7 @@ interface ApiExercise {
   orderNum: number;
   name: string;
   reps: string;
-  videoUrl: string | null;
+  url: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -49,7 +49,7 @@ function transformApiToLocal(apiPrograms: ApiWorkoutProgram[]): ProgramData[] {
       .map((ex) => ({
         name: ex.name,
         reps: ex.reps,
-        url: ex.videoUrl || undefined,
+        url: ex.url || undefined,
       }));
 
     const part2Exercises: Exercise[] = program.exercises
@@ -59,7 +59,7 @@ function transformApiToLocal(apiPrograms: ApiWorkoutProgram[]): ProgramData[] {
         num: idx + 1,
         name: ex.name,
         reps: ex.reps,
-        url: ex.videoUrl || "",
+        url: ex.url || "",
       }));
 
     return {
