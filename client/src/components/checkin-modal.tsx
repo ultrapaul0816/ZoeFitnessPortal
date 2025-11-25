@@ -429,7 +429,10 @@ export default function CheckinModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleSkip()}>
-      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-hidden p-0 bg-white border border-gray-200/50 shadow-2xl">
+      <DialogContent 
+        className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-hidden p-0 bg-white border border-gray-200/50 shadow-2xl"
+        hideCloseButton
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>Daily Check-in</DialogTitle>
           <DialogDescription>Share how you're feeling today</DialogDescription>
