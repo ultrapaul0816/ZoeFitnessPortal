@@ -31,13 +31,15 @@ Each card displays up to 5 members with quick-send email buttons. The Activity F
 ## Technical Implementations
 The application provides a 6-week program with detailed exercises, coach notes, and YouTube video integration. Content is organized into collapsible, gradient-themed sections. Features include a "What's Next Tab" with a PDF progress tracker, a modernized Nutrition section, extensive profile personalization, and real-time profile completeness tracking with a progress banner. Program access is managed via both purchase and admin enrollment records. A "Progress Tracker" tab allows secure before/after photo uploads via Cloudinary. An Instagram-style Community Feed supports photo uploads, categories, week-based filtering, likes, comments, and Instagram sharing, with full CRUD operations and Cloudinary integration.
 
-**Today's Workout Feature**: The user dashboard displays a "This Week's Workout" card for enrolled users with:
-- Immediate visibility of actual exercises (names, reps, video links)
-- Weekly progress tracker (X/Y workouts done this week)
-- Current program title, coach notes, and schedule
-- "Start Full Workout" button linking to the program page
-- "Mark Complete" button with challenge rating and notes
-- Expandable exercise list (show first 3, then "Show All X Exercises")
+**Today's Workout Feature**: A self-contained, immersive workout experience on the dashboard:
+- **YouTube Thumbnail Previews**: Each exercise shows a clickable video thumbnail that opens an embedded player dialog
+- **Exercise-by-Exercise Tracking**: Checkbox for each exercise to track completion within the workout
+- **Workout Swap**: Quick "Swap" button to switch to alternative workouts from earlier weeks (for low-energy days)
+- **Star Rating**: After completing all exercises, rate the workout difficulty (1-5 stars) before saving
+- **Weekly Progress Bar**: Visual header showing X/Y workouts completed this week
+- **Tomorrow Preview**: "Peek at Tomorrow's Workout" shows upcoming exercises
+- **First-Time User Flow**: New users see a welcome screen explaining Week 1 before starting their first workout
+- **Simplified Dashboard**: Program card de-emphasized to a single "View Full Program" button since enrollment is automatic
 - The `/api/workout-progress/:userId` endpoint calculates user's current position
 
 **Ask Zoe AI Coach**: An AI-powered chat interface where users can get personalized coaching:
