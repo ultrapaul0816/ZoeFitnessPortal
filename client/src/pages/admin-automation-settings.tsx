@@ -171,6 +171,8 @@ export default function AdminAutomationSettings() {
       return <Mail className="h-5 w-5" />;
     } else if (triggerType === "program_completion") {
       return <CheckCircle className="h-5 w-5" />;
+    } else if (triggerType === "workout_completion") {
+      return <CheckCircle className="h-5 w-5" />;
     } else if (triggerType.startsWith("user_inactivity")) {
       return <AlertCircle className="h-5 w-5" />;
     } else if (triggerType === "incomplete_signup_3d") {
@@ -194,6 +196,13 @@ export default function AdminAutomationSettings() {
         <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">
           <CheckCircle className="h-3 w-3 mr-1" />
           Program Completion
+        </Badge>
+      );
+    } else if (triggerType === "workout_completion") {
+      return (
+        <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0">
+          <CheckCircle className="h-3 w-3 mr-1" />
+          Workout Completion
         </Badge>
       );
     } else if (triggerType.startsWith("user_inactivity")) {
@@ -325,6 +334,8 @@ export default function AdminAutomationSettings() {
                               ? "bg-gradient-to-r from-pink-100 to-purple-100" 
                               : rule.triggerType === "program_completion"
                               ? "bg-gradient-to-r from-green-100 to-emerald-100"
+                              : rule.triggerType === "workout_completion"
+                              ? "bg-gradient-to-r from-blue-100 to-cyan-100"
                               : rule.triggerType === "incomplete_signup_3d"
                               ? "bg-gradient-to-r from-yellow-100 to-amber-100"
                               : "bg-gradient-to-r from-amber-100 to-orange-100"

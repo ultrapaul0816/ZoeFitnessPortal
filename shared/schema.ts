@@ -291,7 +291,7 @@ export const emailOpens = pgTable("email_opens", {
 // Email automation rules for trigger-based campaigns
 export const emailAutomationRules = pgTable("email_automation_rules", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  triggerType: text("trigger_type").notNull().unique(), // 'user_signup', 'program_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_21d', 'user_inactivity_30d'
+  triggerType: text("trigger_type").notNull().unique(), // 'user_signup', 'program_completion', 'workout_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_30d', 'incomplete_signup_3d'
   name: text("name").notNull(), // Display name: "Welcome Email", "Completion Email", etc.
   description: text("description").notNull(), // Description of what this automation does
   templateId: varchar("template_id").notNull(), // Which email template to use
@@ -475,14 +475,14 @@ export const insertEmailTemplateSchema = createInsertSchema(emailTemplates).omit
   totalSends: true,
   totalOpens: true,
 }).extend({
-  type: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration', 'complete-signup']),
+  type: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration', 'complete-signup', 'workout-congratulations']),
 });
 
 // Manually define insert schema to ensure strict audienceFilter validation
 export const insertEmailCampaignSchema = z.object({
   templateId: z.string(),
   name: z.string().min(1).max(255),
-  templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration', 'complete-signup']),
+  templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration', 'complete-signup', 'workout-congratulations']),
   subject: z.string().min(1).max(500),
   htmlContent: z.string().min(1), // HTML content for the email
   audienceFilter: audienceFilterSchema, // Strict validation - only allowed keys
@@ -511,7 +511,7 @@ export const insertEmailAutomationRuleSchema = createInsertSchema(emailAutomatio
   totalSent: true,
   lastTriggeredAt: true,
 }).extend({
-  triggerType: z.enum(['user_signup', 'program_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_21d', 'user_inactivity_30d', 'incomplete_signup_3d']),
+  triggerType: z.enum(['user_signup', 'program_completion', 'workout_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_30d', 'incomplete_signup_3d']),
   enabled: z.boolean().default(false),
 });
 
