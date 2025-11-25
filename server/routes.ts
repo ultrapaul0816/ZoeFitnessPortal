@@ -1729,6 +1729,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Detailed member profile data for admin
+  app.get("/api/admin/member-profile/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Fetch all profile data in parallel
+      const [
+        user,
+        activityLogs,
+        checkins,
+        progressPhotos,
+        emailHistory,
+        workoutCompletions,
+        memberPrograms,
+        communityPosts
+      ] = await Promise.all([
+        storage.getUser(userId),
+        storage.getActivityLogsForUser(userId),
+        storage.getUserCheckins(userId),
+        storage.getUserProgressPhotosAdmin(userId),
+        storage.getUserEmailHistory(userId),
+        storage.getWorkoutCompletions(userId),
+        storage.getMemberPrograms(userId),
+        storage.getCommunityPosts({ userId })
+      ]);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        user,
+        activityLogs,
+        checkins,
+        progressPhotos,
+        emailHistory,
+        workoutCompletions,
+        memberPrograms,
+        communityPosts
+      });
+    } catch (error) {
+      console.error("Member profile error:", error);
+      res.status(500).json({ message: "Failed to fetch member profile" });
+    }
+  });
+
   // Actionable dashboard data endpoints
   app.get("/api/admin/actionable/dormant-members", async (req, res) => {
     try {

@@ -368,6 +368,29 @@ export interface IStorage {
     createdAt: Date | null;
     user: Pick<User, 'id' | 'firstName' | 'lastName' | 'profilePictureUrl'>;
   }>>;
+  getActivityLogsForUser(userId: string, limit?: number): Promise<Array<{
+    id: string;
+    activityType: string;
+    metadata: Record<string, any> | null;
+    createdAt: Date | null;
+  }>>;
+  
+  // User Profile Data for Admin
+  getUserEmailHistory(userId: string): Promise<Array<{
+    id: string;
+    campaignName: string;
+    templateType: string;
+    sentAt: Date | null;
+    openedAt: Date | null;
+    status: string;
+  }>>;
+  getUserProgressPhotosAdmin(userId: string): Promise<Array<{
+    id: string;
+    photoUrl: string;
+    photoType: string;
+    week: number | null;
+    createdAt: Date | null;
+  }>>;
 
   // Actionable Dashboard Data
   getDormantMembers(daysInactive?: number): Promise<Array<{
@@ -1915,6 +1938,86 @@ export class MemStorage implements IStorage {
 
   async reorderWorkoutContentExercises(programContentId: string, sectionType: string, exerciseIds: string[]): Promise<void> {
     // No-op
+  }
+
+  // Activity Logs (stubs)
+  async createActivityLog(userId: string, activityType: string, metadata?: Record<string, any>): Promise<void> {
+    // No-op
+  }
+
+  async getRecentActivityLogs(limit?: number): Promise<Array<{
+    id: string;
+    userId: string;
+    activityType: string;
+    metadata: Record<string, any> | null;
+    createdAt: Date | null;
+    user: Pick<User, 'id' | 'firstName' | 'lastName' | 'profilePictureUrl'>;
+  }>> {
+    return [];
+  }
+
+  async getActivityLogsForUser(userId: string, limit?: number): Promise<Array<{
+    id: string;
+    activityType: string;
+    metadata: Record<string, any> | null;
+    createdAt: Date | null;
+  }>> {
+    return [];
+  }
+
+  async getUserEmailHistory(userId: string): Promise<Array<{
+    id: string;
+    campaignName: string;
+    templateType: string;
+    sentAt: Date | null;
+    openedAt: Date | null;
+    status: string;
+  }>> {
+    return [];
+  }
+
+  async getUserProgressPhotosAdmin(userId: string): Promise<Array<{
+    id: string;
+    photoUrl: string;
+    photoType: string;
+    week: number | null;
+    createdAt: Date | null;
+  }>> {
+    return [];
+  }
+
+  // Actionable Dashboard Data (stubs)
+  async getDormantMembers(daysInactive?: number): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    lastLoginAt: Date | null;
+    daysSinceLogin: number;
+  }>> {
+    return [];
+  }
+
+  async getMembersWithoutProgressPhotos(): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    lastLoginAt: Date | null;
+    workoutsCompleted: number;
+  }>> {
+    return [];
+  }
+
+  async getRecentWorkoutCompleters(hours?: number): Promise<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    workoutName: string;
+    completedAt: Date | null;
+  }>> {
+    return [];
   }
 }
 
@@ -3622,6 +3725,103 @@ class DatabaseStorage implements IStorage {
       metadata: r.metadata as Record<string, any> | null,
       createdAt: r.createdAt,
       user: r.user || { id: r.userId, firstName: 'Unknown', lastName: 'User', profilePictureUrl: null },
+    }));
+  }
+
+  async getActivityLogsForUser(userId: string, limit: number = 100): Promise<Array<{
+    id: string;
+    activityType: string;
+    metadata: Record<string, any> | null;
+    createdAt: Date | null;
+  }>> {
+    const results = await this.db
+      .select({
+        id: activityLogs.id,
+        activityType: activityLogs.activityType,
+        metadata: activityLogs.metadata,
+        createdAt: activityLogs.createdAt,
+      })
+      .from(activityLogs)
+      .where(eq(activityLogs.userId, userId))
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(limit);
+
+    return results.map(r => ({
+      id: r.id,
+      activityType: r.activityType,
+      metadata: r.metadata as Record<string, any> | null,
+      createdAt: r.createdAt,
+    }));
+  }
+
+  async getUserEmailHistory(userId: string): Promise<Array<{
+    id: string;
+    campaignName: string;
+    templateType: string;
+    sentAt: Date | null;
+    openedAt: Date | null;
+    status: string;
+  }>> {
+    // Get email campaign recipients for this user
+    const recipientResults = await this.db
+      .select({
+        id: emailCampaignRecipients.id,
+        campaignId: emailCampaignRecipients.campaignId,
+        sentAt: emailCampaignRecipients.sentAt,
+        status: emailCampaignRecipients.status,
+        campaignName: emailCampaigns.name,
+        templateType: emailCampaigns.templateType,
+      })
+      .from(emailCampaignRecipients)
+      .leftJoin(emailCampaigns, eq(emailCampaignRecipients.campaignId, emailCampaigns.id))
+      .where(eq(emailCampaignRecipients.userId, userId))
+      .orderBy(desc(emailCampaignRecipients.sentAt));
+
+    // Get email opens for this user
+    const openResults = await this.db
+      .select({
+        campaignId: emailOpens.campaignId,
+        openedAt: emailOpens.openedAt,
+      })
+      .from(emailOpens)
+      .where(eq(emailOpens.userId, userId));
+
+    const openMap = new Map(openResults.map(o => [o.campaignId, o.openedAt]));
+
+    return recipientResults.map(r => ({
+      id: r.id,
+      campaignName: r.campaignName || 'Unknown Campaign',
+      templateType: r.templateType || 'unknown',
+      sentAt: r.sentAt,
+      openedAt: openMap.get(r.campaignId) || null,
+      status: r.status,
+    }));
+  }
+
+  async getUserProgressPhotosAdmin(userId: string): Promise<Array<{
+    id: string;
+    photoUrl: string;
+    photoType: string;
+    week: number | null;
+    createdAt: Date | null;
+  }>> {
+    const results = await this.db
+      .select({
+        id: progressPhotos.id,
+        fileUrl: progressPhotos.fileUrl,
+        photoType: progressPhotos.photoType,
+        uploadedAt: progressPhotos.uploadedAt,
+      })
+      .from(progressPhotos)
+      .where(eq(progressPhotos.userId, userId))
+      .orderBy(desc(progressPhotos.uploadedAt));
+
+    return results.map(r => ({
+      id: r.id,
+      photoUrl: r.fileUrl,
+      photoType: r.photoType,
+      week: null,
+      createdAt: r.uploadedAt,
     }));
   }
 
