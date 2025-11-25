@@ -45,10 +45,17 @@ interface WorkoutProgress {
   workoutCompletedToday: boolean;
 }
 
+interface SuggestedAction {
+  type: string;
+  label: string;
+  description: string;
+}
+
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   action?: { type: "swap_workout"; week: number };
+  suggestedActions?: SuggestedAction[];
 }
 
 const SWAPS_PER_WEEK = 2;
@@ -139,7 +146,11 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     },
     onSuccess: (data) => {
       const reply = data.reply;
-      const newMessage: ChatMessage = { role: "assistant", content: reply };
+      const newMessage: ChatMessage = { 
+        role: "assistant", 
+        content: reply,
+        suggestedActions: data.suggestedActions || []
+      };
       
       if (reply.toLowerCase().includes("week 1") && reply.toLowerCase().includes("switch")) {
         newMessage.action = { type: "swap_workout", week: 1 };
@@ -943,6 +954,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                     </div>
                   </div>
                   
+                  {/* Legacy swap action */}
                   {msg.action?.type === "swap_workout" && swapsUsedThisWeek < SWAPS_PER_WEEK && (
                     <div className="mt-2 ml-2">
                       <Button
@@ -953,6 +965,37 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                       >
                         Switch to Week {msg.action.week}
                       </Button>
+                    </div>
+                  )}
+                  
+                  {/* Suggested Actions */}
+                  {msg.suggestedActions && msg.suggestedActions.length > 0 && (
+                    <div className="mt-2 ml-2 flex flex-wrap gap-2">
+                      {msg.suggestedActions.map((action, actionIdx) => (
+                        <button
+                          key={actionIdx}
+                          onClick={() => {
+                            if (action.type === 'swap_workout') {
+                              handleSwapWorkout(1);
+                            } else if (action.type === 'meal_suggestion') {
+                              handleSendMessage("Can you suggest some healthy meals for postpartum recovery?");
+                            } else if (action.type === 'view_program') {
+                              setShowZoeChat(false);
+                              if (onStartWorkout) onStartWorkout(progress?.currentWeek || 1);
+                            } else if (action.type === 'watch_video') {
+                              handleSendMessage("Can you share the video link for that exercise?");
+                            }
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-medium rounded-full transition-colors"
+                          data-testid={`zoe-action-${action.type}`}
+                        >
+                          {action.type === 'swap_workout' && <Heart className="w-3 h-3" />}
+                          {action.type === 'meal_suggestion' && <Sparkles className="w-3 h-3" />}
+                          {action.type === 'view_program' && <Calendar className="w-3 h-3" />}
+                          {action.type === 'watch_video' && <Youtube className="w-3 h-3" />}
+                          {action.label}
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>

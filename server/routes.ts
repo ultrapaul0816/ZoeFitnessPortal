@@ -1295,7 +1295,49 @@ RESPONSE GUIDELINES:
 
       const reply = response.choices[0]?.message?.content || "I'm here to help! What would you like to know about your workout today?";
       
-      res.json({ reply });
+      // Detect suggested actions based on conversation context
+      const suggestedActions: Array<{ type: string; label: string; description: string }> = [];
+      const lowerMessage = message.toLowerCase();
+      const lowerReply = reply.toLowerCase();
+      
+      // If user mentions tiredness/fatigue and Zoe suggests gentler options
+      if ((lowerMessage.includes('tired') || lowerMessage.includes('exhausted') || lowerMessage.includes('fatigue') || lowerMessage.includes('rough day')) 
+          && (lowerReply.includes('week 1') || lowerReply.includes('gentler') || lowerReply.includes('lighter'))) {
+        suggestedActions.push({
+          type: 'swap_workout',
+          label: 'Switch to Week 1',
+          description: 'Do a gentler workout today'
+        });
+      }
+      
+      // If discussing food/nutrition/eating
+      if (lowerMessage.includes('eat') || lowerMessage.includes('food') || lowerMessage.includes('meal') || lowerMessage.includes('nutrition') || lowerMessage.includes('hungry')) {
+        suggestedActions.push({
+          type: 'meal_suggestion',
+          label: 'Get Meal Ideas',
+          description: 'Ask Zoe for healthy meal suggestions'
+        });
+      }
+      
+      // If user wants to understand the full week/program
+      if (lowerMessage.includes('week') || lowerMessage.includes('plan') || lowerMessage.includes('schedule') || lowerMessage.includes('upcoming')) {
+        suggestedActions.push({
+          type: 'view_program',
+          label: 'View Full Program',
+          description: 'See all 6 weeks of your program'
+        });
+      }
+      
+      // If discussing specific exercise form
+      if (lowerMessage.includes('how do i') || lowerMessage.includes('form') || lowerMessage.includes('technique') || lowerMessage.includes('correctly')) {
+        suggestedActions.push({
+          type: 'watch_video',
+          label: 'Watch Tutorial',
+          description: 'See the video demonstration'
+        });
+      }
+      
+      res.json({ reply, suggestedActions });
     } catch (error) {
       console.error("Ask Zoe error:", error);
       res.status(500).json({ message: "Failed to get response from Zoe" });
