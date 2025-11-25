@@ -39,6 +39,9 @@ export default function Admin() {
   const [selectedProgramForMember, setSelectedProgramForMember] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'name-asc' | 'name-desc'>('newest');
+  const [countryFilter, setCountryFilter] = useState<string>('all');
+  const [postpartumFilter, setPostpartumFilter] = useState<string>('all');
+  const [lastActiveFilter, setLastActiveFilter] = useState<string>('all');
   const [passwordMode, setPasswordMode] = useState<'auto' | 'manual'>('auto');
   const [manualPassword, setManualPassword] = useState('');
   const [resetPasswordMode, setResetPasswordMode] = useState<'auto' | 'manual'>('auto');
@@ -593,28 +596,9 @@ export default function Admin() {
           <TabsContent value="members" className="space-y-6">
             <Card className="overflow-hidden">
           <div className="border-b border-border p-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-foreground">Member Management</h3>
-              <div className="flex space-x-3">
-                <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>
-                  <SelectTrigger className="w-48" data-testid="select-sort-order">
-                    <SelectValue placeholder="Sort by..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="oldest">Oldest First</SelectItem>
-                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="search"
-                  placeholder="Search members..."
-                  className="w-64"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  data-testid="input-search-members"
-                />
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-foreground">Member Management</h3>
                 <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
                   <DialogTrigger asChild>
                     <Button data-testid="button-add-member">
@@ -635,6 +619,79 @@ export default function Admin() {
                     setManualPassword={setManualPassword}
                   />
                 </Dialog>
+              </div>
+              
+              {/* Filters Row */}
+              <div className="flex flex-wrap gap-3 items-center">
+                <Input
+                  type="search"
+                  placeholder="Search by name or email..."
+                  className="w-64"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  data-testid="input-search-members"
+                />
+                <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>
+                  <SelectTrigger className="w-40" data-testid="select-sort-order">
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={countryFilter} onValueChange={setCountryFilter}>
+                  <SelectTrigger className="w-36" data-testid="select-country-filter">
+                    <SelectValue placeholder="Country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Countries</SelectItem>
+                    {Array.from(new Set(allUsers.map(u => u.country).filter(Boolean))).sort().map(country => (
+                      <SelectItem key={country} value={country!}>{country}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={postpartumFilter} onValueChange={setPostpartumFilter}>
+                  <SelectTrigger className="w-44" data-testid="select-postpartum-filter">
+                    <SelectValue placeholder="Postpartum Stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Stages</SelectItem>
+                    <SelectItem value="0-12">0-12 weeks</SelectItem>
+                    <SelectItem value="13-26">13-26 weeks</SelectItem>
+                    <SelectItem value="27-52">27-52 weeks</SelectItem>
+                    <SelectItem value="52+">52+ weeks</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={lastActiveFilter} onValueChange={setLastActiveFilter}>
+                  <SelectTrigger className="w-36" data-testid="select-activity-filter">
+                    <SelectValue placeholder="Last Active" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Activity</SelectItem>
+                    <SelectItem value="7">Active (7 days)</SelectItem>
+                    <SelectItem value="30">Active (30 days)</SelectItem>
+                    <SelectItem value="dormant-7">Dormant 7+ days</SelectItem>
+                    <SelectItem value="dormant-30">Dormant 30+ days</SelectItem>
+                  </SelectContent>
+                </Select>
+                {(countryFilter !== 'all' || postpartumFilter !== 'all' || lastActiveFilter !== 'all' || searchQuery) && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => {
+                      setCountryFilter('all');
+                      setPostpartumFilter('all');
+                      setLastActiveFilter('all');
+                      setSearchQuery('');
+                    }}
+                    data-testid="button-clear-filters"
+                  >
+                    Clear Filters
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -663,13 +720,65 @@ export default function Admin() {
                   if (isDeactivated) return false;
                   
                   // Search filter
-                  if (!searchQuery) return true;
-                  const query = searchQuery.toLowerCase();
-                  return (
-                    member.firstName?.toLowerCase().includes(query) ||
-                    member.lastName?.toLowerCase().includes(query) ||
-                    member.email?.toLowerCase().includes(query)
-                  );
+                  if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    const matchesSearch = (
+                      member.firstName?.toLowerCase().includes(query) ||
+                      member.lastName?.toLowerCase().includes(query) ||
+                      member.email?.toLowerCase().includes(query)
+                    );
+                    if (!matchesSearch) return false;
+                  }
+                  
+                  // Country filter
+                  if (countryFilter !== 'all' && member.country !== countryFilter) {
+                    return false;
+                  }
+                  
+                  // Postpartum stage filter
+                  if (postpartumFilter !== 'all') {
+                    const weeks = member.postpartumWeeks || 0;
+                    switch (postpartumFilter) {
+                      case '0-12':
+                        if (weeks < 0 || weeks > 12) return false;
+                        break;
+                      case '13-26':
+                        if (weeks < 13 || weeks > 26) return false;
+                        break;
+                      case '27-52':
+                        if (weeks < 27 || weeks > 52) return false;
+                        break;
+                      case '52+':
+                        if (weeks <= 52) return false;
+                        break;
+                    }
+                  }
+                  
+                  // Last active filter
+                  if (lastActiveFilter !== 'all') {
+                    const lastLogin = member.lastLoginAt ? new Date(member.lastLoginAt) : null;
+                    const now = new Date();
+                    const daysSinceLogin = lastLogin 
+                      ? Math.floor((now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24))
+                      : Infinity;
+                    
+                    switch (lastActiveFilter) {
+                      case '7':
+                        if (daysSinceLogin > 7) return false;
+                        break;
+                      case '30':
+                        if (daysSinceLogin > 30) return false;
+                        break;
+                      case 'dormant-7':
+                        if (daysSinceLogin < 7) return false;
+                        break;
+                      case 'dormant-30':
+                        if (daysSinceLogin < 30) return false;
+                        break;
+                    }
+                  }
+                  
+                  return true;
                 })
                 .sort((a, b) => {
                   // Sorting logic
