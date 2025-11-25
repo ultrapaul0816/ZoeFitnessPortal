@@ -732,8 +732,6 @@ export default function Dashboard() {
           onClose={() => setShowCheckinModal(false)}
           onSkip={() => setShowCheckinModal(false)}
           userId={user.id}
-          existingCountry={user.country}
-          existingInstagramHandle={user.instagramHandle}
           existingDeliveryDate={user.deliveryDate}
         />
       )}

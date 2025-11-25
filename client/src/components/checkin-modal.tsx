@@ -8,21 +8,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Heart,
   Sparkles,
   Target,
-  Baby,
   X,
   ChevronRight,
   ChevronLeft,
   Check,
-  MapPin,
-  Instagram,
-  Calendar,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -33,8 +27,6 @@ interface CheckinModalProps {
   onClose: () => void;
   onSkip: () => void;
   userId: string;
-  existingCountry?: string | null;
-  existingInstagramHandle?: string | null;
   existingDeliveryDate?: string | null;
 }
 
@@ -63,11 +55,6 @@ const GOAL_OPTIONS = [
   "Connect with other mums",
 ];
 
-const COUNTRIES = [
-  "India", "United States", "United Kingdom", "Canada", "Australia",
-  "UAE", "Singapore", "Germany", "Netherlands", "France", "Other"
-];
-
 function calculatePostpartumWeeks(deliveryDate: Date): number {
   const now = new Date();
   const diffMs = now.getTime() - deliveryDate.getTime();
@@ -75,26 +62,11 @@ function calculatePostpartumWeeks(deliveryDate: Date): number {
   return Math.max(0, weeks);
 }
 
-function getMonthYearOptions() {
-  const options = [];
-  const now = new Date();
-  for (let i = 0; i <= 72; i++) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    options.push({
-      value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-      label: date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    });
-  }
-  return options;
-}
-
 export default function CheckinModal({
   isOpen,
   onClose,
   onSkip,
   userId,
-  existingCountry,
-  existingInstagramHandle,
   existingDeliveryDate,
 }: CheckinModalProps) {
   const [step, setStep] = useState(1);
@@ -102,16 +74,12 @@ export default function CheckinModal({
   const [energyLevel, setEnergyLevel] = useState<number | null>(null);
   const [goals, setGoals] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
-  const [country, setCountry] = useState(existingCountry || "");
-  const [instagramHandle, setInstagramHandle] = useState(existingInstagramHandle || "");
-  const [deliveryMonth, setDeliveryMonth] = useState<string>("");
   const [countdown, setCountdown] = useState<number | null>(null);
   const [checkinId, setCheckinId] = useState<string | null>(null);
   
   const { toast } = useToast();
 
-  const needsProfileInfo = !existingCountry || !existingDeliveryDate;
-  const totalSteps = needsProfileInfo ? 4 : 3;
+  const totalSteps = 3;
 
   const saveCheckinMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -142,12 +110,6 @@ export default function CheckinModal({
     },
   });
 
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: any) => {
-      return apiRequest("PATCH", `/api/users/${userId}`, data);
-    },
-  });
-
   const dismissMutation = useMutation({
     mutationFn: async () => {
       return apiRequest("POST", "/api/checkins/dismiss", {});
@@ -158,9 +120,9 @@ export default function CheckinModal({
   });
 
   const saveProgressively = useCallback(async (stepData: any, isPartial: boolean = true) => {
-    const postpartumWeeks = deliveryMonth 
-      ? calculatePostpartumWeeks(new Date(deliveryMonth + "-01"))
-      : (existingDeliveryDate ? calculatePostpartumWeeks(new Date(existingDeliveryDate)) : null);
+    const postpartumWeeks = existingDeliveryDate 
+      ? calculatePostpartumWeeks(new Date(existingDeliveryDate)) 
+      : null;
 
     if (!checkinId) {
       saveCheckinMutation.mutate({
@@ -174,7 +136,7 @@ export default function CheckinModal({
         data: { ...stepData, postpartumWeeksAtCheckin: postpartumWeeks, isPartial },
       });
     }
-  }, [checkinId, deliveryMonth, existingDeliveryDate, saveCheckinMutation, updateCheckinMutation]);
+  }, [checkinId, existingDeliveryDate, saveCheckinMutation, updateCheckinMutation]);
 
   useEffect(() => {
     if (countdown === null) return;
@@ -219,26 +181,9 @@ export default function CheckinModal({
   };
 
   const handleComplete = async () => {
-    if (needsProfileInfo) {
-      const profileUpdates: any = {};
-      if (country && !existingCountry) profileUpdates.country = country;
-      if (instagramHandle && !existingInstagramHandle) profileUpdates.instagramHandle = instagramHandle;
-      if (deliveryMonth && !existingDeliveryDate) {
-        profileUpdates.deliveryDate = new Date(deliveryMonth + "-01");
-      }
-      
-      if (Object.keys(profileUpdates).length > 0) {
-        try {
-          await updateProfileMutation.mutateAsync(profileUpdates);
-        } catch (error) {
-          console.error("Failed to update profile:", error);
-        }
-      }
-    }
-
-    const postpartumWeeks = deliveryMonth 
-      ? calculatePostpartumWeeks(new Date(deliveryMonth + "-01"))
-      : (existingDeliveryDate ? calculatePostpartumWeeks(new Date(existingDeliveryDate)) : null);
+    const postpartumWeeks = existingDeliveryDate 
+      ? calculatePostpartumWeeks(new Date(existingDeliveryDate)) 
+      : null;
 
     const finalData = {
       mood: mood || null,
@@ -407,90 +352,10 @@ export default function CheckinModal({
       );
     }
 
-    if (step === 4 && needsProfileInfo) {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Baby className="w-7 h-7 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">A bit about you</h3>
-            <p className="text-sm text-gray-500">Help us personalize your experience</p>
-          </div>
-          
-          <div className="space-y-4">
-            {!existingDeliveryDate && (
-              <div className="space-y-2">
-                <Label htmlFor="delivery-date" className="text-sm font-medium flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-pink-500" />
-                  When did you deliver?
-                </Label>
-                <Select value={deliveryMonth} onValueChange={setDeliveryMonth}>
-                  <SelectTrigger className="border-gray-200 focus:border-pink-300 focus:ring-pink-200" data-testid="select-delivery-month">
-                    <SelectValue placeholder="Select month & year" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {getMonthYearOptions().map((option) => (
-                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {deliveryMonth && (
-                  <p className="text-xs text-pink-600 mt-1">
-                    ~{calculatePostpartumWeeks(new Date(deliveryMonth + "-01"))} weeks postpartum
-                  </p>
-                )}
-              </div>
-            )}
-            
-            {!existingCountry && (
-              <div className="space-y-2">
-                <Label htmlFor="country" className="text-sm font-medium flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-pink-500" />
-                  Country
-                </Label>
-                <Select value={country} onValueChange={setCountry}>
-                  <SelectTrigger className="border-gray-200 focus:border-pink-300 focus:ring-pink-200" data-testid="select-country">
-                    <SelectValue placeholder="Select your country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COUNTRIES.map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-            
-            {!existingInstagramHandle && (
-              <div className="space-y-2">
-                <Label htmlFor="instagram" className="text-sm font-medium flex items-center gap-2">
-                  <Instagram className="w-4 h-4 text-pink-500" />
-                  Instagram Handle
-                </Label>
-                <Input
-                  id="instagram"
-                  placeholder="@yourusername"
-                  value={instagramHandle}
-                  onChange={(e) => setInstagramHandle(e.target.value)}
-                  className="border-gray-200 focus:border-pink-300 focus:ring-pink-200"
-                  data-testid="input-instagram"
-                />
-                <p className="text-xs text-gray-400">
-                  Optional - We'll use this to feature your community posts & progress on our Instagram
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-
     return null;
   };
 
   const isLastStep = step === totalSteps;
-  const showSkipOnProfileStep = step === 4 && needsProfileInfo;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleSkip()}>
@@ -561,17 +426,6 @@ export default function CheckinModal({
             )}
 
             <div className="flex items-center gap-2">
-              {showSkipOnProfileStep && (
-                <Button
-                  variant="ghost"
-                  onClick={handleComplete}
-                  className="text-gray-500 hover:text-gray-700"
-                  data-testid="button-skip-profile"
-                >
-                  Skip for now
-                </Button>
-              )}
-
               {!isLastStep ? (
                 <Button
                   onClick={() => {
@@ -588,7 +442,7 @@ export default function CheckinModal({
               ) : (
                 <Button
                   onClick={handleComplete}
-                  disabled={saveCheckinMutation.isPending || updateCheckinMutation.isPending || updateProfileMutation.isPending}
+                  disabled={saveCheckinMutation.isPending || updateCheckinMutation.isPending}
                   className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-2"
                   data-testid="button-submit-checkin"
                 >
