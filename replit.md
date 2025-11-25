@@ -69,6 +69,16 @@ Email automation includes 7 trigger-based rules:
 - **Scheduled (cascading)**: Re-engagement emails at 7, 14, and 30 days of inactivity with cascade logic - 14-day requires 7-day sent at least 7 days prior, 30-day requires 14-day sent at least 16 days prior. Each re-engagement email only sends once per user.
 Storage methods `checkReengagementEligibility()`, `checkWorkoutEmailCooldown()`, and `hasReceivedAutomationEmail()` enforce the cascade logic and cooldowns. Automation rules can be enabled/disabled and customized by admin.
 
+**Spotify Workout Music Integration**: Users can listen to curated workout playlists while exercising:
+- **Replit Connector Integration**: Spotify OAuth handled automatically via Replit's built-in connector (no manual API key setup)
+- **6 Curated Playlists**: One playlist per week, progressing from calm (Week 1) to empowering (Week 6)
+- **Mini Player Widget**: Embedded in Today's Workout view, shows current track with playback controls (play/pause/skip)
+- **Playlist Browser**: Dialog showing all 6 week playlists with play buttons and Spotify links
+- **Real-time Playback State**: Widget polls for current track info when expanded
+- **Note**: Full playback control requires Spotify Premium; free users can browse and open playlists in Spotify app
+- Server module: `server/spotify.ts`, Frontend component: `client/src/components/spotify-widget.tsx`
+- API endpoints: `/api/spotify/status`, `/api/spotify/workout-playlists`, `/api/spotify/playback`, `/api/spotify/playback/:action`
+
 # External Dependencies
 - **Database**: PostgreSQL (managed by Neon Database)
   - Development: Uses DATABASE_URL (Replit-managed)
@@ -78,3 +88,4 @@ Storage methods `checkReengagementEligibility()`, `checkWorkoutEmailCooldown()`,
 - **Video**: YouTube API
 - **PDF Generation**: jsPDF
 - **Image Storage**: Cloudinary
+- **Music**: Spotify Web API (via Replit Connector)
