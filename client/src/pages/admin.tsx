@@ -9,13 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, Activity, LogIn, CheckCircle } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useForm } from "react-hook-form";
@@ -134,6 +135,65 @@ export default function Admin() {
   const { data: memberEnrolledPrograms = [] } = useQuery<any[]>({
     queryKey: ["/api/member-programs", selectedMember?.id],
     enabled: !!selectedMember?.id,
+  });
+
+  // Actionable dashboard data queries
+  const { data: dormantMembers = [] } = useQuery<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    lastLoginAt: string | null;
+    daysSinceLogin: number;
+  }>>({
+    queryKey: ["/api/admin/actionable/dormant-members"],
+    enabled: !!user?.isAdmin,
+  });
+
+  const { data: membersWithoutPhotos = [] } = useQuery<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    completionPercentage: number | null;
+    lastLoginAt: string | null;
+  }>>({
+    queryKey: ["/api/admin/actionable/no-photos"],
+    enabled: !!user?.isAdmin,
+  });
+
+  const { data: recentCompleters = [] } = useQuery<Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    completedAt: string;
+    workoutName: string;
+  }>>({
+    queryKey: ["/api/admin/actionable/recent-completers"],
+    enabled: !!user?.isAdmin,
+  });
+
+  // Quick-send email mutation
+  const quickSendEmailMutation = useMutation({
+    mutationFn: async ({ userId, emailType }: { userId: string; emailType: string }) => {
+      const response = await apiRequest("POST", "/api/admin/actionable/send-email", { userId, emailType });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        variant: "success",
+        title: "Email Sent",
+        description: data.message || "Email sent successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to send email",
+      });
+    },
   });
 
   const updateProgramMutation = useMutation({
@@ -544,6 +604,173 @@ export default function Admin() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Needs Attention Section */}
+        {(dormantMembers.length > 0 || membersWithoutPhotos.length > 0 || recentCompleters.length > 0) && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Dormant Members Card */}
+            {dormantMembers.length > 0 && (
+              <Card className="border-orange-200 bg-orange-50/50">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-orange-100">
+                      <UserMinus className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-sm font-medium text-orange-900">Inactive Members</CardTitle>
+                      <CardDescription className="text-xs text-orange-700">
+                        {dormantMembers.length} member{dormantMembers.length !== 1 ? 's' : ''} inactive 7+ days
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {dormantMembers.slice(0, 5).map((member) => (
+                      <div 
+                        key={member.id} 
+                        className="flex items-center justify-between p-2 bg-white rounded-lg border border-orange-100"
+                        data-testid={`dormant-member-${member.id}`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {member.firstName} {member.lastName}
+                          </p>
+                          <p className="text-xs text-orange-600">
+                            {member.daysSinceLogin} days inactive
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                          onClick={() => quickSendEmailMutation.mutate({ userId: member.id, emailType: 're-engagement' })}
+                          disabled={quickSendEmailMutation.isPending}
+                          data-testid={`send-reengagement-${member.id}`}
+                        >
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {dormantMembers.length > 5 && (
+                    <p className="text-xs text-orange-600 mt-2 text-center">
+                      +{dormantMembers.length - 5} more members
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Members Without Photos Card */}
+            {membersWithoutPhotos.length > 0 && (
+              <Card className="border-purple-200 bg-purple-50/50">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-purple-100">
+                      <Camera className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-sm font-medium text-purple-900">No Progress Photos</CardTitle>
+                      <CardDescription className="text-xs text-purple-700">
+                        {membersWithoutPhotos.length} active member{membersWithoutPhotos.length !== 1 ? 's' : ''} without photos
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {membersWithoutPhotos.slice(0, 5).map((member) => (
+                      <div 
+                        key={member.id} 
+                        className="flex items-center justify-between p-2 bg-white rounded-lg border border-purple-100"
+                        data-testid={`no-photo-member-${member.id}`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {member.firstName} {member.lastName}
+                          </p>
+                          <p className="text-xs text-purple-600">
+                            {member.completionPercentage ? `${member.completionPercentage}% complete` : 'In progress'}
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-100"
+                          onClick={() => quickSendEmailMutation.mutate({ userId: member.id, emailType: 'photo-reminder' })}
+                          disabled={quickSendEmailMutation.isPending}
+                          data-testid={`send-photo-reminder-${member.id}`}
+                        >
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {membersWithoutPhotos.length > 5 && (
+                    <p className="text-xs text-purple-600 mt-2 text-center">
+                      +{membersWithoutPhotos.length - 5} more members
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Recent Workout Completers Card */}
+            {recentCompleters.length > 0 && (
+              <Card className="border-green-200 bg-green-50/50">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-green-100">
+                      <Trophy className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-sm font-medium text-green-900">Recent Completers</CardTitle>
+                      <CardDescription className="text-xs text-green-700">
+                        {recentCompleters.length} workout{recentCompleters.length !== 1 ? 's' : ''} in last 48 hours
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {recentCompleters.slice(0, 5).map((completer) => (
+                      <div 
+                        key={`${completer.id}-${completer.completedAt}`} 
+                        className="flex items-center justify-between p-2 bg-white rounded-lg border border-green-100"
+                        data-testid={`recent-completer-${completer.id}`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {completer.firstName} {completer.lastName}
+                          </p>
+                          <p className="text-xs text-green-600 truncate">
+                            {completer.workoutName}
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-100"
+                          onClick={() => quickSendEmailMutation.mutate({ userId: completer.id, emailType: 'congratulations' })}
+                          disabled={quickSendEmailMutation.isPending}
+                          data-testid={`send-congrats-${completer.id}`}
+                        >
+                          <Sparkles className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {recentCompleters.length > 5 && (
+                    <p className="text-xs text-green-600 mt-2 text-center">
+                      +{recentCompleters.length - 5} more completers
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
         )}
 
         {/* Activity Feed */}
