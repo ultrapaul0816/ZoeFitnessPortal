@@ -25,7 +25,7 @@ import { replaceTemplateVariables, generateUserVariables, generateSampleVariable
 // Rate limiting configurations
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 login attempts per windowMs
+  max: 15, // Increased from 5 to 15 login attempts per windowMs to reduce lockouts
   message: "Too many login attempts from this IP, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
@@ -223,14 +223,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.body
       );
 
+      console.log(`[LOGIN] Attempt for email: ${email}`);
+
       const user = await storage.getUserByEmail(email);
       if (!user) {
+        console.log(`[LOGIN] Failed - User not found: ${email}`);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       // Handle transitional authentication for legacy plaintext passwords
       let isPasswordValid = false;
       const isBcryptHash = user.password.startsWith('$2b$') || user.password.startsWith('$2a$') || user.password.startsWith('$2y$');
+      
+      console.log(`[LOGIN] User found: ${email}, isBcryptHash: ${isBcryptHash}, termsAccepted: ${user.termsAccepted}, disclaimerAccepted: ${user.disclaimerAccepted}`);
       
       if (isBcryptHash) {
         // Password is already hashed - use bcrypt comparison
@@ -241,23 +246,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // If valid, immediately hash and update the password for security
         if (isPasswordValid) {
+          console.log(`[LOGIN] Migrating plaintext password to bcrypt for: ${email}`);
           const hashedPassword = await bcrypt.hash(password, 10);
           await storage.updateUser(user.id, { password: hashedPassword });
         }
       }
       
       if (!isPasswordValid) {
+        console.log(`[LOGIN] Failed - Invalid password for: ${email}`);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+      console.log(`[LOGIN] Password valid for: ${email}`);
+
       // Check if user needs to accept terms and disclaimer
       if (!user.termsAccepted && !termsAccepted) {
+        console.log(`[LOGIN] Requires terms acceptance: ${email}`);
         return res.status(403).json({ 
           message: "Please accept the terms and conditions to continue" 
         });
       }
 
       if (!user.disclaimerAccepted && !disclaimerAccepted) {
+        console.log(`[LOGIN] Requires disclaimer acceptance: ${email}`);
         return res.status(403).json({ 
           message: "Please accept the disclaimer to continue" 
         });
@@ -314,6 +325,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create server-side session
       req.session.userId = updatedUser.id;
 
+      console.log(`[LOGIN] Success for: ${updatedUser.email} (isAdmin: ${updatedUser.isAdmin})`);
+
       res.json({
         user: {
           id: updatedUser.id,
@@ -334,7 +347,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastLoginAt: updatedUser.lastLoginAt,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error(`[LOGIN] Error:`, error?.message || error);
       res.status(400).json({ message: "Invalid request data" });
     }
   });
