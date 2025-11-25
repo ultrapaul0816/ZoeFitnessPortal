@@ -211,7 +211,7 @@ export default function Login() {
     requestOtpMutation.mutate(resetEmail);
   };
 
-  const handleVerifyOtp = (loginNow: boolean) => {
+  const handleProceedToOptions = () => {
     if (otpCode.length !== 6) {
       toast({
         variant: "destructive",
@@ -220,7 +220,21 @@ export default function Login() {
       });
       return;
     }
-    verifyOtpMutation.mutate({ email: resetEmail, code: otpCode, loginNow });
+    // Just move to options step - don't call API yet
+    // The code will be verified when user clicks "Log In Now" or "Reset Password"
+    setForgotPasswordStep('options');
+  };
+
+  const handleLoginWithOtp = () => {
+    if (otpCode.length !== 6) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Code",
+        description: "Please enter the 6-digit code",
+      });
+      return;
+    }
+    verifyOtpMutation.mutate({ email: resetEmail, code: otpCode, loginNow: true });
   };
 
   const handleResetPassword = () => {
@@ -545,19 +559,12 @@ export default function Login() {
                   <p className="text-xs text-gray-500 text-center">Code expires in 10 minutes</p>
                 </div>
                 <Button
-                  onClick={() => handleVerifyOtp(false)}
-                  disabled={verifyOtpMutation.isPending || otpCode.length !== 6}
+                  onClick={handleProceedToOptions}
+                  disabled={otpCode.length !== 6}
                   className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl"
                   data-testid="button-verify-code"
                 >
-                  {verifyOtpMutation.isPending ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Verifying...</span>
-                    </div>
-                  ) : (
-                    "Verify Code"
-                  )}
+                  Continue
                 </Button>
                 <button
                   type="button"
@@ -573,12 +580,12 @@ export default function Login() {
             {/* Options Step */}
             {forgotPasswordStep === 'options' && (
               <>
-                <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-                  <p className="text-green-700 font-medium">Your code has been verified!</p>
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+                  <p className="text-blue-700 font-medium">Code entered! Choose an option below:</p>
                 </div>
                 <div className="space-y-3">
                   <Button
-                    onClick={() => handleVerifyOtp(true)}
+                    onClick={handleLoginWithOtp}
                     disabled={verifyOtpMutation.isPending}
                     className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl"
                     data-testid="button-login-now"
