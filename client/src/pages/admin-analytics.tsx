@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
 import { Users, TrendingUp, Activity, Heart, Globe, Instagram, MessageCircle, ArrowLeft, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,8 +18,8 @@ interface Analytics {
     instagramHandlesCollected: number;
   };
   engagement: {
-    activeUsers: { last7Days: number; last30Days: number; last90Days: number };
-    dormantUsers: { dormant14Days: number; dormant30Days: number; dormant60Days: number };
+    activeUsers: { today: number; last7Days: number; last30Days: number; last90Days: number };
+    dormantUsers: { today: number; dormant7Days: number; dormant30Days: number; dormant90Days: number };
     averageLoginFrequency: number;
   };
   programPerformance: {
@@ -137,18 +138,6 @@ export default function AdminAnalytics() {
   }
 
   if (!analytics) return null;
-
-  const activeUserData = [
-    { period: "Last 7 Days", users: analytics.engagement.activeUsers.last7Days },
-    { period: "Last 30 Days", users: analytics.engagement.activeUsers.last30Days },
-    { period: "Last 90 Days", users: analytics.engagement.activeUsers.last90Days },
-  ];
-
-  const dormantUserData = [
-    { period: "14+ Days", users: analytics.engagement.dormantUsers.dormant14Days },
-    { period: "30+ Days", users: analytics.engagement.dormantUsers.dormant30Days },
-    { period: "60+ Days", users: analytics.engagement.dormantUsers.dormant60Days },
-  ];
 
   const completionData = [
     { name: "Completed", value: analytics.programPerformance.completionRates.completed, color: '#10b981' },
@@ -319,43 +308,63 @@ export default function AdminAnalytics() {
 
           {/* Engagement Tab */}
           <TabsContent value="engagement" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-lg" data-testid="card-active-users">
-                <CardHeader>
-                  <CardTitle>Active Users</CardTitle>
-                  <CardDescription>Recent login activity</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={activeUserData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="period" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="users" fill="#10b981" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-lg" data-testid="card-dormant-users">
-                <CardHeader>
-                  <CardTitle>Dormant Users</CardTitle>
-                  <CardDescription>Members who haven't logged in recently</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={dormantUserData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="period" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="users" fill="#ef4444" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
+            <Card className="shadow-lg" data-testid="card-user-activity">
+              <CardHeader>
+                <CardTitle>User Activity Overview</CardTitle>
+                <CardDescription>Active and dormant user metrics across different time periods</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="font-semibold">Time Period</TableHead>
+                        <TableHead className="text-center font-semibold text-green-600">Active Users</TableHead>
+                        <TableHead className="text-center font-semibold text-red-600">Dormant Users</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow data-testid="row-activity-today">
+                        <TableCell className="font-medium">Today</TableCell>
+                        <TableCell className="text-center text-green-600 font-semibold" data-testid="text-active-today">
+                          {analytics.engagement.activeUsers.today}
+                        </TableCell>
+                        <TableCell className="text-center text-red-600 font-semibold" data-testid="text-dormant-today">
+                          {analytics.engagement.dormantUsers.today}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow data-testid="row-activity-7days">
+                        <TableCell className="font-medium">Last 7 Days</TableCell>
+                        <TableCell className="text-center text-green-600 font-semibold" data-testid="text-active-7days">
+                          {analytics.engagement.activeUsers.last7Days}
+                        </TableCell>
+                        <TableCell className="text-center text-red-600 font-semibold" data-testid="text-dormant-7days">
+                          {analytics.engagement.dormantUsers.dormant7Days}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow data-testid="row-activity-30days">
+                        <TableCell className="font-medium">Last 30 Days</TableCell>
+                        <TableCell className="text-center text-green-600 font-semibold" data-testid="text-active-30days">
+                          {analytics.engagement.activeUsers.last30Days}
+                        </TableCell>
+                        <TableCell className="text-center text-red-600 font-semibold" data-testid="text-dormant-30days">
+                          {analytics.engagement.dormantUsers.dormant30Days}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow data-testid="row-activity-90days">
+                        <TableCell className="font-medium">Last 90 Days</TableCell>
+                        <TableCell className="text-center text-green-600 font-semibold" data-testid="text-active-90days">
+                          {analytics.engagement.activeUsers.last90Days}
+                        </TableCell>
+                        <TableCell className="text-center text-red-600 font-semibold" data-testid="text-dormant-90days">
+                          {analytics.engagement.dormantUsers.dormant90Days}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Program Performance Tab */}
