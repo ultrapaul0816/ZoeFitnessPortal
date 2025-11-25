@@ -186,6 +186,23 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
+  // Trigger confetti when all exercises are completed
+  useEffect(() => {
+    if (!progress) return;
+    
+    const currentProg = workoutPrograms.find(p => p.week === progress.currentWeek) || workoutPrograms[0];
+    const exerciseCount = currentProg.part2.exercises.length;
+    const allComplete = exerciseCount > 0 && completedExercises.size === exerciseCount;
+    const wasNotComplete = prevCompletedCount.current < exerciseCount;
+    
+    if (allComplete && wasNotComplete) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
+    }
+    
+    prevCompletedCount.current = completedExercises.size;
+  }, [completedExercises.size, progress]);
+
   const handleSendMessage = (message: string) => {
     if (!message.trim()) return;
     setChatMessages(prev => [...prev, { role: "user", content: message }]);
@@ -266,20 +283,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     `week${progress.currentWeek}-day${progress.currentDay}`
   );
   const programInfo = programOverviews[progress.currentWeek] || programOverviews[1];
-
-  // Trigger confetti when all exercises are completed
-  useEffect(() => {
-    const allComplete = exercises.length > 0 && completedExercises.size === exercises.length;
-    const wasNotComplete = prevCompletedCount.current < exercises.length;
-    
-    if (allComplete && wasNotComplete) {
-      setShowConfetti(true);
-      // Hide confetti after animation completes
-      setTimeout(() => setShowConfetti(false), 3000);
-    }
-    
-    prevCompletedCount.current = completedExercises.size;
-  }, [completedExercises.size, exercises.length]);
 
   const tomorrowProgram = progress.currentDay < (progress.currentWeek === 1 ? 4 : 3)
     ? currentProgram
