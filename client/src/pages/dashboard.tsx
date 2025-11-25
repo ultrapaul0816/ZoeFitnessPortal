@@ -105,12 +105,25 @@ export default function Dashboard() {
           }));
           
           // Determine if we should show the check-in modal
+          // First check if user has already checked in today
           if (!checkinPromptChecked) {
             setCheckinPromptChecked(true);
             const shouldShowCheckin = shouldPromptCheckin(data.user);
             if (shouldShowCheckin) {
-              // Delay slightly so user sees the dashboard first
-              setTimeout(() => setShowCheckinModal(true), 1500);
+              // Check if user already checked in today before showing modal
+              try {
+                const checkinResponse = await fetch("/api/checkins/today");
+                if (checkinResponse.ok) {
+                  const todayCheckin = await checkinResponse.json();
+                  // Only show modal if there's NO existing check-in today
+                  if (!todayCheckin) {
+                    setTimeout(() => setShowCheckinModal(true), 1500);
+                  }
+                }
+              } catch (error) {
+                // On error, default to showing the modal
+                setTimeout(() => setShowCheckinModal(true), 1500);
+              }
             }
           }
         } else {
