@@ -17,6 +17,7 @@ import CommunityModal from "@/components/community-modal";
 import ProfileSettings from "@/components/profile-settings";
 import ProfileBanner from "@/components/profile-banner";
 import CheckinModal from "@/components/checkin-modal";
+import TodaysWorkout from "@/components/todays-workout";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 // Determine if we should show the check-in modal based on user data
@@ -692,6 +693,19 @@ export default function Dashboard() {
           }}
           className="mb-8"
         />
+
+        {/* Today's Workout Card - Only show if user has enrolled programs */}
+        {memberPrograms.length > 0 && (
+          <section className="mb-8">
+            <TodaysWorkout 
+              userId={user.id}
+              onStartWorkout={(weekNumber) => {
+                // Navigate to the heal-your-core program page with the specific week
+                setLocation(`/heal-your-core?week=${weekNumber}`);
+              }}
+            />
+          </section>
+        )}
 
         {/* Your Programs Section */}
         <section className="mb-8">

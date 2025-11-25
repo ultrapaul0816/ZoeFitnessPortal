@@ -1047,6 +1047,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's workout progress for Today's Workout feature
+  app.get("/api/workout-progress/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Get user's workout completions
+      const completions = await storage.getWorkoutCompletions(userId);
+      const completedWorkoutIds = completions.map(c => c.workoutId);
+      const totalWorkoutsCompleted = completions.length;
+      
+      // Get last completion date
+      const lastCompletion = completions.sort((a, b) => {
+        const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+        const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+        return dateB - dateA;
+      })[0];
+      
+      // Calculate current week based on completions
+      // Each week has different workout counts: Week 1: 4, Weeks 2-6: 3 each
+      const weeklyWorkouts = [4, 3, 3, 3, 3, 3]; // workouts per week
+      const totalProgramWorkouts = weeklyWorkouts.reduce((a, b) => a + b, 0); // 22 total
+      
+      let completedCount = 0;
+      let currentWeek = 1;
+      let weeklyCompleted = 0;
+      
+      for (let week = 1; week <= 6; week++) {
+        const weekWorkouts = weeklyWorkouts[week - 1];
+        const weekCompletions = completedWorkoutIds.filter(id => id.startsWith(`week${week}-`)).length;
+        
+        if (weekCompletions >= weekWorkouts && week < 6) {
+          completedCount += weekCompletions;
+          currentWeek = week + 1;
+          weeklyCompleted = 0;
+        } else {
+          currentWeek = week;
+          weeklyCompleted = weekCompletions;
+          break;
+        }
+      }
+      
+      // Calculate current day within the week
+      const currentDay = Math.min(weeklyCompleted + 1, weeklyWorkouts[currentWeek - 1]);
+      
+      // Calculate overall progress percentage
+      const overallProgress = (totalWorkoutsCompleted / totalProgramWorkouts) * 100;
+      
+      res.json({
+        currentWeek,
+        currentDay,
+        totalWorkoutsCompleted,
+        weeklyWorkoutsCompleted: weeklyCompleted,
+        weeklyWorkoutsTotal: weeklyWorkouts[currentWeek - 1],
+        overallProgress: Math.min(overallProgress, 100),
+        lastCompletedAt: lastCompletion?.completedAt || null,
+        completedWorkoutIds
+      });
+    } catch (error) {
+      console.error("Failed to fetch workout progress:", error);
+      res.status(500).json({ message: "Failed to fetch workout progress" });
+    }
+  });
+
   // Workout Program Content API (database-driven workout data)
   app.get("/api/workout-content", async (req, res) => {
     try {
