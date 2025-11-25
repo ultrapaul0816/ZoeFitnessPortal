@@ -73,6 +73,7 @@ export default function AdminEmailCampaigns() {
     dormantDays: "0",
     hasWhatsAppSupport: "any",
     countries: [] as string[],
+    pendingSignup: false,
   });
 
   const availableCountries = ["India", "USA", "UK", "Canada", "Australia", "Singapore", "UAE"];
@@ -198,6 +199,7 @@ export default function AdminEmailCampaigns() {
         dormantDays: "0",
         hasWhatsAppSupport: "any",
         countries: [],
+        pendingSignup: false,
       });
       setCampaignPreviewData(null);
     },
@@ -289,6 +291,9 @@ export default function AdminEmailCampaigns() {
     if (audienceFilters.countries.length > 0 && audienceFilters.countries.length < availableCountries.length) {
       audienceFilter.country = audienceFilters.countries[0];
     }
+    if (audienceFilters.pendingSignup) {
+      audienceFilter.pendingSignup = true;
+    }
 
     previewCampaignMutation.mutate({
       templateId: selectedTemplateId,
@@ -306,6 +311,9 @@ export default function AdminEmailCampaigns() {
     }
     if (audienceFilters.countries.length > 0 && audienceFilters.countries.length < availableCountries.length) {
       audienceFilter.country = audienceFilters.countries[0];
+    }
+    if (audienceFilters.pendingSignup) {
+      audienceFilter.pendingSignup = true;
     }
 
     sendCampaignMutation.mutate({
@@ -758,6 +766,23 @@ export default function AdminEmailCampaigns() {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-gray-500 mt-1">Filter by WhatsApp community membership</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <Checkbox
+                  id="pending-signup"
+                  checked={audienceFilters.pendingSignup}
+                  onCheckedChange={(checked) => setAudienceFilters({ ...audienceFilters, pendingSignup: !!checked })}
+                  data-testid="checkbox-pending-signup"
+                />
+                <div>
+                  <label htmlFor="pending-signup" className="text-sm font-medium text-yellow-800 cursor-pointer">
+                    Target Pending Signups Only
+                  </label>
+                  <p className="text-xs text-yellow-700 mt-1">
+                    Users who haven't accepted Terms & Conditions or Health Disclaimer
+                  </p>
                 </div>
               </div>
 
