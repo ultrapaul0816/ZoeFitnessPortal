@@ -2100,7 +2100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "pending" as const,
       }));
 
-      await storage.createCampaignRecipients(recipients);
+      const createdRecipients = await storage.createCampaignRecipients(recipients);
 
       // Update campaign with recipient count
       await storage.updateEmailCampaign(id, {
