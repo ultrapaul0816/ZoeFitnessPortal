@@ -19,7 +19,14 @@ Session-based authentication with express-session and PostgreSQL storage (connec
 
 **Login with OTP**: Users can log in via a 6-digit OTP code sent to their email. The login page now features two equally prominent buttons: "Sign In with Password" and "Sign In with Email Code" (OTP). After entering the 6-digit code, users are logged in directly. A "Reset password instead?" option is available for those who need to change their password. OTP codes expire in 10 minutes and are stored in the `password_reset_codes` table. The system auto-accepts terms/disclaimer when logging in via OTP to streamline the process.
 
-**Activity Tracking**: The system tracks user activities (logins, workout completions) in the `activity_logs` database table. The admin dashboard's Overview tab includes a real-time Activity Feed showing recent member activities with timestamps, color-coded by activity type (blue for logins, green for workout completions, pink for workout starts). The feed auto-refreshes every 30 seconds.
+**Activity Tracking**: The system tracks user activities (logins, workout completions) in the `activity_logs` database table. The admin dashboard's Overview tab includes a real-time Activity Feed showing recent member activities with timestamps, color-coded by activity type (blue for logins, green for workout completions, pink for workout starts). The feed auto-refreshes every 30 seconds. Each activity item has a quick-action dropdown menu for viewing member details and sending targeted emails directly.
+
+**Actionable Dashboard**: The admin Overview tab features a "Needs Attention" section with three actionable cards:
+- **Inactive Members** (orange): Shows members who haven't logged in for 7+ days with one-click re-engagement email sending
+- **No Progress Photos** (purple): Shows active members without uploaded progress photos with one-click photo reminder email
+- **Recent Completers** (green): Shows workout completions in the last 48 hours with one-click congratulations email
+
+Each card displays up to 5 members with quick-send email buttons. The Activity Feed items also feature hover-activated dropdown menus with options to view member profiles and send various email types (congratulations, re-engagement, photo reminder).
 
 ## Technical Implementations
 The application provides a 6-week program with detailed exercises, coach notes, and YouTube video integration. Content is organized into collapsible, gradient-themed sections. Features include a "What's Next Tab" with a PDF progress tracker, a modernized Nutrition section, extensive profile personalization, and real-time profile completeness tracking with a progress banner. Program access is managed via both purchase and admin enrollment records. A "Progress Tracker" tab allows secure before/after photo uploads via Cloudinary. An Instagram-style Community Feed supports photo uploads, categories, week-based filtering, likes, comments, and Instagram sharing, with full CRUD operations and Cloudinary integration.
