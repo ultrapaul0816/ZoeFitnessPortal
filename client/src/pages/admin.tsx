@@ -2636,6 +2636,93 @@ export default function Admin() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Email Preview Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={(open) => {
+        setIsPreviewOpen(open);
+        if (!open) setEmailPreview(null);
+      }}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-pink-500" />
+              Email Preview
+            </DialogTitle>
+            <DialogDescription>
+              Review the email before sending
+            </DialogDescription>
+          </DialogHeader>
+          
+          {emailPreview && (
+            <div className="flex flex-col gap-4 py-4 overflow-hidden flex-1">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <Label className="text-muted-foreground text-xs">Recipient</Label>
+                  <p className="font-medium">{emailPreview.recipient.name}</p>
+                  <p className="text-muted-foreground text-xs">{emailPreview.recipient.email}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground text-xs">Email Type</Label>
+                  <p className="font-medium capitalize">{emailPreview.emailType.replace('-', ' ')}</p>
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-muted-foreground text-xs">Subject</Label>
+                <p className="font-medium text-lg">{emailPreview.subject}</p>
+              </div>
+              
+              <div className="flex-1 overflow-hidden">
+                <Label className="text-muted-foreground text-xs mb-2 block">Preview</Label>
+                <div className="border rounded-lg overflow-hidden h-[400px]">
+                  <iframe 
+                    srcDoc={emailPreview.html} 
+                    className="w-full h-full"
+                    title="Email Preview"
+                    sandbox="allow-same-origin"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="border-t pt-4 gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsPreviewOpen(false);
+                setEmailPreview(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (emailPreview) {
+                  quickSendEmailMutation.mutate({
+                    userId: emailPreview.recipient.id,
+                    emailType: emailPreview.emailType
+                  });
+                }
+              }}
+              disabled={quickSendEmailMutation.isPending}
+              className="bg-pink-500 hover:bg-pink-600 text-white"
+            >
+              {quickSendEmailMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Email
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
