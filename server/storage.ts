@@ -200,8 +200,8 @@ export interface IStorage {
       instagramHandlesCollected: number;
     };
     engagement: {
-      activeUsers: { last7Days: number; last30Days: number; last90Days: number };
-      dormantUsers: { dormant14Days: number; dormant30Days: number; dormant60Days: number };
+      activeUsers: { today: number; last7Days: number; last30Days: number; last90Days: number };
+      dormantUsers: { today: number; dormant7Days: number; dormant30Days: number; dormant90Days: number };
       averageLoginFrequency: number;
     };
     programPerformance: {
@@ -1280,22 +1280,23 @@ export class MemStorage implements IStorage {
     const instagramHandlesCollected = users.filter(u => u.instagramHandle).length;
 
     // Engagement
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
     const activeUsers = {
+      today: users.filter(u => u.lastLoginAt && u.lastLoginAt >= todayStart).length,
       last7Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= sevenDaysAgo).length,
       last30Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= thirtyDaysAgo).length,
       last90Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= ninetyDaysAgo).length,
     };
 
     const dormantUsers = {
-      dormant14Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < fourteenDaysAgo).length,
+      today: users.filter(u => !u.lastLoginAt || u.lastLoginAt < todayStart).length,
+      dormant7Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < sevenDaysAgo).length,
       dormant30Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < thirtyDaysAgo).length,
-      dormant60Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < sixtyDaysAgo).length,
+      dormant90Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < ninetyDaysAgo).length,
     };
 
     // Program Performance
@@ -1925,22 +1926,23 @@ class DatabaseStorage implements IStorage {
     const instagramHandlesCollected = users.filter(u => u.instagramHandle).length;
 
     // Engagement
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
     const activeUsers = {
+      today: users.filter(u => u.lastLoginAt && u.lastLoginAt >= todayStart).length,
       last7Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= sevenDaysAgo).length,
       last30Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= thirtyDaysAgo).length,
       last90Days: users.filter(u => u.lastLoginAt && u.lastLoginAt >= ninetyDaysAgo).length,
     };
 
     const dormantUsers = {
-      dormant14Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < fourteenDaysAgo).length,
+      today: users.filter(u => !u.lastLoginAt || u.lastLoginAt < todayStart).length,
+      dormant7Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < sevenDaysAgo).length,
       dormant30Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < thirtyDaysAgo).length,
-      dormant60Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < sixtyDaysAgo).length,
+      dormant90Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < ninetyDaysAgo).length,
     };
 
     // Program Performance
