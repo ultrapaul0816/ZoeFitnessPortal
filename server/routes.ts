@@ -1762,6 +1762,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Recent check-ins endpoint for admin dashboard
+  app.get("/api/admin/actionable/recent-checkins", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const recentCheckins = await storage.getRecentCheckins(limit);
+      res.json(recentCheckins);
+    } catch (error) {
+      console.error("Recent check-ins error:", error);
+      res.status(500).json({ message: "Failed to fetch recent check-ins" });
+    }
+  });
+
+  // Enhanced check-in analytics with day/week breakdown
+  app.get("/api/admin/actionable/checkin-analytics", async (req, res) => {
+    try {
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekStart = new Date(todayStart);
+      weekStart.setDate(weekStart.getDate() - 7);
+
+      // Get all check-ins for processing
+      const allCheckins = await storage.getCheckinAnalytics();
+      
+      // Get today's check-ins
+      const todayCheckins = await storage.getRecentCheckins(100);
+      const todayData = todayCheckins.filter(c => c.createdAt && new Date(c.createdAt) >= todayStart);
+      
+      // Get this week's check-ins
+      const weekData = todayCheckins.filter(c => c.createdAt && new Date(c.createdAt) >= weekStart);
+
+      // Process mood distribution for today
+      const todayMoodCounts: Record<string, number> = {};
+      for (const c of todayData) {
+        if (c.mood) {
+          todayMoodCounts[c.mood] = (todayMoodCounts[c.mood] || 0) + 1;
+        }
+      }
+
+      // Process mood distribution for this week
+      const weekMoodCounts: Record<string, number> = {};
+      for (const c of weekData) {
+        if (c.mood) {
+          weekMoodCounts[c.mood] = (weekMoodCounts[c.mood] || 0) + 1;
+        }
+      }
+
+      // Process energy distribution for today
+      const todayEnergyCounts: Record<number, number> = {};
+      for (const c of todayData) {
+        if (c.energyLevel !== null) {
+          todayEnergyCounts[c.energyLevel] = (todayEnergyCounts[c.energyLevel] || 0) + 1;
+        }
+      }
+
+      // Process energy distribution for this week
+      const weekEnergyCounts: Record<number, number> = {};
+      for (const c of weekData) {
+        if (c.energyLevel !== null) {
+          weekEnergyCounts[c.energyLevel] = (weekEnergyCounts[c.energyLevel] || 0) + 1;
+        }
+      }
+
+      // Process goals for today
+      const todayGoalCounts: Record<string, number> = {};
+      for (const c of todayData) {
+        if (c.goals) {
+          for (const goal of c.goals) {
+            todayGoalCounts[goal] = (todayGoalCounts[goal] || 0) + 1;
+          }
+        }
+      }
+
+      // Process goals for this week
+      const weekGoalCounts: Record<string, number> = {};
+      for (const c of weekData) {
+        if (c.goals) {
+          for (const goal of c.goals) {
+            weekGoalCounts[goal] = (weekGoalCounts[goal] || 0) + 1;
+          }
+        }
+      }
+
+      res.json({
+        overall: allCheckins,
+        today: {
+          total: todayData.length,
+          moodDistribution: Object.entries(todayMoodCounts).map(([mood, count]) => ({ mood, count })),
+          energyDistribution: Object.entries(todayEnergyCounts).map(([level, count]) => ({ energyLevel: parseInt(level), count })),
+          popularGoals: Object.entries(todayGoalCounts).map(([goal, count]) => ({ goal, count })).sort((a, b) => b.count - a.count).slice(0, 5),
+        },
+        thisWeek: {
+          total: weekData.length,
+          moodDistribution: Object.entries(weekMoodCounts).map(([mood, count]) => ({ mood, count })),
+          energyDistribution: Object.entries(weekEnergyCounts).map(([level, count]) => ({ energyLevel: parseInt(level), count })),
+          popularGoals: Object.entries(weekGoalCounts).map(([goal, count]) => ({ goal, count })).sort((a, b) => b.count - a.count).slice(0, 5),
+        },
+      });
+    } catch (error) {
+      console.error("Check-in analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch check-in analytics" });
+    }
+  });
+
   // Email preview endpoint for dashboard actions
   app.post("/api/admin/actionable/preview-email", async (req, res) => {
     try {
