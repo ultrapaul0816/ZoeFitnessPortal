@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown, ClipboardCheck } from "lucide-react";
+import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown, ClipboardCheck, ChevronRight, Play } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ProgramCard from "@/components/program-card";
@@ -694,50 +694,50 @@ export default function Dashboard() {
           className="mb-8"
         />
 
-        {/* Today's Workout Card - Only show if user has enrolled programs */}
+        {/* Today's Workout Card - Main workout experience */}
         {memberPrograms.length > 0 && (
           <section className="mb-8">
             <TodaysWorkout 
               userId={user.id}
+              isFirstLogin={isFirstLogin && stats.completedWorkouts === 0}
               onStartWorkout={(weekNumber) => {
-                // Navigate to the heal-your-core program page with the specific week
                 setLocation(`/heal-your-core?week=${weekNumber}`);
               }}
             />
           </section>
         )}
 
-        {/* Your Programs Section */}
-        <section className="mb-8">
-          <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl p-8 shadow-lg border border-pink-200">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-3">
-                Your Programs
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Discover personalized fitness programs designed to help you achieve your health and wellness goals
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Member Programs - Only show programs user is enrolled in */}
-              {memberPrograms.length > 0 ? (
-                memberPrograms.map((memberProgram) => (
-                  <ProgramCard
-                    key={memberProgram.id}
-                    memberProgram={memberProgram}
-                    userId={user.id}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-gray-500 text-lg">No programs assigned yet.</p>
-                  <p className="text-gray-400 text-sm mt-2">Your admin will enroll you in programs soon.</p>
+        {/* Program Access Card - Simplified since already purchased */}
+        {memberPrograms.length > 0 && (
+          <section className="mb-8">
+            <button
+              onClick={() => setLocation('/heal-your-core')}
+              className="w-full p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border border-pink-200 hover:border-pink-300 transition-all hover:shadow-md flex items-center justify-between group"
+              data-testid="button-view-full-program"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                  <Play className="w-6 h-6 text-white" />
                 </div>
-              )}
+                <div className="text-left">
+                  <h3 className="font-semibold text-gray-800">View Full Program</h3>
+                  <p className="text-sm text-gray-500">Browse all 6 weeks, nutrition guide, and more</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-pink-500 transition-colors" />
+            </button>
+          </section>
+        )}
+
+        {/* No Programs Message */}
+        {memberPrograms.length === 0 && (
+          <section className="mb-8">
+            <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl p-8 shadow-lg border border-pink-200 text-center">
+              <p className="text-gray-500 text-lg">No programs assigned yet.</p>
+              <p className="text-gray-400 text-sm mt-2">Your admin will enroll you in programs soon.</p>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       {/* Community Modal */}
