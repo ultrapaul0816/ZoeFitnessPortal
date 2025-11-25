@@ -1625,10 +1625,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Send campaign to targeted users
-  app.post("/api/admin/email-templates/:id/send-campaign", requireAdmin, adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/email-templates/:id/send-campaign", requireAdmin, adminOperationLimiter, async (req: any, res: any) => {
     try {
       const { id } = req.params;
-      const { audienceFilter, campaignName } = req.body;
+      const { audienceFilter, campaignName, scheduledFor } = req.body;
 
       if (!audienceFilter) {
         return res.status(400).json({ message: "Audience filter is required" });
@@ -1650,6 +1650,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No users match the target audience" });
       }
 
+      // Handle scheduled campaigns
+      const isScheduled = scheduledFor && new Date(scheduledFor) > new Date();
+      const scheduledDate = scheduledFor ? new Date(scheduledFor) : undefined;
+
       const campaign = await storage.createEmailCampaign({
         templateId: template.id,
         name: campaignName,
@@ -1657,10 +1661,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         subject: template.subject,
         htmlContent: template.htmlContent,
         audienceFilter,
-        status: "sending",
-        recipientCount: targetedUsers.length,
-        createdBy: req.user.id,
+        status: isScheduled ? "scheduled" : "sending",
+        scheduledFor: scheduledDate,
+        createdBy: req.session.userId,
       });
+
+      // Update campaign with recipient count
+      await storage.updateEmailCampaign(campaign.id!, {
+        recipientCount: targetedUsers.length,
+      });
+
+      // If scheduled for later, just save and return
+      if (isScheduled) {
+        const recipientsToCreate = targetedUsers.map(user => ({
+          campaignId: campaign.id!,
+          userId: user.id,
+          email: user.email,
+          status: "pending" as const,
+        }));
+        await storage.createCampaignRecipients(recipientsToCreate);
+        
+        return res.json({
+          success: true,
+          scheduled: true,
+          message: `Campaign scheduled for ${scheduledDate?.toISOString()}`,
+          campaignId: campaign.id,
+          recipientCount: targetedUsers.length,
+        });
+      }
 
       const recipientsToCreate = targetedUsers.map(user => ({
         campaignId: campaign.id!,
