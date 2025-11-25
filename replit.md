@@ -31,6 +31,17 @@ Each card displays up to 5 members with quick-send email buttons. The Activity F
 ## Technical Implementations
 The application provides a 6-week program with detailed exercises, coach notes, and YouTube video integration. Content is organized into collapsible, gradient-themed sections. Features include a "What's Next Tab" with a PDF progress tracker, a modernized Nutrition section, extensive profile personalization, and real-time profile completeness tracking with a progress banner. Program access is managed via both purchase and admin enrollment records. A "Progress Tracker" tab allows secure before/after photo uploads via Cloudinary. An Instagram-style Community Feed supports photo uploads, categories, week-based filtering, likes, comments, and Instagram sharing, with full CRUD operations and Cloudinary integration.
 
+**Today's Workout Feature**: The user dashboard displays a "Today's Workout" card for enrolled users, providing smart workout guidance with:
+- Current workout recommendation based on user's progress (week and day tracking)
+- Visual progress tracker showing completed workouts across the 6-week program with circular indicators
+- "Start Workout" button linking directly to the current week's program content
+- "Mark Complete" workflow with challenge rating (1-5 stars) and optional notes
+- "Swap Workout" feature offering alternative workouts from the same week (gentle/recovery options)
+- "How are you feeling?" quick check that suggests lighter options based on energy level (1-5 scale)
+- Zoe's coaching tips displayed based on current week and progress milestones
+- Motivational messages and encouragement throughout the journey
+- The `/api/workout-progress/:userId` endpoint calculates user's current position based on workout completions
+
 **Database-Driven Workout Content**: Workout program content is now stored in PostgreSQL with two tables: `workout_program_content` (program metadata, coach notes, colors, equipment as JSONB) and `workout_content_exercises` (individual exercises with sectionType, orderNum, name, reps, URL). A hybrid fetch approach is used where the frontend tries the database API first (`/api/workout-content`) and falls back to static data (`client/src/data/workoutPrograms.ts`) if unavailable. Admin users can manage workout content through the "Workouts" tab in the admin panel, including editing program details, exercise names, reps, video URLs, and adding/deleting exercises.
 
 Email campaign management includes a template library stored in the PostgreSQL database with reusable templates (Welcome, Re-engagement, Photo Reminder, Workout Congratulations, Completion Celebration, Complete Your Signup), dynamic variable replacement via `generateUserVariables()` and `replaceTemplateVariables()` utilities, email open tracking via pixel tracking, audience targeting with filters (including Pending Signup filter for incomplete registrations), test email functionality, campaign scheduling for future delivery, and a comprehensive Email Analytics Dashboard with performance metrics, template statistics, and campaign history visualization. **Database templates are the single source of truth** - both dashboard quick-send actions and email campaigns fetch templates from the `email_templates` table and use shared template variable processing.
