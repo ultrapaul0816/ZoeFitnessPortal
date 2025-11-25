@@ -422,6 +422,15 @@ export default function AdminEmailCampaigns() {
         </div>
         <div className="flex gap-3">
           <Button
+            onClick={() => setLocation("/admin")}
+            variant="outline"
+            className="flex items-center gap-2"
+            data-testid="button-back-admin"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Admin
+          </Button>
+          <Button
             onClick={() => setLocation("/admin-automation-settings")}
             variant="outline"
             className="flex items-center gap-2"
