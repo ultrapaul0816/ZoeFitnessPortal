@@ -850,187 +850,6 @@ export default function Admin() {
           </div>
         )}
 
-        {/* Activity Feed */}
-        <Card className="border-none shadow-md">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Activity className="w-5 h-5 text-pink-500" />
-                Recent Activity
-              </CardTitle>
-              <Badge variant="secondary" className="text-xs">
-                Live Updates
-              </Badge>
-            </div>
-            <CardDescription>Real-time member activity feed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {activityLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            ) : activityLogs.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No recent activity</p>
-                <p className="text-sm">Member activities will appear here</p>
-              </div>
-            ) : (
-              <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                {activityLogs.slice(0, 20).map((activity) => {
-                  const timeAgo = (dateString: string) => {
-                    const date = new Date(dateString);
-                    const now = new Date();
-                    const diff = now.getTime() - date.getTime();
-                    const minutes = Math.floor(diff / 60000);
-                    const hours = Math.floor(diff / 3600000);
-                    const days = Math.floor(diff / 86400000);
-                    
-                    if (minutes < 1) return 'Just now';
-                    if (minutes < 60) return `${minutes}m ago`;
-                    if (hours < 24) return `${hours}h ago`;
-                    if (days < 7) return `${days}d ago`;
-                    return date.toLocaleDateString();
-                  };
-
-                  const getActivityIcon = (type: string) => {
-                    switch (type) {
-                      case 'login':
-                        return <LogIn className="w-4 h-4 text-blue-500" />;
-                      case 'workout_complete':
-                        return <CheckCircle className="w-4 h-4 text-green-500" />;
-                      case 'workout_start':
-                        return <Dumbbell className="w-4 h-4 text-pink-500" />;
-                      default:
-                        return <Activity className="w-4 h-4 text-gray-400" />;
-                    }
-                  };
-
-                  const getActivityDescription = (type: string, metadata: Record<string, any>) => {
-                    switch (type) {
-                      case 'login':
-                        return `Logged in${metadata?.method === 'otp' ? ' via OTP' : ''}`;
-                      case 'workout_complete':
-                        return `Completed ${metadata?.workoutName || 'a workout'}${metadata?.day ? ` (Day ${metadata.day})` : ''}`;
-                      case 'workout_start':
-                        return `Started ${metadata?.workoutName || 'a workout'}`;
-                      default:
-                        return type.replace(/_/g, ' ');
-                    }
-                  };
-
-                  const getActivityColor = (type: string) => {
-                    switch (type) {
-                      case 'login':
-                        return 'bg-blue-50 border-blue-100';
-                      case 'workout_complete':
-                        return 'bg-green-50 border-green-100';
-                      case 'workout_start':
-                        return 'bg-pink-50 border-pink-100';
-                      default:
-                        return 'bg-gray-50 border-gray-100';
-                    }
-                  };
-
-                  const userName = activity.user 
-                    ? `${activity.user.firstName} ${activity.user.lastName}`
-                    : 'Unknown User';
-
-                  const getQuickEmailType = (activityType: string) => {
-                    switch (activityType) {
-                      case 'workout_complete':
-                        return 'congratulations';
-                      case 'login':
-                        return 're-engagement';
-                      default:
-                        return 're-engagement';
-                    }
-                  };
-
-                  return (
-                    <div 
-                      key={activity.id} 
-                      className={`flex items-start gap-3 p-3 rounded-lg border ${getActivityColor(activity.activityType)} group hover:shadow-sm transition-shadow`}
-                      data-testid={`activity-item-${activity.id}`}
-                    >
-                      <div className="flex-shrink-0 mt-0.5">
-                        {getActivityIcon(activity.activityType)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 truncate">
-                          {userName}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          {getActivityDescription(activity.activityType, activity.metadata || {})}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="flex-shrink-0 text-xs text-gray-400">
-                          {timeAgo(activity.createdAt)}
-                        </span>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                              data-testid={`activity-action-${activity.id}`}
-                            >
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem 
-                              onClick={() => {
-                                const member = allUsers.find(u => u.id === activity.userId);
-                                if (member) {
-                                  setSelectedMember(member);
-                                  setMemberViewMode('view');
-                                }
-                              }}
-                              data-testid={`view-member-${activity.userId}`}
-                            >
-                              <Eye className="w-4 h-4 mr-2" />
-                              View Member
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {activity.activityType === 'workout_complete' && (
-                              <DropdownMenuItem
-                                onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'congratulations' })}
-                                disabled={previewEmailMutation.isPending}
-                                data-testid={`send-congrats-activity-${activity.id}`}
-                              >
-                                <Sparkles className="w-4 h-4 mr-2 text-green-500" />
-                                Send Congratulations
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem
-                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 're-engagement' })}
-                              disabled={previewEmailMutation.isPending}
-                              data-testid={`send-reengagement-activity-${activity.id}`}
-                            >
-                              <Send className="w-4 h-4 mr-2 text-blue-500" />
-                              Send Re-engagement Email
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'photo-reminder' })}
-                              disabled={previewEmailMutation.isPending}
-                              data-testid={`send-photo-activity-${activity.id}`}
-                            >
-                              <Camera className="w-4 h-4 mr-2 text-purple-500" />
-                              Send Photo Reminder
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Check-in Analytics Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Check-in Analytics Card */}
@@ -1300,6 +1119,187 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Activity Feed */}
+        <Card className="border-none shadow-md">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Activity className="w-5 h-5 text-pink-500" />
+                Recent Activity
+              </CardTitle>
+              <Badge variant="secondary" className="text-xs">
+                Live Updates
+              </Badge>
+            </div>
+            <CardDescription>Real-time member activity feed</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {activityLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : activityLogs.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p>No recent activity</p>
+                <p className="text-sm">Member activities will appear here</p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+                {activityLogs.slice(0, 20).map((activity) => {
+                  const timeAgo = (dateString: string) => {
+                    const date = new Date(dateString);
+                    const now = new Date();
+                    const diff = now.getTime() - date.getTime();
+                    const minutes = Math.floor(diff / 60000);
+                    const hours = Math.floor(diff / 3600000);
+                    const days = Math.floor(diff / 86400000);
+                    
+                    if (minutes < 1) return 'Just now';
+                    if (minutes < 60) return `${minutes}m ago`;
+                    if (hours < 24) return `${hours}h ago`;
+                    if (days < 7) return `${days}d ago`;
+                    return date.toLocaleDateString();
+                  };
+
+                  const getActivityIcon = (type: string) => {
+                    switch (type) {
+                      case 'login':
+                        return <LogIn className="w-4 h-4 text-blue-500" />;
+                      case 'workout_complete':
+                        return <CheckCircle className="w-4 h-4 text-green-500" />;
+                      case 'workout_start':
+                        return <Dumbbell className="w-4 h-4 text-pink-500" />;
+                      default:
+                        return <Activity className="w-4 h-4 text-gray-400" />;
+                    }
+                  };
+
+                  const getActivityDescription = (type: string, metadata: Record<string, any>) => {
+                    switch (type) {
+                      case 'login':
+                        return `Logged in${metadata?.method === 'otp' ? ' via OTP' : ''}`;
+                      case 'workout_complete':
+                        return `Completed ${metadata?.workoutName || 'a workout'}${metadata?.day ? ` (Day ${metadata.day})` : ''}`;
+                      case 'workout_start':
+                        return `Started ${metadata?.workoutName || 'a workout'}`;
+                      default:
+                        return type.replace(/_/g, ' ');
+                    }
+                  };
+
+                  const getActivityColor = (type: string) => {
+                    switch (type) {
+                      case 'login':
+                        return 'bg-blue-50 border-blue-100';
+                      case 'workout_complete':
+                        return 'bg-green-50 border-green-100';
+                      case 'workout_start':
+                        return 'bg-pink-50 border-pink-100';
+                      default:
+                        return 'bg-gray-50 border-gray-100';
+                    }
+                  };
+
+                  const userName = activity.user 
+                    ? `${activity.user.firstName} ${activity.user.lastName}`
+                    : 'Unknown User';
+
+                  const getQuickEmailType = (activityType: string) => {
+                    switch (activityType) {
+                      case 'workout_complete':
+                        return 'congratulations';
+                      case 'login':
+                        return 're-engagement';
+                      default:
+                        return 're-engagement';
+                    }
+                  };
+
+                  return (
+                    <div 
+                      key={activity.id} 
+                      className={`flex items-start gap-3 p-3 rounded-lg border ${getActivityColor(activity.activityType)} group hover:shadow-sm transition-shadow`}
+                      data-testid={`activity-item-${activity.id}`}
+                    >
+                      <div className="flex-shrink-0 mt-0.5">
+                        {getActivityIcon(activity.activityType)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">
+                          {userName}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {getActivityDescription(activity.activityType, activity.metadata || {})}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="flex-shrink-0 text-xs text-gray-400">
+                          {timeAgo(activity.createdAt)}
+                        </span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              data-testid={`activity-action-${activity.id}`}
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem 
+                              onClick={() => {
+                                const member = allUsers.find(u => u.id === activity.userId);
+                                if (member) {
+                                  setSelectedMember(member);
+                                  setMemberViewMode('view');
+                                }
+                              }}
+                              data-testid={`view-member-${activity.userId}`}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Member
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {activity.activityType === 'workout_complete' && (
+                              <DropdownMenuItem
+                                onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'congratulations' })}
+                                disabled={previewEmailMutation.isPending}
+                                data-testid={`send-congrats-activity-${activity.id}`}
+                              >
+                                <Sparkles className="w-4 h-4 mr-2 text-green-500" />
+                                Send Congratulations
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 're-engagement' })}
+                              disabled={previewEmailMutation.isPending}
+                              data-testid={`send-reengagement-activity-${activity.id}`}
+                            >
+                              <Send className="w-4 h-4 mr-2 text-blue-500" />
+                              Send Re-engagement Email
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'photo-reminder' })}
+                              disabled={previewEmailMutation.isPending}
+                              data-testid={`send-photo-activity-${activity.id}`}
+                            >
+                              <Camera className="w-4 h-4 mr-2 text-purple-500" />
+                              Send Photo Reminder
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
         </div>
       )}
 
