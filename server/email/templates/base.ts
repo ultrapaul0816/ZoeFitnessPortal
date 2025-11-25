@@ -29,3 +29,9 @@ export interface CompletionCelebrationEmailData {
   completionDate: Date;
   weeksCompleted: number;
 }
+
+export interface CompleteSignupEmailData {
+  firstName: string;
+  email: string;
+  daysSinceSignup: number;
+}

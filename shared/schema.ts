@@ -403,6 +403,7 @@ export const audienceFilterSchema = z.object({
   hasWhatsAppSupport: z.boolean().optional(),
   country: z.string().min(1).max(100).optional(),
   programCompletionStatus: z.enum(['completed', 'in-progress', 'not-started']).optional(),
+  pendingSignup: z.boolean().optional(), // Users who haven't accepted terms/disclaimer
 }).strict(); // Reject any unknown keys
 
 export type AudienceFilter = z.infer<typeof audienceFilterSchema>;
@@ -416,14 +417,14 @@ export const insertEmailTemplateSchema = createInsertSchema(emailTemplates).omit
   totalSends: true,
   totalOpens: true,
 }).extend({
-  type: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration']),
+  type: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration', 'complete-signup']),
 });
 
 // Manually define insert schema to ensure strict audienceFilter validation
 export const insertEmailCampaignSchema = z.object({
   templateId: z.string(),
   name: z.string().min(1).max(255),
-  templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration']),
+  templateType: z.enum(['welcome', 're-engagement', 'program-reminder', 'completion-celebration', 'complete-signup']),
   subject: z.string().min(1).max(500),
   htmlContent: z.string().min(1), // HTML content for the email
   audienceFilter: audienceFilterSchema, // Strict validation - only allowed keys
@@ -452,7 +453,7 @@ export const insertEmailAutomationRuleSchema = createInsertSchema(emailAutomatio
   totalSent: true,
   lastTriggeredAt: true,
 }).extend({
-  triggerType: z.enum(['user_signup', 'program_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_21d', 'user_inactivity_30d']),
+  triggerType: z.enum(['user_signup', 'program_completion', 'user_inactivity_7d', 'user_inactivity_14d', 'user_inactivity_21d', 'user_inactivity_30d', 'incomplete_signup_3d']),
   enabled: z.boolean().default(false),
 });
 

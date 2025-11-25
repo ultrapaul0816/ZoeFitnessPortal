@@ -2861,6 +2861,13 @@ class DatabaseStorage implements IStorage {
       conditions.push(eq(users.country, audienceFilter.country));
     }
 
+    if (audienceFilter.pendingSignup) {
+      // Users who haven't accepted terms OR disclaimer
+      conditions.push(
+        sql`(${users.termsAccepted} = false OR ${users.disclaimerAccepted} = false)`
+      );
+    }
+
     let query = this.db.select().from(users);
 
     if (conditions.length > 0) {
