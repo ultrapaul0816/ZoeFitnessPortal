@@ -6,7 +6,8 @@ import type { User, ProgressPhoto } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp, X, ZoomIn } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp, X, ZoomIn, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 import { compressImage } from "@/lib/imageCompression";
@@ -31,6 +32,10 @@ export default function Progress() {
   const [startPreview, setStartPreview] = useState<string | null>(null);
   const [finishPreview, setFinishPreview] = useState<string | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<{ url: string; type: "start" | "finish" } | null>(null);
+  
+  // Upload progress states
+  const [uploadProgress, setUploadProgress] = useState<{ start: number; finish: number }>({ start: 0, finish: 0 });
+  const [isUploading, setIsUploading] = useState<{ start: boolean; finish: boolean }>({ start: false, finish: false });
   
   // Photo editor states
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
@@ -57,21 +62,44 @@ export default function Progress() {
 
   const uploadMutation = useMutation({
     mutationFn: async ({ file, photoType }: { file: File; photoType: "start" | "finish" }) => {
-      const formData = new FormData();
-      formData.append("photo", file);
-      formData.append("photoType", photoType);
+      setIsUploading(prev => ({ ...prev, [photoType]: true }));
+      setUploadProgress(prev => ({ ...prev, [photoType]: 0 }));
+      
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+        formData.append("photo", file);
+        formData.append("photoType", photoType);
 
-      const response = await fetch(`/api/progress-photos/${user!.id}`, {
-        method: "POST",
-        body: formData,
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(prev => ({ ...prev, [photoType]: progress }));
+          }
+        });
+
+        xhr.addEventListener("load", () => {
+          setIsUploading(prev => ({ ...prev, [photoType]: false }));
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(JSON.parse(xhr.responseText));
+          } else {
+            try {
+              const error = JSON.parse(xhr.responseText);
+              reject(new Error(error.message || "Failed to upload photo"));
+            } catch {
+              reject(new Error("Failed to upload photo"));
+            }
+          }
+        });
+
+        xhr.addEventListener("error", () => {
+          setIsUploading(prev => ({ ...prev, [photoType]: false }));
+          reject(new Error("Network error during upload"));
+        });
+
+        xhr.open("POST", `/api/progress-photos/${user!.id}`);
+        xhr.send(formData);
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to upload photo");
-      }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress-photos", user?.id] });
@@ -83,6 +111,7 @@ export default function Progress() {
       setFinishPhotoFile(null);
       setStartPreview(null);
       setFinishPreview(null);
+      setUploadProgress({ start: 0, finish: 0 });
     },
     onError: (error: Error) => {
       toast({
@@ -90,6 +119,7 @@ export default function Progress() {
         description: error.message,
         variant: "destructive",
       });
+      setUploadProgress({ start: 0, finish: 0 });
     },
   });
 
@@ -430,11 +460,12 @@ export default function Progress() {
                       </div>
                     </div>
                   )}
-                  {uploadMutation.isPending && startPreview && (
+                  {isUploading.start && startPreview && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-3"></div>
-                        <p className="text-white font-semibold">Uploading...</p>
+                      <div className="text-center w-3/4">
+                        <Loader2 className="w-10 h-10 text-white animate-spin mx-auto mb-3" />
+                        <p className="text-white font-semibold mb-2">Uploading... {uploadProgress.start}%</p>
+                        <Progress value={uploadProgress.start} className="h-2 bg-white/30" />
                       </div>
                     </div>
                   )}
@@ -564,11 +595,12 @@ export default function Progress() {
                       </div>
                     </div>
                   )}
-                  {uploadMutation.isPending && finishPreview && (
+                  {isUploading.finish && finishPreview && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-3"></div>
-                        <p className="text-white font-semibold">Uploading...</p>
+                      <div className="text-center w-3/4">
+                        <Loader2 className="w-10 h-10 text-white animate-spin mx-auto mb-3" />
+                        <p className="text-white font-semibold mb-2">Uploading... {uploadProgress.finish}%</p>
+                        <Progress value={uploadProgress.finish} className="h-2 bg-white/30" />
                       </div>
                     </div>
                   )}
