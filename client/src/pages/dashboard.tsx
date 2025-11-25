@@ -24,8 +24,8 @@ function shouldPromptCheckin(user: UserType): boolean {
   const loginCount = user.loginCount || 0;
   const lastPrompt = user.lastCheckinPromptAt ? new Date(user.lastCheckinPromptAt) : null;
   
-  // Check if profile is incomplete (missing country or postpartum weeks)
-  const isProfileIncomplete = !user.country || !user.postpartumWeeks;
+  // Check if profile is incomplete (missing country or delivery date)
+  const isProfileIncomplete = !user.country || !user.deliveryDate;
   
   // Calculate days since last prompt
   const daysSinceLastPrompt = lastPrompt 
@@ -734,7 +734,7 @@ export default function Dashboard() {
           userId={user.id}
           existingCountry={user.country}
           existingInstagramHandle={user.instagramHandle}
-          existingPostpartumWeeks={user.postpartumWeeks}
+          existingDeliveryDate={user.deliveryDate}
         />
       )}
 

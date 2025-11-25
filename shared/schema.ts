@@ -26,6 +26,7 @@ export const users = pgTable("users", {
   bio: text("bio"),
   instagramHandle: text("instagram_handle"),
   postpartumWeeks: integer("postpartum_weeks"),
+  deliveryDate: timestamp("delivery_date"),
   lastLoginAt: timestamp("last_login_at"),
   loginCount: integer("login_count").default(0),
   lastCheckinPromptAt: timestamp("last_checkin_prompt_at"),
@@ -311,8 +312,9 @@ export const userCheckins = pgTable("user_checkins", {
   mood: text("mood"), // 'great', 'good', 'okay', 'tired', 'struggling'
   energyLevel: integer("energy_level"), // 1-5 scale
   goals: text("goals").array(), // ['core-strength', 'energy', 'pain-relief', 'confidence']
-  postpartumWeeks: integer("postpartum_weeks"), // snapshot at check-in time
+  postpartumWeeksAtCheckin: integer("postpartum_weeks_at_checkin"), // snapshot at check-in time (calculated from delivery date)
   notes: text("notes"),
+  isPartial: boolean("is_partial").default(false), // true if user didn't complete all steps
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
@@ -484,11 +486,12 @@ export const insertUserCheckinSchema = createInsertSchema(userCheckins).omit({
   id: true,
   createdAt: true,
 }).extend({
-  mood: z.enum(['great', 'good', 'okay', 'tired', 'struggling']).optional(),
-  energyLevel: z.number().min(1).max(5).optional(),
-  goals: z.array(z.enum(['core-strength', 'energy', 'pain-relief', 'confidence', 'mobility', 'mental-health'])).optional(),
-  postpartumWeeks: z.number().int().positive().max(520).optional(),
-  notes: z.string().max(500).optional(),
+  mood: z.enum(['great', 'good', 'okay', 'tired', 'struggling']).optional().nullable(),
+  energyLevel: z.number().min(1).max(5).optional().nullable(),
+  goals: z.array(z.string()).optional().nullable(),
+  postpartumWeeksAtCheckin: z.number().int().positive().max(520).optional().nullable(),
+  notes: z.string().max(500).optional().nullable(),
+  isPartial: z.boolean().optional(),
 });
 
 // Reusable validation schemas

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,7 @@ import {
   Check,
   MapPin,
   Instagram,
+  Calendar,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -34,7 +35,7 @@ interface CheckinModalProps {
   userId: string;
   existingCountry?: string | null;
   existingInstagramHandle?: string | null;
-  existingPostpartumWeeks?: number | null;
+  existingDeliveryDate?: string | null;
 }
 
 const MOOD_OPTIONS = [
@@ -67,6 +68,26 @@ const COUNTRIES = [
   "UAE", "Singapore", "Germany", "Netherlands", "France", "Other"
 ];
 
+function calculatePostpartumWeeks(deliveryDate: Date): number {
+  const now = new Date();
+  const diffMs = now.getTime() - deliveryDate.getTime();
+  const weeks = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 7));
+  return Math.max(0, weeks);
+}
+
+function getMonthYearOptions() {
+  const options = [];
+  const now = new Date();
+  for (let i = 0; i <= 72; i++) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    options.push({
+      value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+      label: date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    });
+  }
+  return options;
+}
+
 export default function CheckinModal({
   isOpen,
   onClose,
@@ -74,7 +95,7 @@ export default function CheckinModal({
   userId,
   existingCountry,
   existingInstagramHandle,
-  existingPostpartumWeeks,
+  existingDeliveryDate,
 }: CheckinModalProps) {
   const [step, setStep] = useState(1);
   const [mood, setMood] = useState<string>("");
@@ -83,26 +104,25 @@ export default function CheckinModal({
   const [notes, setNotes] = useState("");
   const [country, setCountry] = useState(existingCountry || "");
   const [instagramHandle, setInstagramHandle] = useState(existingInstagramHandle || "");
-  const [postpartumWeeks, setPostpartumWeeks] = useState<string>(
-    existingPostpartumWeeks ? String(existingPostpartumWeeks) : ""
-  );
+  const [deliveryMonth, setDeliveryMonth] = useState<string>("");
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [checkinId, setCheckinId] = useState<string | null>(null);
   
   const { toast } = useToast();
 
-  const needsProfileInfo = !existingCountry || !existingPostpartumWeeks;
+  const needsProfileInfo = !existingCountry || !existingDeliveryDate;
   const totalSteps = needsProfileInfo ? 4 : 3;
 
-  const submitCheckinMutation = useMutation({
+  const saveCheckinMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest("POST", "/api/checkins", data);
+      const response = await apiRequest("POST", "/api/checkins", data);
+      return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data.id) {
+        setCheckinId(data.id);
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/checkins"] });
-      toast({
-        title: "Check-in Complete! 🌟",
-        description: "Thank you for sharing how you're feeling today.",
-      });
-      onClose();
     },
     onError: () => {
       toast({
@@ -110,6 +130,15 @@ export default function CheckinModal({
         title: "Error",
         description: "Failed to save your check-in. Please try again.",
       });
+    },
+  });
+
+  const updateCheckinMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      return apiRequest("PATCH", `/api/checkins/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/checkins"] });
     },
   });
 
@@ -128,29 +157,109 @@ export default function CheckinModal({
     },
   });
 
+  const saveProgressively = useCallback(async (stepData: any, isPartial: boolean = true) => {
+    const postpartumWeeks = deliveryMonth 
+      ? calculatePostpartumWeeks(new Date(deliveryMonth + "-01"))
+      : (existingDeliveryDate ? calculatePostpartumWeeks(new Date(existingDeliveryDate)) : null);
+
+    if (!checkinId) {
+      saveCheckinMutation.mutate({
+        ...stepData,
+        postpartumWeeksAtCheckin: postpartumWeeks,
+        isPartial,
+      });
+    } else {
+      updateCheckinMutation.mutate({
+        id: checkinId,
+        data: { ...stepData, postpartumWeeksAtCheckin: postpartumWeeks, isPartial },
+      });
+    }
+  }, [checkinId, deliveryMonth, existingDeliveryDate, saveCheckinMutation, updateCheckinMutation]);
+
+  useEffect(() => {
+    if (countdown === null) return;
+    
+    if (countdown <= 0) {
+      setCountdown(null);
+      advanceStep();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown(countdown - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
+  const handleMoodSelect = (value: string) => {
+    setMood(value);
+    saveProgressively({ mood: value }, true);
+    setCountdown(2);
+  };
+
+  const handleEnergySelect = (value: number) => {
+    setEnergyLevel(value);
+    saveProgressively({ mood, energyLevel: value }, true);
+    setCountdown(2);
+  };
+
+  const cancelCountdown = () => {
+    setCountdown(null);
+  };
+
+  const advanceStep = () => {
+    if (step < totalSteps) {
+      setStep(step + 1);
+    }
+  };
+
   const handleSkip = () => {
     dismissMutation.mutate();
   };
 
-  const handleSubmit = async () => {
-    if (needsProfileInfo && (country || instagramHandle || postpartumWeeks)) {
+  const handleComplete = async () => {
+    if (needsProfileInfo) {
       const profileUpdates: any = {};
       if (country && !existingCountry) profileUpdates.country = country;
       if (instagramHandle && !existingInstagramHandle) profileUpdates.instagramHandle = instagramHandle;
-      if (postpartumWeeks && !existingPostpartumWeeks) profileUpdates.postpartumWeeks = parseInt(postpartumWeeks);
+      if (deliveryMonth && !existingDeliveryDate) {
+        profileUpdates.deliveryDate = new Date(deliveryMonth + "-01");
+      }
       
       if (Object.keys(profileUpdates).length > 0) {
-        await updateProfileMutation.mutateAsync(profileUpdates);
+        try {
+          await updateProfileMutation.mutateAsync(profileUpdates);
+        } catch (error) {
+          console.error("Failed to update profile:", error);
+        }
       }
     }
 
-    submitCheckinMutation.mutate({
+    const postpartumWeeks = deliveryMonth 
+      ? calculatePostpartumWeeks(new Date(deliveryMonth + "-01"))
+      : (existingDeliveryDate ? calculatePostpartumWeeks(new Date(existingDeliveryDate)) : null);
+
+    const finalData = {
       mood: mood || null,
-      energyLevel: energyLevel,
+      energyLevel,
       goals: goals.length > 0 ? goals : null,
       notes: notes || null,
-      postpartumWeeksAtCheckin: postpartumWeeks ? parseInt(postpartumWeeks) : (existingPostpartumWeeks || null),
+      postpartumWeeksAtCheckin: postpartumWeeks,
+      isPartial: false,
+    };
+
+    if (checkinId) {
+      await updateCheckinMutation.mutateAsync({ id: checkinId, data: finalData });
+    } else {
+      await saveCheckinMutation.mutateAsync(finalData);
+    }
+
+    toast({
+      title: "Check-in Complete! 🌟",
+      description: "Thank you for sharing how you're feeling today.",
     });
+    onClose();
   };
 
   const toggleGoal = (goal: string) => {
@@ -159,14 +268,6 @@ export default function CheckinModal({
         ? prev.filter(g => g !== goal)
         : [...prev, goal]
     );
-  };
-
-  const canProceed = () => {
-    if (step === 1) return !!mood;
-    if (step === 2) return energyLevel !== null;
-    if (step === 3 && needsProfileInfo) return true;
-    if ((step === 3 && !needsProfileInfo) || step === 4) return true;
-    return true;
   };
 
   const renderStep = () => {
@@ -185,7 +286,7 @@ export default function CheckinModal({
             {MOOD_OPTIONS.map((option) => (
               <button
                 key={option.value}
-                onClick={() => setMood(option.value)}
+                onClick={() => handleMoodSelect(option.value)}
                 className={`flex flex-col items-center p-3 rounded-xl transition-all duration-200 ${
                   mood === option.value
                     ? `bg-gradient-to-r ${option.color} text-white shadow-lg scale-105`
@@ -198,6 +299,17 @@ export default function CheckinModal({
               </button>
             ))}
           </div>
+
+          {countdown !== null && mood && (
+            <div className="text-center">
+              <button 
+                onClick={cancelCountdown}
+                className="text-sm text-gray-500 hover:text-pink-500 transition-colors"
+              >
+                Moving in {countdown}s... <span className="underline">tap to stay</span>
+              </button>
+            </div>
+          )}
         </div>
       );
     }
@@ -217,7 +329,7 @@ export default function CheckinModal({
             {ENERGY_OPTIONS.map((option) => (
               <button
                 key={option.value}
-                onClick={() => setEnergyLevel(option.value)}
+                onClick={() => handleEnergySelect(option.value)}
                 className={`w-full flex items-center p-4 rounded-xl transition-all duration-200 ${
                   energyLevel === option.value
                     ? `bg-gradient-to-r ${option.color} text-white shadow-lg`
@@ -233,82 +345,22 @@ export default function CheckinModal({
               </button>
             ))}
           </div>
-        </div>
-      );
-    }
 
-    if (step === 3 && needsProfileInfo) {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Baby className="w-7 h-7 text-white" />
+          {countdown !== null && energyLevel !== null && (
+            <div className="text-center">
+              <button 
+                onClick={cancelCountdown}
+                className="text-sm text-gray-500 hover:text-pink-500 transition-colors"
+              >
+                Moving in {countdown}s... <span className="underline">tap to stay</span>
+              </button>
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">A bit about you</h3>
-            <p className="text-sm text-gray-500">Help us personalize your experience (optional)</p>
-          </div>
-          
-          <div className="space-y-4">
-            {!existingPostpartumWeeks && (
-              <div className="space-y-2">
-                <Label htmlFor="postpartum-weeks" className="text-sm font-medium flex items-center gap-2">
-                  <Baby className="w-4 h-4 text-pink-500" />
-                  Weeks Postpartum
-                </Label>
-                <Input
-                  id="postpartum-weeks"
-                  type="number"
-                  placeholder="e.g., 12"
-                  value={postpartumWeeks}
-                  onChange={(e) => setPostpartumWeeks(e.target.value)}
-                  className="border-gray-200 focus:border-pink-300 focus:ring-pink-200"
-                  data-testid="input-postpartum-weeks"
-                />
-              </div>
-            )}
-            
-            {!existingCountry && (
-              <div className="space-y-2">
-                <Label htmlFor="country" className="text-sm font-medium flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-pink-500" />
-                  Country
-                </Label>
-                <Select value={country} onValueChange={setCountry}>
-                  <SelectTrigger className="border-gray-200 focus:border-pink-300 focus:ring-pink-200" data-testid="select-country">
-                    <SelectValue placeholder="Select your country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COUNTRIES.map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-            
-            {!existingInstagramHandle && (
-              <div className="space-y-2">
-                <Label htmlFor="instagram" className="text-sm font-medium flex items-center gap-2">
-                  <Instagram className="w-4 h-4 text-pink-500" />
-                  Instagram Handle (optional)
-                </Label>
-                <Input
-                  id="instagram"
-                  placeholder="@yourusername"
-                  value={instagramHandle}
-                  onChange={(e) => setInstagramHandle(e.target.value)}
-                  className="border-gray-200 focus:border-pink-300 focus:ring-pink-200"
-                  data-testid="input-instagram"
-                />
-              </div>
-            )}
-          </div>
+          )}
         </div>
       );
     }
 
-    const isGoalStep = (step === 3 && !needsProfileInfo) || step === 4;
-    if (isGoalStep) {
+    if (step === 3) {
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -355,8 +407,90 @@ export default function CheckinModal({
       );
     }
 
+    if (step === 4 && needsProfileInfo) {
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-purple-500 to-violet-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <Baby className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">A bit about you</h3>
+            <p className="text-sm text-gray-500">Help us personalize your experience</p>
+          </div>
+          
+          <div className="space-y-4">
+            {!existingDeliveryDate && (
+              <div className="space-y-2">
+                <Label htmlFor="delivery-date" className="text-sm font-medium flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-pink-500" />
+                  When did you deliver?
+                </Label>
+                <Select value={deliveryMonth} onValueChange={setDeliveryMonth}>
+                  <SelectTrigger className="border-gray-200 focus:border-pink-300 focus:ring-pink-200" data-testid="select-delivery-month">
+                    <SelectValue placeholder="Select month & year" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {getMonthYearOptions().map((option) => (
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {deliveryMonth && (
+                  <p className="text-xs text-pink-600 mt-1">
+                    ~{calculatePostpartumWeeks(new Date(deliveryMonth + "-01"))} weeks postpartum
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {!existingCountry && (
+              <div className="space-y-2">
+                <Label htmlFor="country" className="text-sm font-medium flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-pink-500" />
+                  Country
+                </Label>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger className="border-gray-200 focus:border-pink-300 focus:ring-pink-200" data-testid="select-country">
+                    <SelectValue placeholder="Select your country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            {!existingInstagramHandle && (
+              <div className="space-y-2">
+                <Label htmlFor="instagram" className="text-sm font-medium flex items-center gap-2">
+                  <Instagram className="w-4 h-4 text-pink-500" />
+                  Instagram Handle
+                </Label>
+                <Input
+                  id="instagram"
+                  placeholder="@yourusername"
+                  value={instagramHandle}
+                  onChange={(e) => setInstagramHandle(e.target.value)}
+                  className="border-gray-200 focus:border-pink-300 focus:ring-pink-200"
+                  data-testid="input-instagram"
+                />
+                <p className="text-xs text-gray-400">
+                  Optional - We'll use this to feature your community posts & progress on our Instagram
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     return null;
   };
+
+  const isLastStep = step === totalSteps;
+  const showSkipOnProfileStep = step === 4 && needsProfileInfo;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleSkip()}>
@@ -404,7 +538,10 @@ export default function CheckinModal({
             {step > 1 ? (
               <Button
                 variant="outline"
-                onClick={() => setStep(step - 1)}
+                onClick={() => {
+                  cancelCountdown();
+                  setStep(step - 1);
+                }}
                 className="flex items-center gap-1"
                 data-testid="button-prev-step"
               >
@@ -423,33 +560,49 @@ export default function CheckinModal({
               </Button>
             )}
 
-            {step < totalSteps ? (
-              <Button
-                onClick={() => setStep(step + 1)}
-                disabled={!canProceed()}
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-1"
-                data-testid="button-next-step"
-              >
-                Continue
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={submitCheckinMutation.isPending || updateProfileMutation.isPending}
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-2"
-                data-testid="button-submit-checkin"
-              >
-                {submitCheckinMutation.isPending ? (
-                  "Saving..."
-                ) : (
-                  <>
-                    <Check className="w-4 h-4" />
-                    Complete Check-in
-                  </>
-                )}
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {showSkipOnProfileStep && (
+                <Button
+                  variant="ghost"
+                  onClick={handleComplete}
+                  className="text-gray-500 hover:text-gray-700"
+                  data-testid="button-skip-profile"
+                >
+                  Skip for now
+                </Button>
+              )}
+
+              {!isLastStep ? (
+                <Button
+                  onClick={() => {
+                    cancelCountdown();
+                    advanceStep();
+                  }}
+                  disabled={step === 1 && !mood || step === 2 && energyLevel === null}
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-1"
+                  data-testid="button-next-step"
+                >
+                  Continue
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleComplete}
+                  disabled={saveCheckinMutation.isPending || updateCheckinMutation.isPending || updateProfileMutation.isPending}
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-2"
+                  data-testid="button-submit-checkin"
+                >
+                  {saveCheckinMutation.isPending || updateCheckinMutation.isPending ? (
+                    "Saving..."
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Complete
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </DialogContent>

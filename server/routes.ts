@@ -661,6 +661,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/checkins/:id", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const checkin = await storage.updateUserCheckin(id, req.session.userId, req.body);
+      
+      if (!checkin) {
+        return res.status(404).json({ message: "Check-in not found" });
+      }
+
+      if (!req.body.isPartial) {
+        await storage.updateUser(req.session.userId, {
+          lastCheckinPromptAt: new Date(),
+        });
+      }
+
+      res.json(checkin);
+    } catch (error: any) {
+      console.error(`[CHECKIN] Error updating check-in:`, error?.message || error);
+      res.status(400).json({ message: error?.message || "Failed to update check-in" });
+    }
+  });
+
   // Mark check-in prompt as dismissed (updates lastCheckinPromptAt without creating a check-in)
   app.post("/api/checkins/dismiss", async (req, res) => {
     try {

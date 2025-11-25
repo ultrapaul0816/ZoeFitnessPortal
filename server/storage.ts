@@ -328,6 +328,7 @@ export interface IStorage {
 
   // User Check-ins
   createUserCheckin(checkin: InsertUserCheckin): Promise<UserCheckin>;
+  updateUserCheckin(id: string, userId: string, data: Partial<InsertUserCheckin>): Promise<UserCheckin | undefined>;
   getUserCheckins(userId: string): Promise<UserCheckin[]>;
   getRecentCheckins(limit?: number): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]>;
   getCheckinAnalytics(): Promise<{
@@ -1791,6 +1792,10 @@ export class MemStorage implements IStorage {
     throw new Error("User check-ins not supported in MemStorage");
   }
 
+  async updateUserCheckin(id: string, userId: string, data: Partial<InsertUserCheckin>): Promise<UserCheckin | undefined> {
+    return undefined;
+  }
+
   async getUserCheckins(userId: string): Promise<UserCheckin[]> {
     return [];
   }
@@ -3187,6 +3192,15 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async updateUserCheckin(id: string, userId: string, data: Partial<InsertUserCheckin>): Promise<UserCheckin | undefined> {
+    const result = await this.db
+      .update(userCheckins)
+      .set(data)
+      .where(and(eq(userCheckins.id, id), eq(userCheckins.userId, userId)))
+      .returning();
+    return result[0];
+  }
+
   async getUserCheckins(userId: string): Promise<UserCheckin[]> {
     return await this.db
       .select()
@@ -3203,8 +3217,9 @@ class DatabaseStorage implements IStorage {
         mood: userCheckins.mood,
         energyLevel: userCheckins.energyLevel,
         goals: userCheckins.goals,
-        postpartumWeeks: userCheckins.postpartumWeeks,
+        postpartumWeeksAtCheckin: userCheckins.postpartumWeeksAtCheckin,
         notes: userCheckins.notes,
+        isPartial: userCheckins.isPartial,
         createdAt: userCheckins.createdAt,
         user: {
           id: users.id,
