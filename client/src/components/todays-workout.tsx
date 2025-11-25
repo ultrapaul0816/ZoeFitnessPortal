@@ -123,6 +123,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
       const currentProgram = workoutPrograms.find(p => p.week === (progress?.currentWeek || 1)) || workoutPrograms[0];
       const response = await apiRequest("POST", "/api/ask-zoe", {
         message,
+        userId,
         context: {
           currentWeek: progress?.currentWeek || 1,
           currentDay: progress?.currentDay || 1,

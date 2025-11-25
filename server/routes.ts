@@ -1118,10 +1118,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Ask Zoe AI Chat endpoint
+  // Ask Zoe AI Chat endpoint with comprehensive context
   app.post("/api/ask-zoe", async (req, res) => {
     try {
-      const { message, context } = req.body;
+      const { message, context, userId } = req.body;
       
       if (!message || typeof message !== 'string') {
         return res.status(400).json({ message: "Message is required" });
@@ -1132,29 +1132,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
         apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
       });
 
-      const systemPrompt = `You are Zoe, a warm, supportive, and knowledgeable postpartum fitness coach. You specialize in helping new mothers recover their core strength safely and effectively through a 6-week program.
+      // Fetch user profile if userId provided
+      let userProfile = null;
+      let workoutHistory: any[] = [];
+      
+      if (userId) {
+        try {
+          userProfile = await storage.getUser(userId);
+          workoutHistory = await storage.getWorkoutCompletions(userId);
+        } catch (e) {
+          console.log("Could not fetch user data for Zoe context");
+        }
+      }
+
+      // Build user context section
+      const userContextSection = userProfile ? `
+USER PROFILE:
+- Name: ${userProfile.firstName || 'Mama'}
+- Postpartum weeks: ${userProfile.postpartumWeeks || 'Unknown'}
+- Country: ${userProfile.country || 'Unknown'}
+- Bio: ${userProfile.bio || 'Not provided'}
+` : '';
+
+      // Build workout history section
+      const historySection = workoutHistory.length > 0 ? `
+WORKOUT HISTORY (${workoutHistory.length} total completions):
+${workoutHistory.slice(-10).map(w => `- ${w.workoutId}: completed ${w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'unknown date'}${w.rating ? ` (rated ${w.rating}/5)` : ''}`).join('\n')}
+` : 'WORKOUT HISTORY: No workouts completed yet (just starting!)';
+
+      // Full 6-week program content for comprehensive context
+      const programContent = `
+COMPLETE 6-WEEK PROGRAM CONTENT:
+
+WEEK 1 - RECONNECT & RESET (Foundation Building)
+Schedule: 4x per week (Days 1, 3, 5, 7)
+Equipment: Mini band, Small Pilates ball, Mat
+Coach Note: This is your foundation. Focus on breath, posture, and gentle reconnection with your core and pelvic floor.
+Part 1: 360° Breathing - 25 breaths morning + evening
+Part 2 Exercises:
+1. KNEELING MINI BAND PULL APARTS (12 reps) - Video: https://www.youtube.com/watch?v=jiz7-6nJvjY
+2. QUADRUPED BALL COMPRESSIONS (10 reps) - Video: https://www.youtube.com/watch?v=1QukYQSq0oQ
+3. SUPINE HEEL SLIDES (10 reps) - Video: https://www.youtube.com/watch?v=AIEdkm2q-4k
+4. GLUTE BRIDGES WITH MINI BALL (15 reps) - Video: https://www.youtube.com/watch?v=1vqv8CqCjY0
+5. BUTTERFLY STRETCH — DYNAMIC FLUTTER (1 min) - Video: https://www.youtube.com/watch?v=j5ZGvn1EUTo
+
+WEEK 2 - STABILITY & BREATHWORK (Building Rhythm)
+Schedule: 3x per week (Days 1, 3, 5)
+Equipment: Mat, Your breath, Patience
+Coach Note: Now that you've laid the foundation, we begin layering in simple movements with control.
+Part 1: 3 Part Core & Breath Reset Flow - 10 breaths each - Video: https://www.youtube.com/watch?v=SrEKb2TMLzA
+Part 2 Exercises:
+1. SUPINE ALT LEG MARCHES (10 reps) - Video: https://www.youtube.com/watch?v=T8HHp4KXpJI
+2. SUPINE CROSS LATERAL KNEE PRESSES (10 reps) - Video: https://www.youtube.com/watch?v=AyVuVB0oneo
+3. DEADBUG LEG MARCH ARM EXTENSIONS (10 reps) - Video: https://www.youtube.com/watch?v=iKrou6hSgmg
+4. ELBOW KNEE SIDE PLANK LIFTS (10 reps) - Video: https://www.youtube.com/watch?v=zaOToxvSk6g
+5. WISHBONE STRETCH (30 secs each side) - Video: https://www.youtube.com/watch?v=Pd2le_I4bFE
+
+WEEK 3 - CONTROL & AWARENESS (Strengthening Base)
+Schedule: 3x per week (Days 2, 4, 6)
+Equipment: Resistance band (light), Mat, Optional yoga block
+Coach Note: Let's strengthen your base. You'll challenge your balance, posture, and deep core awareness.
+Part 1: SUPINE DIAPHRAGMATIC BREATHING (25 breaths) - Video: https://youtu.be/lBhO64vd8aE
+       SIDE LYING DIAPHRAGMATIC BREATHING (10 breaths each side) - Video: https://www.youtube.com/watch?v=tCzxxPxxtjw
+Part 2 Exercises:
+1. BAND LAT-PULL W/ 5 KNEE LIFT (10 reps) - Video: https://www.youtube.com/watch?v=-NBcN5pZcH8
+2. BAND LAT-PULL W/ KNEE ADDUCTION/ABDUCTION (10 reps) - Video: https://www.youtube.com/watch?v=Jij6Wc9CQns
+3. BRIDGE W/ BAND LAT-PULL (10 reps) - Video: https://www.youtube.com/watch?v=dv1TVJySjBs
+4. BAND LAT-PULL PILATES PULSES (20 reps) - Video: https://www.youtube.com/watch?v=Tz0Iy90Hx9M
+5. WISHBONE STRETCH (30 secs each side) - Video: https://www.youtube.com/watch?v=Pd2le_I4bFE
+6. HAPPY BABY POSE (1 min) - Video: https://www.youtube.com/watch?v=r6NsBwtPSrw
+
+WEEK 4 - ALIGN & ACTIVATE (Building Challenge)
+Schedule: 3x per week (Days 1, 3, 5)
+Equipment: Small Pilates ball, Chair or stool, Resistance band, Mat
+Coach Note: You're ready for more challenge. These exercises ask more of your body while maintaining connection.
+Part 1: 90 90 BOX BREATHING (25 breaths) - Video: https://www.youtube.com/watch?v=ehaUhSSY1xY
+Part 2 Exercises:
+1. LEGS ELEVATED GLUTE BRIDGE WITH BALL SQUEEZE (10 reps) - Video: https://www.youtube.com/watch?v=MMH2DLbL0ug
+2. SUPINE KNEE DROPS WITH PILATES BAND (10 reps each side) - Video: https://www.youtube.com/watch?v=EE8iKKo9LEk
+3. ALL FOURS PILATES BALL KNEE PRESS AND LEG LIFT (10 reps each side) - Video: https://www.youtube.com/watch?v=rRWeQqIYzUM
+4. BEAR CRAWL LIFTS WITH BALL SQUEEZE (20 reps) - Video: https://www.youtube.com/watch?v=Y0xmJ3IuOCU
+5. WISHBONE STRETCH (30 secs each side) - Video: https://www.youtube.com/watch?v=Pd2le_I4bFE
+6. BUTTERFLY STRETCH — DYNAMIC FLUTTER (1 min) - Video: https://www.youtube.com/watch?v=j5ZGvn1EUTo
+
+WEEK 5 - FUNCTIONAL CORE FLOW (Real-Life Movement)
+Schedule: 3x per week (Days 2, 4, 6)
+Equipment: Mini bands, Mat, Yoga block or Pilates ball, Long resistance band, Stool or chair
+Coach Note: This phase bridges your core work with real-life movement (lifting baby, carrying groceries). It's functional, safe, and empowering.
+Part 1: Continue with your preferred breathing practice from previous weeks (25 breaths)
+Part 2 Exercises:
+1. KNEELING PALLOF RAISES (10 reps) - Video: https://www.youtube.com/watch?v=dBZyeMwNdxQ
+2. SIDE LYING BAND CLAMSHELLS (10 reps) - Video: https://www.youtube.com/watch?v=8Cu-kVG4TZQ
+3. SEATED LEAN BACKS WITH PILATES BALL SQUEEZE (10 reps) - Video: https://www.youtube.com/watch?v=OrH6nMjA0Ho
+4. SINGLE LEG GLUTE BRIDGES (20 reps) - Video: https://www.youtube.com/watch?v=ly2GQ8Hlv6E
+5. COPENHAGEN PLANK HOLD (20 secs each side) - Video: https://www.youtube.com/watch?v=n1YIgAvnNaA
+6. BUTTERFLY STRETCH — DYNAMIC FLUTTER (1 min) - Video: https://www.youtube.com/watch?v=j5ZGvn1EUTo
+
+WEEK 6 - FOUNDATIONAL STRENGTH (Graduation Program)
+Schedule: 4x per week (Days 1, 3, 5, 7)
+Equipment: Swiss ball, Small Pilates ball, Mat
+Coach Note: This is your graduation program. You've built the foundation—now we challenge it with stability ball work.
+Part 1: Continue with your preferred breathing practice (25 breaths)
+Part 2 Exercises:
+1. SWISS BALL HAMSTRING CURLS (20 reps) - Video: https://www.youtube.com/watch?v=dxpSn0HLB6M
+2. SWISS BALL HIP LIFTS TO PIKE (10 reps) - Video: https://www.youtube.com/watch?v=GP5tON5kEDc
+3. SWISS BALL DEADBUGS (20 reps) - Video: https://www.youtube.com/watch?v=PietQSYU2as
+4. SUPINE SWISS BALL HOLD WITH LEG TWISTS (20 reps) - Video: https://www.youtube.com/watch?v=GcVoMJGAV3o
+5. WISHBONE STRETCH (30 secs each side) - Video: https://www.youtube.com/watch?v=Pd2le_I4bFE
+6. KNEELING HIP FLEXOR STRETCH (1 min each side) - Video: https://www.youtube.com/watch?v=GG3rtAKd6hY
+`;
+
+      const systemPrompt = `You are Zoe, a warm, supportive, and knowledgeable postpartum fitness coach. You specialize in helping new mothers recover their core strength safely and effectively through a 6-week core rehabilitation program called "Heal Your Core."
 
 Your personality:
 - Warm, encouraging, and empathetic
-- Understanding of the challenges new mothers face
-- Knowledgeable about postpartum recovery, diastasis recti, and pelvic floor health
+- Understanding of the challenges new mothers face (sleep deprivation, time constraints, body changes)
+- Expert in postpartum recovery, diastasis recti, and pelvic floor health
 - Never judgmental, always supportive
 - Use casual, friendly language with occasional encouragement like "You've got this, mama!"
 
-Current user context:
+${userContextSection}
+
+CURRENT PROGRESS:
 - Week ${context?.currentWeek || 1} of the 6-week program
 - Day ${context?.currentDay || 1} of this week
 - Total workouts completed: ${context?.workoutsCompleted || 0}
 - Current program: ${context?.currentProgram || "Foundation Building"}
 - Today's exercises: ${context?.exercises || "Core reconnection exercises"}
 
-Guidelines for responses:
-1. Keep responses concise (2-3 sentences max unless asked for detail)
-2. If they're feeling tired or stressed, suggest gentler Week 1 exercises or rest
-3. If asked about exercise form, explain briefly and encourage watching the video
-4. If asked to swap workouts, suggest alternatives from their current week or gentler options
-5. Always validate their feelings and remind them that recovery takes time
-6. Never give medical advice - encourage consulting their healthcare provider for medical concerns`;
+${historySection}
+
+${programContent}
+
+KEY COACHING KNOWLEDGE:
+- This is a CORE REHABILITATION program, NOT cardio - focus on core reconnection, breathing, pelvic floor, and glute activation
+- Week 1 has 4 workouts/week for foundation building; Weeks 2-5 have 3 workouts/week; Week 6 returns to 4/week as graduation
+- 360° breathing is foundational - encourage this daily practice
+- Diastasis recti (ab separation) heals with gentle reconnection, not crunches or planks initially
+- Glute bridges activate the posterior chain safely and support pelvic floor recovery
+- Dead bugs teach core stability while protecting the spine
+- Always encourage watching the video tutorials for proper form
+
+RESPONSE GUIDELINES:
+1. Keep responses concise (2-4 sentences) unless asked for detail
+2. If they mention tiredness, stress, or overwhelm - validate their feelings and suggest gentler exercises or rest
+3. When asked about specific exercises, reference the program content above and provide video links
+4. If asked to swap workouts, suggest alternatives from the current week or gentler Week 1 options
+5. Celebrate their progress and remind them that consistency matters more than perfection
+6. For any medical concerns, always recommend consulting their healthcare provider
+7. Mention the video URL when discussing exercise form
+8. Use their name (${userProfile?.firstName || 'mama'}) occasionally to personalize responses`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4o-mini",
@@ -1162,7 +1289,7 @@ Guidelines for responses:
           { role: "system", content: systemPrompt },
           { role: "user", content: message }
         ],
-        max_tokens: 300,
+        max_tokens: 500,
         temperature: 0.7,
       });
 
