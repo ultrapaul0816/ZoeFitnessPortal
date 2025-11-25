@@ -1865,7 +1865,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Email preview endpoint for dashboard actions
+  // Email preview endpoint for dashboard actions - uses database templates
   app.post("/api/admin/actionable/preview-email", async (req, res) => {
     try {
       const { userId, emailType } = req.body;
@@ -1879,180 +1879,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      let subject: string;
-      let html: string;
-      const year = new Date().getFullYear();
+      // Map emailType to database template type
+      const templateTypeMap: Record<string, string> = {
+        're-engagement': 're-engagement',
+        'photo-reminder': 'photo-reminder',
+        'congratulations': 'workout-congratulations',
+      };
 
-      switch (emailType) {
-        case 're-engagement':
-          const daysSinceLogin = user.lastLoginAt 
-            ? Math.floor((new Date().getTime() - new Date(user.lastLoginAt).getTime()) / (1000 * 60 * 60 * 24))
-            : 30;
-          
-          const memberPrograms = await storage.getMemberPrograms(userId);
-          const progress = memberPrograms.length > 0 
-            ? memberPrograms[0].completionPercentage || memberPrograms[0].progress || 0
-            : 0;
-          
-          subject = `We miss you, ${user.firstName}! 💪`;
-          html = `
-            <!DOCTYPE html>
-            <html>
-            <head><meta charset="utf-8"></head>
-            <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fdf2f8;">
-              <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fdf2f8;">
-                <tr>
-                  <td align="center" style="padding: 40px 20px;">
-                    <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                      <tr>
-                        <td style="background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
-                          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">We Miss You! 💪</h1>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 40px 30px;">
-                          <p style="color: #1f2937; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            Hi ${user.firstName}! 👋
-                          </p>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            It's been ${daysSinceLogin} days since we last saw you in your postpartum recovery program. We hope everything is going well!
-                          </p>
-                          ${progress > 0 ? `
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            You've already made great progress - <strong>${progress}% complete</strong>! Don't let that momentum slip away.
-                          </p>
-                          ` : ''}
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            Even just 10 minutes of exercise can make a difference. Your body and mind will thank you!
-                          </p>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0;">
-                            Ready to get back on track? We're here cheering you on! 🎉
-                          </p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="background-color: #fdf2f8; padding: 30px; text-align: center; border-radius: 0 0 16px 16px;">
-                          <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 0;">
-                            © ${year} Stronger With Zoe. All rights reserved.
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </body>
-            </html>
-          `;
-          break;
-          
-        case 'photo-reminder':
-          subject = `${user.firstName}, capture your progress! 📸`;
-          html = `
-            <!DOCTYPE html>
-            <html>
-            <head><meta charset="utf-8"></head>
-            <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fdf2f8;">
-              <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fdf2f8;">
-                <tr>
-                  <td align="center" style="padding: 40px 20px;">
-                    <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                      <tr>
-                        <td style="background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
-                          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Time to Capture Your Progress! 📸</h1>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 40px 30px;">
-                          <p style="color: #1f2937; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            Hi ${user.firstName}! 👋
-                          </p>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            You've been doing amazing work in your postpartum recovery journey. We noticed you haven't uploaded any progress photos yet - they're a great way to see how far you've come!
-                          </p>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            Progress photos help you:
-                          </p>
-                          <ul style="color: #4b5563; font-size: 16px; line-height: 1.8; margin: 0 0 20px; padding-left: 20px;">
-                            <li>See your transformation over time</li>
-                            <li>Stay motivated on challenging days</li>
-                            <li>Celebrate your achievements</li>
-                          </ul>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0;">
-                            Head to the <strong>Progress Tracker</strong> tab in your dashboard to upload your first photo. You've got this, mama! 💪
-                          </p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="background-color: #fdf2f8; padding: 30px; text-align: center; border-radius: 0 0 16px 16px;">
-                          <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 0;">
-                            © ${year} Stronger With Zoe. All rights reserved.
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </body>
-            </html>
-          `;
-          break;
-          
-        case 'congratulations':
-          const completions = await storage.getWorkoutCompletions(userId);
-          const totalWorkouts = completions.length;
-          
-          subject = `Amazing work, ${user.firstName}! 🎉`;
-          html = `
-            <!DOCTYPE html>
-            <html>
-            <head><meta charset="utf-8"></head>
-            <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fdf2f8;">
-              <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fdf2f8;">
-                <tr>
-                  <td align="center" style="padding: 40px 20px;">
-                    <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                      <tr>
-                        <td style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
-                          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">You're Crushing It! 🎉</h1>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 40px 30px;">
-                          <p style="color: #1f2937; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            Hi ${user.firstName}! 👋
-                          </p>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            Congratulations on your recent workout! You've now completed <strong>${totalWorkouts} workout${totalWorkouts !== 1 ? 's' : ''}</strong> in your postpartum recovery journey. That's incredible dedication!
-                          </p>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                            Every workout is a step towards a stronger you. Keep up the amazing work - your body will thank you!
-                          </p>
-                          <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0;">
-                            Remember, consistency is key. See you at the next workout! 💪
-                          </p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="background-color: #fdf2f8; padding: 30px; text-align: center; border-radius: 0 0 16px 16px;">
-                          <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 0;">
-                            © ${year} Stronger With Zoe. All rights reserved.
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </body>
-            </html>
-          `;
-          break;
-          
-        default:
-          return res.status(400).json({ message: "Invalid email type" });
+      const templateType = templateTypeMap[emailType];
+      if (!templateType) {
+        return res.status(400).json({ message: "Invalid email type" });
       }
+
+      // Fetch template from database
+      const template = await storage.getEmailTemplateByType(templateType);
+      if (!template) {
+        return res.status(404).json({ message: `Email template not found for type: ${templateType}` });
+      }
+
+      // Generate variables for this user
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://app.strongerwithzoe.com';
+      const userVariables = generateUserVariables(user, {
+        programName: 'Your Postpartum Strength Recovery Program',
+        campaignId: 'quick-send',
+        recipientId: String(user.id),
+        baseUrl,
+      });
+
+      // Replace template variables with user data
+      const subject = replaceTemplateVariables(template.subject, userVariables);
+      const html = replaceTemplateVariables(template.htmlContent, userVariables);
 
       res.json({
         recipient: {
