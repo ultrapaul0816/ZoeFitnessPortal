@@ -122,6 +122,15 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const passwordResetCodes = pgTable("password_reset_codes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull(),
+  code: text("code").notNull(),
+  isVerified: boolean("is_verified").default(false),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 export const terms = pgTable("terms", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
@@ -590,6 +599,13 @@ export type PostComment = typeof postComments.$inferSelect;
 export type InsertPostComment = z.infer<typeof insertPostCommentSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type PasswordResetCode = typeof passwordResetCodes.$inferSelect;
+
+export const insertPasswordResetCodeSchema = createInsertSchema(passwordResetCodes).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertPasswordResetCode = z.infer<typeof insertPasswordResetCodeSchema>;
 export type Terms = typeof terms.$inferSelect;
 export type InsertTerms = z.infer<typeof insertTermsSchema>;
 export type EmailTemplate = typeof emailTemplates.$inferSelect;
