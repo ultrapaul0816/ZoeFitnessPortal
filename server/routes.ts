@@ -661,6 +661,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/checkins/today", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const todayCheckin = await storage.getTodayCheckin(req.session.userId);
+      res.json(todayCheckin);
+    } catch (error: any) {
+      console.error(`[CHECKIN] Error fetching today's check-in:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch today's check-in" });
+    }
+  });
+
   app.patch("/api/checkins/:id", async (req, res) => {
     try {
       if (!req.session?.userId) {

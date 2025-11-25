@@ -330,6 +330,7 @@ export interface IStorage {
   createUserCheckin(checkin: InsertUserCheckin): Promise<UserCheckin>;
   updateUserCheckin(id: string, userId: string, data: Partial<InsertUserCheckin>): Promise<UserCheckin | undefined>;
   getUserCheckins(userId: string): Promise<UserCheckin[]>;
+  getTodayCheckin(userId: string): Promise<UserCheckin | null>;
   getRecentCheckins(limit?: number): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]>;
   getCheckinAnalytics(): Promise<{
     totalCheckins: number;
@@ -1800,6 +1801,10 @@ export class MemStorage implements IStorage {
     return [];
   }
 
+  async getTodayCheckin(userId: string): Promise<UserCheckin | null> {
+    return null;
+  }
+
   async getRecentCheckins(limit?: number): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]> {
     return [];
   }
@@ -3248,6 +3253,26 @@ class DatabaseStorage implements IStorage {
       .from(userCheckins)
       .where(eq(userCheckins.userId, userId))
       .orderBy(desc(userCheckins.createdAt));
+  }
+
+  async getTodayCheckin(userId: string): Promise<UserCheckin | null> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const result = await this.db
+      .select()
+      .from(userCheckins)
+      .where(
+        and(
+          eq(userCheckins.userId, userId),
+          gte(userCheckins.createdAt, today),
+          eq(userCheckins.isPartial, false)
+        )
+      )
+      .orderBy(desc(userCheckins.createdAt))
+      .limit(1);
+    
+    return result[0] || null;
   }
 
   async getRecentCheckins(limit: number = 10): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]> {

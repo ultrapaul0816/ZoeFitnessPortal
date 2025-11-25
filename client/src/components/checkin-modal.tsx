@@ -17,10 +17,13 @@ import {
   ChevronRight,
   ChevronLeft,
   Check,
+  CheckCircle,
+  RefreshCw,
 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { UserCheckin } from "@shared/schema";
 
 interface CheckinModalProps {
   isOpen: boolean;
@@ -76,10 +79,18 @@ export default function CheckinModal({
   const [notes, setNotes] = useState("");
   const [countdown, setCountdown] = useState<number | null>(null);
   const [checkinId, setCheckinId] = useState<string | null>(null);
+  const [wantsToUpdate, setWantsToUpdate] = useState(false);
   
   const { toast } = useToast();
 
   const totalSteps = 3;
+
+  const { data: todayCheckin, isLoading: isLoadingTodayCheckin } = useQuery<UserCheckin | null>({
+    queryKey: ["/api/checkins/today"],
+    enabled: isOpen,
+  });
+
+  const hasCompletedToday = todayCheckin && !wantsToUpdate;
 
   const saveCheckinMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -91,6 +102,7 @@ export default function CheckinModal({
         setCheckinId(data.id);
       }
       queryClient.invalidateQueries({ queryKey: ["/api/checkins"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/checkins/today"] });
     },
     onError: () => {
       toast({
@@ -107,6 +119,7 @@ export default function CheckinModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/checkins"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/checkins/today"] });
     },
   });
 
@@ -357,6 +370,63 @@ export default function CheckinModal({
 
   const isLastStep = step === totalSteps;
 
+  const getMoodEmoji = (moodValue: string | null | undefined) => {
+    const option = MOOD_OPTIONS.find(m => m.value === moodValue);
+    return option ? option.emoji : "";
+  };
+
+  const getEnergyEmoji = (energyValue: number | null | undefined) => {
+    const option = ENERGY_OPTIONS.find(e => e.value === energyValue);
+    return option ? option.emoji : "";
+  };
+
+  const renderCompletedTodayView = () => {
+    if (!todayCheckin) return null;
+    
+    return (
+      <div className="space-y-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center mx-auto shadow-lg">
+          <CheckCircle className="w-8 h-8 text-white" />
+        </div>
+        
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">You've Already Checked In Today!</h3>
+          <p className="text-sm text-gray-500">Here's what you shared earlier:</p>
+        </div>
+        
+        <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-2xl p-4 space-y-3 text-left">
+          {todayCheckin.mood && (
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{getMoodEmoji(todayCheckin.mood)}</span>
+              <span className="text-gray-700 capitalize font-medium">{todayCheckin.mood}</span>
+            </div>
+          )}
+          {todayCheckin.energyLevel && (
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{getEnergyEmoji(todayCheckin.energyLevel)}</span>
+              <span className="text-gray-700">
+                {ENERGY_OPTIONS.find(e => e.value === todayCheckin.energyLevel)?.label || "Energy level " + todayCheckin.energyLevel}
+              </span>
+            </div>
+          )}
+          {todayCheckin.goals && todayCheckin.goals.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {todayCheckin.goals.map((goal, i) => (
+                <span key={i} className="px-2 py-0.5 text-xs bg-pink-100 text-pink-700 rounded-full">
+                  {goal}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <p className="text-xs text-gray-400">
+          Want to update your check-in? You can do that below.
+        </p>
+      </div>
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleSkip()}>
       <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-hidden p-0 bg-white border border-gray-200/50 shadow-2xl">
@@ -369,95 +439,135 @@ export default function CheckinModal({
           <button
             onClick={handleSkip}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-10"
-            aria-label="Skip check-in"
+            aria-label="Close check-in"
             data-testid="button-skip-checkin"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>
 
-          <div className="px-6 pt-6 pb-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              {Array.from({ length: totalSteps }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i + 1 === step
-                      ? "w-8 bg-gradient-to-r from-pink-500 to-rose-500"
-                      : i + 1 < step
-                      ? "w-4 bg-pink-300"
-                      : "w-4 bg-gray-200"
-                  }`}
-                />
-              ))}
+          {isLoadingTodayCheckin ? (
+            <div className="px-6 py-12 text-center">
+              <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full mx-auto" />
+              <p className="text-sm text-gray-500 mt-4">Loading...</p>
             </div>
-            <p className="text-center text-xs text-gray-400">
-              Step {step} of {totalSteps}
-            </p>
-          </div>
-
-          <div className="px-6 pb-6 overflow-y-auto max-h-[60vh]">
-            {renderStep()}
-          </div>
-
-          <div className="px-6 pb-6 flex items-center justify-between gap-3 border-t border-gray-100 pt-4 bg-gray-50/50">
-            {step > 1 ? (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  cancelCountdown();
-                  setStep(step - 1);
-                }}
-                className="flex items-center gap-1"
-                data-testid="button-prev-step"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Back
-              </Button>
-            ) : (
-              <Button
-                variant="ghost"
-                onClick={handleSkip}
-                className="text-gray-500 hover:text-gray-700"
-                disabled={dismissMutation.isPending}
-                data-testid="button-skip-later"
-              >
-                Maybe later
-              </Button>
-            )}
-
-            <div className="flex items-center gap-2">
-              {!isLastStep ? (
+          ) : hasCompletedToday ? (
+            <>
+              <div className="px-6 pt-6 pb-6">
+                {renderCompletedTodayView()}
+              </div>
+              <div className="px-6 pb-6 flex items-center justify-between gap-3 border-t border-gray-100 pt-4 bg-gray-50/50">
+                <Button
+                  variant="ghost"
+                  onClick={onClose}
+                  className="text-gray-500 hover:text-gray-700"
+                  data-testid="button-close-checkin"
+                >
+                  Close
+                </Button>
                 <Button
                   onClick={() => {
-                    cancelCountdown();
-                    advanceStep();
+                    setWantsToUpdate(true);
+                    setCheckinId(todayCheckin.id);
+                    if (todayCheckin.mood) setMood(todayCheckin.mood);
+                    if (todayCheckin.energyLevel) setEnergyLevel(todayCheckin.energyLevel);
+                    if (todayCheckin.goals) setGoals(todayCheckin.goals);
+                    if (todayCheckin.notes) setNotes(todayCheckin.notes);
                   }}
-                  disabled={step === 1 && !mood || step === 2 && energyLevel === null}
-                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-1"
-                  data-testid="button-next-step"
-                >
-                  Continue
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleComplete}
-                  disabled={saveCheckinMutation.isPending || updateCheckinMutation.isPending}
                   className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-2"
-                  data-testid="button-submit-checkin"
+                  data-testid="button-update-checkin"
                 >
-                  {saveCheckinMutation.isPending || updateCheckinMutation.isPending ? (
-                    "Saving..."
-                  ) : (
-                    <>
-                      <Check className="w-4 h-4" />
-                      Complete
-                    </>
-                  )}
+                  <RefreshCw className="w-4 h-4" />
+                  Update Check-in
                 </Button>
-              )}
-            </div>
-          </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="px-6 pt-6 pb-4">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  {Array.from({ length: totalSteps }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        i + 1 === step
+                          ? "w-8 bg-gradient-to-r from-pink-500 to-rose-500"
+                          : i + 1 < step
+                          ? "w-4 bg-pink-300"
+                          : "w-4 bg-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className="text-center text-xs text-gray-400">
+                  Step {step} of {totalSteps}
+                </p>
+              </div>
+
+              <div className="px-6 pb-6 overflow-y-auto max-h-[60vh]">
+                {renderStep()}
+              </div>
+
+              <div className="px-6 pb-6 flex items-center justify-between gap-3 border-t border-gray-100 pt-4 bg-gray-50/50">
+                {step > 1 ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      cancelCountdown();
+                      setStep(step - 1);
+                    }}
+                    className="flex items-center gap-1"
+                    data-testid="button-prev-step"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Back
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    onClick={handleSkip}
+                    className="text-gray-500 hover:text-gray-700"
+                    disabled={dismissMutation.isPending}
+                    data-testid="button-skip-later"
+                  >
+                    Maybe later
+                  </Button>
+                )}
+
+                <div className="flex items-center gap-2">
+                  {!isLastStep ? (
+                    <Button
+                      onClick={() => {
+                        cancelCountdown();
+                        advanceStep();
+                      }}
+                      disabled={step === 1 && !mood || step === 2 && energyLevel === null}
+                      className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-1"
+                      data-testid="button-next-step"
+                    >
+                      Continue
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleComplete}
+                      disabled={saveCheckinMutation.isPending || updateCheckinMutation.isPending}
+                      className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-2"
+                      data-testid="button-submit-checkin"
+                    >
+                      {saveCheckinMutation.isPending || updateCheckinMutation.isPending ? (
+                        "Saving..."
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Complete
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>
