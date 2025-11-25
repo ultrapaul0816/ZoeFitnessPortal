@@ -31,16 +31,24 @@ Each card displays up to 5 members with quick-send email buttons. The Activity F
 ## Technical Implementations
 The application provides a 6-week program with detailed exercises, coach notes, and YouTube video integration. Content is organized into collapsible, gradient-themed sections. Features include a "What's Next Tab" with a PDF progress tracker, a modernized Nutrition section, extensive profile personalization, and real-time profile completeness tracking with a progress banner. Program access is managed via both purchase and admin enrollment records. A "Progress Tracker" tab allows secure before/after photo uploads via Cloudinary. An Instagram-style Community Feed supports photo uploads, categories, week-based filtering, likes, comments, and Instagram sharing, with full CRUD operations and Cloudinary integration.
 
-**Today's Workout Feature**: The user dashboard displays a "Today's Workout" card for enrolled users, providing smart workout guidance with:
-- Current workout recommendation based on user's progress (week and day tracking)
-- Visual progress tracker showing completed workouts across the 6-week program with circular indicators
-- "Start Workout" button linking directly to the current week's program content
-- "Mark Complete" workflow with challenge rating (1-5 stars) and optional notes
-- "Swap Workout" feature offering alternative workouts from the same week (gentle/recovery options)
-- "How are you feeling?" quick check that suggests lighter options based on energy level (1-5 scale)
-- Zoe's coaching tips displayed based on current week and progress milestones
-- Motivational messages and encouragement throughout the journey
-- The `/api/workout-progress/:userId` endpoint calculates user's current position based on workout completions
+**Today's Workout Feature**: The user dashboard displays a "This Week's Workout" card for enrolled users with:
+- Immediate visibility of actual exercises (names, reps, video links)
+- Weekly progress tracker (X/Y workouts done this week)
+- Current program title, coach notes, and schedule
+- "Start Full Workout" button linking to the program page
+- "Mark Complete" button with challenge rating and notes
+- Expandable exercise list (show first 3, then "Show All X Exercises")
+- The `/api/workout-progress/:userId` endpoint calculates user's current position
+
+**Ask Zoe AI Coach**: An AI-powered chat interface where users can get personalized coaching:
+- Powered by OpenAI via Replit AI Integrations (no API key needed, uses Replit credits)
+- Zoe personality: warm, supportive, knowledgeable about postpartum recovery
+- Context-aware: knows user's current week, day, workout progress, and exercises
+- Quick prompts: "I'm feeling tired today", "Suggest a lighter workout", "How do I do this exercise correctly?", "What's the goal of this week?"
+- Suggests gentler alternatives when users are tired/stressed
+- Encourages proper form and watching exercise videos
+- Never gives medical advice, always encourages consulting healthcare providers
+- The `/api/ask-zoe` endpoint handles AI conversations with full workout context
 
 **Database-Driven Workout Content**: Workout program content is now stored in PostgreSQL with two tables: `workout_program_content` (program metadata, coach notes, colors, equipment as JSONB) and `workout_content_exercises` (individual exercises with sectionType, orderNum, name, reps, URL). A hybrid fetch approach is used where the frontend tries the database API first (`/api/workout-content`) and falls back to static data (`client/src/data/workoutPrograms.ts`) if unavailable. Admin users can manage workout content through the "Workouts" tab in the admin panel, including editing program details, exercise names, reps, video URLs, and adding/deleting exercises.
 
