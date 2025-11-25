@@ -3,10 +3,9 @@ import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,8 +15,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
+import AdminLayout from "@/components/admin/AdminLayout";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -48,6 +48,7 @@ export default function Admin() {
   const [resetPasswordMode, setResetPasswordMode] = useState<'auto' | 'manual'>('auto');
   const [resetManualPassword, setResetManualPassword] = useState('');
   const [resetPasswordMember, setResetPasswordMember] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('overview');
   const { toast } = useToast();
 
   const addUserForm = useForm<AdminCreateUser>({
@@ -416,82 +417,13 @@ export default function Admin() {
   if (!user?.isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Admin Navigation */}
-      <header className="bg-secondary border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="w-10 h-10 flex items-center justify-center">
-                <img 
-                  src="/assets/logo.png" 
-                  alt="Stronger With Zoe" 
-                  className="h-8 w-auto object-contain"
-                />
-              </div>
-              <span className="ml-3 text-lg font-semibold text-secondary-foreground">
-                Admin Dashboard
-              </span>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                onClick={() => setLocation("/admin/analytics")}
-                variant="outline"
-                data-testid="button-analytics"
-              >
-                <TrendingUp className="w-4 h-4 mr-2" />
-                Analytics
-              </Button>
-              <Button
-                onClick={() => setLocation("/admin-email-campaigns")}
-                variant="outline"
-                data-testid="button-email-campaigns"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Email Campaigns
-              </Button>
-              <Button
-                onClick={() => setLocation("/dashboard")}
-                data-testid="button-back-member"
-              >
-                Back to Member View
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="overview" data-testid="tab-overview">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="members" data-testid="tab-members">
-              <Users className="w-4 h-4 mr-2" />
-              Members
-            </TabsTrigger>
-            <TabsTrigger value="deactivated" data-testid="tab-deactivated">
-              <UserX className="w-4 h-4 mr-2" />
-              Deactivated
-            </TabsTrigger>
-            <TabsTrigger value="programs" data-testid="tab-programs">
-              <Settings className="w-4 h-4 mr-2" />
-              Programs
-            </TabsTrigger>
-            <TabsTrigger value="assets" data-testid="tab-assets">
-              <Image className="w-4 h-4 mr-2" />
-              Assets
-            </TabsTrigger>
-            <TabsTrigger value="workouts" data-testid="tab-workouts">
-              <FolderOpen className="w-4 h-4 mr-2" />
-              Workouts
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
+    <AdminLayout 
+      activeTab={activeTab} 
+      onTabChange={setActiveTab}
+      onNavigate={setLocation}
+    >
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
         {/* Admin Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-pink-50 to-white">
@@ -595,10 +527,11 @@ export default function Admin() {
             </CardContent>
           </Card>
         )}
+        </div>
+      )}
 
-          </TabsContent>
-
-          <TabsContent value="members" className="space-y-6">
+      {activeTab === 'members' && (
+        <div className="space-y-6">
             <Card className="overflow-hidden">
           <div className="border-b border-border p-6">
             <div className="flex flex-col gap-4">
@@ -1800,9 +1733,11 @@ export default function Admin() {
             </DialogContent>
           </Dialog>
             </Card>
-          </TabsContent>
+        </div>
+      )}
 
-          <TabsContent value="deactivated" className="space-y-6">
+      {activeTab === 'deactivated' && (
+        <div className="space-y-6">
             <Card className="overflow-hidden">
               <div className="border-b border-border p-6">
                 <h3 className="text-lg font-semibold text-foreground">Deactivated Members</h3>
@@ -1899,9 +1834,11 @@ export default function Admin() {
                 </table>
               </div>
             </Card>
-          </TabsContent>
+        </div>
+      )}
 
-          <TabsContent value="programs" className="space-y-6">
+      {activeTab === 'programs' && (
+        <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -1991,9 +1928,11 @@ export default function Admin() {
                 ))}
               </CardContent>
             </Card>
-          </TabsContent>
+        </div>
+      )}
 
-          <TabsContent value="assets" className="space-y-6">
+      {activeTab === 'assets' && (
+        <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -2077,13 +2016,12 @@ export default function Admin() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+        </div>
+      )}
 
-          <TabsContent value="workouts" className="space-y-6">
-            <WorkoutContentManager />
-          </TabsContent>
-        </Tabs>
-      </div>
+      {activeTab === 'workouts' && (
+        <WorkoutContentManager />
+      )}
       
       {/* Reset Password Options Dialog */}
       <Dialog open={!!resetPasswordMember} onOpenChange={() => {
@@ -2242,7 +2180,7 @@ export default function Admin() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </AdminLayout>
   );
 }
 
