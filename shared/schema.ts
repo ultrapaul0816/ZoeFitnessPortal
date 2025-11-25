@@ -27,6 +27,8 @@ export const users = pgTable("users", {
   instagramHandle: text("instagram_handle"),
   postpartumWeeks: integer("postpartum_weeks"),
   lastLoginAt: timestamp("last_login_at"),
+  loginCount: integer("login_count").default(0),
+  lastCheckinPromptAt: timestamp("last_checkin_prompt_at"),
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
@@ -302,6 +304,18 @@ export const emailAutomationRules = pgTable("email_automation_rules", {
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
+// User check-ins for mood tracking and engagement
+export const userCheckins = pgTable("user_checkins", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  mood: text("mood"), // 'great', 'good', 'okay', 'tired', 'struggling'
+  energyLevel: integer("energy_level"), // 1-5 scale
+  goals: text("goals").array(), // ['core-strength', 'energy', 'pain-relief', 'confidence']
+  postpartumWeeks: integer("postpartum_weeks"), // snapshot at check-in time
+  notes: text("notes"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -466,6 +480,17 @@ export const insertEmailAutomationRuleSchema = createInsertSchema(emailAutomatio
   enabled: z.boolean().default(false),
 });
 
+export const insertUserCheckinSchema = createInsertSchema(userCheckins).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  mood: z.enum(['great', 'good', 'okay', 'tired', 'struggling']).optional(),
+  energyLevel: z.number().min(1).max(5).optional(),
+  goals: z.array(z.enum(['core-strength', 'energy', 'pain-relief', 'confidence', 'mobility', 'mental-health'])).optional(),
+  postpartumWeeks: z.number().int().positive().max(520).optional(),
+  notes: z.string().max(500).optional(),
+});
+
 // Reusable validation schemas
 
 // Phone number validation (flexible for international formats, truly optional)
@@ -618,6 +643,8 @@ export type EmailOpen = typeof emailOpens.$inferSelect;
 export type InsertEmailOpen = z.infer<typeof insertEmailOpenSchema>;
 export type EmailAutomationRule = typeof emailAutomationRules.$inferSelect;
 export type InsertEmailAutomationRule = z.infer<typeof insertEmailAutomationRuleSchema>;
+export type UserCheckin = typeof userCheckins.$inferSelect;
+export type InsertUserCheckin = z.infer<typeof insertUserCheckinSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 

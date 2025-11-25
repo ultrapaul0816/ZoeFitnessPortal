@@ -46,6 +46,8 @@ import {
   type InsertEmailOpen,
   type EmailAutomationRule,
   type PasswordResetCode,
+  type UserCheckin,
+  type InsertUserCheckin,
 } from "@shared/schema";
 import {
   users,
@@ -72,6 +74,7 @@ import {
   emailOpens,
   emailAutomationRules,
   passwordResetCodes,
+  userCheckins,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -322,6 +325,18 @@ export interface IStorage {
   getValidPasswordResetCode(email: string, code: string): Promise<PasswordResetCode | undefined>;
   markPasswordResetCodeAsVerified(id: string): Promise<void>;
   deletePasswordResetCodes(email: string): Promise<void>;
+
+  // User Check-ins
+  createUserCheckin(checkin: InsertUserCheckin): Promise<UserCheckin>;
+  getUserCheckins(userId: string): Promise<UserCheckin[]>;
+  getRecentCheckins(limit?: number): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]>;
+  getCheckinAnalytics(): Promise<{
+    totalCheckins: number;
+    checkinsByMood: { mood: string; count: number }[];
+    checkinsByEnergy: { energyLevel: number; count: number }[];
+    popularGoals: { goal: string; count: number }[];
+    checkinFrequency: { period: string; count: number }[];
+  }>;
 }
 
 export class MemStorage implements IStorage {
@@ -1770,6 +1785,35 @@ export class MemStorage implements IStorage {
   async deletePasswordResetCodes(email: string): Promise<void> {
     // No-op
   }
+
+  // User Check-ins (MemStorage stubs)
+  async createUserCheckin(checkin: InsertUserCheckin): Promise<UserCheckin> {
+    throw new Error("User check-ins not supported in MemStorage");
+  }
+
+  async getUserCheckins(userId: string): Promise<UserCheckin[]> {
+    return [];
+  }
+
+  async getRecentCheckins(limit?: number): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]> {
+    return [];
+  }
+
+  async getCheckinAnalytics(): Promise<{
+    totalCheckins: number;
+    checkinsByMood: { mood: string; count: number }[];
+    checkinsByEnergy: { energyLevel: number; count: number }[];
+    popularGoals: { goal: string; count: number }[];
+    checkinFrequency: { period: string; count: number }[];
+  }> {
+    return {
+      totalCheckins: 0,
+      checkinsByMood: [],
+      checkinsByEnergy: [],
+      popularGoals: [],
+      checkinFrequency: [],
+    };
+  }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -3132,6 +3176,146 @@ class DatabaseStorage implements IStorage {
     await this.db
       .delete(passwordResetCodes)
       .where(eq(passwordResetCodes.email, email.toLowerCase()));
+  }
+
+  // User Check-ins
+  async createUserCheckin(checkin: InsertUserCheckin): Promise<UserCheckin> {
+    const result = await this.db
+      .insert(userCheckins)
+      .values(checkin)
+      .returning();
+    return result[0];
+  }
+
+  async getUserCheckins(userId: string): Promise<UserCheckin[]> {
+    return await this.db
+      .select()
+      .from(userCheckins)
+      .where(eq(userCheckins.userId, userId))
+      .orderBy(desc(userCheckins.createdAt));
+  }
+
+  async getRecentCheckins(limit: number = 10): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]> {
+    const result = await this.db
+      .select({
+        id: userCheckins.id,
+        userId: userCheckins.userId,
+        mood: userCheckins.mood,
+        energyLevel: userCheckins.energyLevel,
+        goals: userCheckins.goals,
+        postpartumWeeks: userCheckins.postpartumWeeks,
+        notes: userCheckins.notes,
+        createdAt: userCheckins.createdAt,
+        user: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+        },
+      })
+      .from(userCheckins)
+      .innerJoin(users, eq(userCheckins.userId, users.id))
+      .orderBy(desc(userCheckins.createdAt))
+      .limit(limit);
+    return result;
+  }
+
+  async getCheckinAnalytics(): Promise<{
+    totalCheckins: number;
+    checkinsByMood: { mood: string; count: number }[];
+    checkinsByEnergy: { energyLevel: number; count: number }[];
+    popularGoals: { goal: string; count: number }[];
+    checkinFrequency: { period: string; count: number }[];
+  }> {
+    // Get total check-ins
+    const totalResult = await this.db
+      .select({ count: count() })
+      .from(userCheckins);
+    const totalCheckins = totalResult[0]?.count || 0;
+
+    // Get check-ins by mood
+    const moodResult = await this.db
+      .select({
+        mood: userCheckins.mood,
+        count: count(),
+      })
+      .from(userCheckins)
+      .where(sql`${userCheckins.mood} IS NOT NULL`)
+      .groupBy(userCheckins.mood);
+    const checkinsByMood = moodResult.map(r => ({
+      mood: r.mood || 'unknown',
+      count: r.count,
+    }));
+
+    // Get check-ins by energy level
+    const energyResult = await this.db
+      .select({
+        energyLevel: userCheckins.energyLevel,
+        count: count(),
+      })
+      .from(userCheckins)
+      .where(sql`${userCheckins.energyLevel} IS NOT NULL`)
+      .groupBy(userCheckins.energyLevel);
+    const checkinsByEnergy = energyResult.map(r => ({
+      energyLevel: r.energyLevel || 0,
+      count: r.count,
+    }));
+
+    // Get popular goals (flatten the array and count)
+    const goalsResult = await this.db
+      .select({
+        goals: userCheckins.goals,
+      })
+      .from(userCheckins)
+      .where(sql`${userCheckins.goals} IS NOT NULL`);
+    
+    const goalCounts: Record<string, number> = {};
+    for (const row of goalsResult) {
+      if (row.goals) {
+        for (const goal of row.goals) {
+          goalCounts[goal] = (goalCounts[goal] || 0) + 1;
+        }
+      }
+    }
+    const popularGoals = Object.entries(goalCounts)
+      .map(([goal, count]) => ({ goal, count }))
+      .sort((a, b) => b.count - a.count);
+
+    // Get check-in frequency by time period
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart = new Date(todayStart);
+    weekStart.setDate(weekStart.getDate() - 7);
+    const monthStart = new Date(todayStart);
+    monthStart.setDate(monthStart.getDate() - 30);
+
+    const todayCount = await this.db
+      .select({ count: count() })
+      .from(userCheckins)
+      .where(gte(userCheckins.createdAt, todayStart));
+
+    const weekCount = await this.db
+      .select({ count: count() })
+      .from(userCheckins)
+      .where(gte(userCheckins.createdAt, weekStart));
+
+    const monthCount = await this.db
+      .select({ count: count() })
+      .from(userCheckins)
+      .where(gte(userCheckins.createdAt, monthStart));
+
+    const checkinFrequency = [
+      { period: 'Today', count: todayCount[0]?.count || 0 },
+      { period: 'Last 7 Days', count: weekCount[0]?.count || 0 },
+      { period: 'Last 30 Days', count: monthCount[0]?.count || 0 },
+    ];
+
+    return {
+      totalCheckins,
+      checkinsByMood,
+      checkinsByEnergy,
+      popularGoals,
+      checkinFrequency,
+    };
   }
 }
 
