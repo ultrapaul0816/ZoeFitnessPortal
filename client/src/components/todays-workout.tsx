@@ -404,7 +404,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                         <Checkbox
                           checked={completedExercises.has(exercise.num)}
                           onCheckedChange={() => toggleExerciseComplete(exercise.num)}
-                          className="mt-1"
+                          className="w-6 h-6 mt-1 border-2 border-pink-300 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                           data-testid={`checkbox-exercise-${exercise.num}`}
                         />
                         
