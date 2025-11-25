@@ -318,6 +318,39 @@ export const userCheckins = pgTable("user_checkins", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+// Workout program content - stores detailed program data for each week (database-driven content)
+export const workoutProgramContent = pgTable("workout_program_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  week: integer("week").notNull().unique(), // 1-6 for the 6-week program
+  programNumber: integer("program_number").notNull(),
+  title: text("title").notNull(), // e.g., "PROGRAM 1 - RECONNECT & RESET"
+  subtitle: text("subtitle").notNull(), // e.g., "Foundation Building"
+  schedule: text("schedule").notNull(), // e.g., "4x per week"
+  scheduleDetail: text("schedule_detail").notNull(), // e.g., "Complete on Days 1, 3, 5, and 7 of each week"
+  equipment: jsonb("equipment").notNull(), // Array of {name, colorClass}
+  coachNote: text("coach_note").notNull(),
+  coachNoteColorClass: text("coach_note_color_class").notNull(),
+  part1Title: text("part1_title").notNull(), // e.g., "Part 1: 360° Breathing"
+  part2PlaylistUrl: text("part2_playlist_url"), // YouTube playlist URL for part 2
+  colorScheme: jsonb("color_scheme").notNull(), // {sectionClass, borderColor, bgColor, textColor, accentColor, hoverBg, buttonColor}
+  isActive: boolean("is_active").default(true), // Can disable a week if needed
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+// Workout content exercises - individual exercises for each program week
+export const workoutContentExercises = pgTable("workout_content_exercises", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  programContentId: varchar("program_content_id").notNull(), // Reference to workoutProgramContent
+  sectionType: text("section_type").notNull(), // 'part1' (breathing) or 'part2' (main workout)
+  orderNum: integer("order_num").notNull(), // For sorting within section (1-based for display)
+  name: text("name").notNull(), // Exercise name
+  reps: text("reps").notNull(), // e.g., "12 reps", "25 breaths", "1 min"
+  url: text("url"), // YouTube video URL (optional for some breathing exercises)
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -494,6 +527,19 @@ export const insertUserCheckinSchema = createInsertSchema(userCheckins).omit({
   isPartial: z.boolean().optional(),
 });
 
+// Workout program content schemas
+export const insertWorkoutProgramContentSchema = createInsertSchema(workoutProgramContent).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWorkoutContentExerciseSchema = createInsertSchema(workoutContentExercises).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Reusable validation schemas
 
 // Phone number validation (flexible for international formats, truly optional)
@@ -648,6 +694,10 @@ export type EmailAutomationRule = typeof emailAutomationRules.$inferSelect;
 export type InsertEmailAutomationRule = z.infer<typeof insertEmailAutomationRuleSchema>;
 export type UserCheckin = typeof userCheckins.$inferSelect;
 export type InsertUserCheckin = z.infer<typeof insertUserCheckinSchema>;
+export type WorkoutProgramContent = typeof workoutProgramContent.$inferSelect;
+export type InsertWorkoutProgramContent = z.infer<typeof insertWorkoutProgramContentSchema>;
+export type WorkoutContentExercise = typeof workoutContentExercises.$inferSelect;
+export type InsertWorkoutContentExercise = z.infer<typeof insertWorkoutContentExerciseSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 
