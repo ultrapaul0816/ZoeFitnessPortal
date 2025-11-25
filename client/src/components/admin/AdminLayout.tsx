@@ -26,6 +26,7 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   section?: string;
+  path?: string;
 }
 
 interface AdminLayoutProps {
@@ -42,11 +43,9 @@ const navItems: NavItem[] = [
   { id: "workouts", label: "Workouts", icon: Dumbbell, section: "Content" },
   { id: "programs", label: "Programs", icon: FolderOpen, section: "Content" },
   { id: "assets", label: "Assets", icon: Image, section: "Content" },
-];
-
-const externalLinks = [
-  { id: "analytics", label: "Analytics", icon: BarChart3, path: "/admin/analytics" },
-  { id: "email", label: "Email Campaigns", icon: Mail, path: "/admin-email-campaigns" },
+  { id: "analytics", label: "Analytics", icon: BarChart3, section: "Insights", path: "/admin/analytics" },
+  { id: "email-campaigns", label: "Email Campaigns", icon: Mail, section: "Insights", path: "/admin-email-campaigns" },
+  { id: "email-analytics", label: "Email Analytics", icon: BarChart3, section: "Insights", path: "/admin-email-analytics" },
 ];
 
 export default function AdminLayout({ children, activeTab, onTabChange, onNavigate }: AdminLayoutProps) {
@@ -55,12 +54,11 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
   const [, setLocation] = useLocation();
 
   const handleNavClick = (item: NavItem) => {
-    onTabChange(item.id);
-    setIsMobileOpen(false);
-  };
-
-  const handleExternalLink = (path: string) => {
-    setLocation(path);
+    if (item.path) {
+      setLocation(item.path);
+    } else {
+      onTabChange(item.id);
+    }
     setIsMobileOpen(false);
   };
 
@@ -159,51 +157,6 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
             </div>
           ))}
 
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
-            {!isCollapsed && (
-              <p className="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Tools
-              </p>
-            )}
-            <div className="space-y-1">
-              {externalLinks.map((link) => {
-                const Icon = link.icon;
-                
-                if (isCollapsed) {
-                  return (
-                    <TooltipProvider key={link.id} delayDuration={0}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={() => handleExternalLink(link.path)}
-                            className="w-full flex items-center justify-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-200"
-                            data-testid={`nav-${link.id}`}
-                          >
-                            <Icon className="w-5 h-5" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                          {link.label}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  );
-                }
-
-                return (
-                  <button
-                    key={link.id}
-                    onClick={() => handleExternalLink(link.path)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-200 text-left"
-                    data-testid={`nav-${link.id}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-sm">{link.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
         </nav>
       </ScrollArea>
 

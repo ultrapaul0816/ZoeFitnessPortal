@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
-import { Users, TrendingUp, Activity, Heart, Globe, Instagram, MessageCircle, ArrowLeft, AlertCircle } from "lucide-react";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { Users, TrendingUp, Activity, Heart, Globe, Instagram, MessageCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import AdminLayout from "@/components/admin/AdminLayout";
 
 interface Analytics {
   demographics: {
@@ -71,29 +71,35 @@ export default function AdminAnalytics() {
     enabled: !!user?.isAdmin,
   });
 
-  if (!user?.isAdmin) return null;
+  const handleNavigate = (path: string) => {
+    setLocation(path);
+  };
 
-  if (isLoading) {
+  if (!user?.isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-pink-500" />
-              <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-            </div>
-            <Button 
-              onClick={() => setLocation("/admin")} 
-              variant="outline"
-              data-testid="button-back-admin"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Admin
-            </Button>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+      </div>
+    );
+  }
+
+  const completionData = analytics ? [
+    { name: "Completed", value: analytics.programPerformance.completionRates.completed, color: '#10b981' },
+    { name: "In Progress", value: analytics.programPerformance.completionRates.inProgress, color: '#f59e0b' },
+    { name: "Not Started", value: analytics.programPerformance.completionRates.notStarted, color: '#ef4444' },
+  ] : [];
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 mb-6">
+            <TrendingUp className="h-8 w-8 text-pink-500" />
+            <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <Card key={i}>
+              <Card key={i} className="bg-white">
                 <CardHeader>
                   <Skeleton className="h-4 w-24" />
                 </CardHeader>
@@ -104,27 +110,15 @@ export default function AdminAnalytics() {
             ))}
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-pink-500" />
-              <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-            </div>
-            <Button 
-              onClick={() => setLocation("/admin")} 
-              variant="outline"
-              data-testid="button-back-admin"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Admin
-            </Button>
+    if (isError) {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 mb-6">
+            <TrendingUp className="h-8 w-8 text-pink-500" />
+            <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
           </div>
           <Alert variant="destructive" data-testid="error-alert">
             <AlertCircle className="h-4 w-4" />
@@ -134,39 +128,22 @@ export default function AdminAnalytics() {
             </AlertDescription>
           </Alert>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (!analytics) return null;
+    if (!analytics) return null;
 
-  const completionData = [
-    { name: "Completed", value: analytics.programPerformance.completionRates.completed, color: '#10b981' },
-    { name: "In Progress", value: analytics.programPerformance.completionRates.inProgress, color: '#f59e0b' },
-    { name: "Not Started", value: analytics.programPerformance.completionRates.notStarted, color: '#ef4444' },
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-6" data-testid="admin-analytics-page">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-pink-500" />
-            <h1 className="text-3xl font-bold text-gray-900" data-testid="page-title">Analytics Dashboard</h1>
-          </div>
-          <Button 
-            onClick={() => setLocation("/admin")} 
-            variant="outline"
-            data-testid="button-back-admin"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Admin
-          </Button>
+    return (
+      <div className="space-y-6" data-testid="admin-analytics-page">
+        {/* Page Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <TrendingUp className="h-8 w-8 text-pink-500" />
+          <h1 className="text-2xl font-bold text-gray-900" data-testid="page-title">Analytics Dashboard</h1>
         </div>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border-pink-200 shadow-md" data-testid="card-total-users">
+          <Card className="bg-white border-gray-200 shadow-sm" data-testid="card-total-users">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-pink-500" />
@@ -174,11 +151,11 @@ export default function AdminAnalytics() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-pink-600" data-testid="text-total-users">{analytics.demographics.totalUsers}</div>
+              <div className="text-3xl font-bold text-gray-900" data-testid="text-total-users">{analytics.demographics.totalUsers}</div>
             </CardContent>
           </Card>
 
-          <Card className="border-pink-200 shadow-md" data-testid="card-workout-completions">
+          <Card className="bg-white border-gray-200 shadow-sm" data-testid="card-workout-completions">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-purple-500" />
@@ -186,14 +163,14 @@ export default function AdminAnalytics() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-purple-600" data-testid="text-workout-completions">{analytics.programPerformance.totalWorkoutCompletions}</div>
+              <div className="text-3xl font-bold text-gray-900" data-testid="text-workout-completions">{analytics.programPerformance.totalWorkoutCompletions}</div>
               <p className="text-sm text-gray-500 mt-1">
                 Avg {analytics.programPerformance.averageWorkoutsPerUser.toFixed(1)} per user
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-pink-200 shadow-md" data-testid="card-community-posts">
+          <Card className="bg-white border-gray-200 shadow-sm" data-testid="card-community-posts">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <Heart className="h-5 w-5 text-pink-500" />
@@ -201,14 +178,14 @@ export default function AdminAnalytics() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-pink-600" data-testid="text-community-posts">{analytics.communityHealth.totalPosts}</div>
+              <div className="text-3xl font-bold text-gray-900" data-testid="text-community-posts">{analytics.communityHealth.totalPosts}</div>
               <p className="text-sm text-gray-500 mt-1">
                 {analytics.communityHealth.participationRate.toFixed(0)}% participation rate
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-pink-200 shadow-md" data-testid="card-whatsapp-adoption">
+          <Card className="bg-white border-gray-200 shadow-sm" data-testid="card-whatsapp-adoption">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5 text-green-500" />
@@ -216,7 +193,7 @@ export default function AdminAnalytics() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600" data-testid="text-whatsapp-members">{analytics.businessMetrics.whatsAppAdoption}</div>
+              <div className="text-3xl font-bold text-gray-900" data-testid="text-whatsapp-members">{analytics.businessMetrics.whatsAppAdoption}</div>
               <p className="text-sm text-gray-500 mt-1">
                 {((analytics.businessMetrics.whatsAppAdoption / analytics.demographics.totalUsers) * 100).toFixed(0)}% of members
               </p>
@@ -226,7 +203,7 @@ export default function AdminAnalytics() {
 
         {/* Detailed Analytics Tabs */}
         <Tabs defaultValue="demographics" className="space-y-4" data-testid="analytics-tabs">
-          <TabsList className="bg-white border border-pink-200">
+          <TabsList className="bg-white border border-gray-200">
             <TabsTrigger value="demographics" data-testid="tab-demographics">Demographics</TabsTrigger>
             <TabsTrigger value="engagement" data-testid="tab-engagement">Engagement</TabsTrigger>
             <TabsTrigger value="performance" data-testid="tab-performance">Program Performance</TabsTrigger>
@@ -236,7 +213,7 @@ export default function AdminAnalytics() {
           {/* Demographics Tab */}
           <TabsContent value="demographics" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-lg" data-testid="card-country-distribution">
+              <Card className="bg-white shadow-sm" data-testid="card-country-distribution">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Globe className="h-5 w-5 text-pink-500" />
@@ -257,7 +234,7 @@ export default function AdminAnalytics() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg" data-testid="card-postpartum-stage">
+              <Card className="bg-white shadow-sm" data-testid="card-postpartum-stage">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5 text-purple-500" />
@@ -291,7 +268,7 @@ export default function AdminAnalytics() {
               </Card>
             </div>
 
-            <Card className="shadow-lg" data-testid="card-instagram-handles">
+            <Card className="bg-white shadow-sm" data-testid="card-instagram-handles">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Instagram className="h-5 w-5 text-pink-500" />
@@ -299,7 +276,7 @@ export default function AdminAnalytics() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold text-pink-600" data-testid="text-instagram-count">{analytics.demographics.instagramHandlesCollected}</div>
+                <div className="text-4xl font-bold text-gray-900" data-testid="text-instagram-count">{analytics.demographics.instagramHandlesCollected}</div>
                 <p className="text-gray-600 mt-2">
                   {((analytics.demographics.instagramHandlesCollected / analytics.demographics.totalUsers) * 100).toFixed(1)}% of total members
                 </p>
@@ -309,7 +286,7 @@ export default function AdminAnalytics() {
 
           {/* Engagement Tab */}
           <TabsContent value="engagement" className="space-y-6">
-            <Card className="shadow-lg" data-testid="card-user-activity">
+            <Card className="bg-white shadow-sm" data-testid="card-user-activity">
               <CardHeader>
                 <CardTitle>User Activity Overview</CardTitle>
                 <CardDescription>Active and dormant user metrics across different time periods</CardDescription>
@@ -384,7 +361,7 @@ export default function AdminAnalytics() {
           {/* Program Performance Tab */}
           <TabsContent value="performance" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-lg" data-testid="card-completion-rates">
+              <Card className="bg-white shadow-sm" data-testid="card-completion-rates">
                 <CardHeader>
                   <CardTitle>Program Completion Status</CardTitle>
                   <CardDescription>Current program enrollment status</CardDescription>
@@ -414,7 +391,7 @@ export default function AdminAnalytics() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg" data-testid="card-progress-distribution">
+              <Card className="bg-white shadow-sm" data-testid="card-progress-distribution">
                 <CardHeader>
                   <CardTitle>Progress Distribution</CardTitle>
                   <CardDescription>Breakdown by completion percentage</CardDescription>
@@ -434,7 +411,7 @@ export default function AdminAnalytics() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="shadow-lg" data-testid="card-average-mood">
+              <Card className="bg-white shadow-sm" data-testid="card-average-mood">
                 <CardHeader>
                   <CardTitle>Average Workout Mood</CardTitle>
                 </CardHeader>
@@ -448,7 +425,7 @@ export default function AdminAnalytics() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg" data-testid="card-challenge-rating">
+              <Card className="bg-white shadow-sm" data-testid="card-challenge-rating">
                 <CardHeader>
                   <CardTitle>Average Challenge Rating</CardTitle>
                 </CardHeader>
@@ -462,7 +439,7 @@ export default function AdminAnalytics() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg" data-testid="card-avg-completion-time">
+              <Card className="bg-white shadow-sm" data-testid="card-avg-completion-time">
                 <CardHeader>
                   <CardTitle>Avg Completion Time</CardTitle>
                 </CardHeader>
@@ -481,7 +458,7 @@ export default function AdminAnalytics() {
           {/* Community Tab */}
           <TabsContent value="community" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-lg" data-testid="card-top-categories">
+              <Card className="bg-white shadow-sm" data-testid="card-top-categories">
                 <CardHeader>
                   <CardTitle>Top Post Categories</CardTitle>
                   <CardDescription>Most popular post categories</CardDescription>
@@ -499,7 +476,7 @@ export default function AdminAnalytics() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg" data-testid="card-community-stats">
+              <Card className="bg-white shadow-sm" data-testid="card-community-stats">
                 <CardHeader>
                   <CardTitle>Community Activity</CardTitle>
                   <CardDescription>Total engagement metrics</CardDescription>
@@ -507,15 +484,15 @@ export default function AdminAnalytics() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Total Posts</span>
-                    <span className="text-2xl font-bold text-pink-600" data-testid="text-total-posts">{analytics.communityHealth.totalPosts}</span>
+                    <span className="text-2xl font-bold text-gray-900" data-testid="text-total-posts">{analytics.communityHealth.totalPosts}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Total Likes</span>
-                    <span className="text-2xl font-bold text-pink-600" data-testid="text-total-likes">{analytics.communityHealth.totalLikes}</span>
+                    <span className="text-2xl font-bold text-gray-900" data-testid="text-total-likes">{analytics.communityHealth.totalLikes}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Total Comments</span>
-                    <span className="text-2xl font-bold text-pink-600" data-testid="text-total-comments">{analytics.communityHealth.totalComments}</span>
+                    <span className="text-2xl font-bold text-gray-900" data-testid="text-total-comments">{analytics.communityHealth.totalComments}</span>
                   </div>
                   <div className="flex justify-between items-center pt-4 border-t">
                     <span className="text-gray-600 font-semibold">Participation Rate</span>
@@ -527,22 +504,26 @@ export default function AdminAnalytics() {
               </Card>
             </div>
 
-            <Card className="shadow-lg" data-testid="card-top-contributors">
+            <Card className="bg-white shadow-sm" data-testid="card-top-contributors">
               <CardHeader>
-                <CardTitle>Top 10 Contributors</CardTitle>
+                <CardTitle>Top Contributors</CardTitle>
                 <CardDescription>Most active community members</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {analytics.communityHealth.topContributors.map((contributor, index) => (
-                    <div
-                      key={contributor.userId}
-                      className="flex justify-between items-center p-3 bg-pink-50 rounded-lg"
-                      data-testid={`contributor-${index}`}
+                    <div 
+                      key={contributor.userId} 
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      data-testid={`contributor-row-${index}`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-pink-600 font-bold">#{index + 1}</span>
-                        <span className="font-medium" data-testid={`contributor-name-${index}`}>{contributor.userName}</span>
+                        <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold">
+                          {index + 1}
+                        </div>
+                        <span className="font-medium text-gray-900" data-testid={`contributor-name-${index}`}>
+                          {contributor.userName}
+                        </span>
                       </div>
                       <span className="text-gray-600" data-testid={`contributor-posts-${index}`}>
                         {contributor.postCount} {contributor.postCount === 1 ? 'post' : 'posts'}
@@ -555,6 +536,16 @@ export default function AdminAnalytics() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    );
+  };
+
+  return (
+    <AdminLayout
+      activeTab="analytics"
+      onTabChange={() => setLocation("/admin")}
+      onNavigate={handleNavigate}
+    >
+      {renderContent()}
+    </AdminLayout>
   );
 }
