@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useForm } from "react-hook-form";
@@ -173,6 +173,53 @@ export default function Admin() {
     queryKey: ["/api/admin/actionable/recent-completers"],
     enabled: !!user?.isAdmin,
   });
+
+  // Check-in data queries
+  const { data: recentCheckins = [] } = useQuery<Array<{
+    id: string;
+    userId: string;
+    mood: string | null;
+    energyLevel: number | null;
+    goals: string[] | null;
+    notes: string | null;
+    createdAt: string | null;
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+    };
+  }>>({
+    queryKey: ["/api/admin/actionable/recent-checkins"],
+    enabled: !!user?.isAdmin,
+  });
+
+  const { data: checkinAnalytics } = useQuery<{
+    overall: {
+      totalCheckins: number;
+      checkinsByMood: { mood: string; count: number }[];
+      checkinsByEnergy: { energyLevel: number; count: number }[];
+      popularGoals: { goal: string; count: number }[];
+      checkinFrequency: { period: string; count: number }[];
+    };
+    today: {
+      total: number;
+      moodDistribution: { mood: string; count: number }[];
+      energyDistribution: { energyLevel: number; count: number }[];
+      popularGoals: { goal: string; count: number }[];
+    };
+    thisWeek: {
+      total: number;
+      moodDistribution: { mood: string; count: number }[];
+      energyDistribution: { energyLevel: number; count: number }[];
+      popularGoals: { goal: string; count: number }[];
+    };
+  }>({
+    queryKey: ["/api/admin/actionable/checkin-analytics"],
+    enabled: !!user?.isAdmin,
+  });
+
+  // Check-in analytics view toggle (today vs this week)
+  const [checkinView, setCheckinView] = useState<'today' | 'week'>('today');
 
   // Email preview state
   const [emailPreview, setEmailPreview] = useState<{
@@ -983,6 +1030,276 @@ export default function Admin() {
             )}
           </CardContent>
         </Card>
+
+        {/* Check-in Analytics Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Check-in Analytics Card */}
+          <Card className="border-none shadow-md">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-pink-500" />
+                  Daily Check-ins
+                </CardTitle>
+                <div className="flex gap-1">
+                  <Button
+                    variant={checkinView === 'today' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCheckinView('today')}
+                    className={checkinView === 'today' ? 'bg-pink-500 hover:bg-pink-600' : ''}
+                    data-testid="checkin-view-today"
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    variant={checkinView === 'week' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCheckinView('week')}
+                    className={checkinView === 'week' ? 'bg-pink-500 hover:bg-pink-600' : ''}
+                    data-testid="checkin-view-week"
+                  >
+                    This Week
+                  </Button>
+                </div>
+              </div>
+              <CardDescription>
+                {checkinView === 'today' ? "Today's" : "This week's"} member wellness check-ins
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {checkinAnalytics ? (
+                <div className="space-y-4">
+                  {/* Total Check-ins */}
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">Total Check-ins</span>
+                    <Badge className="bg-pink-500 text-white text-lg px-3">
+                      {checkinView === 'today' ? checkinAnalytics.today.total : checkinAnalytics.thisWeek.total}
+                    </Badge>
+                  </div>
+
+                  {/* Mood Distribution */}
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <Smile className="w-4 h-4 text-yellow-500" /> Mood Distribution
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(checkinView === 'today' 
+                        ? checkinAnalytics.today.moodDistribution 
+                        : checkinAnalytics.thisWeek.moodDistribution
+                      ).length > 0 ? (
+                        (checkinView === 'today' 
+                          ? checkinAnalytics.today.moodDistribution 
+                          : checkinAnalytics.thisWeek.moodDistribution
+                        ).map((item) => {
+                          const moodEmoji = {
+                            'great': '😊',
+                            'good': '🙂',
+                            'okay': '😐',
+                            'tired': '😴',
+                            'struggling': '😔',
+                          }[item.mood.toLowerCase()] || '😐';
+                          return (
+                            <div 
+                              key={item.mood} 
+                              className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                            >
+                              <span className="text-sm capitalize flex items-center gap-1">
+                                <span>{moodEmoji}</span> {item.mood}
+                              </span>
+                              <Badge variant="secondary">{item.count}</Badge>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p className="text-sm text-gray-400 col-span-2 text-center py-2">No mood data</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Energy Distribution */}
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-orange-500" /> Energy Levels
+                    </h4>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((level) => {
+                        const data = (checkinView === 'today' 
+                          ? checkinAnalytics.today.energyDistribution 
+                          : checkinAnalytics.thisWeek.energyDistribution
+                        ).find(e => e.energyLevel === level);
+                        const count = data?.count || 0;
+                        const maxCount = Math.max(
+                          ...(checkinView === 'today' 
+                            ? checkinAnalytics.today.energyDistribution 
+                            : checkinAnalytics.thisWeek.energyDistribution
+                          ).map(e => e.count),
+                          1
+                        );
+                        const height = count > 0 ? Math.max((count / maxCount) * 60, 10) : 10;
+                        return (
+                          <div key={level} className="flex-1 flex flex-col items-center gap-1">
+                            <div 
+                              className="w-full bg-gradient-to-t from-orange-400 to-yellow-300 rounded-t"
+                              style={{ height: `${height}px` }}
+                            />
+                            <span className="text-xs text-gray-500">{level}</span>
+                            <span className="text-xs font-medium">{count}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Popular Goals */}
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <Target className="w-4 h-4 text-green-500" /> Popular Goals
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {(checkinView === 'today' 
+                        ? checkinAnalytics.today.popularGoals 
+                        : checkinAnalytics.thisWeek.popularGoals
+                      ).length > 0 ? (
+                        (checkinView === 'today' 
+                          ? checkinAnalytics.today.popularGoals 
+                          : checkinAnalytics.thisWeek.popularGoals
+                        ).slice(0, 5).map((item) => (
+                          <Badge 
+                            key={item.goal} 
+                            variant="outline" 
+                            className="text-xs bg-green-50 border-green-200"
+                          >
+                            {item.goal} ({item.count})
+                          </Badge>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-400">No goals data</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>Loading check-in analytics...</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent Check-ins Card */}
+          <Card className="border-none shadow-md">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <ClipboardCheck className="w-5 h-5 text-blue-500" />
+                  Recent Check-ins
+                </CardTitle>
+                <Badge variant="secondary" className="text-xs">
+                  {recentCheckins.length} latest
+                </Badge>
+              </div>
+              <CardDescription>Latest member wellness submissions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {recentCheckins.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <ClipboardCheck className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No check-ins yet</p>
+                  <p className="text-sm">Member check-ins will appear here</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+                  {recentCheckins.slice(0, 10).map((checkin) => {
+                    const moodEmoji = {
+                      'great': '😊',
+                      'good': '🙂',
+                      'okay': '😐',
+                      'tired': '😴',
+                      'struggling': '😔',
+                    }[checkin.mood?.toLowerCase() || ''] || '😐';
+                    
+                    const timeAgo = checkin.createdAt ? (() => {
+                      const date = new Date(checkin.createdAt);
+                      const now = new Date();
+                      const diff = now.getTime() - date.getTime();
+                      const minutes = Math.floor(diff / 60000);
+                      const hours = Math.floor(diff / 3600000);
+                      const days = Math.floor(diff / 86400000);
+                      
+                      if (minutes < 1) return 'Just now';
+                      if (minutes < 60) return `${minutes}m ago`;
+                      if (hours < 24) return `${hours}h ago`;
+                      if (days < 7) return `${days}d ago`;
+                      return date.toLocaleDateString();
+                    })() : 'Unknown';
+
+                    return (
+                      <div 
+                        key={checkin.id} 
+                        className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100 group hover:bg-blue-100 transition-colors"
+                        data-testid={`recent-checkin-${checkin.id}`}
+                      >
+                        <div className="text-2xl">{moodEmoji}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium text-gray-800 truncate">
+                              {checkin.user.firstName} {checkin.user.lastName}
+                            </p>
+                            <span className="text-xs text-gray-400">{timeAgo}</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-gray-600 capitalize">
+                              Mood: {checkin.mood || 'N/A'}
+                            </span>
+                            {checkin.energyLevel && (
+                              <span className="text-xs text-gray-600 flex items-center gap-1">
+                                <Zap className="w-3 h-3 text-orange-400" />
+                                Energy: {checkin.energyLevel}/5
+                              </span>
+                            )}
+                          </div>
+                          {checkin.goals && checkin.goals.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {checkin.goals.slice(0, 3).map((goal, i) => (
+                                <Badge key={i} variant="outline" className="text-xs py-0">
+                                  {goal}
+                                </Badge>
+                              ))}
+                              {checkin.goals.length > 3 && (
+                                <span className="text-xs text-gray-400">+{checkin.goals.length - 3} more</span>
+                              )}
+                            </div>
+                          )}
+                          {checkin.notes && (
+                            <p className="text-xs text-gray-500 mt-1 truncate italic">
+                              "{checkin.notes}"
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            const member = allUsers.find(u => u.id === checkin.userId);
+                            if (member) {
+                              setSelectedMember(member);
+                              setMemberViewMode('view');
+                            }
+                          }}
+                          data-testid={`view-checkin-member-${checkin.id}`}
+                        >
+                          <Eye className="w-4 h-4 text-blue-500" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
         </div>
       )}
 
