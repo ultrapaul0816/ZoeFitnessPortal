@@ -284,9 +284,11 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   );
   const programInfo = programOverviews[progress.currentWeek] || programOverviews[1];
 
-  const tomorrowProgram = progress.currentDay < (progress.currentWeek === 1 ? 4 : 3)
-    ? currentProgram
-    : workoutPrograms.find(p => p.week === progress.currentWeek + 1) || currentProgram;
+  const weeklyWorkoutsForCurrentWeek = progress.currentWeek === 1 ? 4 : 3;
+  const isTomorrowNewWeek = progress.currentDay >= weeklyWorkoutsForCurrentWeek;
+  const tomorrowProgram = isTomorrowNewWeek
+    ? workoutPrograms.find(p => p.week === progress.currentWeek + 1) || currentProgram
+    : currentProgram;
 
   if (showWelcome && isFirstLogin) {
     return (
@@ -374,20 +376,85 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
 
         <CardContent className="p-4 space-y-4">
           {isWorkoutCompletedToday ? (
-            <div className="p-6 bg-green-50 border border-green-200 rounded-xl text-center">
-              <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-              <h3 className="text-lg font-bold text-green-700">Today's Workout Complete!</h3>
-              <p className="text-green-600 text-sm mt-1">Amazing work, mama! Rest up and come back tomorrow. 💪</p>
-              
-              <Button
-                onClick={() => setShowTomorrowPreview(true)}
-                variant="outline"
-                className="mt-4 border-green-300 text-green-600 hover:bg-green-50"
-                data-testid="button-preview-tomorrow"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Preview Tomorrow's Workout
-              </Button>
+            <div className="space-y-4">
+              {/* Celebration Banner */}
+              <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400"></div>
+                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-green-700">You Did It, Mama!</h3>
+                <p className="text-green-600 text-sm mt-1">Day {progress.currentDay} of Week {progress.currentWeek} complete</p>
+                
+                {/* Stats Row */}
+                <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-green-200">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{exercises.length}</div>
+                    <div className="text-xs text-gray-500">Exercises</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-pink-600">{progress.weeklyWorkoutsCompleted}/{progress.weeklyWorkoutsTotal}</div>
+                    <div className="text-xs text-gray-500">This Week</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">{progress.totalWorkoutsCompleted}</div>
+                    <div className="text-xs text-gray-500">Total</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tomorrow's Preview - Inline */}
+              <div className="p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border border-pink-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar className="w-5 h-5 text-pink-500" />
+                  <h4 className="font-bold text-gray-800">
+                    {isTomorrowNewWeek ? "Coming Up: New Week!" : "Tomorrow's Focus"}
+                  </h4>
+                </div>
+                
+                {isTomorrowNewWeek ? (
+                  <div className="space-y-3">
+                    <div className={`p-3 rounded-lg ${tomorrowProgram.colorScheme.bgColor} border ${tomorrowProgram.colorScheme.borderColor}`}>
+                      <h5 className={`font-bold ${tomorrowProgram.colorScheme.textColor}`}>{tomorrowProgram.title}</h5>
+                      <p className="text-sm text-gray-600 mt-1">{tomorrowProgram.subtitle}</p>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      <strong>What's new:</strong> {tomorrowProgram.coachNote}
+                    </p>
+                    <p className="text-sm text-pink-600 font-medium">{tomorrowProgram.schedule}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600">
+                      Continue <span className="font-semibold text-pink-600">{currentProgram.title}</span>
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Day {progress.currentDay + 1} of {progress.weeklyWorkoutsTotal} • Same exercises, building your strength
+                    </p>
+                    <div className="flex items-center gap-2 text-sm text-purple-600 mt-2">
+                      <Heart className="w-4 h-4" />
+                      <span>Consistency is how we heal, mama!</span>
+                    </div>
+                  </div>
+                )}
+                
+                <Button
+                  onClick={() => setShowTomorrowPreview(true)}
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 border-pink-200 text-pink-600 hover:bg-pink-50"
+                  data-testid="button-preview-tomorrow"
+                >
+                  See Full Workout Details
+                </Button>
+              </div>
+
+              {/* Rest Day Message */}
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-500">
+                  Take time to rest and recover. Your body is rebuilding stronger! 
+                </p>
+              </div>
             </div>
           ) : (
             <>
