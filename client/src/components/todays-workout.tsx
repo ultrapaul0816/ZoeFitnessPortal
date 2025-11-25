@@ -449,6 +449,84 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </Button>
               </div>
 
+              {/* My Journey Progress */}
+              <div className="p-4 bg-white rounded-xl border border-gray-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-5 h-5 text-purple-500" />
+                  <h4 className="font-bold text-gray-800">My Journey</h4>
+                </div>
+                
+                {/* 6-Week Visual Timeline */}
+                <div className="space-y-2">
+                  {[1, 2, 3, 4, 5, 6].map((week) => {
+                    const weekProgram = workoutPrograms.find(p => p.week === week);
+                    const workoutsInWeek = week === 1 ? 4 : 3;
+                    const completedInWeek = progress.completedWorkoutIds.filter(
+                      id => id.startsWith(`week${week}-`)
+                    ).length;
+                    const isCurrentWeek = week === progress.currentWeek;
+                    const isCompleted = completedInWeek >= workoutsInWeek;
+                    const isUpcoming = week > progress.currentWeek;
+                    
+                    return (
+                      <div 
+                        key={week}
+                        className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                          isCurrentWeek ? 'bg-pink-50 border border-pink-200' :
+                          isCompleted ? 'bg-green-50' :
+                          isUpcoming ? 'bg-gray-50 opacity-60' : 'bg-gray-50'
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          isCompleted ? 'bg-green-500 text-white' :
+                          isCurrentWeek ? 'bg-pink-500 text-white' :
+                          'bg-gray-200 text-gray-500'
+                        }`}>
+                          {isCompleted ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <span className="text-sm font-bold">{week}</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium truncate ${
+                            isCompleted ? 'text-green-700' :
+                            isCurrentWeek ? 'text-pink-700' :
+                            'text-gray-600'
+                          }`}>
+                            {weekProgram?.subtitle || `Week ${week}`}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            {[...Array(workoutsInWeek)].map((_, i) => (
+                              <div
+                                key={i}
+                                className={`w-3 h-1.5 rounded-full ${
+                                  i < completedInWeek 
+                                    ? isCurrentWeek ? 'bg-pink-400' : 'bg-green-400'
+                                    : 'bg-gray-200'
+                                }`}
+                              />
+                            ))}
+                            <span className="text-xs text-gray-500 ml-1">
+                              {completedInWeek}/{workoutsInWeek}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Overall Progress */}
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Overall Progress</span>
+                    <span className="font-bold text-pink-600">{Math.round(progress.overallProgress)}%</span>
+                  </div>
+                  <Progress value={progress.overallProgress} className="h-2 mt-2" />
+                </div>
+              </div>
+
               {/* Rest Day Message */}
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-500">
