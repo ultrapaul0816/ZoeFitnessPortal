@@ -1065,6 +1065,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return dateB - dateA;
       })[0];
       
+      // Check if workout was completed today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const lastCompletionDate = lastCompletion?.completedAt ? new Date(lastCompletion.completedAt) : null;
+      const workoutCompletedToday = lastCompletionDate ? lastCompletionDate >= today : false;
+      
       // Calculate current week based on completions
       // Each week has different workout counts: Week 1: 4, Weeks 2-6: 3 each
       const weeklyWorkouts = [4, 3, 3, 3, 3, 3]; // workouts per week
@@ -1103,7 +1109,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         weeklyWorkoutsTotal: weeklyWorkouts[currentWeek - 1],
         overallProgress: Math.min(overallProgress, 100),
         lastCompletedAt: lastCompletion?.completedAt || null,
-        completedWorkoutIds
+        completedWorkoutIds,
+        workoutCompletedToday
       });
     } catch (error) {
       console.error("Failed to fetch workout progress:", error);

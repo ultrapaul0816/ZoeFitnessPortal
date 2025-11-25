@@ -42,6 +42,7 @@ interface WorkoutProgress {
   overallProgress: number;
   lastCompletedAt: string | null;
   completedWorkoutIds: string[];
+  workoutCompletedToday: boolean;
 }
 
 interface ChatMessage {
@@ -279,9 +280,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const currentProgram = workoutPrograms.find(p => p.week === progress.currentWeek) || workoutPrograms[0];
   const exercises = currentProgram.part2.exercises;
   const allExercisesComplete = completedExercises.size === exercises.length;
-  const isWorkoutCompletedToday = progress.completedWorkoutIds?.includes(
-    `week${progress.currentWeek}-day${progress.currentDay}`
-  );
+  const isWorkoutCompletedToday = progress.workoutCompletedToday;
   const programInfo = programOverviews[progress.currentWeek] || programOverviews[1];
 
   const weeklyWorkoutsForCurrentWeek = progress.currentWeek === 1 ? 4 : 3;
