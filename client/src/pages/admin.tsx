@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useForm } from "react-hook-form";
@@ -220,6 +220,50 @@ export default function Admin() {
   }>({
     queryKey: ["/api/admin/actionable/checkin-analytics"],
     enabled: !!user?.isAdmin,
+  });
+
+  // Full member profile data query
+  const { data: fullProfileData, isLoading: fullProfileLoading } = useQuery<{
+    user: User;
+    activityLogs: Array<{
+      id: string;
+      activityType: string;
+      metadata: Record<string, any> | null;
+      createdAt: string | null;
+    }>;
+    checkins: Array<{
+      id: string;
+      mood: string | null;
+      energyLevel: number | null;
+      goals: string[] | null;
+      notes: string | null;
+      createdAt: string | null;
+    }>;
+    progressPhotos: Array<{
+      id: string;
+      photoUrl: string;
+      photoType: string;
+      week: number | null;
+      createdAt: string | null;
+    }>;
+    emailHistory: Array<{
+      id: string;
+      campaignName: string;
+      templateType: string;
+      sentAt: string | null;
+      openedAt: string | null;
+      status: string;
+    }>;
+    workoutCompletions: Array<{
+      id: string;
+      workoutId: string;
+      completedAt: string | null;
+    }>;
+    memberPrograms: Array<any>;
+    communityPosts: Array<any>;
+  }>({
+    queryKey: ["/api/admin/member-profile", fullProfileMember?.id],
+    enabled: !!fullProfileMember?.id,
   });
 
   // Check-in analytics view toggle (today vs this week)
@@ -1931,6 +1975,21 @@ export default function Admin() {
                       </div>
                     </div>
                   </div>
+
+                  {/* View Full Profile Button */}
+                  <div className="pt-4 border-t border-gray-200">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                      onClick={() => {
+                        setFullProfileMember(selectedMember);
+                        setSelectedMember(null);
+                      }}
+                      data-testid="button-view-full-profile"
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      View Full Profile & History
+                    </Button>
+                  </div>
                 </div>
               )}
 
@@ -2980,6 +3039,249 @@ export default function Admin() {
               )}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Full Member Profile Dialog */}
+      <Dialog open={!!fullProfileMember} onOpenChange={() => setFullProfileMember(null)}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-purple-50/30 to-pink-50/20">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-md text-white text-lg font-bold">
+                {fullProfileMember?.firstName?.[0]}{fullProfileMember?.lastName?.[0]}
+              </div>
+              <div>
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-semibold">
+                  {fullProfileMember?.firstName} {fullProfileMember?.lastName}
+                </span>
+                <p className="text-sm text-muted-foreground font-normal">{fullProfileMember?.email}</p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          {fullProfileLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+            </div>
+          ) : fullProfileData ? (
+            <Tabs defaultValue="activity" className="w-full">
+              <TabsList className="grid w-full grid-cols-5 mb-4">
+                <TabsTrigger value="activity" className="text-xs">Activity</TabsTrigger>
+                <TabsTrigger value="checkins" className="text-xs">Check-ins</TabsTrigger>
+                <TabsTrigger value="photos" className="text-xs">Photos</TabsTrigger>
+                <TabsTrigger value="emails" className="text-xs">Emails</TabsTrigger>
+                <TabsTrigger value="community" className="text-xs">Community</TabsTrigger>
+              </TabsList>
+
+              {/* Activity Tab */}
+              <TabsContent value="activity" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm text-purple-700">Activity Logs ({fullProfileData.activityLogs.length})</h3>
+                </div>
+                {fullProfileData.activityLogs.length > 0 ? (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {fullProfileData.activityLogs.map((log) => (
+                      <div key={log.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-100">
+                        <div className={`w-2 h-2 rounded-full ${
+                          log.activityType === 'login' ? 'bg-blue-500' :
+                          log.activityType === 'workout_completion' ? 'bg-green-500' :
+                          log.activityType === 'workout_start' ? 'bg-pink-500' :
+                          'bg-gray-400'
+                        }`}></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium capitalize">{log.activityType.replace(/_/g, ' ')}</p>
+                          {log.metadata && Object.keys(log.metadata).length > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              {log.metadata.workoutName || log.metadata.programName || ''}
+                            </p>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {log.createdAt ? format(new Date(log.createdAt), "MMM dd, HH:mm") : 'N/A'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-8">No activity logs found</p>
+                )}
+              </TabsContent>
+
+              {/* Check-ins Tab */}
+              <TabsContent value="checkins" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm text-purple-700">Wellness Check-ins ({fullProfileData.checkins.length})</h3>
+                </div>
+                {fullProfileData.checkins.length > 0 ? (
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                    {fullProfileData.checkins.map((checkin) => (
+                      <div key={checkin.id} className="p-4 bg-white rounded-lg border border-gray-100 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {checkin.mood && (
+                              <span className="text-2xl">
+                                {checkin.mood === 'great' ? '😊' :
+                                 checkin.mood === 'good' ? '🙂' :
+                                 checkin.mood === 'okay' ? '😐' :
+                                 checkin.mood === 'tired' ? '😴' :
+                                 checkin.mood === 'struggling' ? '😔' : ''}
+                              </span>
+                            )}
+                            <span className="text-sm font-medium capitalize">{checkin.mood || 'No mood'}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {checkin.createdAt ? format(new Date(checkin.createdAt), "MMM dd, yyyy") : 'N/A'}
+                          </p>
+                        </div>
+                        {checkin.energyLevel && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Energy:</span>
+                            <div className="flex gap-1">
+                              {[1,2,3,4,5].map((level) => (
+                                <div 
+                                  key={level} 
+                                  className={`w-4 h-2 rounded ${level <= checkin.energyLevel! ? 'bg-pink-400' : 'bg-gray-200'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {checkin.goals && checkin.goals.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {checkin.goals.map((goal, idx) => (
+                              <Badge key={idx} variant="secondary" className="text-xs">{goal}</Badge>
+                            ))}
+                          </div>
+                        )}
+                        {checkin.notes && (
+                          <p className="text-sm text-gray-600 italic">"{checkin.notes}"</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-8">No check-ins recorded</p>
+                )}
+              </TabsContent>
+
+              {/* Photos Tab */}
+              <TabsContent value="photos" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm text-purple-700">Progress Photos ({fullProfileData.progressPhotos.length})</h3>
+                </div>
+                {fullProfileData.progressPhotos.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-4 max-h-[400px] overflow-y-auto">
+                    {fullProfileData.progressPhotos.map((photo) => (
+                      <div key={photo.id} className="relative group">
+                        <img 
+                          src={photo.photoUrl} 
+                          alt={`Progress photo - ${photo.photoType}`}
+                          className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 rounded-b-lg">
+                          <p className="text-white text-xs font-medium capitalize">{photo.photoType}</p>
+                          {photo.week && <p className="text-white/80 text-xs">Week {photo.week}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-8">No progress photos uploaded</p>
+                )}
+              </TabsContent>
+
+              {/* Emails Tab */}
+              <TabsContent value="emails" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm text-purple-700">Email History ({fullProfileData.emailHistory.length})</h3>
+                </div>
+                {fullProfileData.emailHistory.length > 0 ? (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {fullProfileData.emailHistory.map((email) => (
+                      <div key={email.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-100">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          email.openedAt ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                        }`}>
+                          {email.openedAt ? <Eye className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{email.campaignName}</p>
+                          <p className="text-xs text-muted-foreground capitalize">{email.templateType.replace(/-/g, ' ')}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">
+                            {email.sentAt ? format(new Date(email.sentAt), "MMM dd, HH:mm") : 'N/A'}
+                          </p>
+                          {email.openedAt && (
+                            <p className="text-xs text-green-600">Opened</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-8">No emails sent to this member</p>
+                )}
+              </TabsContent>
+
+              {/* Community Tab */}
+              <TabsContent value="community" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm text-purple-700">Community Posts ({fullProfileData.communityPosts.length})</h3>
+                </div>
+                {fullProfileData.communityPosts.length > 0 ? (
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                    {fullProfileData.communityPosts.map((post: any) => (
+                      <div key={post.id} className="p-4 bg-white rounded-lg border border-gray-100 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">{post.category || 'General'}</Badge>
+                          <p className="text-xs text-muted-foreground">
+                            {post.createdAt ? format(new Date(post.createdAt), "MMM dd, yyyy") : 'N/A'}
+                          </p>
+                        </div>
+                        <p className="text-sm text-gray-700">{post.content}</p>
+                        {post.imageUrl && (
+                          <img 
+                            src={post.imageUrl} 
+                            alt="Post image" 
+                            className="w-full max-h-40 object-cover rounded-lg"
+                          />
+                        )}
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>{post.likeCount || 0} likes</span>
+                          <span>{post.commentCount || 0} comments</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-8">No community posts</p>
+                )}
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-8">Unable to load profile data</p>
+          )}
+
+          <div className="flex justify-between items-center pt-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setSelectedMember(fullProfileMember);
+                setMemberViewMode('view');
+                setFullProfileMember(null);
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Quick View
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => setFullProfileMember(null)}
+            >
+              Close
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>
