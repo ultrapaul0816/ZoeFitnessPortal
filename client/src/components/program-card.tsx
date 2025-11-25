@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Target, Baby } from "lucide-react";
+import programCoverFallback from "@assets/program-cover.png";
 
 interface ProgramCardProps {
   memberProgram: any;
@@ -11,12 +13,15 @@ interface ProgramCardProps {
 export default function ProgramCard({ memberProgram, userId }: ProgramCardProps) {
   const { program } = memberProgram;
   const [, navigate] = useLocation();
+  const [imgError, setImgError] = useState(false);
 
   const handleStartProgram = () => {
     if (program.name === "Your Postpartum Strength Recovery Program") {
       navigate("/heal-your-core");
     }
   };
+
+  const imageUrl = imgError || !program.imageUrl ? programCoverFallback : program.imageUrl;
 
   return (
     <Card 
@@ -26,9 +31,10 @@ export default function ProgramCard({ memberProgram, userId }: ProgramCardProps)
       {/* Program Cover Image */}
       <div className="relative p-3">
         <img
-          src={program.imageUrl}
+          src={imageUrl}
           alt={`${program.name} program`}
           className="w-full h-auto rounded-lg"
+          onError={() => setImgError(true)}
         />
       </div>
 
