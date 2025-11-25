@@ -4025,21 +4025,21 @@ class DatabaseStorage implements IStorage {
       .orderBy(desc(workoutCompletions.completedAt))
       .limit(20);
 
-    // Get workout names
-    const workoutIds = Array.from(new Set(results.map(r => r.workoutId)));
-    const workoutNames = await this.db
-      .select({ id: workouts.id, name: workouts.name })
-      .from(workouts)
-      .where(inArray(workouts.id, workoutIds));
-    
-    const nameMap = new Map(workoutNames.map(w => [w.id, w.name]));
+    // Parse workout ID to readable name (e.g., "week1-day1" → "Week 1, Day 1")
+    const parseWorkoutName = (workoutId: string): string => {
+      const match = workoutId.match(/week(\d+)-day(\d+)/i);
+      if (match) {
+        return `Week ${match[1]}, Day ${match[2]}`;
+      }
+      return workoutId;
+    };
 
     return results.map(r => ({
       id: r.id,
       firstName: r.firstName,
       lastName: r.lastName,
       email: r.email,
-      workoutName: nameMap.get(r.workoutId) || 'Unknown Workout',
+      workoutName: parseWorkoutName(r.workoutId),
       completedAt: r.completedAt,
     }));
   }
