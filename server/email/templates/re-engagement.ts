@@ -1,7 +1,7 @@
 import type { EmailTemplate, ReEngagementEmailData } from './base';
 
 export function createReEngagementEmail(data: ReEngagementEmailData): EmailTemplate {
-  const { firstName, lastLoginDays, programProgress } = data;
+  const { firstName, programProgress } = data;
 
   const html = `
 <!DOCTYPE html>
@@ -17,7 +17,7 @@ export function createReEngagementEmail(data: ReEngagementEmailData): EmailTempl
       <td align="center" style="padding: 40px 20px;">
         <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <tr>
-            <td style="background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
+            <td style="background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
               <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
                 We Miss You, ${firstName}! 💕
               </h1>
@@ -31,30 +31,39 @@ export function createReEngagementEmail(data: ReEngagementEmailData): EmailTempl
               </p>
               
               <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                It's been ${lastLoginDays} days since we last saw you, and we wanted to check in. Life with a little one is beautifully chaotic—we get it! But remember, taking even 20 minutes for yourself isn't selfish, it's essential.
+                It's been a little while since we last saw you, and we just wanted to say—we're here whenever you're ready! Life with a little one is beautifully chaotic, and we completely understand.
               </p>
               
-              ${programProgress !== undefined ? `
+              <div style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border-left: 4px solid #ec4899; padding: 20px; border-radius: 8px; margin: 0 0 20px;">
+                <p style="color: #9d174d; font-size: 14px; line-height: 1.6; margin: 0; font-weight: 600;">
+                  💡 Quick Restart Idea
+                </p>
+                <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 8px 0 0;">
+                  Just 10 minutes today is all it takes. Pick any workout and press play—no pressure to be perfect, just show up for yourself. Your body will thank you!
+                </p>
+              </div>
+              
+              ${programProgress !== undefined && programProgress > 0 ? `
               <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 0 0 20px;">
                 <p style="color: #78350f; font-size: 14px; line-height: 1.6; margin: 0; font-weight: 600;">
                   📊 Your Progress
                 </p>
                 <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 8px 0 0;">
-                  You're ${programProgress}% through your program. You've already come so far—let's keep that momentum going!
+                  You're ${programProgress}% through your program. You've already done the hard part—getting started. Let's pick up where you left off!
                 </p>
               </div>
               ` : ''}
               
               <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 30px;">
-                Your program is waiting for you, and there's no pressure to be perfect. Just show up for yourself today—even if it's just to stretch or breathe. You've got this, mama. 💪
+                Remember, every mama's journey is different. There's no "falling behind"—only moving forward at your own pace. You've got this! 💪
               </p>
               
               <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 30px;">
                 <tr>
                   <td align="center">
                     <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard" 
-                       style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
-                      Continue Your Journey
+                       style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%); color: #ffffff; text-decoration: none; padding: 18px 40px; border-radius: 30px; font-size: 18px; font-weight: 700; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); text-transform: uppercase; letter-spacing: 0.5px;">
+                      Start My Next Workout →
                     </a>
                   </td>
                 </tr>
@@ -88,11 +97,13 @@ export function createReEngagementEmail(data: ReEngagementEmailData): EmailTempl
   const text = `
 Hi ${firstName},
 
-It's been ${lastLoginDays} days since we last saw you, and we wanted to check in. Life with a little one is beautifully chaotic—we get it! But remember, taking even 20 minutes for yourself isn't selfish, it's essential.
+It's been a little while since we last saw you, and we just wanted to say—we're here whenever you're ready! Life with a little one is beautifully chaotic, and we completely understand.
 
-${programProgress !== undefined ? `Your Progress: You're ${programProgress}% through your program. You've already come so far—let's keep that momentum going!\n\n` : ''}Your program is waiting for you, and there's no pressure to be perfect. Just show up for yourself today—even if it's just to stretch or breathe. You've got this, mama.
+💡 Quick Restart Idea: Just 10 minutes today is all it takes. Pick any workout and press play—no pressure to be perfect, just show up for yourself. Your body will thank you!
 
-Continue your journey: ${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard
+${programProgress !== undefined && programProgress > 0 ? `Your Progress: You're ${programProgress}% through your program. You've already done the hard part—getting started. Let's pick up where you left off!\n\n` : ''}Remember, every mama's journey is different. There's no "falling behind"—only moving forward at your own pace. You've got this!
+
+Start your next workout: ${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard
 
 Rooting for you always,
 Zoe & The Team
@@ -101,7 +112,7 @@ Zoe & The Team
   `.trim();
 
   return {
-    subject: `We miss you, ${firstName}! Your strength journey is waiting 💕`,
+    subject: `We miss you, ${firstName}! Ready to jump back in? 💕`,
     html,
     text,
   };
