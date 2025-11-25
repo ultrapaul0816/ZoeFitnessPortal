@@ -75,6 +75,12 @@ import {
   emailAutomationRules,
   passwordResetCodes,
   userCheckins,
+  workoutProgramContent,
+  workoutContentExercises,
+  WorkoutProgramContent,
+  WorkoutContentExercise,
+  InsertWorkoutProgramContent,
+  InsertWorkoutContentExercise,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -339,6 +345,17 @@ export interface IStorage {
     popularGoals: { goal: string; count: number }[];
     checkinFrequency: { period: string; count: number }[];
   }>;
+
+  // Workout Program Content (database-driven workout data)
+  getWorkoutProgramContent(): Promise<WorkoutProgramContent[]>;
+  getWorkoutProgramContentByWeek(week: number): Promise<WorkoutProgramContent | undefined>;
+  getWorkoutContentExercises(programContentId: string): Promise<WorkoutContentExercise[]>;
+  getFullWorkoutPrograms(): Promise<Array<WorkoutProgramContent & { exercises: WorkoutContentExercise[] }>>;
+  updateWorkoutProgramContent(id: string, updates: Partial<InsertWorkoutProgramContent>): Promise<WorkoutProgramContent | undefined>;
+  updateWorkoutContentExercise(id: string, updates: Partial<InsertWorkoutContentExercise>): Promise<WorkoutContentExercise | undefined>;
+  createWorkoutContentExercise(exercise: InsertWorkoutContentExercise): Promise<WorkoutContentExercise>;
+  deleteWorkoutContentExercise(id: string): Promise<boolean>;
+  reorderWorkoutContentExercises(programContentId: string, sectionType: string, exerciseIds: string[]): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -1823,6 +1840,43 @@ export class MemStorage implements IStorage {
       popularGoals: [],
       checkinFrequency: [],
     };
+  }
+
+  // Workout Program Content (MemStorage stubs - not used in production)
+  async getWorkoutProgramContent(): Promise<WorkoutProgramContent[]> {
+    return [];
+  }
+
+  async getWorkoutProgramContentByWeek(week: number): Promise<WorkoutProgramContent | undefined> {
+    return undefined;
+  }
+
+  async getWorkoutContentExercises(programContentId: string): Promise<WorkoutContentExercise[]> {
+    return [];
+  }
+
+  async getFullWorkoutPrograms(): Promise<Array<WorkoutProgramContent & { exercises: WorkoutContentExercise[] }>> {
+    return [];
+  }
+
+  async updateWorkoutProgramContent(id: string, updates: Partial<InsertWorkoutProgramContent>): Promise<WorkoutProgramContent | undefined> {
+    return undefined;
+  }
+
+  async updateWorkoutContentExercise(id: string, updates: Partial<InsertWorkoutContentExercise>): Promise<WorkoutContentExercise | undefined> {
+    return undefined;
+  }
+
+  async createWorkoutContentExercise(exercise: InsertWorkoutContentExercise): Promise<WorkoutContentExercise> {
+    throw new Error("Workout content not supported in MemStorage");
+  }
+
+  async deleteWorkoutContentExercise(id: string): Promise<boolean> {
+    return false;
+  }
+
+  async reorderWorkoutContentExercises(programContentId: string, sectionType: string, exerciseIds: string[]): Promise<void> {
+    // No-op
   }
 }
 
@@ -3397,6 +3451,92 @@ class DatabaseStorage implements IStorage {
       popularGoals,
       checkinFrequency,
     };
+  }
+
+  // Workout Program Content Methods
+  async getWorkoutProgramContent(): Promise<WorkoutProgramContent[]> {
+    return await this.db
+      .select()
+      .from(workoutProgramContent)
+      .where(eq(workoutProgramContent.isActive, true))
+      .orderBy(asc(workoutProgramContent.week));
+  }
+
+  async getWorkoutProgramContentByWeek(week: number): Promise<WorkoutProgramContent | undefined> {
+    const results = await this.db
+      .select()
+      .from(workoutProgramContent)
+      .where(eq(workoutProgramContent.week, week));
+    return results[0];
+  }
+
+  async getWorkoutContentExercises(programContentId: string): Promise<WorkoutContentExercise[]> {
+    return await this.db
+      .select()
+      .from(workoutContentExercises)
+      .where(eq(workoutContentExercises.programContentId, programContentId))
+      .orderBy(asc(workoutContentExercises.sectionType), asc(workoutContentExercises.orderNum));
+  }
+
+  async getFullWorkoutPrograms(): Promise<Array<WorkoutProgramContent & { exercises: WorkoutContentExercise[] }>> {
+    const programs = await this.getWorkoutProgramContent();
+    const result: Array<WorkoutProgramContent & { exercises: WorkoutContentExercise[] }> = [];
+    
+    for (const program of programs) {
+      const exercises = await this.getWorkoutContentExercises(program.id);
+      result.push({ ...program, exercises });
+    }
+    
+    return result;
+  }
+
+  async updateWorkoutProgramContent(id: string, updates: Partial<InsertWorkoutProgramContent>): Promise<WorkoutProgramContent | undefined> {
+    const results = await this.db
+      .update(workoutProgramContent)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(workoutProgramContent.id, id))
+      .returning();
+    return results[0];
+  }
+
+  async updateWorkoutContentExercise(id: string, updates: Partial<InsertWorkoutContentExercise>): Promise<WorkoutContentExercise | undefined> {
+    const results = await this.db
+      .update(workoutContentExercises)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(workoutContentExercises.id, id))
+      .returning();
+    return results[0];
+  }
+
+  async createWorkoutContentExercise(exercise: InsertWorkoutContentExercise): Promise<WorkoutContentExercise> {
+    const results = await this.db
+      .insert(workoutContentExercises)
+      .values(exercise)
+      .returning();
+    return results[0];
+  }
+
+  async deleteWorkoutContentExercise(id: string): Promise<boolean> {
+    const results = await this.db
+      .delete(workoutContentExercises)
+      .where(eq(workoutContentExercises.id, id))
+      .returning();
+    return results.length > 0;
+  }
+
+  async reorderWorkoutContentExercises(programContentId: string, sectionType: string, exerciseIds: string[]): Promise<void> {
+    for (let i = 0; i < exerciseIds.length; i++) {
+      await this.db
+        .update(workoutContentExercises)
+        .set({ orderNum: i + 1, updatedAt: new Date() })
+        .where(
+          and(
+            eq(workoutContentExercises.id, exerciseIds[i]),
+            eq(workoutContentExercises.programContentId, programContentId),
+            eq(workoutContentExercises.sectionType, sectionType)
+          )
+        );
+    }
   }
 }
 

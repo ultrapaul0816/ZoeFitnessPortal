@@ -1012,6 +1012,159 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Workout Program Content API (database-driven workout data)
+  app.get("/api/workout-content", async (req, res) => {
+    try {
+      const programs = await storage.getFullWorkoutPrograms();
+      res.json(programs);
+    } catch (error) {
+      console.error("Failed to fetch workout content:", error);
+      res.status(500).json({ message: "Failed to fetch workout content" });
+    }
+  });
+
+  app.get("/api/workout-content/:week", async (req, res) => {
+    try {
+      const week = parseInt(req.params.week, 10);
+      if (isNaN(week) || week < 1 || week > 6) {
+        return res.status(400).json({ message: "Invalid week number" });
+      }
+      
+      const program = await storage.getWorkoutProgramContentByWeek(week);
+      if (!program) {
+        return res.status(404).json({ message: "Program not found" });
+      }
+      
+      const exercises = await storage.getWorkoutContentExercises(program.id);
+      res.json({ ...program, exercises });
+    } catch (error) {
+      console.error("Failed to fetch workout content for week:", error);
+      res.status(500).json({ message: "Failed to fetch workout content" });
+    }
+  });
+
+  // Admin endpoints for workout content management
+  app.patch("/api/admin/workout-content/:id", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+      }
+      
+      const { id } = req.params;
+      const updates = req.body;
+      const updated = await storage.updateWorkoutProgramContent(id, updates);
+      
+      if (!updated) {
+        return res.status(404).json({ message: "Program content not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Failed to update workout content:", error);
+      res.status(500).json({ message: "Failed to update workout content" });
+    }
+  });
+
+  app.patch("/api/admin/workout-exercises/:id", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+      }
+      
+      const { id } = req.params;
+      const updates = req.body;
+      const updated = await storage.updateWorkoutContentExercise(id, updates);
+      
+      if (!updated) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Failed to update exercise:", error);
+      res.status(500).json({ message: "Failed to update exercise" });
+    }
+  });
+
+  app.post("/api/admin/workout-exercises", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+      }
+      
+      const exercise = await storage.createWorkoutContentExercise(req.body);
+      res.json(exercise);
+    } catch (error) {
+      console.error("Failed to create exercise:", error);
+      res.status(500).json({ message: "Failed to create exercise" });
+    }
+  });
+
+  app.delete("/api/admin/workout-exercises/:id", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+      }
+      
+      const { id } = req.params;
+      const deleted = await storage.deleteWorkoutContentExercise(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Failed to delete exercise:", error);
+      res.status(500).json({ message: "Failed to delete exercise" });
+    }
+  });
+
+  app.post("/api/admin/workout-exercises/reorder", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+      }
+      
+      const { programContentId, sectionType, exerciseIds } = req.body;
+      
+      if (!programContentId || !sectionType || !Array.isArray(exerciseIds)) {
+        return res.status(400).json({ message: "Invalid reorder request" });
+      }
+      
+      await storage.reorderWorkoutContentExercises(programContentId, sectionType, exerciseIds);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Failed to reorder exercises:", error);
+      res.status(500).json({ message: "Failed to reorder exercises" });
+    }
+  });
+
   // Program access control
   app.get("/api/program-access/:userId/:programId", async (req, res) => {
     try {
