@@ -32,9 +32,11 @@ Each card displays up to 5 members with quick-send email buttons. The Activity F
 The application provides a 6-week program with detailed exercises, coach notes, and YouTube video integration. Content is organized into collapsible, gradient-themed sections. Features include a "What's Next Tab" with a PDF progress tracker, a modernized Nutrition section, extensive profile personalization, and real-time profile completeness tracking with a progress banner. Program access is managed via both purchase and admin enrollment records. A "Progress Tracker" tab allows secure before/after photo uploads via Cloudinary. An Instagram-style Community Feed supports photo uploads, categories, week-based filtering, likes, comments, and Instagram sharing, with full CRUD operations and Cloudinary integration.
 
 **Today's Workout Feature**: A self-contained, immersive workout experience on the dashboard:
+- **Program Overview**: Each workout starts with clear info - focus area, duration (e.g., "15-20 minutes"), exercise count, and "How it works" instructions explaining what to expect
 - **YouTube Thumbnail Previews**: Each exercise shows a clickable video thumbnail that opens an embedded player dialog
+- **Prominent Reps/Duration**: Exercise instructions displayed in large, bold pink text on their own line for clarity
 - **Exercise-by-Exercise Tracking**: Checkbox for each exercise to track completion within the workout
-- **Workout Swap**: Quick "Swap" button to switch to alternative workouts from earlier weeks (for low-energy days)
+- **Zoe's Personalized Check-in**: Instead of a generic "Swap" button, Zoe encourages consistency with messaging like "I don't usually let my mamas skip their scheduled workout!" while offering limited flexibility (2 swaps per week max)
 - **Star Rating**: After completing all exercises, rate the workout difficulty (1-5 stars) before saving
 - **Weekly Progress Bar**: Visual header showing X/Y workouts completed this week
 - **Tomorrow Preview**: "Peek at Tomorrow's Workout" shows upcoming exercises
