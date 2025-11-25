@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown } from "lucide-react";
+import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown, ClipboardCheck } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ProgramCard from "@/components/program-card";
@@ -16,8 +16,37 @@ import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
 import ProfileSettings from "@/components/profile-settings";
 import ProfileBanner from "@/components/profile-banner";
+import CheckinModal from "@/components/checkin-modal";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
+// Determine if we should show the check-in modal based on user data
+function shouldPromptCheckin(user: UserType): boolean {
+  const loginCount = user.loginCount || 0;
+  const lastPrompt = user.lastCheckinPromptAt ? new Date(user.lastCheckinPromptAt) : null;
+  
+  // Check if profile is incomplete (missing country or postpartum weeks)
+  const isProfileIncomplete = !user.country || !user.postpartumWeeks;
+  
+  // Calculate days since last prompt
+  const daysSinceLastPrompt = lastPrompt 
+    ? Math.floor((Date.now() - lastPrompt.getTime()) / (1000 * 60 * 60 * 24))
+    : Infinity;
+  
+  // For users with incomplete profiles: prompt every 2-3 logins or if 3+ days since last prompt
+  if (isProfileIncomplete) {
+    // On first few logins, prompt on login 2 and 5
+    if (loginCount === 2 || loginCount === 5) return true;
+    // After that, prompt if 3+ days since last prompt
+    if (daysSinceLastPrompt >= 3) return true;
+  } else {
+    // For complete profiles: less frequent prompting
+    // Prompt on login 3 and every 7 days after
+    if (loginCount === 3) return true;
+    if (daysSinceLastPrompt >= 7) return true;
+  }
+  
+  return false;
+}
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -27,6 +56,8 @@ export default function Dashboard() {
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [showPurchasesDialog, setShowPurchasesDialog] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
+  const [showCheckinModal, setShowCheckinModal] = useState(false);
+  const [checkinPromptChecked, setCheckinPromptChecked] = useState(false);
   const [profileData, setProfileData] = useState({
     fullName: "",
     email: "",
@@ -72,6 +103,16 @@ export default function Dashboard() {
             fullName: `${data.user.firstName} ${data.user.lastName}`,
             email: data.user.email
           }));
+          
+          // Determine if we should show the check-in modal
+          if (!checkinPromptChecked) {
+            setCheckinPromptChecked(true);
+            const shouldShowCheckin = shouldPromptCheckin(data.user);
+            if (shouldShowCheckin) {
+              // Delay slightly so user sees the dashboard first
+              setTimeout(() => setShowCheckinModal(true), 1500);
+            }
+          }
         } else {
           // No valid session - redirect to login
           localStorage.removeItem("user");
@@ -683,6 +724,32 @@ export default function Dashboard() {
           initialView={currentView}
         />
       )}
+
+      {/* Check-in Modal */}
+      {showCheckinModal && (
+        <CheckinModal
+          isOpen={showCheckinModal}
+          onClose={() => setShowCheckinModal(false)}
+          onSkip={() => setShowCheckinModal(false)}
+          userId={user.id}
+          existingCountry={user.country}
+          existingInstagramHandle={user.instagramHandle}
+          existingPostpartumWeeks={user.postpartumWeeks}
+        />
+      )}
+
+      {/* Floating Check-in Button */}
+      <button
+        onClick={() => setShowCheckinModal(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group z-40 hover:scale-110"
+        aria-label="Log a check-in"
+        data-testid="button-open-checkin"
+      >
+        <ClipboardCheck className="w-6 h-6 text-white" />
+        <span className="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          Log Check-in
+        </span>
+      </button>
     </div>
   );
 }
