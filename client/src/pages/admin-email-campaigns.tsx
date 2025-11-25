@@ -12,7 +12,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Send, Users, Eye, TestTube, Loader2, Edit, TrendingUp, Calendar, Check, ArrowLeft } from "lucide-react";
+import { Mail, Send, Users, Eye, TestTube, Loader2, Edit, TrendingUp, Calendar, Check, ArrowLeft, Clock } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
 
 interface EmailTemplate {
@@ -75,6 +79,10 @@ export default function AdminEmailCampaigns() {
     countries: [] as string[],
     pendingSignup: false,
   });
+  
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
+  const [scheduledTime, setScheduledTime] = useState("09:00");
 
   const availableCountries = ["India", "USA", "UK", "Canada", "Australia", "Singapore", "UAE"];
   const dormantDaysPresets = [
@@ -176,22 +184,26 @@ export default function AdminEmailCampaigns() {
 
   // Send campaign mutation
   const sendCampaignMutation = useMutation({
-    mutationFn: async ({ templateId, campaignName, audienceFilter }: {
+    mutationFn: async ({ templateId, campaignName, audienceFilter, scheduledFor }: {
       templateId: string;
       campaignName: string;
       audienceFilter: any;
+      scheduledFor?: Date;
     }) => {
       const response = await apiRequest("POST", `/api/admin/email-templates/${templateId}/send-campaign`, {
         campaignName,
         audienceFilter,
+        scheduledFor: scheduledFor?.toISOString(),
       });
-      return await response.json() as { success: boolean; recipientCount: number; message: string };
+      return await response.json() as { success: boolean; recipientCount: number; message: string; scheduled?: boolean };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/email-campaigns"] });
       toast({
-        title: "Campaign Sending",
-        description: `Email campaign is being sent to ${data.recipientCount} recipients`,
+        title: data.scheduled ? "Campaign Scheduled" : "Campaign Sending",
+        description: data.scheduled 
+          ? `Email campaign scheduled for ${data.recipientCount} recipients`
+          : `Email campaign is being sent to ${data.recipientCount} recipients`,
       });
       setShowPreviewDialog(false);
       setCampaignName("");
@@ -202,6 +214,9 @@ export default function AdminEmailCampaigns() {
         pendingSignup: false,
       });
       setCampaignPreviewData(null);
+      setIsScheduled(false);
+      setScheduledDate(undefined);
+      setScheduledTime("09:00");
     },
     onError: (error: any) => {
       toast({
@@ -316,10 +331,18 @@ export default function AdminEmailCampaigns() {
       audienceFilter.pendingSignup = true;
     }
 
+    let scheduledFor: Date | undefined;
+    if (isScheduled && scheduledDate) {
+      const [hours, minutes] = scheduledTime.split(':').map(Number);
+      scheduledFor = new Date(scheduledDate);
+      scheduledFor.setHours(hours, minutes, 0, 0);
+    }
+
     sendCampaignMutation.mutate({
       templateId: selectedTemplateId,
       campaignName,
       audienceFilter,
+      scheduledFor,
     });
   };
 
@@ -838,9 +861,103 @@ export default function AdminEmailCampaigns() {
               </div>
             </div>
 
+            {/* Schedule Campaign Section */}
+            <div className="space-y-4 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="schedule-campaign"
+                  checked={isScheduled}
+                  onCheckedChange={(checked) => {
+                    setIsScheduled(!!checked);
+                    if (!checked) {
+                      setScheduledDate(undefined);
+                      setScheduledTime("09:00");
+                    }
+                  }}
+                  data-testid="checkbox-schedule"
+                />
+                <div>
+                  <label htmlFor="schedule-campaign" className="text-sm font-medium text-blue-800 cursor-pointer flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Schedule for Later
+                  </label>
+                  <p className="text-xs text-blue-600 mt-0.5">
+                    Send this campaign at a specific date and time
+                  </p>
+                </div>
+              </div>
+
+              {isScheduled && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <Label className="text-blue-800">Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal mt-1",
+                            !scheduledDate && "text-muted-foreground"
+                          )}
+                          data-testid="button-select-date"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {scheduledDate ? format(scheduledDate, "PPP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={scheduledDate}
+                          onSelect={setScheduledDate}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div>
+                    <Label className="text-blue-800">Time</Label>
+                    <Select value={scheduledTime} onValueChange={setScheduledTime}>
+                      <SelectTrigger className="mt-1" data-testid="select-time">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[
+                          "06:00", "07:00", "08:00", "09:00", "10:00", "11:00",
+                          "12:00", "13:00", "14:00", "15:00", "16:00", "17:00",
+                          "18:00", "19:00", "20:00", "21:00"
+                        ].map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time.split(':')[0] >= '12' 
+                              ? `${parseInt(time.split(':')[0]) === 12 ? 12 : parseInt(time.split(':')[0]) - 12}:00 PM`
+                              : `${parseInt(time.split(':')[0])}:00 AM`
+                            }
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {scheduledDate && (
+                    <div className="md:col-span-2">
+                      <p className="text-sm text-blue-700 bg-blue-100 p-2 rounded flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        Campaign will be sent on {format(scheduledDate, "PPPP")} at {scheduledTime.split(':')[0] >= '12' 
+                          ? `${parseInt(scheduledTime.split(':')[0]) === 12 ? 12 : parseInt(scheduledTime.split(':')[0]) - 12}:00 PM`
+                          : `${parseInt(scheduledTime.split(':')[0])}:00 AM`
+                        }
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             <Button
               onClick={handlePreviewCampaign}
-              disabled={previewCampaignMutation.isPending}
+              disabled={previewCampaignMutation.isPending || (isScheduled && !scheduledDate)}
               className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
               data-testid="button-preview-campaign"
             >
