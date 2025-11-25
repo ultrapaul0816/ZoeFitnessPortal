@@ -21,6 +21,7 @@ interface Analytics {
     activeUsers: { today: number; last7Days: number; last30Days: number; last90Days: number };
     dormantUsers: { today: number; dormant7Days: number; dormant30Days: number; dormant90Days: number };
     averageLoginFrequency: number;
+    trackingStartDate: string | null;
   };
   programPerformance: {
     totalWorkoutCompletions: number;
@@ -314,6 +315,19 @@ export default function AdminAnalytics() {
                 <CardDescription>Active and dormant user metrics across different time periods</CardDescription>
               </CardHeader>
               <CardContent>
+                {analytics.engagement.trackingStartDate && (
+                  <Alert className="mb-6 border-blue-200 bg-blue-50" data-testid="alert-tracking-start">
+                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    <AlertTitle className="text-blue-900 font-semibold">Data Tracking Information</AlertTitle>
+                    <AlertDescription className="text-blue-800">
+                      Activity tracking started on {new Date(analytics.engagement.trackingStartDate).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })} ({Math.ceil((new Date().getTime() - new Date(analytics.engagement.trackingStartDate).getTime()) / (1000 * 60 * 60 * 24))} days ago)
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>

@@ -1299,6 +1299,12 @@ export class MemStorage implements IStorage {
       dormant90Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < ninetyDaysAgo).length,
     };
 
+    // Find earliest tracking date
+    const usersWithLogins = users.filter(u => u.lastLoginAt);
+    const trackingStartDate = usersWithLogins.length > 0
+      ? new Date(Math.min(...usersWithLogins.map(u => u.lastLoginAt!.getTime())))
+      : null;
+
     // Program Performance
     const totalWorkoutCompletions = workoutCompletions.length;
     const averageWorkoutsPerUser = users.length > 0 ? totalWorkoutCompletions / users.length : 0;
@@ -1385,6 +1391,7 @@ export class MemStorage implements IStorage {
         activeUsers,
         dormantUsers,
         averageLoginFrequency: 0, // Would need more granular tracking
+        trackingStartDate,
       },
       programPerformance: {
         totalWorkoutCompletions,
@@ -1945,6 +1952,12 @@ class DatabaseStorage implements IStorage {
       dormant90Days: users.filter(u => !u.lastLoginAt || u.lastLoginAt < ninetyDaysAgo).length,
     };
 
+    // Find earliest tracking date
+    const usersWithLogins = users.filter(u => u.lastLoginAt);
+    const trackingStartDate = usersWithLogins.length > 0
+      ? new Date(Math.min(...usersWithLogins.map(u => u.lastLoginAt!.getTime())))
+      : null;
+
     // Program Performance
     const totalWorkoutCompletions = allWorkoutCompletions.length;
     const averageWorkoutsPerUser = users.length > 0 ? totalWorkoutCompletions / users.length : 0;
@@ -2031,6 +2044,7 @@ class DatabaseStorage implements IStorage {
         activeUsers,
         dormantUsers,
         averageLoginFrequency: 0, // Would need more granular tracking
+        trackingStartDate,
       },
       programPerformance: {
         totalWorkoutCompletions,
