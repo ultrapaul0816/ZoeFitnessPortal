@@ -313,17 +313,7 @@ export default function Login() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center justify-between">
-                          <FormLabel className="text-gray-700 font-medium text-sm">Password</FormLabel>
-                          <button
-                            type="button"
-                            onClick={handleForgotPasswordOpen}
-                            className="text-xs text-pink-600 hover:text-pink-700 font-medium transition-colors"
-                            data-testid="link-login-with-otp"
-                          >
-                            Login with OTP
-                          </button>
-                        </div>
+                        <FormLabel className="text-gray-700 font-medium text-sm">Password</FormLabel>
                         <FormControl>
                           <Input
                             type="password"
@@ -426,10 +416,8 @@ export default function Login() {
                       </>
                     ) : (
                       <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                        </svg>
-                        <span>Sign In</span>
+                        <Lock className="w-4 h-4" />
+                        <span>Sign In with Password</span>
                       </>
                     )}
                   </Button>
@@ -437,7 +425,8 @@ export default function Login() {
               </form>
             </Form>
 
-            <div className="mt-8 text-center animate-in slide-in-from-bottom-4 fade-in duration-300">
+            {/* Divider */}
+            <div className="mt-6 animate-in slide-in-from-bottom-4 fade-in duration-300">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>
@@ -446,7 +435,27 @@ export default function Login() {
                   <span className="px-4 bg-white text-gray-500">or</span>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mt-6 leading-relaxed">
+            </div>
+
+            {/* Login with OTP Button - Equal prominence */}
+            <div className="mt-6 animate-in slide-in-from-bottom-4 fade-in duration-300">
+              <Button
+                type="button"
+                onClick={handleForgotPasswordOpen}
+                variant="outline"
+                className="w-full h-12 border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
+                data-testid="button-login-otp"
+              >
+                <Mail className="w-4 h-4" />
+                <span>Sign In with Email Code</span>
+              </Button>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                We'll send a 6-digit code to your email
+              </p>
+            </div>
+
+            <div className="mt-6 text-center animate-in slide-in-from-bottom-4 fade-in duration-300">
+              <p className="text-sm text-gray-600 leading-relaxed">
                 Need access?{" "}
                 <a
                   href="https://strongerwithzoe.in"
