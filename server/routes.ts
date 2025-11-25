@@ -22,6 +22,7 @@ import bcrypt from "bcrypt";
 import rateLimit from "express-rate-limit";
 import { emailService } from "./email/service";
 import { replaceTemplateVariables, generateUserVariables, generateSampleVariables } from "./email/template-variables";
+import OpenAI from "openai";
 
 // Rate limiting configurations
 const loginLimiter = rateLimit({
@@ -1107,6 +1108,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Failed to fetch workout progress:", error);
       res.status(500).json({ message: "Failed to fetch workout progress" });
+    }
+  });
+
+  // Ask Zoe AI Chat endpoint
+  app.post("/api/ask-zoe", async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const systemPrompt = `You are Zoe, a warm, supportive, and knowledgeable postpartum fitness coach. You specialize in helping new mothers recover their core strength safely and effectively through a 6-week program.
+
+Your personality:
+- Warm, encouraging, and empathetic
+- Understanding of the challenges new mothers face
+- Knowledgeable about postpartum recovery, diastasis recti, and pelvic floor health
+- Never judgmental, always supportive
+- Use casual, friendly language with occasional encouragement like "You've got this, mama!"
+
+Current user context:
+- Week ${context?.currentWeek || 1} of the 6-week program
+- Day ${context?.currentDay || 1} of this week
+- Total workouts completed: ${context?.workoutsCompleted || 0}
+- Current program: ${context?.currentProgram || "Foundation Building"}
+- Today's exercises: ${context?.exercises || "Core reconnection exercises"}
+
+Guidelines for responses:
+1. Keep responses concise (2-3 sentences max unless asked for detail)
+2. If they're feeling tired or stressed, suggest gentler Week 1 exercises or rest
+3. If asked about exercise form, explain briefly and encourage watching the video
+4. If asked to swap workouts, suggest alternatives from their current week or gentler options
+5. Always validate their feelings and remind them that recovery takes time
+6. Never give medical advice - encourage consulting their healthcare provider for medical concerns`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message }
+        ],
+        max_tokens: 300,
+        temperature: 0.7,
+      });
+
+      const reply = response.choices[0]?.message?.content || "I'm here to help! What would you like to know about your workout today?";
+      
+      res.json({ reply });
+    } catch (error) {
+      console.error("Ask Zoe error:", error);
+      res.status(500).json({ message: "Failed to get response from Zoe" });
     }
   });
 
