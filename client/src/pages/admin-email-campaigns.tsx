@@ -18,6 +18,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
+import AdminLayout from "@/components/admin/AdminLayout";
 
 interface EmailTemplate {
   id: string;
@@ -404,10 +405,14 @@ export default function AdminEmailCampaigns() {
     return { totalSent, totalOpens, openRate };
   };
 
+  const handleNavigate = (path: string) => {
+    setLocation(path);
+  };
+
   // Show loading state while session is being checked
   if (sessionLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
       </div>
     );
@@ -433,34 +438,38 @@ export default function AdminEmailCampaigns() {
 
   if (isLoadingTemplates) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
-      </div>
+      <AdminLayout
+        activeTab="email-campaigns"
+        onTabChange={() => setLocation("/admin")}
+        onNavigate={handleNavigate}
+      >
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Email Campaign Templates
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Select a template to preview, test, or send to your members
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            onClick={() => setLocation("/admin")}
-            variant="outline"
-            className="flex items-center gap-2"
-            data-testid="button-back-admin"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Admin
-          </Button>
+    <AdminLayout
+      activeTab="email-campaigns"
+      onTabChange={() => setLocation("/admin")}
+      onNavigate={handleNavigate}
+    >
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Mail className="w-8 h-8 text-pink-500" />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Email Campaign Templates
+              </h1>
+              <p className="text-gray-600 text-sm">
+                Select a template to preview, test, or send to your members
+              </p>
+            </div>
+          </div>
           <Button
             onClick={() => setLocation("/admin-automation-settings")}
             variant="outline"
@@ -468,23 +477,13 @@ export default function AdminEmailCampaigns() {
             data-testid="button-automation-settings"
           >
             <Mail className="w-4 h-4" />
-            Automation Settings
-          </Button>
-          <Button
-            onClick={() => setLocation("/admin-email-analytics")}
-            variant="outline"
-            className="flex items-center gap-2"
-            data-testid="button-view-analytics"
-          >
-            <TrendingUp className="w-4 h-4" />
-            View Analytics
+            Automation
           </Button>
         </div>
-      </div>
 
-      {/* Template Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {templates.map((template) => {
+        {/* Template Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {templates.map((template) => {
           const stats = getTemplateStats(template.type);
           return (
             <Card key={template.id} className="overflow-hidden border-2 hover:shadow-lg transition-shadow">
@@ -570,11 +569,11 @@ export default function AdminEmailCampaigns() {
               </CardContent>
             </Card>
           );
-        })}
-      </div>
+          })}
+        </div>
 
-      {/* Recent Campaigns */}
-      <div className="space-y-4">
+        {/* Recent Campaigns */}
+        <div className="space-y-4">
         <h2 className="text-xl font-semibold">Recent Campaigns</h2>
         
         {campaigns.length === 0 ? (
@@ -624,10 +623,10 @@ export default function AdminEmailCampaigns() {
             ))}
           </div>
         )}
-      </div>
+        </div>
 
-      {/* Preview Dialog */}
-      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        {/* Preview Dialog */}
+        <Dialog open={showPreview} onOpenChange={setShowPreview}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Email Preview</DialogTitle>
@@ -1182,6 +1181,7 @@ export default function AdminEmailCampaigns() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

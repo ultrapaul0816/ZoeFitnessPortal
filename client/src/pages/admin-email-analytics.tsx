@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@/hooks/use-session";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { ArrowLeft, Mail, TrendingUp, Users, Eye, Loader2, BarChart3 } from "lucide-react";
+import { Mail, TrendingUp, Users, Eye, Loader2, BarChart3 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { format } from "date-fns";
+import AdminLayout from "@/components/admin/AdminLayout";
 
 interface EmailAnalytics {
   overview: {
@@ -44,12 +44,16 @@ export default function AdminEmailAnalytics() {
 
   const { data: analytics, isLoading, isError } = useQuery<EmailAnalytics>({
     queryKey: ["/api/admin/analytics/email-campaigns"],
-    enabled: !sessionLoading && user !== null && user.isAdmin,
+    enabled: !sessionLoading && !!user && user.isAdmin,
   });
+
+  const handleNavigate = (path: string) => {
+    setLocation(path);
+  };
 
   if (sessionLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
       </div>
     );
@@ -65,80 +69,36 @@ export default function AdminEmailAnalytics() {
     return null;
   }
 
-  if (isLoading || !analytics) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-6">
-        <div className="container mx-auto max-w-7xl">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <BarChart3 className="w-8 h-8 text-pink-500" />
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                Email Campaign Analytics
-              </h1>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => setLocation("/admin")}
-                variant="outline"
-                data-testid="button-back-admin"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Admin
-              </Button>
-              <Button
-                onClick={() => setLocation("/admin-email-campaigns")}
-                variant="ghost"
-                data-testid="button-back-campaigns"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Campaigns
-              </Button>
-            </div>
+  const renderContent = () => {
+    if (isLoading || !analytics) {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 mb-6">
+            <BarChart3 className="w-8 h-8 text-pink-500" />
+            <h1 className="text-2xl font-bold text-gray-900">Email Campaign Analytics</h1>
           </div>
           <div className="flex items-center justify-center h-64">
             <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  const { overview, templateStats, recentCampaigns } = analytics;
+    const overview = analytics.overview;
+    const templateStats = analytics.templateStats;
+    const recentCampaigns = analytics.recentCampaigns;
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-6">
-      <div className="container mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <BarChart3 className="w-8 h-8 text-pink-500" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-              Email Campaign Analytics
-            </h1>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => setLocation("/admin")}
-              variant="outline"
-              data-testid="button-back-admin"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Admin
-            </Button>
-            <Button
-              onClick={() => setLocation("/admin-email-campaigns")}
-              variant="ghost"
-              data-testid="button-back-campaigns"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Campaigns
-            </Button>
-          </div>
+    return (
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <BarChart3 className="w-8 h-8 text-pink-500" />
+          <h1 className="text-2xl font-bold text-gray-900">Email Campaign Analytics</h1>
         </div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-pink-200 shadow-lg hover:shadow-xl transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
               <CardDescription className="text-sm font-medium text-gray-600">Total Campaigns</CardDescription>
             </CardHeader>
@@ -150,7 +110,7 @@ export default function AdminEmailAnalytics() {
             </CardContent>
           </Card>
 
-          <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
               <CardDescription className="text-sm font-medium text-gray-600">Total Sent</CardDescription>
             </CardHeader>
@@ -162,7 +122,7 @@ export default function AdminEmailAnalytics() {
             </CardContent>
           </Card>
 
-          <Card className="border-blue-200 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
               <CardDescription className="text-sm font-medium text-gray-600">Total Opens</CardDescription>
             </CardHeader>
@@ -174,7 +134,7 @@ export default function AdminEmailAnalytics() {
             </CardContent>
           </Card>
 
-          <Card className="border-green-200 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
               <CardDescription className="text-sm font-medium text-gray-600">Average Open Rate</CardDescription>
             </CardHeader>
@@ -188,11 +148,11 @@ export default function AdminEmailAnalytics() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Template Performance Chart */}
-          <Card className="shadow-lg">
+          <Card className="bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">Template Performance</CardTitle>
+              <CardTitle className="text-lg font-semibold">Template Performance</CardTitle>
               <CardDescription>Email opens by template type</CardDescription>
             </CardHeader>
             <CardContent>
@@ -211,9 +171,9 @@ export default function AdminEmailAnalytics() {
           </Card>
 
           {/* Open Rate Distribution */}
-          <Card className="shadow-lg">
+          <Card className="bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">Open Rate by Template</CardTitle>
+              <CardTitle className="text-lg font-semibold">Open Rate by Template</CardTitle>
               <CardDescription>Percentage breakdown</CardDescription>
             </CardHeader>
             <CardContent>
@@ -228,7 +188,7 @@ export default function AdminEmailAnalytics() {
                     outerRadius={100}
                     label={(entry) => `${entry.templateName}: ${entry.openRate}%`}
                   >
-                    {templateStats.map((_, index) => (
+                    {templateStats.map((_: typeof templateStats[0], index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -240,9 +200,9 @@ export default function AdminEmailAnalytics() {
         </div>
 
         {/* Template Statistics Table */}
-        <Card className="shadow-lg mb-8">
+        <Card className="bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Template Statistics</CardTitle>
+            <CardTitle className="text-lg font-semibold">Template Statistics</CardTitle>
             <CardDescription>Detailed performance metrics for each template</CardDescription>
           </CardHeader>
           <CardContent>
@@ -258,8 +218,8 @@ export default function AdminEmailAnalytics() {
                   </tr>
                 </thead>
                 <tbody>
-                  {templateStats.map((stat) => (
-                    <tr key={stat.templateId} className="border-b hover:bg-pink-50 transition-colors">
+                  {templateStats.map((stat: typeof templateStats[0]) => (
+                    <tr key={stat.templateId} className="border-b hover:bg-gray-50 transition-colors">
                       <td className="p-3 font-medium text-gray-900">{stat.templateName}</td>
                       <td className="p-3 text-right text-gray-700">{stat.campaigns}</td>
                       <td className="p-3 text-right text-gray-700">{stat.totalSent.toLocaleString()}</td>
@@ -278,9 +238,9 @@ export default function AdminEmailAnalytics() {
         </Card>
 
         {/* Recent Campaigns */}
-        <Card className="shadow-lg">
+        <Card className="bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Recent Campaigns</CardTitle>
+            <CardTitle className="text-lg font-semibold">Recent Campaigns</CardTitle>
             <CardDescription>Last 10 email campaigns sent</CardDescription>
           </CardHeader>
           <CardContent>
@@ -306,8 +266,8 @@ export default function AdminEmailAnalytics() {
                       </td>
                     </tr>
                   ) : (
-                    recentCampaigns.map((campaign) => (
-                      <tr key={campaign.id} className="border-b hover:bg-purple-50 transition-colors">
+                    recentCampaigns.map((campaign: typeof recentCampaigns[0]) => (
+                      <tr key={campaign.id} className="border-b hover:bg-gray-50 transition-colors">
                         <td className="p-3 font-medium text-gray-900">{campaign.name}</td>
                         <td className="p-3 text-gray-700 capitalize">{campaign.templateType.replace('-', ' ')}</td>
                         <td className="p-3">
@@ -340,6 +300,16 @@ export default function AdminEmailAnalytics() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    );
+  };
+
+  return (
+    <AdminLayout
+      activeTab="email-analytics"
+      onTabChange={() => setLocation("/admin")}
+      onNavigate={handleNavigate}
+    >
+      {renderContent()}
+    </AdminLayout>
   );
 }
