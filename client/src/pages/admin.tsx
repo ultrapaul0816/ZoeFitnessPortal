@@ -149,10 +149,14 @@ export default function Admin() {
     email: string;
     lastLoginAt: string | null;
     daysSinceLogin: number;
+    lastReengagementEmailAt: string | null;
   }>>({
     queryKey: ["/api/admin/actionable/dormant-members"],
     enabled: !!user?.isAdmin,
   });
+  
+  // State for bulk selection of inactive members
+  const [selectedInactiveMembers, setSelectedInactiveMembers] = useState<Set<string>>(new Set());
 
   const { data: membersWithoutPhotos = [] } = useQuery<Array<{
     id: string;
@@ -737,46 +741,122 @@ export default function Admin() {
           {dormantMembers.length > 0 && (
             <Card className="border-orange-200 bg-orange-50/50">
               <CardHeader className="pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-orange-100">
-                    <UserMinus className="w-4 h-4 text-orange-600" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-orange-100">
+                      <UserMinus className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <CardTitle className="text-sm font-medium text-orange-900">Inactive Members</CardTitle>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="w-3 h-3 text-orange-500 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-xs">Members showing "999 days" have never logged in since we started tracking logins. Activity is tracked from when login tracking was implemented.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <CardDescription className="text-xs text-orange-700">
+                        {dormantMembers.length} member{dormantMembers.length !== 1 ? 's' : ''} inactive 7+ days
+                      </CardDescription>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-sm font-medium text-orange-900">Inactive Members</CardTitle>
-                    <CardDescription className="text-xs text-orange-700">
-                      {dormantMembers.length} member{dormantMembers.length !== 1 ? 's' : ''} inactive 7+ days
-                    </CardDescription>
-                  </div>
+                  {selectedInactiveMembers.size > 0 && (
+                    <Button
+                      size="sm"
+                      className="bg-orange-500 hover:bg-orange-600 text-white text-xs"
+                      onClick={() => {
+                        const selectedIds = Array.from(selectedInactiveMembers);
+                        selectedIds.forEach(userId => {
+                          previewEmailMutation.mutate({ userId, emailType: 're-engagement' });
+                        });
+                      }}
+                      disabled={previewEmailMutation.isPending}
+                      data-testid="bulk-send-reengagement"
+                    >
+                      <Send className="w-3 h-3 mr-1" />
+                      Send to {selectedInactiveMembers.size}
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {dormantMembers.slice(0, 5).map((member) => (
-                    <div 
-                      key={member.id} 
-                      className="flex items-center justify-between p-2 bg-white rounded-lg border border-orange-100"
-                      data-testid={`dormant-member-${member.id}`}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-gray-800 truncate">
-                          {member.firstName} {member.lastName}
-                        </p>
-                        <p className="text-xs text-orange-600">
-                          {member.daysSinceLogin} days inactive
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
-                        onClick={() => previewEmailMutation.mutate({ userId: member.id, emailType: 're-engagement' })}
-                        disabled={previewEmailMutation.isPending}
-                        data-testid={`send-reengagement-${member.id}`}
+                  {dormantMembers.slice(0, 5).map((member) => {
+                    const lastEmailDate = member.lastReengagementEmailAt ? new Date(member.lastReengagementEmailAt) : null;
+                    const daysSinceEmail = lastEmailDate 
+                      ? Math.floor((new Date().getTime() - lastEmailDate.getTime()) / (1000 * 60 * 60 * 24))
+                      : null;
+                    const canSendEmail = daysSinceEmail === null || daysSinceEmail >= 7;
+                    const isSelected = selectedInactiveMembers.has(member.id);
+                    
+                    return (
+                      <div 
+                        key={member.id} 
+                        className={`flex items-center gap-2 p-2 bg-white rounded-lg border ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-orange-100'}`}
+                        data-testid={`dormant-member-${member.id}`}
                       >
-                        <Send className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => {
+                            const newSet = new Set(selectedInactiveMembers);
+                            if (e.target.checked) {
+                              newSet.add(member.id);
+                            } else {
+                              newSet.delete(member.id);
+                            }
+                            setSelectedInactiveMembers(newSet);
+                          }}
+                          disabled={!canSendEmail}
+                          className="w-4 h-4 rounded border-orange-300 text-orange-500 focus:ring-orange-500 disabled:opacity-50"
+                          data-testid={`checkbox-dormant-${member.id}`}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {member.firstName} {member.lastName}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-orange-600">
+                              {member.daysSinceLogin} days inactive
+                            </p>
+                            {daysSinceEmail !== null && daysSinceEmail < 7 && (
+                              <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-500">
+                                Sent {daysSinceEmail}d ago
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className={`h-8 w-8 p-0 ${canSendEmail ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-100' : 'text-gray-400 cursor-not-allowed'}`}
+                                  onClick={() => canSendEmail && previewEmailMutation.mutate({ userId: member.id, emailType: 're-engagement' })}
+                                  disabled={previewEmailMutation.isPending || !canSendEmail}
+                                  data-testid={`send-reengagement-${member.id}`}
+                                >
+                                  <Send className="w-4 h-4" />
+                                </Button>
+                              </span>
+                            </TooltipTrigger>
+                            {!canSendEmail && (
+                              <TooltipContent>
+                                <p className="text-xs">Cooldown: Wait {7 - (daysSinceEmail || 0)} more days</p>
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    );
+                  })}
                 </div>
                 {dormantMembers.length > 5 && (
                   <p className="text-xs text-orange-600 mt-2 text-center">
