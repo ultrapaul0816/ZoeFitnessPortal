@@ -603,10 +603,21 @@ export default function Dashboard() {
               </Link>
             </div>
             
-            {/* Right side spacer to maintain balance */}
-            <div className="flex items-center opacity-0 pointer-events-none">
-              <button className="p-3 rounded-lg">
-                <Menu className="w-6 h-6" />
+            {/* Right side - Daily Check-in Button */}
+            <div className="flex items-center">
+              <button 
+                className="p-2 sm:p-3 relative transition-all duration-300 md:hover:scale-110 active:scale-95 group touch-manipulation"
+                data-testid="button-daily-checkin"
+                aria-label="Daily check-in"
+                onClick={() => setShowCheckinModal(true)}
+                title="Daily Check-in"
+              >
+                <div className="relative">
+                  <ClipboardCheck className="w-5 h-5 sm:w-6 sm:h-6 text-pink-500 md:group-hover:text-pink-600 transition-colors" />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse" />
+                </div>
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-rose-400/20 via-pink-500/20 to-pink-600/20 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
               </button>
             </div>
           </div>
