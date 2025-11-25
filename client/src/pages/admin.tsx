@@ -683,63 +683,182 @@ export default function Admin() {
           </Card>
         )}
 
-        {/* Needs Attention Section */}
-        {(dormantMembers.length > 0 || membersWithoutPhotos.length > 0 || recentCompleters.length > 0) && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Dormant Members Card */}
-            {dormantMembers.length > 0 && (
-              <Card className="border-orange-200 bg-orange-50/50">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-orange-100">
-                      <UserMinus className="w-4 h-4 text-orange-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-sm font-medium text-orange-900">Inactive Members</CardTitle>
-                      <CardDescription className="text-xs text-orange-700">
-                        {dormantMembers.length} member{dormantMembers.length !== 1 ? 's' : ''} inactive 7+ days
-                      </CardDescription>
-                    </div>
+        {/* Needs Attention + Activity Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Dormant Members Card */}
+          {dormantMembers.length > 0 && (
+            <Card className="border-orange-200 bg-orange-50/50">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-orange-100">
+                    <UserMinus className="w-4 h-4 text-orange-600" />
                   </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {dormantMembers.slice(0, 5).map((member) => (
-                      <div 
-                        key={member.id} 
-                        className="flex items-center justify-between p-2 bg-white rounded-lg border border-orange-100"
-                        data-testid={`dormant-member-${member.id}`}
+                  <div>
+                    <CardTitle className="text-sm font-medium text-orange-900">Inactive Members</CardTitle>
+                    <CardDescription className="text-xs text-orange-700">
+                      {dormantMembers.length} member{dormantMembers.length !== 1 ? 's' : ''} inactive 7+ days
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {dormantMembers.slice(0, 5).map((member) => (
+                    <div 
+                      key={member.id} 
+                      className="flex items-center justify-between p-2 bg-white rounded-lg border border-orange-100"
+                      data-testid={`dormant-member-${member.id}`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-800 truncate">
+                          {member.firstName} {member.lastName}
+                        </p>
+                        <p className="text-xs text-orange-600">
+                          {member.daysSinceLogin} days inactive
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                        onClick={() => previewEmailMutation.mutate({ userId: member.id, emailType: 're-engagement' })}
+                        disabled={previewEmailMutation.isPending}
+                        data-testid={`send-reengagement-${member.id}`}
                       >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-800 truncate">
-                            {member.firstName} {member.lastName}
-                          </p>
-                          <p className="text-xs text-orange-600">
-                            {member.daysSinceLogin} days inactive
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                {dormantMembers.length > 5 && (
+                  <p className="text-xs text-orange-600 mt-2 text-center">
+                    +{dormantMembers.length - 5} more members
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Compact Activity Feed - next to Inactive Members */}
+          <Card className="border-pink-200 bg-pink-50/30">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-pink-100">
+                    <Activity className="w-4 h-4 text-pink-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-medium text-pink-900">Recent Activity</CardTitle>
+                    <CardDescription className="text-xs text-pink-700">Live member updates</CardDescription>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-xs bg-pink-100 text-pink-700">
+                  Live
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {activityLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="w-5 h-5 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : activityLogs.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  <Activity className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-xs">No recent activity</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {activityLogs.slice(0, 8).map((activity) => {
+                    const timeAgo = (dateString: string) => {
+                      const date = new Date(dateString);
+                      const now = new Date();
+                      const diff = now.getTime() - date.getTime();
+                      const minutes = Math.floor(diff / 60000);
+                      const hours = Math.floor(diff / 3600000);
+                      const days = Math.floor(diff / 86400000);
+                      
+                      if (minutes < 1) return 'Now';
+                      if (minutes < 60) return `${minutes}m`;
+                      if (hours < 24) return `${hours}h`;
+                      return `${days}d`;
+                    };
+
+                    const getActivityIcon = (type: string) => {
+                      switch (type) {
+                        case 'login':
+                        case 'login_otp':
+                          return <LogIn className="w-3 h-3 text-blue-500" />;
+                        case 'workout_complete':
+                          return <CheckCircle className="w-3 h-3 text-green-500" />;
+                        case 'workout_start':
+                          return <Dumbbell className="w-3 h-3 text-pink-500" />;
+                        default:
+                          return <Activity className="w-3 h-3 text-gray-400" />;
+                      }
+                    };
+
+                    const getActivityBg = (type: string) => {
+                      switch (type) {
+                        case 'login':
+                        case 'login_otp':
+                          return 'bg-blue-50';
+                        case 'workout_complete':
+                          return 'bg-green-50';
+                        case 'workout_start':
+                          return 'bg-pink-50';
+                        default:
+                          return 'bg-gray-50';
+                      }
+                    };
+
+                    const userName = activity.user 
+                      ? `${activity.user.firstName} ${activity.user.lastName?.charAt(0) || ''}.`
+                      : 'Unknown';
+
+                    const getShortDescription = (type: string) => {
+                      switch (type) {
+                        case 'login':
+                        case 'login_otp':
+                          return 'logged in';
+                        case 'workout_complete':
+                          return 'completed workout';
+                        case 'workout_start':
+                          return 'started workout';
+                        default:
+                          return type.replace(/_/g, ' ');
+                      }
+                    };
+
+                    return (
+                      <div 
+                        key={activity.id} 
+                        className={`flex items-center gap-2 p-2 rounded-lg ${getActivityBg(activity.activityType)}`}
+                        data-testid={`compact-activity-${activity.id}`}
+                      >
+                        <div className="flex-shrink-0">
+                          {getActivityIcon(activity.activityType)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-gray-700 truncate">
+                            <span className="font-medium">{userName}</span> {getShortDescription(activity.activityType)}
                           </p>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
-                          onClick={() => previewEmailMutation.mutate({ userId: member.id, emailType: 're-engagement' })}
-                          disabled={previewEmailMutation.isPending}
-                          data-testid={`send-reengagement-${member.id}`}
-                        >
-                          <Send className="w-4 h-4" />
-                        </Button>
+                        <span className="flex-shrink-0 text-xs text-gray-400">
+                          {timeAgo(activity.createdAt)}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                  {dormantMembers.length > 5 && (
-                    <p className="text-xs text-orange-600 mt-2 text-center">
-                      +{dormantMembers.length - 5} more members
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
+        {/* Additional Needs Attention Cards */}
+        {(membersWithoutPhotos.length > 0 || recentCompleters.length > 0) && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Members Without Photos Card */}
             {membersWithoutPhotos.length > 0 && (
               <Card className="border-purple-200 bg-purple-50/50">
@@ -1119,187 +1238,6 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Activity Feed */}
-        <Card className="border-none shadow-md">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Activity className="w-5 h-5 text-pink-500" />
-                Recent Activity
-              </CardTitle>
-              <Badge variant="secondary" className="text-xs">
-                Live Updates
-              </Badge>
-            </div>
-            <CardDescription>Real-time member activity feed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {activityLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            ) : activityLogs.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No recent activity</p>
-                <p className="text-sm">Member activities will appear here</p>
-              </div>
-            ) : (
-              <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                {activityLogs.slice(0, 20).map((activity) => {
-                  const timeAgo = (dateString: string) => {
-                    const date = new Date(dateString);
-                    const now = new Date();
-                    const diff = now.getTime() - date.getTime();
-                    const minutes = Math.floor(diff / 60000);
-                    const hours = Math.floor(diff / 3600000);
-                    const days = Math.floor(diff / 86400000);
-                    
-                    if (minutes < 1) return 'Just now';
-                    if (minutes < 60) return `${minutes}m ago`;
-                    if (hours < 24) return `${hours}h ago`;
-                    if (days < 7) return `${days}d ago`;
-                    return date.toLocaleDateString();
-                  };
-
-                  const getActivityIcon = (type: string) => {
-                    switch (type) {
-                      case 'login':
-                        return <LogIn className="w-4 h-4 text-blue-500" />;
-                      case 'workout_complete':
-                        return <CheckCircle className="w-4 h-4 text-green-500" />;
-                      case 'workout_start':
-                        return <Dumbbell className="w-4 h-4 text-pink-500" />;
-                      default:
-                        return <Activity className="w-4 h-4 text-gray-400" />;
-                    }
-                  };
-
-                  const getActivityDescription = (type: string, metadata: Record<string, any>) => {
-                    switch (type) {
-                      case 'login':
-                        return `Logged in${metadata?.method === 'otp' ? ' via OTP' : ''}`;
-                      case 'workout_complete':
-                        return `Completed ${metadata?.workoutName || 'a workout'}${metadata?.day ? ` (Day ${metadata.day})` : ''}`;
-                      case 'workout_start':
-                        return `Started ${metadata?.workoutName || 'a workout'}`;
-                      default:
-                        return type.replace(/_/g, ' ');
-                    }
-                  };
-
-                  const getActivityColor = (type: string) => {
-                    switch (type) {
-                      case 'login':
-                        return 'bg-blue-50 border-blue-100';
-                      case 'workout_complete':
-                        return 'bg-green-50 border-green-100';
-                      case 'workout_start':
-                        return 'bg-pink-50 border-pink-100';
-                      default:
-                        return 'bg-gray-50 border-gray-100';
-                    }
-                  };
-
-                  const userName = activity.user 
-                    ? `${activity.user.firstName} ${activity.user.lastName}`
-                    : 'Unknown User';
-
-                  const getQuickEmailType = (activityType: string) => {
-                    switch (activityType) {
-                      case 'workout_complete':
-                        return 'congratulations';
-                      case 'login':
-                        return 're-engagement';
-                      default:
-                        return 're-engagement';
-                    }
-                  };
-
-                  return (
-                    <div 
-                      key={activity.id} 
-                      className={`flex items-start gap-3 p-3 rounded-lg border ${getActivityColor(activity.activityType)} group hover:shadow-sm transition-shadow`}
-                      data-testid={`activity-item-${activity.id}`}
-                    >
-                      <div className="flex-shrink-0 mt-0.5">
-                        {getActivityIcon(activity.activityType)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 truncate">
-                          {userName}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          {getActivityDescription(activity.activityType, activity.metadata || {})}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="flex-shrink-0 text-xs text-gray-400">
-                          {timeAgo(activity.createdAt)}
-                        </span>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                              data-testid={`activity-action-${activity.id}`}
-                            >
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem 
-                              onClick={() => {
-                                const member = allUsers.find(u => u.id === activity.userId);
-                                if (member) {
-                                  setSelectedMember(member);
-                                  setMemberViewMode('view');
-                                }
-                              }}
-                              data-testid={`view-member-${activity.userId}`}
-                            >
-                              <Eye className="w-4 h-4 mr-2" />
-                              View Member
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {activity.activityType === 'workout_complete' && (
-                              <DropdownMenuItem
-                                onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'congratulations' })}
-                                disabled={previewEmailMutation.isPending}
-                                data-testid={`send-congrats-activity-${activity.id}`}
-                              >
-                                <Sparkles className="w-4 h-4 mr-2 text-green-500" />
-                                Send Congratulations
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem
-                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 're-engagement' })}
-                              disabled={previewEmailMutation.isPending}
-                              data-testid={`send-reengagement-activity-${activity.id}`}
-                            >
-                              <Send className="w-4 h-4 mr-2 text-blue-500" />
-                              Send Re-engagement Email
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'photo-reminder' })}
-                              disabled={previewEmailMutation.isPending}
-                              data-testid={`send-photo-activity-${activity.id}`}
-                            >
-                              <Camera className="w-4 h-4 mr-2 text-purple-500" />
-                              Send Photo Reminder
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
         </div>
       )}
 
