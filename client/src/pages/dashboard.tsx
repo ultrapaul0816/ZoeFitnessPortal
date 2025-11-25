@@ -78,6 +78,15 @@ export default function Dashboard() {
   });
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
+
+  // Auto-hide welcome message after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcomeMessage(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Check session with server on mount
@@ -668,13 +677,17 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Welcome back, {user.firstName}! 💪
-          </h1>
-          <p className="text-muted-foreground">Ready to get stronger today?</p>
-        </div>
+        {/* Welcome Section - Auto-hides after 3 seconds */}
+        {showWelcomeMessage && (
+          <div className="mb-6 animate-in fade-in duration-300" style={{
+            animation: showWelcomeMessage ? 'fadeIn 0.3s ease-in' : 'fadeOut 0.5s ease-out forwards'
+          }}>
+            <h1 className="text-2xl font-bold text-foreground mb-1">
+              Welcome back, {user.firstName}! 💪
+            </h1>
+            <p className="text-sm text-muted-foreground">Ready to get stronger today?</p>
+          </div>
+        )}
 
         {/* Profile Completion Banner */}
         <ProfileBanner 
