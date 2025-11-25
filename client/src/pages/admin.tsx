@@ -1505,7 +1505,15 @@ export default function Admin() {
                   }
                 })
                 .map((member) => (
-                  <tr key={member.id} className="border-b border-border hover:bg-muted/30 transition-colors">
+                  <tr 
+                    key={member.id} 
+                    className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSelectedMember(member);
+                      setMemberViewMode('view');
+                    }}
+                    data-testid={`row-member-${member.id}`}
+                  >
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-sm">
@@ -1613,7 +1621,7 @@ export default function Admin() {
                         {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : '—'}
                       </span>
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex space-x-1">
                         <Button
                           variant="ghost"
@@ -2535,7 +2543,15 @@ export default function Admin() {
                         return validUntil && validUntil <= new Date();
                       })
                       .map((member) => (
-                        <tr key={member.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                        <tr 
+                          key={member.id} 
+                          className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                          onClick={() => {
+                            setSelectedMember(member);
+                            setMemberViewMode('view');
+                          }}
+                          data-testid={`row-deactivated-member-${member.id}`}
+                        >
                           <td className="px-6 py-4">
                             <div className="flex items-center space-x-3">
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-semibold">
@@ -2554,7 +2570,7 @@ export default function Admin() {
                           <td className="px-6 py-4 text-sm text-muted-foreground" data-testid={`text-deactivated-${member.id}`}>
                             {member.validUntil ? format(new Date(member.validUntil), "MMM dd, yyyy") : "Unknown"}
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                             <Button
                               variant="outline"
                               size="sm"
