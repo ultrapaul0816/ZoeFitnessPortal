@@ -77,6 +77,7 @@ import {
   userCheckins,
   workoutProgramContent,
   workoutContentExercises,
+  activityLogs,
   WorkoutProgramContent,
   WorkoutContentExercise,
   InsertWorkoutProgramContent,
@@ -356,6 +357,17 @@ export interface IStorage {
   createWorkoutContentExercise(exercise: InsertWorkoutContentExercise): Promise<WorkoutContentExercise>;
   deleteWorkoutContentExercise(id: string): Promise<boolean>;
   reorderWorkoutContentExercises(programContentId: string, sectionType: string, exerciseIds: string[]): Promise<void>;
+
+  // Activity Logs
+  createActivityLog(userId: string, activityType: string, metadata?: Record<string, any>): Promise<void>;
+  getRecentActivityLogs(limit?: number): Promise<Array<{
+    id: string;
+    userId: string;
+    activityType: string;
+    metadata: Record<string, any> | null;
+    createdAt: Date | null;
+    user: Pick<User, 'id' | 'firstName' | 'lastName' | 'profilePictureUrl'>;
+  }>>;
 }
 
 export class MemStorage implements IStorage {
@@ -3537,6 +3549,54 @@ class DatabaseStorage implements IStorage {
           )
         );
     }
+  }
+
+  // Activity Logs
+  async createActivityLog(userId: string, activityType: string, metadata?: Record<string, any>): Promise<void> {
+    await this.db
+      .insert(activityLogs)
+      .values({
+        userId,
+        activityType,
+        metadata: metadata || null,
+      });
+  }
+
+  async getRecentActivityLogs(limit: number = 50): Promise<Array<{
+    id: string;
+    userId: string;
+    activityType: string;
+    metadata: Record<string, any> | null;
+    createdAt: Date | null;
+    user: Pick<User, 'id' | 'firstName' | 'lastName' | 'profilePictureUrl'>;
+  }>> {
+    const results = await this.db
+      .select({
+        id: activityLogs.id,
+        userId: activityLogs.userId,
+        activityType: activityLogs.activityType,
+        metadata: activityLogs.metadata,
+        createdAt: activityLogs.createdAt,
+        user: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profilePictureUrl: users.profilePictureUrl,
+        },
+      })
+      .from(activityLogs)
+      .leftJoin(users, eq(activityLogs.userId, users.id))
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(limit);
+
+    return results.map(r => ({
+      id: r.id,
+      userId: r.userId,
+      activityType: r.activityType,
+      metadata: r.metadata as Record<string, any> | null,
+      createdAt: r.createdAt,
+      user: r.user || { id: r.userId, firstName: 'Unknown', lastName: 'User', profilePictureUrl: null },
+    }));
   }
 }
 

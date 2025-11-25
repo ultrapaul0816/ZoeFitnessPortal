@@ -540,6 +540,20 @@ export const insertWorkoutContentExerciseSchema = createInsertSchema(workoutCont
   updatedAt: true,
 });
 
+// Activity logs for admin dashboard
+export const activityLogs = pgTable("activity_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  activityType: text("activity_type").notNull(), // 'login', 'workout_start', 'workout_complete', 'signup', 'profile_update'
+  metadata: jsonb("metadata"), // Additional context like workout name, week number, etc.
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Reusable validation schemas
 
 // Phone number validation (flexible for international formats, truly optional)
@@ -700,6 +714,8 @@ export type WorkoutContentExercise = typeof workoutContentExercises.$inferSelect
 export type InsertWorkoutContentExercise = z.infer<typeof insertWorkoutContentExerciseSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
+export type ActivityLog = typeof activityLogs.$inferSelect;
+export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z

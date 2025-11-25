@@ -297,6 +297,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updatedUser = (await storage.updateUser(user.id, updates)) || user;
       }
 
+      // Log activity for admin dashboard
+      try {
+        await storage.createActivityLog(user.id, 'login', {
+          method: 'password',
+          email: user.email,
+        });
+      } catch (activityError) {
+        console.error('Failed to log activity:', activityError);
+      }
+
       // One-time migration: If user has profile data in request, save it to database
       const { profileData } = req.body;
       if (profileData && typeof profileData === 'object') {
@@ -499,6 +509,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Delete the used code
         await storage.deletePasswordResetCodes(email);
+
+        // Log activity for admin dashboard
+        try {
+          await storage.createActivityLog(updatedUser.id, 'login', {
+            method: 'otp',
+            email: updatedUser.email,
+          });
+        } catch (activityError) {
+          console.error('Failed to log OTP login activity:', activityError);
+        }
 
         console.log(`[PASSWORD-RESET] OTP login success for: ${email}`);
         return res.json({
@@ -967,6 +987,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const completionData = insertWorkoutCompletionSchema.parse(req.body);
 
       const completion = await storage.createWorkoutCompletion(completionData);
+
+      // Log activity for admin dashboard
+      try {
+        // Get workout details for the activity log
+        const workout = await storage.getWorkout(completionData.workoutId);
+        await storage.createActivityLog(completionData.userId, 'workout_complete', {
+          workoutId: completionData.workoutId,
+          workoutName: workout?.name || 'Unknown Workout',
+          day: workout?.day,
+          challengeRating: completionData.challengeRating,
+          mood: completionData.mood,
+        });
+      } catch (activityError) {
+        console.error('Failed to log workout completion activity:', activityError);
+      }
 
       res.json(completion);
     } catch (error) {
@@ -1679,6 +1714,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Analytics error:", error);
       res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
+  // Recent activity logs for admin dashboard
+  app.get("/api/admin/activity-logs", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const activities = await storage.getRecentActivityLogs(limit);
+      res.json(activities);
+    } catch (error) {
+      console.error("Activity logs error:", error);
+      res.status(500).json({ message: "Failed to fetch activity logs" });
     }
   });
 
