@@ -105,6 +105,8 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [isZoeTyping, setIsZoeTyping] = useState(false);
   const [challengeRating, setChallengeRating] = useState(0);
   const [showWelcome, setShowWelcome] = useState(isFirstLogin);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const prevCompletedCount = useRef(0);
   const [swapsUsedThisWeek, setSwapsUsedThisWeek] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -265,6 +267,20 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   );
   const programInfo = programOverviews[progress.currentWeek] || programOverviews[1];
 
+  // Trigger confetti when all exercises are completed
+  useEffect(() => {
+    const allComplete = exercises.length > 0 && completedExercises.size === exercises.length;
+    const wasNotComplete = prevCompletedCount.current < exercises.length;
+    
+    if (allComplete && wasNotComplete) {
+      setShowConfetti(true);
+      // Hide confetti after animation completes
+      setTimeout(() => setShowConfetti(false), 3000);
+    }
+    
+    prevCompletedCount.current = completedExercises.size;
+  }, [completedExercises.size, exercises.length]);
+
   const tomorrowProgram = progress.currentDay < (progress.currentWeek === 1 ? 4 : 3)
     ? currentProgram
     : workoutPrograms.find(p => p.week === progress.currentWeek + 1) || currentProgram;
@@ -307,6 +323,32 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
 
   return (
     <>
+      {/* Confetti Celebration Animation */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden" aria-hidden="true">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="confetti-piece absolute"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: '-10px',
+                backgroundColor: ['#ec4899', '#f472b6', '#fbbf24', '#a855f7', '#22c55e', '#06b6d4'][Math.floor(Math.random() * 6)],
+                width: `${Math.random() * 10 + 6}px`,
+                height: `${Math.random() * 10 + 6}px`,
+                borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                animationDelay: `${Math.random() * 0.5}s`,
+                animationDuration: `${Math.random() * 2 + 2}s`,
+              }}
+            />
+          ))}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="celebration-text text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-green-500 animate-bounce">
+              Amazing! 
+            </div>
+          </div>
+        </div>
+      )}
       <Card className="border-pink-200 bg-gradient-to-br from-white to-pink-50 shadow-lg overflow-hidden">
         <CardHeader className="pb-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white">
           <div className="flex items-center justify-between">
