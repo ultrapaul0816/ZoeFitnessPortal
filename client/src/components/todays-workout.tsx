@@ -23,7 +23,8 @@ import {
   Info,
   Heart,
   Eye,
-  ChevronDown
+  ChevronDown,
+  Camera
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -123,6 +124,11 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  const [showFirstWorkoutWelcome, setShowFirstWorkoutWelcome] = useState(true);
+  const [welcomeStep, setWelcomeStep] = useState<'video' | 'photo' | 'ready'>('video');
+  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
     queryKey: ["/api/workout-progress", userId],
@@ -305,36 +311,227 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     ? workoutPrograms.find(p => p.week === progress.currentWeek + 1) || currentProgram
     : currentProgram;
 
-  if (showWelcome && isFirstLogin) {
+  const isFirstWorkout = progress.totalWorkoutsCompleted === 0 && !isWorkoutCompletedToday;
+
+  const handleBeforePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append("photo", file);
+    formData.append("photoType", "start");
+    
+    try {
+      const response = await fetch(`/api/progress-photos/${userId}`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Before Photo Saved! 📸",
+          description: "You can view your progress anytime in the Progress tab.",
+        });
+        setWelcomeStep('ready');
+      }
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: "Don't worry, you can add your photo later in the Progress tab.",
+      });
+      setWelcomeStep('ready');
+    }
+  };
+
+  if (showFirstWorkoutWelcome && isFirstWorkout) {
+    return (
+      <Card className="border-pink-200 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 shadow-xl overflow-hidden">
+        <CardContent className="p-6 space-y-6">
+          {welcomeStep === 'video' && (
+            <>
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                  <Heart className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome, Mama! 💕</h2>
+                <p className="text-gray-600 text-sm">
+                  Before we begin, I have a quick message for you...
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl overflow-hidden shadow-md">
+                {showWelcomeVideo ? (
+                  <div className="aspect-video">
+                    <iframe
+                      src="https://www.youtube.com/embed/SrEKb2TMLzA?autoplay=1"
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title="Welcome from Zoe"
+                    />
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowWelcomeVideo(true)}
+                    className="relative w-full aspect-video bg-gradient-to-br from-pink-100 to-purple-100 flex flex-col items-center justify-center hover:from-pink-200 hover:to-purple-200 transition-colors"
+                    data-testid="button-play-welcome-video"
+                  >
+                    <div className="w-20 h-20 rounded-full bg-pink-500 flex items-center justify-center shadow-lg mb-3">
+                      <Play className="w-10 h-10 text-white ml-1" />
+                    </div>
+                    <span className="text-pink-700 font-semibold">Watch Zoe's Welcome Message</span>
+                    <span className="text-gray-500 text-sm mt-1">2 min video</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="bg-white/80 rounded-xl p-4">
+                <h3 className="font-bold text-pink-700 mb-3 flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  What to Expect
+                </h3>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                    <span>6 weeks, gentle progression</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Clock className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                    <span>20-30 min per workout</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Dumbbell className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                    <span>Core rehabilitation focus</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Heart className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                    <span>Healing over hustle</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setWelcomeStep('photo')}
+                  className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+                  data-testid="button-continue-to-photo"
+                >
+                  Continue
+                  <ChevronDown className="w-4 h-4 ml-2 -rotate-90" />
+                </Button>
+              </div>
+            </>
+          )}
+
+          {welcomeStep === 'photo' && (
+            <>
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
+                  <Camera className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-800 mb-2">Capture Your Starting Point</h2>
+                <p className="text-gray-600 text-sm max-w-sm mx-auto">
+                  Many mamas find it powerful to see their progress later. Want to snap a quick "before" photo?
+                </p>
+              </div>
+
+              <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
+                <p className="text-purple-700 text-sm text-center mb-4">
+                  This is completely optional and private to you. You can always add it later in the Progress tab.
+                </p>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleBeforePhotoSelect}
+                  className="hidden"
+                  data-testid="input-before-photo"
+                />
+                
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="outline"
+                    className="flex-1 border-purple-300 text-purple-700 hover:bg-purple-100"
+                    data-testid="button-upload-before-photo"
+                  >
+                    <Camera className="w-4 h-4 mr-2" />
+                    Take/Upload Photo
+                  </Button>
+                  <Button
+                    onClick={() => setWelcomeStep('ready')}
+                    variant="ghost"
+                    className="text-gray-500 hover:text-gray-700"
+                    data-testid="button-skip-photo"
+                  >
+                    Skip for now
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {welcomeStep === 'ready' && (
+            <>
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
+                  <CheckCircle className="w-10 h-10 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">You're All Set!</h2>
+                <p className="text-gray-600 max-w-sm mx-auto">
+                  Let's begin Week 1, Day 1. Remember: this is about healing, not hustling. 
+                  Go at your own pace and listen to your body.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-xl p-4">
+                <h3 className="font-bold text-pink-700 mb-2">Today's Focus</h3>
+                <p className="text-gray-600 text-sm mb-2">
+                  <strong>Part 1:</strong> 360° Breathing (25 breaths)
+                </p>
+                <p className="text-gray-600 text-sm">
+                  <strong>Part 2:</strong> 5 gentle exercises × 3 rounds
+                </p>
+              </div>
+
+              <Button
+                onClick={() => setShowFirstWorkoutWelcome(false)}
+                className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white py-6 text-lg"
+                data-testid="button-begin-first-workout"
+              >
+                <Play className="w-6 h-6 mr-2" />
+                Let's Begin! 💪
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (showWelcome && isFirstLogin && !isFirstWorkout) {
     return (
       <Card className="border-pink-200 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 shadow-xl overflow-hidden">
         <CardContent className="p-8 text-center">
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
             <Sparkles className="w-10 h-10 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">Welcome to Your Recovery Journey!</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">Welcome Back!</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            I'm so glad you're here, mama! This 6-week program is designed to help you 
-            reconnect with your core and build strength safely postpartum.
+            Great to see you again, mama! Let's continue your recovery journey.
           </p>
-          
-          <div className="bg-white/80 rounded-xl p-4 mb-6 text-left max-w-md mx-auto">
-            <h3 className="font-semibold text-pink-700 mb-2">Week 1: Reconnect & Reset</h3>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Focus on breath and posture</li>
-              <li>• Gentle core reconnection</li>
-              <li>• 4 workouts this week</li>
-              <li>• Each workout is about 20-30 minutes</li>
-            </ul>
-          </div>
 
           <Button
             onClick={() => setShowWelcome(false)}
             className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-8 py-3 text-lg"
-            data-testid="button-start-first-workout"
+            data-testid="button-continue-workout"
           >
             <Play className="w-5 h-5 mr-2" />
-            Start Your First Workout
+            Continue
           </Button>
         </CardContent>
       </Card>
