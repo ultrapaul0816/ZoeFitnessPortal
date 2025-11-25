@@ -253,13 +253,27 @@ export default function Community() {
     },
   });
 
-  // Create comment mutation
+  // Create comment mutation with optimistic update
   const createCommentMutation = useMutation({
     mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
       await apiRequest("POST", `/api/community/posts/${postId}/comments`, {
         userId: user?.id,
         content,
       });
+    },
+    onMutate: async ({ postId }) => {
+      await queryClient.cancelQueries({ queryKey: ["/api/community/posts"] });
+      const previousPosts = queryClient.getQueryData(["/api/community/posts"]);
+      
+      queryClient.setQueryData(["/api/community/posts"], (old: EnrichedPost[] | undefined) => {
+        return old?.map(post => 
+          post.id === postId 
+            ? { ...post, commentCount: post.commentCount + 1 }
+            : post
+        );
+      });
+
+      return { previousPosts };
     },
     onSuccess: (_, { postId }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/community/posts"] });
@@ -269,7 +283,8 @@ export default function Community() {
         title: "Comment posted!",
       });
     },
-    onError: () => {
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(["/api/community/posts"], context?.previousPosts);
       toast({
         title: "Error",
         description: "Failed to post comment",
