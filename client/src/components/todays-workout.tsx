@@ -385,10 +385,27 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
 
               {/* Exercises Section */}
               <div className="space-y-3">
-                <h5 className="font-semibold text-gray-700 flex items-center gap-2">
-                  <Play className="w-4 h-4 text-pink-500" />
-                  Your Exercises ({completedExercises.size}/{exercises.length} done)
-                </h5>
+                <div className="flex items-center justify-between">
+                  <h5 className="font-semibold text-gray-700 flex items-center gap-2">
+                    <Play className="w-4 h-4 text-pink-500" />
+                    Your Exercises ({completedExercises.size}/{exercises.length} done)
+                  </h5>
+                  {!allExercisesComplete && (
+                    <Button
+                      onClick={() => {
+                        const allNums = new Set(exercises.map(e => e.num));
+                        setCompletedExercises(allNums);
+                      }}
+                      variant="ghost"
+                      size="sm"
+                      className="text-pink-600 hover:text-pink-700 hover:bg-pink-50 text-xs"
+                      data-testid="button-mark-all-complete"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Complete All
+                    </Button>
+                  )}
+                </div>
 
                 <div className="space-y-3">
                   {exercises.map((exercise, idx) => (
