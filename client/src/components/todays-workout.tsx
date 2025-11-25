@@ -642,11 +642,19 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                     <div className="space-y-2">
                       <p className="text-sm font-semibold text-gray-700">{tomorrowProgram.title}</p>
                       <p className="text-xs text-gray-500">{tomorrowProgram.subtitle} • {tomorrowProgram.schedule}</p>
+                      <p className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded inline-block">
+                        {tomorrowProgram.part2.exercises.length} exercises × 3 rounds
+                      </p>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-600">
-                      Same workout, building your strength one day at a time
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-sm text-gray-600">
+                        Same workout, building your strength one day at a time
+                      </p>
+                      <p className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded inline-block">
+                        {tomorrowProgram.part2.exercises.length} exercises × 3 rounds
+                      </p>
+                    </div>
                   )}
                 </div>
                 
@@ -1061,6 +1069,12 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               <p className="text-sm text-gray-600">{tomorrowProgram.schedule}</p>
             </div>
 
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-sm">
+              <p className="text-amber-800">
+                <strong>3 Rounds:</strong> Complete all exercises, then repeat 2 more times.
+              </p>
+            </div>
+
             <div className="space-y-2">
               {tomorrowProgram.part2.exercises.slice(0, 3).map((exercise, idx) => (
                 <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
@@ -1069,7 +1083,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </span>
                   <div>
                     <p className="text-sm font-medium text-gray-700">{exercise.name}</p>
-                    <p className="text-sm font-bold text-pink-600">{exercise.reps}</p>
+                    <p className="text-sm font-bold text-pink-600">{exercise.reps} <span className="text-gray-400 font-normal">×3</span></p>
                   </div>
                 </div>
               ))}
