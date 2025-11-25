@@ -1065,11 +1065,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return dateB - dateA;
       })[0];
       
-      // Check if workout was completed today
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const lastCompletionDate = lastCompletion?.completedAt ? new Date(lastCompletion.completedAt) : null;
-      const workoutCompletedToday = lastCompletionDate ? lastCompletionDate >= today : false;
+      // Check if workout was completed today (timezone-safe comparison using date strings)
+      const todayDateStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD in UTC
+      const lastCompletionDateStr = lastCompletion?.completedAt 
+        ? new Date(lastCompletion.completedAt).toISOString().split('T')[0] 
+        : null;
+      const workoutCompletedToday = lastCompletionDateStr === todayDateStr;
       
       // Calculate current week based on completions
       // Each week has different workout counts: Week 1: 4, Weeks 2-6: 3 each
