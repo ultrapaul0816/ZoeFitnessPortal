@@ -2494,7 +2494,10 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
   async getWorkoutCompletions(userId: string): Promise<WorkoutCompletion[]> {
-    return [];
+    return await this.db
+      .select()
+      .from(workoutCompletions)
+      .where(eq(workoutCompletions.userId, userId));
   }
   async createWorkoutCompletion(
     completion: InsertWorkoutCompletion
