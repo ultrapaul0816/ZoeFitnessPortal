@@ -1671,19 +1671,32 @@ export default function Admin() {
               
               {selectedMember && memberViewMode === 'view' && (
                 <div className="space-y-6 pt-2">
-                  {/* Profile Section */}
-                  <div className="flex items-center gap-4 p-5 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-200/50 shadow-sm">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg ring-4 ring-pink-100">
-                      <span className="text-2xl font-bold text-white">
-                        {selectedMember.firstName?.[0]}{selectedMember.lastName?.[0]}
-                      </span>
+                  {/* Profile Section with View Full Profile Button */}
+                  <div className="flex items-center justify-between gap-4 p-5 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-200/50 shadow-sm">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg ring-4 ring-pink-100">
+                        <span className="text-2xl font-bold text-white">
+                          {selectedMember.firstName?.[0]}{selectedMember.lastName?.[0]}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {selectedMember.firstName} {selectedMember.lastName}
+                        </h3>
+                        <p className="text-sm text-gray-600">{selectedMember.email}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {selectedMember.firstName} {selectedMember.lastName}
-                      </h3>
-                      <p className="text-sm text-gray-600">{selectedMember.email}</p>
-                    </div>
+                    <Button 
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-md"
+                      onClick={() => {
+                        setFullProfileMember(selectedMember);
+                        setSelectedMember(null);
+                      }}
+                      data-testid="button-view-full-profile"
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      Full Profile
+                    </Button>
                   </div>
 
                   {/* Account Information */}
@@ -1984,20 +1997,6 @@ export default function Admin() {
                     </div>
                   </div>
 
-                  {/* View Full Profile Button */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                      onClick={() => {
-                        setFullProfileMember(selectedMember);
-                        setSelectedMember(null);
-                      }}
-                      data-testid="button-view-full-profile"
-                    >
-                      <FileText className="w-4 h-4 mr-2" />
-                      View Full Profile & History
-                    </Button>
-                  </div>
                 </div>
               )}
 
