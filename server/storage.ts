@@ -418,6 +418,20 @@ export interface IStorage {
     workoutName: string;
     completedAt: Date | null;
   }>>;
+  
+  // Email Automation Cascade Logic
+  checkReengagementEligibility(userId: string, triggerType: string): Promise<{
+    isEligible: boolean;
+    reason: string;
+    lastEmailOfType: Date | null;
+    previousLevelSentAt: Date | null;
+  }>;
+  checkWorkoutEmailCooldown(userId: string): Promise<{
+    canSend: boolean;
+    lastSentAt: Date | null;
+    hoursRemaining: number;
+  }>;
+  hasReceivedAutomationEmail(userId: string, triggerType: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -2020,6 +2034,28 @@ export class MemStorage implements IStorage {
     completedAt: Date | null;
   }>> {
     return [];
+  }
+
+  // Email Automation Cascade Logic (stubs)
+  async checkReengagementEligibility(userId: string, triggerType: string): Promise<{
+    isEligible: boolean;
+    reason: string;
+    lastEmailOfType: Date | null;
+    previousLevelSentAt: Date | null;
+  }> {
+    return { isEligible: true, reason: 'Memory storage', lastEmailOfType: null, previousLevelSentAt: null };
+  }
+
+  async checkWorkoutEmailCooldown(userId: string): Promise<{
+    canSend: boolean;
+    lastSentAt: Date | null;
+    hoursRemaining: number;
+  }> {
+    return { canSend: true, lastSentAt: null, hoursRemaining: 0 };
+  }
+
+  async hasReceivedAutomationEmail(userId: string, triggerType: string): Promise<boolean> {
+    return false;
   }
 }
 
@@ -4003,6 +4039,167 @@ class DatabaseStorage implements IStorage {
       workoutName: nameMap.get(r.workoutId) || 'Unknown Workout',
       completedAt: r.completedAt,
     }));
+  }
+
+  // Email Automation Cascade Logic
+  async checkReengagementEligibility(userId: string, triggerType: string): Promise<{
+    isEligible: boolean;
+    reason: string;
+    lastEmailOfType: Date | null;
+    previousLevelSentAt: Date | null;
+  }> {
+    // Get the automation rule config
+    const ruleResult = await this.db
+      .select({ config: emailAutomationRules.config })
+      .from(emailAutomationRules)
+      .where(eq(emailAutomationRules.triggerType, triggerType))
+      .limit(1);
+
+    if (ruleResult.length === 0) {
+      return { isEligible: false, reason: 'Rule not found', lastEmailOfType: null, previousLevelSentAt: null };
+    }
+
+    const config = ruleResult[0].config as { 
+      requiresPreviousLevel?: string | null; 
+      minDaysSincePrevious?: number;
+      inactivityDays?: number;
+    };
+
+    // Check if user has already received this email type
+    const existingEmail = await this.db
+      .select({ sentAt: sql<Date>`MAX(${emailCampaignRecipients.sentAt})` })
+      .from(emailCampaignRecipients)
+      .innerJoin(emailCampaigns, eq(emailCampaignRecipients.campaignId, emailCampaigns.id))
+      .innerJoin(emailAutomationRules, eq(emailCampaigns.automationRuleId, emailAutomationRules.id))
+      .where(
+        and(
+          eq(emailCampaignRecipients.userId, userId),
+          eq(emailAutomationRules.triggerType, triggerType),
+          eq(emailCampaignRecipients.status, 'sent')
+        )
+      );
+
+    const lastEmailOfType = existingEmail[0]?.sentAt || null;
+    
+    // If already received this type, not eligible
+    if (lastEmailOfType) {
+      return { 
+        isEligible: false, 
+        reason: `Already received ${triggerType} email`, 
+        lastEmailOfType, 
+        previousLevelSentAt: null 
+      };
+    }
+
+    // If no previous level required, eligible
+    if (!config.requiresPreviousLevel) {
+      return { isEligible: true, reason: 'No previous level required', lastEmailOfType: null, previousLevelSentAt: null };
+    }
+
+    // Check if previous level was sent
+    const previousEmail = await this.db
+      .select({ sentAt: sql<Date>`MAX(${emailCampaignRecipients.sentAt})` })
+      .from(emailCampaignRecipients)
+      .innerJoin(emailCampaigns, eq(emailCampaignRecipients.campaignId, emailCampaigns.id))
+      .innerJoin(emailAutomationRules, eq(emailCampaigns.automationRuleId, emailAutomationRules.id))
+      .where(
+        and(
+          eq(emailCampaignRecipients.userId, userId),
+          eq(emailAutomationRules.triggerType, config.requiresPreviousLevel),
+          eq(emailCampaignRecipients.status, 'sent')
+        )
+      );
+
+    const previousLevelSentAt = previousEmail[0]?.sentAt || null;
+
+    if (!previousLevelSentAt) {
+      return { 
+        isEligible: false, 
+        reason: `Previous level (${config.requiresPreviousLevel}) not sent yet`, 
+        lastEmailOfType: null, 
+        previousLevelSentAt: null 
+      };
+    }
+
+    // Check if enough time has passed since previous level
+    const daysSincePrevious = Math.floor(
+      (new Date().getTime() - new Date(previousLevelSentAt).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const minDaysRequired = config.minDaysSincePrevious || 0;
+
+    if (daysSincePrevious < minDaysRequired) {
+      return { 
+        isEligible: false, 
+        reason: `Need ${minDaysRequired - daysSincePrevious} more days since previous level`, 
+        lastEmailOfType: null, 
+        previousLevelSentAt 
+      };
+    }
+
+    return { 
+      isEligible: true, 
+      reason: 'Cascade requirements met', 
+      lastEmailOfType: null, 
+      previousLevelSentAt 
+    };
+  }
+
+  async checkWorkoutEmailCooldown(userId: string): Promise<{
+    canSend: boolean;
+    lastSentAt: Date | null;
+    hoursRemaining: number;
+  }> {
+    // Check for workout-congratulations emails sent to this user in the last 24 hours
+    const cutoffTime = new Date();
+    cutoffTime.setHours(cutoffTime.getHours() - 24);
+
+    const recentEmail = await this.db
+      .select({ sentAt: emailCampaignRecipients.sentAt })
+      .from(emailCampaignRecipients)
+      .innerJoin(emailCampaigns, eq(emailCampaignRecipients.campaignId, emailCampaigns.id))
+      .where(
+        and(
+          eq(emailCampaignRecipients.userId, userId),
+          eq(emailCampaigns.templateType, 'workout-congratulations'),
+          eq(emailCampaignRecipients.status, 'sent'),
+          gte(emailCampaignRecipients.sentAt, cutoffTime)
+        )
+      )
+      .orderBy(desc(emailCampaignRecipients.sentAt))
+      .limit(1);
+
+    if (recentEmail.length === 0) {
+      return { canSend: true, lastSentAt: null, hoursRemaining: 0 };
+    }
+
+    const lastSentAt = recentEmail[0].sentAt;
+    const hoursSinceLastEmail = lastSentAt 
+      ? (new Date().getTime() - new Date(lastSentAt).getTime()) / (1000 * 60 * 60)
+      : 24;
+    const hoursRemaining = Math.max(0, 24 - hoursSinceLastEmail);
+
+    return { 
+      canSend: hoursRemaining <= 0, 
+      lastSentAt, 
+      hoursRemaining: Math.ceil(hoursRemaining) 
+    };
+  }
+
+  async hasReceivedAutomationEmail(userId: string, triggerType: string): Promise<boolean> {
+    const result = await this.db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(emailCampaignRecipients)
+      .innerJoin(emailCampaigns, eq(emailCampaignRecipients.campaignId, emailCampaigns.id))
+      .innerJoin(emailAutomationRules, eq(emailCampaigns.automationRuleId, emailAutomationRules.id))
+      .where(
+        and(
+          eq(emailCampaignRecipients.userId, userId),
+          eq(emailAutomationRules.triggerType, triggerType),
+          eq(emailCampaignRecipients.status, 'sent')
+        )
+      );
+
+    return (result[0]?.count || 0) > 0;
   }
 }
 
