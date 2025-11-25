@@ -174,6 +174,34 @@ export default function Admin() {
     enabled: !!user?.isAdmin,
   });
 
+  // Email preview state
+  const [emailPreview, setEmailPreview] = useState<{
+    recipient: { id: string; name: string; email: string };
+    emailType: string;
+    subject: string;
+    html: string;
+  } | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  // Email preview mutation
+  const previewEmailMutation = useMutation({
+    mutationFn: async ({ userId, emailType }: { userId: string; emailType: string }) => {
+      const response = await apiRequest("POST", "/api/admin/actionable/preview-email", { userId, emailType });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setEmailPreview(data);
+      setIsPreviewOpen(true);
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to load email preview",
+      });
+    },
+  });
+
   // Quick-send email mutation
   const quickSendEmailMutation = useMutation({
     mutationFn: async ({ userId, emailType }: { userId: string; emailType: string }) => {
@@ -181,6 +209,8 @@ export default function Admin() {
       return response.json();
     },
     onSuccess: (data) => {
+      setIsPreviewOpen(false);
+      setEmailPreview(null);
       toast({
         variant: "success",
         title: "Email Sent",
@@ -645,8 +675,8 @@ export default function Admin() {
                           size="sm"
                           variant="ghost"
                           className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
-                          onClick={() => quickSendEmailMutation.mutate({ userId: member.id, emailType: 're-engagement' })}
-                          disabled={quickSendEmailMutation.isPending}
+                          onClick={() => previewEmailMutation.mutate({ userId: member.id, emailType: 're-engagement' })}
+                          disabled={previewEmailMutation.isPending}
                           data-testid={`send-reengagement-${member.id}`}
                         >
                           <Send className="w-4 h-4" />
@@ -699,8 +729,8 @@ export default function Admin() {
                           size="sm"
                           variant="ghost"
                           className="h-8 w-8 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-100"
-                          onClick={() => quickSendEmailMutation.mutate({ userId: member.id, emailType: 'photo-reminder' })}
-                          disabled={quickSendEmailMutation.isPending}
+                          onClick={() => previewEmailMutation.mutate({ userId: member.id, emailType: 'photo-reminder' })}
+                          disabled={previewEmailMutation.isPending}
                           data-testid={`send-photo-reminder-${member.id}`}
                         >
                           <Send className="w-4 h-4" />
@@ -753,8 +783,8 @@ export default function Admin() {
                           size="sm"
                           variant="ghost"
                           className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-100"
-                          onClick={() => quickSendEmailMutation.mutate({ userId: completer.id, emailType: 'congratulations' })}
-                          disabled={quickSendEmailMutation.isPending}
+                          onClick={() => previewEmailMutation.mutate({ userId: completer.id, emailType: 'congratulations' })}
+                          disabled={previewEmailMutation.isPending}
                           data-testid={`send-congrats-${completer.id}`}
                         >
                           <Sparkles className="w-4 h-4" />
@@ -919,8 +949,8 @@ export default function Admin() {
                             <DropdownMenuSeparator />
                             {activity.activityType === 'workout_complete' && (
                               <DropdownMenuItem
-                                onClick={() => quickSendEmailMutation.mutate({ userId: activity.userId, emailType: 'congratulations' })}
-                                disabled={quickSendEmailMutation.isPending}
+                                onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'congratulations' })}
+                                disabled={previewEmailMutation.isPending}
                                 data-testid={`send-congrats-activity-${activity.id}`}
                               >
                                 <Sparkles className="w-4 h-4 mr-2 text-green-500" />
@@ -928,16 +958,16 @@ export default function Admin() {
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
-                              onClick={() => quickSendEmailMutation.mutate({ userId: activity.userId, emailType: 're-engagement' })}
-                              disabled={quickSendEmailMutation.isPending}
+                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 're-engagement' })}
+                              disabled={previewEmailMutation.isPending}
                               data-testid={`send-reengagement-activity-${activity.id}`}
                             >
                               <Send className="w-4 h-4 mr-2 text-blue-500" />
                               Send Re-engagement Email
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => quickSendEmailMutation.mutate({ userId: activity.userId, emailType: 'photo-reminder' })}
-                              disabled={quickSendEmailMutation.isPending}
+                              onClick={() => previewEmailMutation.mutate({ userId: activity.userId, emailType: 'photo-reminder' })}
+                              disabled={previewEmailMutation.isPending}
                               data-testid={`send-photo-activity-${activity.id}`}
                             >
                               <Camera className="w-4 h-4 mr-2 text-purple-500" />
