@@ -173,6 +173,8 @@ export default function AdminAutomationSettings() {
       return <CheckCircle className="h-5 w-5" />;
     } else if (triggerType.startsWith("user_inactivity")) {
       return <AlertCircle className="h-5 w-5" />;
+    } else if (triggerType === "incomplete_signup_3d") {
+      return <AlertCircle className="h-5 w-5" />;
     }
     return <Zap className="h-5 w-5" />;
   };
@@ -200,6 +202,13 @@ export default function AdminAutomationSettings() {
         <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
           <AlertCircle className="h-3 w-3 mr-1" />
           {days} Days Inactive
+        </Badge>
+      );
+    } else if (triggerType === "incomplete_signup_3d") {
+      return (
+        <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0">
+          <AlertCircle className="h-3 w-3 mr-1" />
+          Incomplete Signup (3 Days)
         </Badge>
       );
     }
@@ -316,6 +325,8 @@ export default function AdminAutomationSettings() {
                               ? "bg-gradient-to-r from-pink-100 to-purple-100" 
                               : rule.triggerType === "program_completion"
                               ? "bg-gradient-to-r from-green-100 to-emerald-100"
+                              : rule.triggerType === "incomplete_signup_3d"
+                              ? "bg-gradient-to-r from-yellow-100 to-amber-100"
                               : "bg-gradient-to-r from-amber-100 to-orange-100"
                           }`}>
                             {getTriggerIcon(rule.triggerType)}
