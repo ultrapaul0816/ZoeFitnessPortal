@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, Activity, LogIn, CheckCircle } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useForm } from "react-hook-form";
@@ -110,6 +110,24 @@ export default function Admin() {
   const { data: assets = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/assets"],
     enabled: !!user?.isAdmin,
+  });
+
+  // Fetch recent activity logs for activity feed
+  const { data: activityLogs = [], isLoading: activityLoading } = useQuery<Array<{
+    id: number;
+    userId: string;
+    activityType: string;
+    metadata: Record<string, any>;
+    createdAt: string;
+    user?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  }>>({
+    queryKey: ["/api/admin/activity-logs"],
+    enabled: !!user?.isAdmin,
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Fetch member's enrolled programs when a member is selected
@@ -527,6 +545,120 @@ export default function Admin() {
             </CardContent>
           </Card>
         )}
+
+        {/* Activity Feed */}
+        <Card className="border-none shadow-md">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Activity className="w-5 h-5 text-pink-500" />
+                Recent Activity
+              </CardTitle>
+              <Badge variant="secondary" className="text-xs">
+                Live Updates
+              </Badge>
+            </div>
+            <CardDescription>Real-time member activity feed</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {activityLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : activityLogs.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p>No recent activity</p>
+                <p className="text-sm">Member activities will appear here</p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+                {activityLogs.slice(0, 20).map((activity) => {
+                  const timeAgo = (dateString: string) => {
+                    const date = new Date(dateString);
+                    const now = new Date();
+                    const diff = now.getTime() - date.getTime();
+                    const minutes = Math.floor(diff / 60000);
+                    const hours = Math.floor(diff / 3600000);
+                    const days = Math.floor(diff / 86400000);
+                    
+                    if (minutes < 1) return 'Just now';
+                    if (minutes < 60) return `${minutes}m ago`;
+                    if (hours < 24) return `${hours}h ago`;
+                    if (days < 7) return `${days}d ago`;
+                    return date.toLocaleDateString();
+                  };
+
+                  const getActivityIcon = (type: string) => {
+                    switch (type) {
+                      case 'login':
+                        return <LogIn className="w-4 h-4 text-blue-500" />;
+                      case 'workout_complete':
+                        return <CheckCircle className="w-4 h-4 text-green-500" />;
+                      case 'workout_start':
+                        return <Dumbbell className="w-4 h-4 text-pink-500" />;
+                      default:
+                        return <Activity className="w-4 h-4 text-gray-400" />;
+                    }
+                  };
+
+                  const getActivityDescription = (type: string, metadata: Record<string, any>) => {
+                    switch (type) {
+                      case 'login':
+                        return `Logged in${metadata?.method === 'otp' ? ' via OTP' : ''}`;
+                      case 'workout_complete':
+                        return `Completed ${metadata?.workoutName || 'a workout'}${metadata?.day ? ` (Day ${metadata.day})` : ''}`;
+                      case 'workout_start':
+                        return `Started ${metadata?.workoutName || 'a workout'}`;
+                      default:
+                        return type.replace(/_/g, ' ');
+                    }
+                  };
+
+                  const getActivityColor = (type: string) => {
+                    switch (type) {
+                      case 'login':
+                        return 'bg-blue-50 border-blue-100';
+                      case 'workout_complete':
+                        return 'bg-green-50 border-green-100';
+                      case 'workout_start':
+                        return 'bg-pink-50 border-pink-100';
+                      default:
+                        return 'bg-gray-50 border-gray-100';
+                    }
+                  };
+
+                  const userName = activity.user 
+                    ? `${activity.user.firstName} ${activity.user.lastName}`
+                    : 'Unknown User';
+
+                  return (
+                    <div 
+                      key={activity.id} 
+                      className={`flex items-start gap-3 p-3 rounded-lg border ${getActivityColor(activity.activityType)}`}
+                      data-testid={`activity-item-${activity.id}`}
+                    >
+                      <div className="flex-shrink-0 mt-0.5">
+                        {getActivityIcon(activity.activityType)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">
+                          {userName}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {getActivityDescription(activity.activityType, activity.metadata || {})}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 text-xs text-gray-400">
+                        {timeAgo(activity.createdAt)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
         </div>
       )}
 
