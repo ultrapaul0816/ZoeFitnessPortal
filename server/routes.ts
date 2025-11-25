@@ -23,6 +23,7 @@ import rateLimit from "express-rate-limit";
 import { emailService } from "./email/service";
 import { replaceTemplateVariables, generateUserVariables, generateSampleVariables } from "./email/template-variables";
 import OpenAI from "openai";
+import { getSpotifyClient, isSpotifyConnected, workoutPlaylists, getPlaylistDetails, getPlaybackState, controlPlayback } from "./spotify";
 
 // Rate limiting configurations
 const loginLimiter = rateLimit({
@@ -3586,6 +3587,73 @@ RESPONSE GUIDELINES:
     } catch (error) {
       console.error("Delete photo error:", error);
       res.status(500).json({ message: "Failed to delete photo" });
+    }
+  });
+
+  // ==================== SPOTIFY ROUTES ====================
+  
+  // Check if Spotify is connected
+  app.get("/api/spotify/status", async (req, res) => {
+    try {
+      const connected = await isSpotifyConnected();
+      res.json({ connected });
+    } catch (error) {
+      res.json({ connected: false });
+    }
+  });
+
+  // Get workout playlists for all weeks
+  app.get("/api/spotify/workout-playlists", async (req, res) => {
+    try {
+      res.json(workoutPlaylists);
+    } catch (error) {
+      console.error("Error fetching workout playlists:", error);
+      res.status(500).json({ message: "Failed to fetch playlists" });
+    }
+  });
+
+  // Get specific playlist details from Spotify
+  app.get("/api/spotify/playlist/:playlistId", async (req, res) => {
+    try {
+      const { playlistId } = req.params;
+      const details = await getPlaylistDetails(playlistId);
+      if (details) {
+        res.json(details);
+      } else {
+        res.status(404).json({ message: "Playlist not found" });
+      }
+    } catch (error) {
+      console.error("Error fetching playlist details:", error);
+      res.status(500).json({ message: "Failed to fetch playlist details" });
+    }
+  });
+
+  // Get current playback state
+  app.get("/api/spotify/playback", async (req, res) => {
+    try {
+      const state = await getPlaybackState();
+      res.json(state || { isPlaying: false, track: null, device: null });
+    } catch (error) {
+      console.error("Error getting playback state:", error);
+      res.status(500).json({ message: "Failed to get playback state" });
+    }
+  });
+
+  // Control playback (play/pause/next/previous)
+  app.post("/api/spotify/playback/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const { contextUri } = req.body;
+      
+      if (!['play', 'pause', 'next', 'previous'].includes(action)) {
+        return res.status(400).json({ message: "Invalid action" });
+      }
+      
+      const result = await controlPlayback(action as any, contextUri);
+      res.json(result);
+    } catch (error) {
+      console.error("Playback control error:", error);
+      res.status(500).json({ message: "Failed to control playback" });
     }
   });
 
