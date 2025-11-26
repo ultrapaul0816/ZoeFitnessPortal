@@ -170,13 +170,13 @@ export default function CheckinModal({
   const handleMoodSelect = (value: string) => {
     setMood(value);
     saveProgressively({ mood: value }, true);
-    setCountdown(2);
+    setCountdown(1);
   };
 
   const handleEnergySelect = (value: number) => {
     setEnergyLevel(value);
     saveProgressively({ mood, energyLevel: value }, true);
-    setCountdown(2);
+    setCountdown(1);
   };
 
   const cancelCountdown = () => {
