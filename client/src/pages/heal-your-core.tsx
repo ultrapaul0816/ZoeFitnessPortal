@@ -184,20 +184,24 @@ export default function HealYourCorePage() {
     staleTime: 1 * 60 * 1000, // Cache for 1 minute
   });
 
-  // Check if user should see disclaimer modal on this session
+  // Check if user should see disclaimer modal - only show if they haven't accepted yet
   useEffect(() => {
     if (user && (accessData as any)?.hasAccess) {
-      const shouldShowDisclaimer = sessionStorage.getItem("showDisclaimerOnSession");
-      if (shouldShowDisclaimer === "true") {
+      // Only show disclaimer if user hasn't accepted it yet (check database value)
+      if (!user.disclaimerAccepted) {
         setShowWelcomeModal(true);
       }
+      // Clear the old session storage flag since we now use database
+      sessionStorage.removeItem("showDisclaimerOnSession");
     }
   }, [user, accessData]);
 
   const handleWelcomeClose = (hasConsented: boolean) => {
-    if (hasConsented) {
-      // Clear the session flag so disclaimer won't show again this session
-      sessionStorage.removeItem("showDisclaimerOnSession");
+    if (hasConsented && user) {
+      // Update local user state to reflect acceptance
+      const updatedUser = { ...user, disclaimerAccepted: true };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     }
     setShowWelcomeModal(false);
   };
