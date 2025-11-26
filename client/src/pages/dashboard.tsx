@@ -709,9 +709,8 @@ export default function Dashboard() {
           className="mb-8"
         />
 
-        {/* TEMPORARILY HIDDEN - Today's Workout Card - Main workout experience */}
-        {/* Uncomment to restore: memberPrograms.length > 0 && ( */}
-        {false && (
+        {/* Today's Workout Card - Main workout experience */}
+        {memberPrograms.length > 0 && (
           <section className="mb-8">
             <TodaysWorkout 
               userId={user.id}
