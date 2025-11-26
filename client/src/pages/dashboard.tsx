@@ -19,7 +19,8 @@ import ProfileBanner from "@/components/profile-banner";
 import CheckinModal from "@/components/checkin-modal";
 import TodaysWorkout from "@/components/todays-workout";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
-import programCover from "@assets/program-cover.png";
+
+const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
 
 // Determine if we should show the check-in modal based on user data
 function shouldPromptCheckin(user: UserType): boolean {
@@ -733,7 +734,7 @@ export default function Dashboard() {
               {/* Program Cover Image */}
               <div className="relative w-full aspect-[16/9] overflow-hidden">
                 <img 
-                  src={programCover} 
+                  src={PROGRAM_IMAGE_URL} 
                   alt="Heal Your Core Program" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
