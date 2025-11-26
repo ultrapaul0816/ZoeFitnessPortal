@@ -81,6 +81,7 @@ export default function Dashboard() {
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
+  const [isWorkoutExpanded, setIsWorkoutExpanded] = useState(false); // Start minimized
 
   // Auto-hide welcome message after 3 seconds
   useEffect(() => {
@@ -709,7 +710,47 @@ export default function Dashboard() {
           className="mb-8"
         />
 
-        {/* Today's Workout Card - Main workout experience */}
+        {/* User Journey Card - Shows progress and Start Now button */}
+        {memberPrograms.length > 0 && (
+          <section className="mb-6">
+            <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border-purple-200 shadow-md overflow-hidden">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center shadow-md">
+                      <ClipboardCheck className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-800">Your Journey</h3>
+                      <p className="text-gray-600 text-sm">
+                        Week {Math.ceil((stats.completedWorkouts + 1) / 4) || 1} • Day {((stats.completedWorkouts % 4) + 1) || 1}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-24 h-1.5 bg-pink-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all"
+                            style={{ width: `${Math.min((stats.completedWorkouts / 20) * 100, 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-500">{stats.completedWorkouts}/20 workouts</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setIsWorkoutExpanded(true)}
+                    className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-5 py-2 shadow-md"
+                    data-testid="button-start-now-journey"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Start Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        )}
+
+        {/* Today's Workout Card - Main workout experience (collapsible) */}
         {memberPrograms.length > 0 && (
           <section className="mb-8">
             <TodaysWorkout 
@@ -718,6 +759,8 @@ export default function Dashboard() {
               onStartWorkout={(weekNumber) => {
                 setLocation(`/heal-your-core?week=${weekNumber}`);
               }}
+              isExpanded={isWorkoutExpanded}
+              onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
             />
           </section>
         )}
