@@ -787,18 +787,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.body;
 
+      if (!userId) {
+        console.error("[accept-disclaimer] Missing userId in request body");
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`[accept-disclaimer] Processing for userId: ${userId}`);
+
       const updatedUser = await storage.updateUser(userId, {
         disclaimerAccepted: true,
         disclaimerAcceptedAt: new Date(),
       });
 
       if (!updatedUser) {
+        console.error(`[accept-disclaimer] User not found: ${userId}`);
         return res.status(404).json({ message: "User not found" });
       }
 
+      console.log(`[accept-disclaimer] Successfully updated for userId: ${userId}`);
       res.json({ success: true });
     } catch (error) {
-      res.status(500).json({ message: "Failed to accept disclaimer" });
+      console.error("[accept-disclaimer] Error:", error);
+      res.status(500).json({ message: "Failed to accept disclaimer", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 

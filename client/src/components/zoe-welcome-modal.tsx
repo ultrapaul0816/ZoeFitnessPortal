@@ -32,20 +32,30 @@ export default function ZoeWelcomeModal({
   userId,
 }: ZoeWelcomeModalProps) {
   const [hasConsented, setHasConsented] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const { toast } = useToast();
 
   const acceptDisclaimerMutation = useMutation({
     mutationFn: async () => {
+      if (!userId) {
+        throw new Error("User ID is missing");
+      }
+      
       const response = await fetch("/api/auth/accept-disclaimer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
+        credentials: "include",
       });
+      
       if (!response.ok) {
-        throw new Error("Failed to accept disclaimer");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to accept disclaimer");
       }
       return response.json();
     },
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
     onSuccess: () => {
       toast({
         title: "Disclaimer Accepted",
@@ -53,11 +63,15 @@ export default function ZoeWelcomeModal({
       });
       onClose(true);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Disclaimer acceptance failed:", error);
+      setRetryCount(prev => prev + 1);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save disclaimer acceptance. Please try again.",
+        description: retryCount >= 2 
+          ? "Still having trouble saving. Please refresh the page and try again."
+          : "Failed to save disclaimer acceptance. Please try again.",
       });
     },
   });
