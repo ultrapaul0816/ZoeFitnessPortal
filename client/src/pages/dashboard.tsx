@@ -723,43 +723,68 @@ export default function Dashboard() {
           </section>
         )}
 
-        {/* Program Access Card - With engaging program image */}
+        {/* Program Access Card - Full design matching the original */}
         {memberPrograms.length > 0 && (
-          <section className="mb-8">
-            <button
-              onClick={() => setLocation('/heal-your-core')}
-              className="w-full bg-white rounded-2xl border border-pink-200 hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden group"
-              data-testid="button-view-full-program"
-            >
-              {/* Program Cover Image */}
-              <div className="relative w-full aspect-[16/9] overflow-hidden">
-                <img 
-                  src={PROGRAM_IMAGE_URL} 
-                  alt="Heal Your Core Program" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 text-left">
-                  <h3 className="text-xl font-bold text-white mb-1">Heal Your Core</h3>
-                  <p className="text-sm text-white/90">6-Week Postpartum Recovery Program</p>
+          <section className="mb-8 flex justify-center">
+            <div className="w-full max-w-md">
+              <button
+                onClick={() => setLocation('/heal-your-core')}
+                className="w-full bg-white rounded-2xl border border-gray-200 hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left"
+                data-testid="button-view-full-program"
+              >
+                {/* Program Cover Image - Tall aspect ratio */}
+                <div className="relative w-full aspect-[4/5] overflow-hidden">
+                  <img 
+                    src={PROGRAM_IMAGE_URL} 
+                    alt="Heal Your Core Program" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-pink-500 text-white text-xs font-semibold rounded-full">
-                    ENROLLED
-                  </span>
-                </div>
-              </div>
-              {/* Card Footer */}
-              <div className="p-4 flex items-center justify-between bg-gradient-to-r from-pink-50 to-purple-50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
-                    <Play className="w-5 h-5 text-white" />
+                
+                {/* Program Details */}
+                <div className="p-5 space-y-4">
+                  <h3 className="text-xl font-bold text-gray-900">Your Postpartum Strength Recovery Program</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.
+                  </p>
+                  
+                  {/* Program Info */}
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Calendar className="w-4 h-4 text-pink-500" />
+                      <span className="text-sm">6 Weeks</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
+                      <span className="text-sm">Postnatal level</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">🏋️</span>
+                      <span className="text-sm">Minimal Equipment</span>
+                    </div>
                   </div>
-                  <span className="font-medium text-gray-700">View Full Program</span>
+                  
+                  {/* Premium Access Badge */}
+                  <div className="pt-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-green-500 text-green-600 text-sm font-medium rounded-full">
+                      <span>☆</span> Premium Access
+                    </span>
+                  </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-pink-500 transition-colors" />
-              </div>
-            </button>
+                
+                {/* Continue Button */}
+                <div className="px-5 pb-5">
+                  <div className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg flex items-center justify-center gap-2">
+                    <Play className="w-4 h-4" />
+                    Continue
+                  </div>
+                  <p className="text-center text-green-600 text-sm mt-2 flex items-center justify-center gap-1">
+                    <CheckCircle className="w-4 h-4" />
+                    You have full access to this program
+                  </p>
+                </div>
+              </button>
+            </div>
           </section>
         )}
 
