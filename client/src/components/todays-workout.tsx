@@ -24,6 +24,7 @@ import {
   Heart,
   Eye,
   ChevronDown,
+  ChevronUp,
   Camera
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
@@ -36,6 +37,8 @@ interface TodaysWorkoutProps {
   userId: string;
   onStartWorkout?: (weekNumber: number) => void;
   isFirstLogin?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
 interface WorkoutProgress {
@@ -108,7 +111,7 @@ function getYouTubeEmbedUrl(url: string): string {
   return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : "";
 }
 
-export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = false }: TodaysWorkoutProps) {
+export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = false, isExpanded = true, onToggleExpand }: TodaysWorkoutProps) {
   const [showZoeChat, setShowZoeChat] = useState(false);
   const [showVideoPlayer, setShowVideoPlayer] = useState<string | null>(null);
   const [showTomorrowPreview, setShowTomorrowPreview] = useState(false);
@@ -593,6 +596,41 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     );
   }
 
+  // Collapsed view - shows minimal card when minimized
+  if (!isExpanded) {
+    return (
+      <Card 
+        className="border-pink-200 bg-gradient-to-r from-pink-500 to-rose-500 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+        onClick={onToggleExpand}
+        data-testid="card-todays-workout-collapsed"
+      >
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between text-white">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <Dumbbell className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">Today's Workout</h3>
+                <p className="text-pink-100 text-sm">
+                  Week {progress.currentWeek} • Day {progress.currentDay}
+                  {isWorkoutCompletedToday && " ✓ Complete"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="text-right mr-2">
+                <div className="font-bold">{progress.weeklyWorkoutsCompleted}/{progress.weeklyWorkoutsTotal}</div>
+                <div className="text-xs text-pink-100">this week</div>
+              </div>
+              <ChevronDown className="w-5 h-5" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <>
       {/* Confetti Celebration Animation */}
@@ -630,9 +668,21 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 Week {progress.currentWeek} • Day {progress.currentDay}
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold">{progress.weeklyWorkoutsCompleted}/{progress.weeklyWorkoutsTotal}</div>
-              <div className="text-xs text-pink-100">this week</div>
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div className="text-2xl font-bold">{progress.weeklyWorkoutsCompleted}/{progress.weeklyWorkoutsTotal}</div>
+                <div className="text-xs text-pink-100">this week</div>
+              </div>
+              {onToggleExpand && (
+                <button
+                  onClick={onToggleExpand}
+                  className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                  data-testid="button-minimize-workout"
+                  aria-label="Minimize workout"
+                >
+                  <ChevronUp className="w-5 h-5" />
+                </button>
+              )}
             </div>
           </div>
           <Progress 
