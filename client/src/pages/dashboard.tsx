@@ -19,6 +19,7 @@ import ProfileBanner from "@/components/profile-banner";
 import CheckinModal from "@/components/checkin-modal";
 import TodaysWorkout from "@/components/todays-workout";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
+import programCover from "@assets/program-cover.png";
 
 // Determine if we should show the check-in modal based on user data
 function shouldPromptCheckin(user: UserType): boolean {
@@ -721,24 +722,42 @@ export default function Dashboard() {
           </section>
         )}
 
-        {/* Program Access Card - Simplified since already purchased */}
+        {/* Program Access Card - With engaging program image */}
         {memberPrograms.length > 0 && (
           <section className="mb-8">
             <button
               onClick={() => setLocation('/heal-your-core')}
-              className="w-full p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border border-pink-200 hover:border-pink-300 transition-all hover:shadow-md flex items-center justify-between group"
+              className="w-full bg-white rounded-2xl border border-pink-200 hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden group"
               data-testid="button-view-full-program"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
-                  <Play className="w-6 h-6 text-white" />
+              {/* Program Cover Image */}
+              <div className="relative w-full aspect-[16/9] overflow-hidden">
+                <img 
+                  src={programCover} 
+                  alt="Heal Your Core Program" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 text-left">
+                  <h3 className="text-xl font-bold text-white mb-1">Heal Your Core</h3>
+                  <p className="text-sm text-white/90">6-Week Postpartum Recovery Program</p>
                 </div>
-                <div className="text-left">
-                  <h3 className="font-semibold text-gray-800">View Full Program</h3>
-                  <p className="text-sm text-gray-500">Browse all 6 weeks, nutrition guide, and more</p>
+                <div className="absolute top-4 right-4">
+                  <span className="px-3 py-1 bg-pink-500 text-white text-xs font-semibold rounded-full">
+                    ENROLLED
+                  </span>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-pink-500 transition-colors" />
+              {/* Card Footer */}
+              <div className="p-4 flex items-center justify-between bg-gradient-to-r from-pink-50 to-purple-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                    <Play className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-medium text-gray-700">View Full Program</span>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-pink-500 transition-colors" />
+              </div>
             </button>
           </section>
         )}
