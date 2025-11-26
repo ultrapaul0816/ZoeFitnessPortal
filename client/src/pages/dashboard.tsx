@@ -127,12 +127,12 @@ export default function Dashboard() {
                   const todayCheckin = await checkinResponse.json();
                   // Only show modal if there's NO existing check-in today
                   if (!todayCheckin) {
-                    setTimeout(() => setShowCheckinModal(true), 1500);
+                    setTimeout(() => setShowCheckinModal(true), 1000);
                   }
                 }
               } catch (error) {
                 // On error, default to showing the modal
-                setTimeout(() => setShowCheckinModal(true), 1500);
+                setTimeout(() => setShowCheckinModal(true), 1000);
               }
             }
           }

@@ -347,7 +347,9 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     }
   };
 
-  if (showFirstWorkoutWelcome && isFirstWorkout) {
+  // TEMPORARILY HIDDEN - Uncomment to restore first workout welcome flow
+  // if (showFirstWorkoutWelcome && isFirstWorkout) {
+  if (false) {
     return (
       <Card className="border-pink-200 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 shadow-xl overflow-hidden">
         <CardContent className="p-6 space-y-6">
