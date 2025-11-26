@@ -30,6 +30,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { workoutPrograms, ProgramData, Exercise } from "@/data/workoutPrograms";
 import { SpotifyWidget } from "@/components/spotify-widget";
+import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 
 interface TodaysWorkoutProps {
   userId: string;
@@ -438,9 +439,61 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </p>
               </div>
 
+              {/* Example Photo & Tips Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Example Image */}
+                <div className="bg-white rounded-xl p-4 border-2 border-pink-200 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-4 h-4 text-pink-600" />
+                    <h3 className="text-sm font-bold text-gray-900">Example Photo Angle</h3>
+                  </div>
+                  <div className="relative rounded-lg overflow-hidden mb-2 bg-gray-100">
+                    <img 
+                      src={examplePhotoImage} 
+                      alt="Example progress photo showing proper angle" 
+                      className="w-full h-auto object-contain max-h-48"
+                      data-testid="img-example-photo-welcome"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600 text-center italic">
+                    Side-angle view showing body posture and core area clearly
+                  </p>
+                </div>
+
+                {/* Photography Tips */}
+                <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 border-2 border-pink-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Info className="w-4 h-4 text-pink-600" />
+                    <h3 className="text-sm font-bold text-gray-900">Photography Tips</h3>
+                  </div>
+                  <ul className="space-y-2 text-xs text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-600 font-bold">1.</span>
+                      <span><strong>Same Location & Lighting:</strong> Use consistent lighting each time</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-600 font-bold">2.</span>
+                      <span><strong>Fitted Clothing:</strong> Wear form-fitting clothes or sports bra</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-600 font-bold">3.</span>
+                      <span><strong>Side-Angle Mirror Selfie:</strong> Side-profile shows core changes best</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-600 font-bold">4.</span>
+                      <span><strong>Consistent Distance:</strong> Capture from chest to upper thighs</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-pink-600 font-bold">5.</span>
+                      <span><strong>Privacy Assured:</strong> Your photos are completely private—only you can see them</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
               <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
                 <p className="text-purple-700 text-sm text-center mb-4">
-                  This is completely optional and private to you. You can always add it later in the Progress tab.
+                  This is completely optional. You can always add it later in the Progress tab.
                 </p>
                 
                 <input
