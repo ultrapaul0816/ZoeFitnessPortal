@@ -710,8 +710,8 @@ export default function Dashboard() {
           className="mb-8"
         />
 
-        {/* User Journey Card - Shows progress and Start Now button */}
-        {memberPrograms.length > 0 && (
+        {/* TEMPORARILY HIDDEN - User Journey Card - Shows progress and Start Now button */}
+        {/* {memberPrograms.length > 0 && (
           <section className="mb-6">
             <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border-purple-200 shadow-md overflow-hidden">
               <CardContent className="p-5">
@@ -748,10 +748,10 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </section>
-        )}
+        )} */}
 
-        {/* Today's Workout Card - Main workout experience (collapsible) */}
-        {memberPrograms.length > 0 && (
+        {/* TEMPORARILY HIDDEN - Today's Workout Card - Main workout experience (collapsible) */}
+        {/* {memberPrograms.length > 0 && (
           <section className="mb-8">
             <TodaysWorkout 
               userId={user.id}
@@ -763,7 +763,7 @@ export default function Dashboard() {
               onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
             />
           </section>
-        )}
+        )} */}
 
         {/* Program Access Card - Full design matching the original */}
         {memberPrograms.length > 0 && (
