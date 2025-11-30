@@ -12,6 +12,7 @@ import {
   passwordSchema,
   insertEmailCampaignSchema,
   insertUserCheckinSchema,
+  insertDailyCheckinSchema,
 } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
@@ -738,6 +739,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error(`[CHECKIN] Error dismissing check-in:`, error?.message || error);
       res.status(500).json({ message: "Failed to dismiss check-in" });
+    }
+  });
+
+  // Daily Performance Check-ins (habits & wellness tracking)
+  app.post("/api/daily-checkins", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Check if there's already a check-in for today
+      const existingCheckin = await storage.getTodayDailyCheckin(req.session.userId);
+      if (existingCheckin) {
+        // Update existing check-in
+        const updated = await storage.updateDailyCheckin(
+          existingCheckin.id,
+          req.session.userId,
+          req.body
+        );
+        return res.json(updated);
+      }
+
+      // Create new check-in
+      const checkinData = insertDailyCheckinSchema.parse({
+        ...req.body,
+        userId: req.session.userId,
+        date: new Date(),
+      });
+
+      const checkin = await storage.createDailyCheckin(checkinData);
+      res.status(201).json(checkin);
+    } catch (error: any) {
+      console.error(`[DAILY-CHECKIN] Error creating check-in:`, error?.message || error);
+      res.status(400).json({ message: error?.message || "Failed to create daily check-in" });
+    }
+  });
+
+  app.get("/api/daily-checkins/today", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const todayCheckin = await storage.getTodayDailyCheckin(req.session.userId);
+      res.json(todayCheckin || null);
+    } catch (error: any) {
+      console.error(`[DAILY-CHECKIN] Error fetching today's check-in:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch today's check-in" });
+    }
+  });
+
+  app.get("/api/daily-checkins/week", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get the start of the current week (Monday)
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Adjust for Sunday
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - diff);
+      weekStart.setHours(0, 0, 0, 0);
+
+      const weekCheckins = await storage.getWeeklyDailyCheckins(req.session.userId, weekStart);
+      res.json(weekCheckins);
+    } catch (error: any) {
+      console.error(`[DAILY-CHECKIN] Error fetching week's check-ins:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch weekly check-ins" });
+    }
+  });
+
+  app.get("/api/daily-checkins/stats", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const days = parseInt(req.query.days as string) || 30;
+      const stats = await storage.getDailyCheckinStats(req.session.userId, days);
+      res.json(stats);
+    } catch (error: any) {
+      console.error(`[DAILY-CHECKIN] Error fetching stats:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch check-in stats" });
+    }
+  });
+
+  app.patch("/api/daily-checkins/:id", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const checkin = await storage.updateDailyCheckin(id, req.session.userId, req.body);
+
+      if (!checkin) {
+        return res.status(404).json({ message: "Check-in not found" });
+      }
+
+      res.json(checkin);
+    } catch (error: any) {
+      console.error(`[DAILY-CHECKIN] Error updating check-in:`, error?.message || error);
+      res.status(400).json({ message: error?.message || "Failed to update daily check-in" });
+    }
+  });
+
+  // Weekly summary with WhatsApp share data
+  app.get("/api/daily-checkins/weekly-summary", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Get the start of the current week (Monday)
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - diff);
+      weekStart.setHours(0, 0, 0, 0);
+
+      const weekCheckins = await storage.getWeeklyDailyCheckins(req.session.userId, weekStart);
+      const stats = await storage.getDailyCheckinStats(req.session.userId, 7);
+      
+      // Get user info for personalized message
+      const user = await storage.getUser(req.session.userId);
+
+      // Calculate week number in program (if enrolled)
+      const memberPrograms = await storage.getMemberPrograms(req.session.userId);
+      const activeProgram = memberPrograms.find(mp => mp.isActive);
+      let programWeek = 1;
+      if (activeProgram) {
+        const daysSinceStart = Math.floor(
+          (Date.now() - new Date(activeProgram.purchaseDate || Date.now()).getTime()) / (1000 * 60 * 60 * 24)
+        );
+        programWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 6);
+      }
+
+      // Generate WhatsApp share message
+      const shareMessage = `*Week ${programWeek} Progress!* 💪\n\n` +
+        `✅ Workouts: ${stats.workoutDays}/7 days\n` +
+        `🧘 Breathing: ${stats.breathingDays}/7 days\n` +
+        `💧 Avg Water: ${stats.avgWaterGlasses} glasses/day\n` +
+        `🏃 Avg Cardio: ${stats.avgCardioMinutes} min/day\n` +
+        `🔥 Current Streak: ${stats.currentStreak} days\n\n` +
+        `#PostpartumStrength #HealYourCore`;
+
+      res.json({
+        weekStart: weekStart.toISOString(),
+        checkins: weekCheckins,
+        stats,
+        programWeek,
+        shareMessage,
+        whatsappUrl: `https://wa.me/?text=${encodeURIComponent(shareMessage)}`,
+      });
+    } catch (error: any) {
+      console.error(`[DAILY-CHECKIN] Error fetching weekly summary:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch weekly summary" });
     }
   });
 
