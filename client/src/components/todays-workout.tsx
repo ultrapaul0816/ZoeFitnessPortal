@@ -118,7 +118,6 @@ function getYouTubeEmbedUrl(url: string): string {
 export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = false, isExpanded = true, onToggleExpand }: TodaysWorkoutProps) {
   const [showZoeChat, setShowZoeChat] = useState(false);
   const [showVideoPlayer, setShowVideoPlayer] = useState<string | null>(null);
-  const [showTomorrowPreview, setShowTomorrowPreview] = useState(false);
   const [showProgramInfo, setShowProgramInfo] = useState(false);
   const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -339,12 +338,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const allExercisesComplete = completedExercises.size === exercises.length;
   const isWorkoutCompletedToday = progress.workoutCompletedToday;
   const programInfo = programOverviews[progress.currentWeek] || programOverviews[1];
-
-  const weeklyWorkoutsForCurrentWeek = progress.currentWeek === 1 ? 4 : 3;
-  const isTomorrowNewWeek = progress.currentDay >= weeklyWorkoutsForCurrentWeek;
-  const tomorrowProgram = isTomorrowNewWeek
-    ? workoutPrograms.find(p => p.week === progress.currentWeek + 1) || currentProgram
-    : currentProgram;
 
   const isFirstWorkout = progress.totalWorkoutsCompleted === 0 && !isWorkoutCompletedToday;
 
@@ -838,58 +831,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 )}
               </div>
 
-              {/* Next Workout - Clear Tomorrow Message */}
-              <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <Calendar className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-purple-800 text-lg">
-                      {isTomorrowNewWeek 
-                        ? `Next: Week ${progress.currentWeek + 1}, Day 1`
-                        : `Next: Week ${progress.currentWeek}, Day ${progress.currentDay + 1}`
-                      }
-                    </h4>
-                    <p className="text-purple-600 text-sm font-medium">
-                      See you tomorrow! 
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="mt-3 pt-3 border-t border-purple-100">
-                  {isTomorrowNewWeek ? (
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold text-gray-700">{tomorrowProgram.title}</p>
-                      <p className="text-xs text-gray-500">{tomorrowProgram.subtitle} • {tomorrowProgram.schedule}</p>
-                      <p className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded inline-block">
-                        {tomorrowProgram.part2.exercises.length} exercises × 3 rounds
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <p className="text-sm text-gray-600">
-                        Same workout, building your strength one day at a time
-                      </p>
-                      <p className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded inline-block">
-                        {tomorrowProgram.part2.exercises.length} exercises × 3 rounds
-                      </p>
-                    </div>
-                  )}
-                </div>
-                
-                <Button
-                  onClick={() => setShowTomorrowPreview(true)}
-                  variant="outline"
-                  size="sm"
-                  className="mt-3 w-full border-purple-200 text-purple-600 hover:bg-purple-50"
-                  data-testid="button-preview-tomorrow"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  Preview Tomorrow's Workout
-                </Button>
-              </div>
-
               {/* Rest Day Message */}
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-500">
@@ -1164,14 +1105,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowTomorrowPreview(true)}
-                className="w-full text-sm text-gray-500 hover:text-pink-600 flex items-center justify-center gap-1 py-2"
-                data-testid="button-peek-tomorrow"
-              >
-                <Calendar className="w-4 h-4" />
-                Peek at Tomorrow's Workout
-              </button>
             </>
           )}
         </CardContent>
@@ -1189,55 +1122,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 allowFullScreen
               />
             )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Tomorrow Preview Dialog */}
-      <Dialog open={showTomorrowPreview} onOpenChange={setShowTomorrowPreview}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-pink-500" />
-              Tomorrow's Workout
-            </DialogTitle>
-            <DialogDescription>
-              Here's what's coming up next
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 pt-4">
-            <div className={`p-3 rounded-lg ${tomorrowProgram.colorScheme.bgColor} border ${tomorrowProgram.colorScheme.borderColor}`}>
-              <h4 className={`font-bold ${tomorrowProgram.colorScheme.textColor}`}>
-                {tomorrowProgram.title}
-              </h4>
-              <p className="text-sm text-gray-600">{tomorrowProgram.schedule}</p>
-            </div>
-
-            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-sm">
-              <p className="text-amber-800">
-                <strong>3 Rounds:</strong> Complete all exercises, then repeat 2 more times.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              {tomorrowProgram.part2.exercises.slice(0, 3).map((exercise, idx) => (
-                <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
-                  <span className="w-6 h-6 rounded-full bg-pink-100 text-pink-600 text-xs font-bold flex items-center justify-center">
-                    {exercise.num}
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">{exercise.name}</p>
-                    <p className="text-sm font-bold text-pink-600">{exercise.reps} <span className="text-gray-400 font-normal">×3</span></p>
-                  </div>
-                </div>
-              ))}
-              {tomorrowProgram.part2.exercises.length > 3 && (
-                <p className="text-sm text-gray-500 text-center">
-                  +{tomorrowProgram.part2.exercises.length - 3} more exercises
-                </p>
-              )}
-            </div>
           </div>
         </DialogContent>
       </Dialog>
