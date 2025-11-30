@@ -912,6 +912,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===========================================
+  // WORKOUT SESSIONS (Progressive Tracking)
+  // ===========================================
+
+  // Get workout progress (current week, completions, all weeks progress)
+  app.get("/api/workout-sessions/progress", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const progress = await storage.getWorkoutSessionProgress(req.session.userId);
+      res.json(progress);
+    } catch (error: any) {
+      console.error(`[WORKOUT-SESSIONS] Error fetching progress:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch workout progress" });
+    }
+  });
+
+  // Log a workout session
+  app.post("/api/workout-sessions", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { week, sessionType, sessionNumber, rating, notes } = req.body;
+
+      // Validate input
+      if (!week || !sessionType || !sessionNumber) {
+        return res.status(400).json({ message: "Week, session type, and session number are required" });
+      }
+
+      if (!['workout', 'cardio'].includes(sessionType)) {
+        return res.status(400).json({ message: "Session type must be 'workout' or 'cardio'" });
+      }
+
+      if (sessionType === 'workout' && (sessionNumber < 1 || sessionNumber > 4)) {
+        return res.status(400).json({ message: "Workout session number must be between 1 and 4" });
+      }
+
+      if (sessionType === 'cardio' && (sessionNumber < 1 || sessionNumber > 2)) {
+        return res.status(400).json({ message: "Cardio session number must be between 1 and 2" });
+      }
+
+      const session = await storage.createWorkoutSession({
+        userId: req.session.userId,
+        week,
+        sessionType,
+        sessionNumber,
+        rating: rating || null,
+        notes: notes || null,
+      });
+
+      res.json(session);
+    } catch (error: any) {
+      console.error(`[WORKOUT-SESSIONS] Error logging session:`, error?.message || error);
+      res.status(500).json({ message: "Failed to log workout session" });
+    }
+  });
+
+  // Get sessions for a specific week
+  app.get("/api/workout-sessions/week/:week", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const week = parseInt(req.params.week);
+      if (isNaN(week) || week < 1 || week > 6) {
+        return res.status(400).json({ message: "Week must be between 1 and 6" });
+      }
+
+      const sessions = await storage.getWeeklyWorkoutSessions(req.session.userId, week);
+      res.json(sessions);
+    } catch (error: any) {
+      console.error(`[WORKOUT-SESSIONS] Error fetching week sessions:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch week sessions" });
+    }
+  });
+
+  // Skip a week (mark as skipped and advance)
+  app.post("/api/workout-sessions/skip-week", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { week } = req.body;
+      if (!week || week < 1 || week > 6) {
+        return res.status(400).json({ message: "Week must be between 1 and 6" });
+      }
+
+      // Get current progress for the week being skipped
+      const progress = await storage.getWorkoutSessionProgress(req.session.userId);
+      const weekProgress = progress.weeklyProgress.find(w => w.week === week);
+      const workoutsCompleted = weekProgress?.workoutsCompleted || 0;
+
+      // Create skipped week record
+      const skippedWeek = await storage.createSkippedWeek(
+        req.session.userId,
+        week,
+        workoutsCompleted
+      );
+
+      // Return updated progress
+      const updatedProgress = await storage.getWorkoutSessionProgress(req.session.userId);
+      res.json({ skippedWeek, progress: updatedProgress });
+    } catch (error: any) {
+      console.error(`[WORKOUT-SESSIONS] Error skipping week:`, error?.message || error);
+      res.status(500).json({ message: "Failed to skip week" });
+    }
+  });
+
   // Accept terms
   app.post("/api/auth/accept-terms", async (req, res) => {
     try {

@@ -50,6 +50,10 @@ import {
   type InsertUserCheckin,
   type DailyCheckin,
   type InsertDailyCheckin,
+  type WeeklyWorkoutSession,
+  type InsertWeeklyWorkoutSession,
+  type SkippedWeek,
+  type InsertSkippedWeek,
 } from "@shared/schema";
 import {
   users,
@@ -87,6 +91,8 @@ import {
   InsertWorkoutContentExercise,
   educationalTopics,
   EducationalTopic,
+  weeklyWorkoutSessions,
+  skippedWeeks,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -366,6 +372,27 @@ export interface IStorage {
     avgCardioMinutes: number;
     currentStreak: number;
   }>;
+
+  // Weekly Workout Sessions (progressive tracking: 4 workouts + 2 cardio per week)
+  createWorkoutSession(session: InsertWeeklyWorkoutSession): Promise<WeeklyWorkoutSession>;
+  getWeeklyWorkoutSessions(userId: string, week: number): Promise<WeeklyWorkoutSession[]>;
+  getAllUserWorkoutSessions(userId: string): Promise<WeeklyWorkoutSession[]>;
+  getWorkoutSessionProgress(userId: string): Promise<{
+    currentWeek: number;
+    workoutsCompletedThisWeek: number;
+    cardioCompletedThisWeek: number;
+    weeklyProgress: Array<{
+      week: number;
+      workoutsCompleted: number;
+      cardioCompleted: number;
+      isComplete: boolean;
+      isSkipped: boolean;
+    }>;
+  }>;
+  
+  // Skipped Weeks tracking
+  createSkippedWeek(userId: string, week: number, workoutsCompleted: number): Promise<SkippedWeek>;
+  getSkippedWeeks(userId: string): Promise<SkippedWeek[]>;
 
   // Workout Program Content (database-driven workout data)
   getWorkoutProgramContent(): Promise<WorkoutProgramContent[]>;
@@ -1979,6 +2006,63 @@ export class MemStorage implements IStorage {
       avgCardioMinutes: 0,
       currentStreak: 0,
     };
+  }
+
+  // Weekly Workout Sessions (MemStorage stubs - not used in production)
+  async createWorkoutSession(session: InsertWeeklyWorkoutSession): Promise<WeeklyWorkoutSession> {
+    const newSession: WeeklyWorkoutSession = {
+      id: randomUUID(),
+      userId: session.userId,
+      week: session.week,
+      sessionType: session.sessionType,
+      sessionNumber: session.sessionNumber,
+      completedAt: new Date(),
+      rating: session.rating || null,
+      notes: session.notes || null,
+    };
+    return newSession;
+  }
+
+  async getWeeklyWorkoutSessions(userId: string, week: number): Promise<WeeklyWorkoutSession[]> {
+    return [];
+  }
+
+  async getAllUserWorkoutSessions(userId: string): Promise<WeeklyWorkoutSession[]> {
+    return [];
+  }
+
+  async getWorkoutSessionProgress(userId: string): Promise<{
+    currentWeek: number;
+    workoutsCompletedThisWeek: number;
+    cardioCompletedThisWeek: number;
+    weeklyProgress: Array<{
+      week: number;
+      workoutsCompleted: number;
+      cardioCompleted: number;
+      isComplete: boolean;
+      isSkipped: boolean;
+    }>;
+  }> {
+    return {
+      currentWeek: 1,
+      workoutsCompletedThisWeek: 0,
+      cardioCompletedThisWeek: 0,
+      weeklyProgress: [],
+    };
+  }
+
+  async createSkippedWeek(userId: string, week: number, workoutsCompleted: number): Promise<SkippedWeek> {
+    return {
+      id: randomUUID(),
+      userId,
+      week,
+      skippedAt: new Date(),
+      workoutsCompletedBeforeSkip: workoutsCompleted,
+    };
+  }
+
+  async getSkippedWeeks(userId: string): Promise<SkippedWeek[]> {
+    return [];
   }
 
   // Workout Program Content (MemStorage stubs - not used in production)
@@ -3832,6 +3916,120 @@ class DatabaseStorage implements IStorage {
       avgCardioMinutes,
       currentStreak,
     };
+  }
+
+  // Weekly Workout Sessions (Progressive Tracking)
+  async createWorkoutSession(session: InsertWeeklyWorkoutSession): Promise<WeeklyWorkoutSession> {
+    const result = await this.db
+      .insert(weeklyWorkoutSessions)
+      .values({
+        userId: session.userId,
+        week: session.week,
+        sessionType: session.sessionType,
+        sessionNumber: session.sessionNumber,
+        rating: session.rating,
+        notes: session.notes,
+      })
+      .returning();
+    return result[0];
+  }
+
+  async getWeeklyWorkoutSessions(userId: string, week: number): Promise<WeeklyWorkoutSession[]> {
+    return await this.db
+      .select()
+      .from(weeklyWorkoutSessions)
+      .where(
+        and(
+          eq(weeklyWorkoutSessions.userId, userId),
+          eq(weeklyWorkoutSessions.week, week)
+        )
+      )
+      .orderBy(asc(weeklyWorkoutSessions.completedAt));
+  }
+
+  async getAllUserWorkoutSessions(userId: string): Promise<WeeklyWorkoutSession[]> {
+    return await this.db
+      .select()
+      .from(weeklyWorkoutSessions)
+      .where(eq(weeklyWorkoutSessions.userId, userId))
+      .orderBy(asc(weeklyWorkoutSessions.week), asc(weeklyWorkoutSessions.completedAt));
+  }
+
+  async getWorkoutSessionProgress(userId: string): Promise<{
+    currentWeek: number;
+    workoutsCompletedThisWeek: number;
+    cardioCompletedThisWeek: number;
+    weeklyProgress: Array<{
+      week: number;
+      workoutsCompleted: number;
+      cardioCompleted: number;
+      isComplete: boolean;
+      isSkipped: boolean;
+    }>;
+  }> {
+    // Get all sessions for this user
+    const sessions = await this.getAllUserWorkoutSessions(userId);
+    
+    // Get skipped weeks
+    const skipped = await this.getSkippedWeeks(userId);
+    const skippedWeekNumbers = new Set(skipped.map(s => s.week));
+    
+    // Calculate progress for each week
+    const weeklyProgress: Array<{
+      week: number;
+      workoutsCompleted: number;
+      cardioCompleted: number;
+      isComplete: boolean;
+      isSkipped: boolean;
+    }> = [];
+    
+    for (let week = 1; week <= 6; week++) {
+      const weekSessions = sessions.filter(s => s.week === week);
+      const workoutsCompleted = weekSessions.filter(s => s.sessionType === 'workout').length;
+      const cardioCompleted = weekSessions.filter(s => s.sessionType === 'cardio').length;
+      const isComplete = workoutsCompleted >= 4 && cardioCompleted >= 2;
+      const isSkipped = skippedWeekNumbers.has(week);
+      
+      weeklyProgress.push({
+        week,
+        workoutsCompleted,
+        cardioCompleted,
+        isComplete,
+        isSkipped,
+      });
+    }
+    
+    // Find current week (first non-complete, non-skipped week, or 6 if all complete)
+    let currentWeek = weeklyProgress.find(w => !w.isComplete && !w.isSkipped)?.week || 6;
+    
+    const currentWeekProgress = weeklyProgress.find(w => w.week === currentWeek);
+    
+    return {
+      currentWeek,
+      workoutsCompletedThisWeek: currentWeekProgress?.workoutsCompleted || 0,
+      cardioCompletedThisWeek: currentWeekProgress?.cardioCompleted || 0,
+      weeklyProgress,
+    };
+  }
+
+  async createSkippedWeek(userId: string, week: number, workoutsCompleted: number): Promise<SkippedWeek> {
+    const result = await this.db
+      .insert(skippedWeeks)
+      .values({
+        userId,
+        week,
+        workoutsCompletedBeforeSkip: workoutsCompleted,
+      })
+      .returning();
+    return result[0];
+  }
+
+  async getSkippedWeeks(userId: string): Promise<SkippedWeek[]> {
+    return await this.db
+      .select()
+      .from(skippedWeeks)
+      .where(eq(skippedWeeks.userId, userId))
+      .orderBy(asc(skippedWeeks.week));
   }
 
   // Workout Program Content Methods
