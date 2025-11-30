@@ -756,10 +756,10 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             <div className="flex items-center gap-3">
               {/* Streak Display */}
               {(sessionProgress?.currentStreak || 0) > 0 && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-400/30 to-pink-400/30 rounded-full border border-purple-300/50">
-                  <Flame className="w-4 h-4 text-purple-200" />
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-pink-400/30 to-purple-400/30 rounded-full border border-pink-300/50">
+                  <Flame className="w-4 h-4 text-pink-200" />
                   <span className="text-sm font-bold text-white">{sessionProgress?.currentStreak}</span>
-                  <span className="text-xs text-purple-100">day streak</span>
+                  <span className="text-xs text-pink-100">day streak</span>
                 </div>
               )}
               <div className="text-right">
@@ -811,7 +811,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </div>
                   {(sessionProgress?.currentStreak || 0) > 0 && (
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-500 flex items-center justify-center gap-1">
+                      <div className="text-2xl font-bold text-pink-500 flex items-center justify-center gap-1">
                         <Flame className="w-5 h-5" />
                         {sessionProgress?.currentStreak}
                       </div>
@@ -827,8 +827,8 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 {/* Motivational Streak Message */}
                 {(sessionProgress?.currentStreak || 0) >= 2 && (
                   <div className="mt-3 text-center">
-                    <p className="text-sm text-purple-600 font-medium">
-                      {sessionProgress?.currentStreak === 2 && "Two days in a row! You're building momentum! 💜"}
+                    <p className="text-sm bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent font-medium">
+                      {sessionProgress?.currentStreak === 2 && "Two days in a row! You're building momentum! 💪"}
                       {sessionProgress?.currentStreak === 3 && "Three day streak! Your consistency is inspiring! 💪"}
                       {sessionProgress?.currentStreak === 4 && "Four days strong! You're unstoppable! 🌟"}
                       {(sessionProgress?.currentStreak || 0) >= 5 && (sessionProgress?.currentStreak || 0) < 7 && `${sessionProgress?.currentStreak} day streak! You're amazing, mama! ✨`}
