@@ -30,6 +30,7 @@ import {
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { workoutPrograms, ProgramData, Exercise } from "@/data/workoutPrograms";
+import { useWorkoutSessionProgress, useLogWorkoutSession, getDayType, getDayTypeLabel } from "@/hooks/useWorkoutSessions";
 import { SpotifyWidget } from "@/components/spotify-widget";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 
@@ -139,6 +140,20 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     queryKey: ["/api/workout-progress", userId],
     enabled: !!userId,
   });
+
+  const { data: sessionProgress } = useWorkoutSessionProgress();
+  const logWorkoutSession = useLogWorkoutSession();
+
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const todayDayType = getDayType(dayOfWeek);
+  const todayDayTypeLabel = getDayTypeLabel(todayDayType);
+
+  const currentWeekProgress = sessionProgress?.weeklyProgress?.find(
+    w => w.week === (sessionProgress?.currentWeek || 1)
+  );
+  const workoutsCompletedThisWeek = currentWeekProgress?.workoutsCompleted || 0;
+  const nextWorkoutNumber = workoutsCompletedThisWeek + 1;
 
   const zoeChatMutation = useMutation({
     mutationFn: async (message: string) => {
@@ -664,14 +679,28 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-xl font-bold">Today's Workout</CardTitle>
-              <p className="text-pink-100 text-sm mt-1">
-                Week {progress.currentWeek} • Day {progress.currentDay}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-pink-100 text-sm">
+                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {todayDayType === 'rest' ? 'Rest Day' : `Workout ${nextWorkoutNumber > 4 ? 4 : nextWorkoutNumber} of 4`}
+                </p>
+                <Badge 
+                  variant="secondary" 
+                  className={`text-xs px-2 py-0.5 ${
+                    todayDayType === 'workout' 
+                      ? 'bg-white/20 text-white' 
+                      : todayDayType === 'cardio' 
+                        ? 'bg-green-400/30 text-green-100' 
+                        : 'bg-purple-400/30 text-purple-100'
+                  }`}
+                >
+                  {todayDayTypeLabel}
+                </Badge>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <div className="text-2xl font-bold">{progress.weeklyWorkoutsCompleted}/{progress.weeklyWorkoutsTotal}</div>
-                <div className="text-xs text-pink-100">this week</div>
+                <div className="text-2xl font-bold">{workoutsCompletedThisWeek}/4</div>
+                <div className="text-xs text-pink-100">workouts this week</div>
               </div>
               {onToggleExpand && (
                 <button
@@ -686,7 +715,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             </div>
           </div>
           <Progress 
-            value={(progress.weeklyWorkoutsCompleted / progress.weeklyWorkoutsTotal) * 100} 
+            value={(workoutsCompletedThisWeek / 4) * 100} 
             className="h-2 mt-3 bg-pink-300"
           />
         </CardHeader>
