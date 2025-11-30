@@ -540,6 +540,21 @@ export const insertWorkoutContentExerciseSchema = createInsertSchema(workoutCont
   updatedAt: true,
 });
 
+// Educational content - Understanding Your Core topics
+export const educationalTopics = pgTable("educational_topics", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slug: text("slug").notNull().unique(), // e.g., "breathing-activation", "360-breathing"
+  orderNum: integer("order_num").notNull(), // 1-7 for display order
+  title: text("title").notNull(), // e.g., "Breathing & Core Activation"
+  videoUrl: text("video_url"), // YouTube URL (optional)
+  videoLabel: text("video_label"), // e.g., "360 Degree Breathing"
+  imageKey: text("image_key"), // Key to reference local image assets
+  contentBlocks: jsonb("content_blocks").notNull(), // Array of content blocks with type, text, items, etc.
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 // Activity logs for admin dashboard
 export const activityLogs = pgTable("activity_logs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -547,6 +562,12 @@ export const activityLogs = pgTable("activity_logs", {
   activityType: text("activity_type").notNull(), // 'login', 'workout_start', 'workout_complete', 'signup', 'profile_update'
   metadata: jsonb("metadata"), // Additional context like workout name, week number, etc.
   createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const insertEducationalTopicSchema = createInsertSchema(educationalTopics).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
@@ -716,6 +737,8 @@ export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type AdminCreateUser = z.infer<typeof adminCreateUserSchema>;
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
+export type EducationalTopic = typeof educationalTopics.$inferSelect;
+export type InsertEducationalTopic = z.infer<typeof insertEducationalTopicSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
