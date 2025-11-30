@@ -19,6 +19,7 @@ import ProfileBanner from "@/components/profile-banner";
 import CheckinModal from "@/components/checkin-modal";
 import TodaysWorkout from "@/components/todays-workout";
 import WeeklySummary from "@/components/weekly-summary";
+import DailyCheckinModal from "@/components/daily-checkin-modal";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
@@ -61,6 +62,7 @@ export default function Dashboard() {
   const [showPurchasesDialog, setShowPurchasesDialog] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
   const [showCheckinModal, setShowCheckinModal] = useState(false);
+  const [showDailyCheckinModal, setShowDailyCheckinModal] = useState(false);
   const [checkinPromptChecked, setCheckinPromptChecked] = useState(false);
   const [profileData, setProfileData] = useState({
     fullName: "",
@@ -711,7 +713,35 @@ export default function Dashboard() {
           className="mb-8"
         />
 
-        {/* Daily Check-in & Weekly Progress Summary */}
+        {/* Daily Check-in Prompt Card - Prominent & Supportive */}
+        {memberPrograms.length > 0 && (
+          <section className="mb-6">
+            <button
+              onClick={() => setShowDailyCheckinModal(true)}
+              className="w-full text-left"
+              data-testid="button-daily-checkin-card"
+            >
+              <Card className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 border-0 shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                      <ClipboardCheck className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-white">Daily Check-in</h3>
+                      <p className="text-pink-100 text-sm leading-relaxed">
+                        Take 30 seconds to log your progress. Tracking your wins creates accountability and helps you see how far you've come!
+                      </p>
+                    </div>
+                    <ChevronRight className="w-6 h-6 text-white/70 flex-shrink-0" />
+                  </div>
+                </CardContent>
+              </Card>
+            </button>
+          </section>
+        )}
+
+        {/* Weekly Progress Summary with Check-in Button */}
         {memberPrograms.length > 0 && (
           <section className="mb-8">
             <WeeklySummary />
@@ -872,7 +902,7 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Check-in Modal */}
+      {/* Check-in Modal (Profile completion) */}
       {showCheckinModal && (
         <CheckinModal
           isOpen={showCheckinModal}
@@ -883,16 +913,22 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Floating Check-in Button */}
+      {/* Daily Check-in Modal (Progress tracking) */}
+      <DailyCheckinModal
+        isOpen={showDailyCheckinModal}
+        onClose={() => setShowDailyCheckinModal(false)}
+      />
+
+      {/* Floating Daily Check-in Button */}
       <button
-        onClick={() => setShowCheckinModal(true)}
+        onClick={() => setShowDailyCheckinModal(true)}
         className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group z-40 hover:scale-110"
-        aria-label="Log a check-in"
-        data-testid="button-open-checkin"
+        aria-label="Log daily check-in"
+        data-testid="button-open-daily-checkin"
       >
         <ClipboardCheck className="w-6 h-6 text-white" />
         <span className="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          Log Check-in
+          Daily Check-in
         </span>
       </button>
     </div>
