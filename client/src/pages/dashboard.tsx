@@ -18,6 +18,7 @@ import ProfileSettings from "@/components/profile-settings";
 import ProfileBanner from "@/components/profile-banner";
 import CheckinModal from "@/components/checkin-modal";
 import TodaysWorkout from "@/components/todays-workout";
+import WeeklySummary from "@/components/weekly-summary";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
@@ -709,6 +710,13 @@ export default function Dashboard() {
           }}
           className="mb-8"
         />
+
+        {/* Daily Check-in & Weekly Progress Summary */}
+        {memberPrograms.length > 0 && (
+          <section className="mb-8">
+            <WeeklySummary />
+          </section>
+        )}
 
         {/* TEMPORARILY HIDDEN - User Journey Card - Shows progress and Start Now button */}
         {/* {memberPrograms.length > 0 && (
