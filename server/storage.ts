@@ -82,6 +82,8 @@ import {
   WorkoutContentExercise,
   InsertWorkoutProgramContent,
   InsertWorkoutContentExercise,
+  educationalTopics,
+  EducationalTopic,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -357,6 +359,10 @@ export interface IStorage {
   createWorkoutContentExercise(exercise: InsertWorkoutContentExercise): Promise<WorkoutContentExercise>;
   deleteWorkoutContentExercise(id: string): Promise<boolean>;
   reorderWorkoutContentExercises(programContentId: string, sectionType: string, exerciseIds: string[]): Promise<void>;
+
+  // Educational Topics
+  getEducationalTopics(): Promise<EducationalTopic[]>;
+  getEducationalTopicBySlug(slug: string): Promise<EducationalTopic | undefined>;
 
   // Activity Logs
   createActivityLog(userId: string, activityType: string, metadata?: Record<string, any>): Promise<void>;
@@ -1953,6 +1959,15 @@ export class MemStorage implements IStorage {
 
   async reorderWorkoutContentExercises(programContentId: string, sectionType: string, exerciseIds: string[]): Promise<void> {
     // No-op
+  }
+
+  // Educational Topics (stubs)
+  async getEducationalTopics(): Promise<EducationalTopic[]> {
+    return [];
+  }
+
+  async getEducationalTopicBySlug(slug: string): Promise<EducationalTopic | undefined> {
+    return undefined;
   }
 
   // Activity Logs (stubs)
@@ -3719,6 +3734,24 @@ class DatabaseStorage implements IStorage {
           )
         );
     }
+  }
+
+  // Educational Topics
+  async getEducationalTopics(): Promise<EducationalTopic[]> {
+    return await this.db
+      .select()
+      .from(educationalTopics)
+      .where(eq(educationalTopics.isActive, true))
+      .orderBy(asc(educationalTopics.orderNum));
+  }
+
+  async getEducationalTopicBySlug(slug: string): Promise<EducationalTopic | undefined> {
+    const results = await this.db
+      .select()
+      .from(educationalTopics)
+      .where(eq(educationalTopics.slug, slug))
+      .limit(1);
+    return results[0];
   }
 
   // Activity Logs

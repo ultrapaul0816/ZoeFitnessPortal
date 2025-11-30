@@ -1392,6 +1392,33 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Educational Content API (database-driven educational topics)
+  app.get("/api/educational-content", async (req, res) => {
+    try {
+      const topics = await storage.getEducationalTopics();
+      res.json(topics);
+    } catch (error) {
+      console.error("Failed to fetch educational content:", error);
+      res.status(500).json({ message: "Failed to fetch educational content" });
+    }
+  });
+
+  app.get("/api/educational-content/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const topic = await storage.getEducationalTopicBySlug(slug);
+      
+      if (!topic) {
+        return res.status(404).json({ message: "Topic not found" });
+      }
+      
+      res.json(topic);
+    } catch (error) {
+      console.error("Failed to fetch educational topic:", error);
+      res.status(500).json({ message: "Failed to fetch educational topic" });
+    }
+  });
+
   // Admin endpoints for workout content management
   app.patch("/api/admin/workout-content/:id", adminOperationLimiter, async (req, res) => {
     try {
