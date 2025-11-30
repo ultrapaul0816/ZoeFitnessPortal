@@ -121,7 +121,7 @@ export default function Dashboard() {
       };
 
       try {
-        const response = await fetch("/api/auth/session");
+        const response = await fetch("/api/auth/session", { credentials: "include" });
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);

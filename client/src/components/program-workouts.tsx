@@ -28,7 +28,7 @@ export default function ProgramWorkouts({ program, memberProgram, userId, onClos
   const { data: workouts = [] } = useQuery<Workout[]>({
     queryKey: ["/api/workouts", program.id],
     queryFn: async () => {
-      const response = await fetch(`/api/workouts/${program.id}`);
+      const response = await fetch(`/api/workouts/${program.id}`, { credentials: "include" });
       return response.json();
     },
   });
@@ -36,7 +36,7 @@ export default function ProgramWorkouts({ program, memberProgram, userId, onClos
   const { data: completions = [] } = useQuery<WorkoutCompletion[]>({
     queryKey: ["/api/workout-completions", userId],
     queryFn: async () => {
-      const response = await fetch(`/api/workout-completions/${userId}`);
+      const response = await fetch(`/api/workout-completions/${userId}`, { credentials: "include" });
       return response.json();
     },
   });
@@ -100,7 +100,7 @@ export default function ProgramWorkouts({ program, memberProgram, userId, onClos
         queryClient.prefetchQuery({
           queryKey: ["/api/workout-content", workoutAfterNext.id],
           queryFn: async () => {
-            const response = await fetch(`/api/workouts/${program.id}`);
+            const response = await fetch(`/api/workouts/${program.id}`, { credentials: "include" });
             return response.json();
           },
           staleTime: 5 * 60 * 1000, // Consider fresh for 5 minutes

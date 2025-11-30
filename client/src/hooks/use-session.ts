@@ -20,7 +20,7 @@ export function useSession() {
       }
 
       // Then verify with server session
-      const response = await fetch("/api/auth/session");
+      const response = await fetch("/api/auth/session", { credentials: "include" });
       
       if (response.ok) {
         const data = await response.json();

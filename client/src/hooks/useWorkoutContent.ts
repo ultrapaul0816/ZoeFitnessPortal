@@ -90,7 +90,7 @@ export function useWorkoutContent() {
     queryKey: ["/api/workout-content"],
     queryFn: async () => {
       try {
-        const response = await fetch("/api/workout-content");
+        const response = await fetch("/api/workout-content", { credentials: "include" });
         
         if (!response.ok) {
           console.warn("Failed to fetch workout content from API, using static fallback");
@@ -122,7 +122,7 @@ export function useWorkoutContentByWeek(week: number) {
     queryKey: ["/api/workout-content", week],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/workout-content/${week}`);
+        const response = await fetch(`/api/workout-content/${week}`, { credentials: "include" });
         
         if (!response.ok) {
           console.warn(`Failed to fetch week ${week} from API, using static fallback`);
