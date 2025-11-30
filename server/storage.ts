@@ -48,6 +48,8 @@ import {
   type PasswordResetCode,
   type UserCheckin,
   type InsertUserCheckin,
+  type DailyCheckin,
+  type InsertDailyCheckin,
 } from "@shared/schema";
 import {
   users,
@@ -75,6 +77,7 @@ import {
   emailAutomationRules,
   passwordResetCodes,
   userCheckins,
+  dailyCheckins,
   workoutProgramContent,
   workoutContentExercises,
   activityLogs,
@@ -88,7 +91,7 @@ import {
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { eq, and, desc, sql, count, asc, gte, or, isNull, lt, notInArray, inArray } from "drizzle-orm";
+import { eq, and, desc, sql, count, asc, gte, lte, or, isNull, lt, notInArray, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -347,6 +350,21 @@ export interface IStorage {
     checkinsByEnergy: { energyLevel: number; count: number }[];
     popularGoals: { goal: string; count: number }[];
     checkinFrequency: { period: string; count: number }[];
+  }>;
+
+  // Daily Performance Check-ins (habits & wellness tracking)
+  createDailyCheckin(checkin: InsertDailyCheckin): Promise<DailyCheckin>;
+  updateDailyCheckin(id: string, userId: string, updates: Partial<InsertDailyCheckin>): Promise<DailyCheckin | undefined>;
+  getDailyCheckin(userId: string, date: Date): Promise<DailyCheckin | undefined>;
+  getTodayDailyCheckin(userId: string): Promise<DailyCheckin | undefined>;
+  getWeeklyDailyCheckins(userId: string, weekStartDate: Date): Promise<DailyCheckin[]>;
+  getDailyCheckinStats(userId: string, days?: number): Promise<{
+    totalCheckins: number;
+    workoutDays: number;
+    breathingDays: number;
+    avgWaterGlasses: number;
+    avgCardioMinutes: number;
+    currentStreak: number;
   }>;
 
   // Workout Program Content (database-driven workout data)
@@ -1921,6 +1939,45 @@ export class MemStorage implements IStorage {
       checkinsByEnergy: [],
       popularGoals: [],
       checkinFrequency: [],
+    };
+  }
+
+  // Daily Performance Check-ins (MemStorage stubs)
+  async createDailyCheckin(checkin: InsertDailyCheckin): Promise<DailyCheckin> {
+    throw new Error("Daily check-ins not supported in MemStorage");
+  }
+
+  async updateDailyCheckin(id: string, userId: string, updates: Partial<InsertDailyCheckin>): Promise<DailyCheckin | undefined> {
+    return undefined;
+  }
+
+  async getDailyCheckin(userId: string, date: Date): Promise<DailyCheckin | undefined> {
+    return undefined;
+  }
+
+  async getTodayDailyCheckin(userId: string): Promise<DailyCheckin | undefined> {
+    return undefined;
+  }
+
+  async getWeeklyDailyCheckins(userId: string, weekStartDate: Date): Promise<DailyCheckin[]> {
+    return [];
+  }
+
+  async getDailyCheckinStats(userId: string, days?: number): Promise<{
+    totalCheckins: number;
+    workoutDays: number;
+    breathingDays: number;
+    avgWaterGlasses: number;
+    avgCardioMinutes: number;
+    currentStreak: number;
+  }> {
+    return {
+      totalCheckins: 0,
+      workoutDays: 0,
+      breathingDays: 0,
+      avgWaterGlasses: 0,
+      avgCardioMinutes: 0,
+      currentStreak: 0,
     };
   }
 
@@ -3647,6 +3704,133 @@ class DatabaseStorage implements IStorage {
       checkinsByEnergy,
       popularGoals,
       checkinFrequency,
+    };
+  }
+
+  // Daily Performance Check-ins
+  async createDailyCheckin(checkin: InsertDailyCheckin): Promise<DailyCheckin> {
+    const result = await this.db
+      .insert(dailyCheckins)
+      .values(checkin)
+      .returning();
+    return result[0];
+  }
+
+  async updateDailyCheckin(id: string, userId: string, updates: Partial<InsertDailyCheckin>): Promise<DailyCheckin | undefined> {
+    const result = await this.db
+      .update(dailyCheckins)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(and(eq(dailyCheckins.id, id), eq(dailyCheckins.userId, userId)))
+      .returning();
+    return result[0];
+  }
+
+  async getDailyCheckin(userId: string, date: Date): Promise<DailyCheckin | undefined> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    const result = await this.db
+      .select()
+      .from(dailyCheckins)
+      .where(
+        and(
+          eq(dailyCheckins.userId, userId),
+          gte(dailyCheckins.date, startOfDay),
+          lte(dailyCheckins.date, endOfDay)
+        )
+      )
+      .limit(1);
+    return result[0];
+  }
+
+  async getTodayDailyCheckin(userId: string): Promise<DailyCheckin | undefined> {
+    return this.getDailyCheckin(userId, new Date());
+  }
+
+  async getWeeklyDailyCheckins(userId: string, weekStartDate: Date): Promise<DailyCheckin[]> {
+    const weekEndDate = new Date(weekStartDate);
+    weekEndDate.setDate(weekEndDate.getDate() + 7);
+    
+    return await this.db
+      .select()
+      .from(dailyCheckins)
+      .where(
+        and(
+          eq(dailyCheckins.userId, userId),
+          gte(dailyCheckins.date, weekStartDate),
+          lt(dailyCheckins.date, weekEndDate)
+        )
+      )
+      .orderBy(asc(dailyCheckins.date));
+  }
+
+  async getDailyCheckinStats(userId: string, days: number = 30): Promise<{
+    totalCheckins: number;
+    workoutDays: number;
+    breathingDays: number;
+    avgWaterGlasses: number;
+    avgCardioMinutes: number;
+    currentStreak: number;
+  }> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
+
+    const checkins = await this.db
+      .select()
+      .from(dailyCheckins)
+      .where(
+        and(
+          eq(dailyCheckins.userId, userId),
+          gte(dailyCheckins.date, startDate)
+        )
+      )
+      .orderBy(desc(dailyCheckins.date));
+
+    const totalCheckins = checkins.length;
+    const workoutDays = checkins.filter(c => c.workoutCompleted).length;
+    const breathingDays = checkins.filter(c => c.breathingPractice).length;
+    
+    const totalWater = checkins.reduce((sum, c) => sum + (c.waterGlasses || 0), 0);
+    const avgWaterGlasses = totalCheckins > 0 ? Math.round((totalWater / totalCheckins) * 10) / 10 : 0;
+    
+    const totalCardio = checkins.reduce((sum, c) => sum + (c.cardioMinutes || 0), 0);
+    const avgCardioMinutes = totalCheckins > 0 ? Math.round(totalCardio / totalCheckins) : 0;
+
+    // Calculate current streak (consecutive days with at least one activity)
+    let currentStreak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    for (let i = 0; i < days; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(checkDate.getDate() - i);
+      checkDate.setHours(0, 0, 0, 0);
+      
+      const dayCheckin = checkins.find(c => {
+        const cDate = new Date(c.date);
+        cDate.setHours(0, 0, 0, 0);
+        return cDate.getTime() === checkDate.getTime();
+      });
+      
+      if (dayCheckin && (dayCheckin.workoutCompleted || dayCheckin.breathingPractice || 
+          (dayCheckin.waterGlasses && dayCheckin.waterGlasses > 0) || 
+          (dayCheckin.cardioMinutes && dayCheckin.cardioMinutes > 0))) {
+        currentStreak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+
+    return {
+      totalCheckins,
+      workoutDays,
+      breathingDays,
+      avgWaterGlasses,
+      avgCardioMinutes,
+      currentStreak,
     };
   }
 
