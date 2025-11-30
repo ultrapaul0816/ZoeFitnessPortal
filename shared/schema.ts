@@ -333,6 +333,27 @@ export const dailyCheckins = pgTable("daily_checkins", {
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
+// Weekly workout sessions - tracks 4 workouts + 2 cardio per week for progressive tracking
+export const weeklyWorkoutSessions = pgTable("weekly_workout_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  week: integer("week").notNull(), // 1-6 for the 6-week program
+  sessionType: text("session_type").notNull(), // 'workout' or 'cardio'
+  sessionNumber: integer("session_number").notNull(), // 1-4 for workouts, 1-2 for cardio
+  completedAt: timestamp("completed_at").default(sql`now()`),
+  rating: integer("rating"), // 1-5 difficulty rating
+  notes: text("notes"),
+});
+
+// Skipped weeks - tracks when user skips ahead without completing a week
+export const skippedWeeks = pgTable("skipped_weeks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  week: integer("week").notNull(), // Which week was skipped
+  skippedAt: timestamp("skipped_at").default(sql`now()`),
+  workoutsCompletedBeforeSkip: integer("workouts_completed_before_skip").default(0), // How many of 4 were done
+});
+
 // Workout program content - stores detailed program data for each week (database-driven content)
 export const workoutProgramContent = pgTable("workout_program_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -554,6 +575,22 @@ export const insertDailyCheckinSchema = createInsertSchema(dailyCheckins).omit({
   struggles: z.string().max(500).optional().nullable(),
 });
 
+// Weekly workout session schemas for progressive tracking
+export const insertWeeklyWorkoutSessionSchema = createInsertSchema(weeklyWorkoutSessions).omit({
+  id: true,
+  completedAt: true,
+}).extend({
+  sessionType: z.enum(['workout', 'cardio']),
+  sessionNumber: z.number().int().min(1).max(4),
+  rating: z.number().int().min(1).max(5).optional().nullable(),
+  notes: z.string().max(500).optional().nullable(),
+});
+
+export const insertSkippedWeekSchema = createInsertSchema(skippedWeeks).omit({
+  id: true,
+  skippedAt: true,
+});
+
 // Workout program content schemas
 export const insertWorkoutProgramContentSchema = createInsertSchema(workoutProgramContent).omit({
   id: true,
@@ -758,6 +795,10 @@ export type UserCheckin = typeof userCheckins.$inferSelect;
 export type InsertUserCheckin = z.infer<typeof insertUserCheckinSchema>;
 export type DailyCheckin = typeof dailyCheckins.$inferSelect;
 export type InsertDailyCheckin = z.infer<typeof insertDailyCheckinSchema>;
+export type WeeklyWorkoutSession = typeof weeklyWorkoutSessions.$inferSelect;
+export type InsertWeeklyWorkoutSession = z.infer<typeof insertWeeklyWorkoutSessionSchema>;
+export type SkippedWeek = typeof skippedWeeks.$inferSelect;
+export type InsertSkippedWeek = z.infer<typeof insertSkippedWeekSchema>;
 export type WorkoutProgramContent = typeof workoutProgramContent.$inferSelect;
 export type InsertWorkoutProgramContent = z.infer<typeof insertWorkoutProgramContentSchema>;
 export type WorkoutContentExercise = typeof workoutContentExercises.$inferSelect;
