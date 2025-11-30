@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -57,6 +57,13 @@ interface WeeklySummaryProps {
 export default function WeeklySummary({ compact = false }: WeeklySummaryProps) {
   const [showCheckinModal, setShowCheckinModal] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsCollapsed(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const { data: summary, isLoading } = useQuery<WeeklySummaryData>({
     queryKey: ["/api/daily-checkins/weekly-summary"],
