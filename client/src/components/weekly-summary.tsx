@@ -81,6 +81,18 @@ export default function WeeklySummary({ compact = false }: WeeklySummaryProps) {
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   
+  // Milestone messages based on streak
+  const getStreakMessage = (streak: number) => {
+    if (streak >= 30) return { emoji: "🏆", message: "30 days strong! You're unstoppable!", milestone: true };
+    if (streak >= 14) return { emoji: "⭐", message: "2 weeks of consistency! Amazing!", milestone: true };
+    if (streak >= 7) return { emoji: "🔥", message: "1 week streak! Keep it up!", milestone: true };
+    if (streak >= 3) return { emoji: "💪", message: "Building momentum!", milestone: false };
+    if (streak >= 1) return { emoji: "🌱", message: "Great start! Every day counts", milestone: false };
+    return { emoji: "✨", message: "Start your streak today!", milestone: false };
+  };
+  
+  const streakInfo = getStreakMessage(stats.currentStreak);
+  
   const getCheckinForDay = (dayIndex: number) => {
     if (!summary?.checkins) return null;
     const weekStart = new Date(summary.weekStart);
@@ -161,10 +173,20 @@ export default function WeeklySummary({ compact = false }: WeeklySummaryProps) {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-center gap-2 p-3 bg-white/50 rounded-xl">
-            <Flame className="h-6 w-6 text-orange-500" />
-            <span className="text-2xl font-bold text-gray-900">{stats.currentStreak}</span>
-            <span className="text-gray-600">day streak</span>
+          {/* Streak Display with Milestone Celebration */}
+          <div className={`p-4 rounded-xl text-center ${
+            streakInfo.milestone 
+              ? 'bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 border-2 border-amber-300 animate-pulse' 
+              : 'bg-white/50'
+          }`}>
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-3xl">{streakInfo.emoji}</span>
+              <span className="text-3xl font-bold text-gray-900">{stats.currentStreak}</span>
+              <span className="text-gray-600 text-lg">day streak</span>
+            </div>
+            <p className={`text-sm ${streakInfo.milestone ? 'text-amber-700 font-semibold' : 'text-gray-500'}`}>
+              {streakInfo.message}
+            </p>
           </div>
 
           <div className="flex justify-between gap-1">

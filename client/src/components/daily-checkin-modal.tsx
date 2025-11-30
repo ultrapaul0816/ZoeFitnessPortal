@@ -111,10 +111,19 @@ export default function DailyCheckinModal({
             <Sparkles className="h-5 w-5 text-pink-500" />
             Daily Check-in
           </DialogTitle>
-          <DialogDescription>
-            Track your progress for today. Every step counts!
+          <DialogDescription className="text-base">
+            Take 30 seconds to celebrate your wins today
           </DialogDescription>
         </DialogHeader>
+
+        {/* Zoe's Encouraging Message */}
+        <div className="bg-gradient-to-r from-pink-100 to-rose-100 rounded-xl p-4 border border-pink-200">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            <span className="font-semibold text-pink-600">Hey mama!</span> Tracking your daily wins - even the small ones - helps you see how far you've come. 
+            This creates accountability and lets us celebrate your progress together. 
+            <span className="text-pink-600 font-medium"> Every glass of water counts. Every breath matters. You're doing amazing! 💗</span>
+          </p>
+        </div>
 
         <div className="space-y-6 py-4">
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-100">
