@@ -17,11 +17,15 @@ import {
   Flame,
   Share2,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   TrendingUp,
   Calendar,
+  Pencil,
 } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import DailyCheckinModal from "./daily-checkin-modal";
+import type { DailyCheckin } from "@shared/schema";
 
 interface WeeklySummaryData {
   weekStart: string;
@@ -52,10 +56,17 @@ interface WeeklySummaryProps {
 
 export default function WeeklySummary({ compact = false }: WeeklySummaryProps) {
   const [showCheckinModal, setShowCheckinModal] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const { data: summary, isLoading } = useQuery<WeeklySummaryData>({
     queryKey: ["/api/daily-checkins/weekly-summary"],
   });
+
+  const { data: todayCheckin } = useQuery<DailyCheckin | null>({
+    queryKey: ["/api/daily-checkins/today"],
+  });
+
+  const hasCheckedInToday = !!todayCheckin;
 
   if (isLoading) {
     return (
@@ -152,120 +163,153 @@ export default function WeeklySummary({ compact = false }: WeeklySummaryProps) {
       <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-100">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <div>
+            <div 
+              className="flex-1 cursor-pointer" 
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            >
               <CardTitle className="flex items-center gap-2 text-xl">
                 <TrendingUp className="h-5 w-5 text-pink-500" />
                 Week {summary?.programWeek || 1} Progress
+                <button 
+                  className="ml-2 p-1 rounded-full hover:bg-pink-100 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsCollapsed(!isCollapsed);
+                  }}
+                  data-testid="button-toggle-progress"
+                >
+                  {isCollapsed ? (
+                    <ChevronDown className="h-4 w-4 text-pink-500" />
+                  ) : (
+                    <ChevronUp className="h-4 w-4 text-pink-500" />
+                  )}
+                </button>
               </CardTitle>
-              <CardDescription>Your wellness journey this week</CardDescription>
+              {!isCollapsed && (
+                <CardDescription>Your wellness journey this week</CardDescription>
+              )}
             </div>
             <Button
-              variant="outline"
+              variant={hasCheckedInToday ? "outline" : "default"}
               size="sm"
               onClick={() => setShowCheckinModal(true)}
-              className="border-pink-200 hover:bg-pink-100"
+              className={hasCheckedInToday 
+                ? "border-pink-200 hover:bg-pink-100" 
+                : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white"
+              }
               data-testid="button-checkin"
             >
-              <Calendar className="h-4 w-4 mr-2" />
-              Check In
+              {hasCheckedInToday ? (
+                <>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Update Today's Log
+                </>
+              ) : (
+                <>
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Log Today's Progress
+                </>
+              )}
             </Button>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-6">
-          {/* Streak Display with Milestone Celebration */}
-          <div className={`p-4 rounded-xl text-center ${
-            streakInfo.milestone 
-              ? 'bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 border-2 border-amber-300 animate-pulse' 
-              : 'bg-white/50'
-          }`}>
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-3xl">{streakInfo.emoji}</span>
-              <span className="text-3xl font-bold text-gray-900">{stats.currentStreak}</span>
-              <span className="text-gray-600 text-lg">day streak</span>
+        {!isCollapsed && (
+          <CardContent className="space-y-6">
+            {/* Streak Display with Milestone Celebration */}
+            <div className={`p-4 rounded-xl text-center ${
+              streakInfo.milestone 
+                ? 'bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 border-2 border-amber-300 animate-pulse' 
+                : 'bg-white/50'
+            }`}>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <span className="text-3xl">{streakInfo.emoji}</span>
+                <span className="text-3xl font-bold text-gray-900">{stats.currentStreak}</span>
+                <span className="text-gray-600 text-lg">day streak</span>
+              </div>
+              <p className={`text-sm ${streakInfo.milestone ? 'text-amber-700 font-semibold' : 'text-gray-500'}`}>
+                {streakInfo.message}
+              </p>
             </div>
-            <p className={`text-sm ${streakInfo.milestone ? 'text-amber-700 font-semibold' : 'text-gray-500'}`}>
-              {streakInfo.message}
-            </p>
-          </div>
 
-          <div className="flex justify-between gap-1">
-            {weekDays.map((day, index) => {
-              const checkin = getCheckinForDay(index);
-              const hasActivity = checkin && (
-                checkin.workoutCompleted || 
-                checkin.breathingPractice || 
-                (checkin.waterGlasses && checkin.waterGlasses > 0) ||
-                (checkin.cardioMinutes && checkin.cardioMinutes > 0)
-              );
-              const today = new Date().getDay();
-              const adjustedToday = today === 0 ? 6 : today - 1;
-              const isToday = index === adjustedToday;
-              
-              return (
-                <div 
-                  key={day}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg flex-1 ${
-                    isToday ? 'bg-pink-100 border border-pink-200' : ''
-                  }`}
-                >
-                  <span className={`text-xs font-medium ${isToday ? 'text-pink-600' : 'text-gray-500'}`}>
-                    {day}
-                  </span>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    hasActivity 
-                      ? 'bg-gradient-to-br from-pink-500 to-rose-500 text-white' 
-                      : 'bg-gray-100 text-gray-400'
-                  }`}>
-                    {hasActivity ? '✓' : '·'}
+            <div className="flex justify-between gap-1">
+              {weekDays.map((day, index) => {
+                const checkin = getCheckinForDay(index);
+                const hasActivity = checkin && (
+                  checkin.workoutCompleted || 
+                  checkin.breathingPractice || 
+                  (checkin.waterGlasses && checkin.waterGlasses > 0) ||
+                  (checkin.cardioMinutes && checkin.cardioMinutes > 0)
+                );
+                const today = new Date().getDay();
+                const adjustedToday = today === 0 ? 6 : today - 1;
+                const isToday = index === adjustedToday;
+                
+                return (
+                  <div 
+                    key={day}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg flex-1 ${
+                      isToday ? 'bg-pink-100 border border-pink-200' : ''
+                    }`}
+                  >
+                    <span className={`text-xs font-medium ${isToday ? 'text-pink-600' : 'text-gray-500'}`}>
+                      {day}
+                    </span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      hasActivity 
+                        ? 'bg-gradient-to-br from-pink-500 to-rose-500 text-white' 
+                        : 'bg-gray-100 text-gray-400'
+                    }`}>
+                      {hasActivity ? '✓' : '·'}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <StatCard
-              icon={<Dumbbell className="h-4 w-4" />}
-              label="Workouts"
-              value={`${stats.workoutDays}/7`}
-              progress={(stats.workoutDays / 7) * 100}
-              color="pink"
-            />
-            <StatCard
-              icon={<Wind className="h-4 w-4" />}
-              label="Breathing"
-              value={`${stats.breathingDays}/7`}
-              progress={(stats.breathingDays / 7) * 100}
-              color="blue"
-            />
-            <StatCard
-              icon={<Droplets className="h-4 w-4" />}
-              label="Avg Water"
-              value={`${stats.avgWaterGlasses}`}
-              subLabel="glasses/day"
-              progress={Math.min((stats.avgWaterGlasses / 8) * 100, 100)}
-              color="cyan"
-            />
-            <StatCard
-              icon={<Footprints className="h-4 w-4" />}
-              label="Avg Cardio"
-              value={`${stats.avgCardioMinutes}`}
-              subLabel="min/day"
-              progress={Math.min((stats.avgCardioMinutes / 30) * 100, 100)}
-              color="orange"
-            />
-          </div>
+            <div className="grid grid-cols-2 gap-3">
+              <StatCard
+                icon={<Dumbbell className="h-4 w-4" />}
+                label="Workouts"
+                value={`${stats.workoutDays}/7`}
+                progress={(stats.workoutDays / 7) * 100}
+                color="pink"
+              />
+              <StatCard
+                icon={<Wind className="h-4 w-4" />}
+                label="Breathing"
+                value={`${stats.breathingDays}/7`}
+                progress={(stats.breathingDays / 7) * 100}
+                color="blue"
+              />
+              <StatCard
+                icon={<Droplets className="h-4 w-4" />}
+                label="Avg Water"
+                value={`${stats.avgWaterGlasses}`}
+                subLabel="glasses/day"
+                progress={Math.min((stats.avgWaterGlasses / 8) * 100, 100)}
+                color="cyan"
+              />
+              <StatCard
+                icon={<Footprints className="h-4 w-4" />}
+                label="Avg Cardio"
+                value={`${stats.avgCardioMinutes}`}
+                subLabel="min/day"
+                progress={Math.min((stats.avgCardioMinutes / 30) * 100, 100)}
+                color="orange"
+              />
+            </div>
 
-          <Button
-            onClick={handleWhatsAppShare}
-            className="w-full bg-green-500 hover:bg-green-600 text-white"
-            data-testid="button-share-whatsapp"
-          >
-            <SiWhatsapp className="h-5 w-5 mr-2" />
-            Share Progress on WhatsApp
-          </Button>
-        </CardContent>
+            <Button
+              onClick={handleWhatsAppShare}
+              className="w-full bg-green-500 hover:bg-green-600 text-white"
+              data-testid="button-share-whatsapp"
+            >
+              <SiWhatsapp className="h-5 w-5 mr-2" />
+              Share Progress on WhatsApp
+            </Button>
+          </CardContent>
+        )}
       </Card>
 
       <DailyCheckinModal 
