@@ -123,6 +123,9 @@ export default function DailyCheckinModal({
             This creates accountability and lets us celebrate your progress together. 
             <span className="text-pink-600 font-medium"> Every glass of water counts. Every breath matters. You're doing amazing! 💗</span>
           </p>
+          <p className="text-xs text-pink-500 mt-2 flex items-center gap-1">
+            <span>💡</span> Tip: Check in at the end of your day to capture all your wins!
+          </p>
         </div>
 
         <div className="space-y-6 py-4">

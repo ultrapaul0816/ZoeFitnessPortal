@@ -769,6 +769,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const checkin = await storage.createDailyCheckin(checkinData);
+      
+      // Log activity for admin visibility
+      await storage.createActivityLog(req.session.userId, 'daily_checkin', {
+        workoutCompleted: req.body.workoutCompleted,
+        breathingPractice: req.body.breathingPractice,
+        waterGlasses: req.body.waterGlasses,
+        cardioMinutes: req.body.cardioMinutes,
+        checkinTime: new Date().toISOString(),
+      });
+      
       res.status(201).json(checkin);
     } catch (error: any) {
       console.error(`[DAILY-CHECKIN] Error creating check-in:`, error?.message || error);

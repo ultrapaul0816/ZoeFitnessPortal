@@ -120,28 +120,9 @@ export default function Dashboard() {
             email: data.user.email
           }));
           
-          // Determine if we should show the check-in modal
-          // First check if user has already checked in today
-          if (!checkinPromptChecked) {
-            setCheckinPromptChecked(true);
-            const shouldShowCheckin = shouldPromptCheckin(data.user);
-            if (shouldShowCheckin) {
-              // Check if user already checked in today before showing modal
-              try {
-                const checkinResponse = await fetch("/api/checkins/today");
-                if (checkinResponse.ok) {
-                  const todayCheckin = await checkinResponse.json();
-                  // Only show modal if there's NO existing check-in today
-                  if (!todayCheckin) {
-                    setTimeout(() => setShowCheckinModal(true), 1000);
-                  }
-                }
-              } catch (error) {
-                // On error, default to showing the modal
-                setTimeout(() => setShowCheckinModal(true), 1000);
-              }
-            }
-          }
+          // OLD MOOD CHECK-IN DISABLED - Replaced by Daily Check-in system
+          // The old mood/feelings check-in had low adoption, so we simplified to just the daily check-in
+          // which tracks workouts, water, breathing, cardio, gratitude, and struggles
         } else {
           // No valid session - redirect to login
           localStorage.removeItem("user");
@@ -184,6 +165,14 @@ export default function Dashboard() {
     queryKey: ["/api/programs"],
     enabled: !!user?.id,
   });
+
+  // Check if user has completed today's daily check-in
+  const { data: todaysDailyCheckin } = useQuery({
+    queryKey: ["/api/daily-checkins/today"],
+    enabled: !!user?.id,
+  });
+
+  const hasCheckedInToday = !!todaysDailyCheckin;
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -713,8 +702,8 @@ export default function Dashboard() {
           className="mb-8"
         />
 
-        {/* Daily Check-in Prompt Card - Prominent & Supportive */}
-        {memberPrograms.length > 0 && (
+        {/* Daily Check-in Prompt Card - Hidden after check-in complete */}
+        {memberPrograms.length > 0 && !hasCheckedInToday && (
           <section className="mb-6">
             <button
               onClick={() => setShowDailyCheckinModal(true)}
