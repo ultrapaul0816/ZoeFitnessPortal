@@ -97,6 +97,29 @@ export default function Dashboard() {
   useEffect(() => {
     // Check session with server on mount
     async function checkAuth() {
+      // Helper to use localStorage data
+      const useLocalStorageUser = () => {
+        const userData = localStorage.getItem("user");
+        if (!userData) {
+          setLocation("/");
+          return false;
+        }
+        try {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+          setProfileData(prev => ({
+            ...prev,
+            fullName: `${parsedUser.firstName} ${parsedUser.lastName}`,
+            email: parsedUser.email
+          }));
+          return true;
+        } catch {
+          localStorage.removeItem("user");
+          setLocation("/");
+          return false;
+        }
+      };
+
       try {
         const response = await fetch("/api/auth/session");
         if (response.ok) {
@@ -124,25 +147,13 @@ export default function Dashboard() {
           // The old mood/feelings check-in had low adoption, so we simplified to just the daily check-in
           // which tracks workouts, water, breathing, cardio, gratitude, and struggles
         } else {
-          // No valid session - redirect to login
-          localStorage.removeItem("user");
-          setLocation("/");
+          // Session check failed - try localStorage as fallback (useful for admin switching views)
+          // This handles timing issues where session cookie may not be immediately available
+          useLocalStorageUser();
         }
       } catch (error) {
-        // On error, try localStorage as fallback
-        const userData = localStorage.getItem("user");
-        if (!userData) {
-          setLocation("/");
-          return;
-        }
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        
-        setProfileData(prev => ({
-          ...prev,
-          fullName: `${parsedUser.firstName} ${parsedUser.lastName}`,
-          email: parsedUser.email
-        }));
+        // On network error, try localStorage as fallback
+        useLocalStorageUser();
       }
     }
     
