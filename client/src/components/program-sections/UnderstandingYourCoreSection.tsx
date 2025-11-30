@@ -1,7 +1,20 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, ChevronLeft, Play } from "lucide-react";
+
+interface EducationalTopic {
+  id: string;
+  slug: string;
+  orderNum: number;
+  title: string;
+  videoUrl: string | null;
+  videoLabel: string | null;
+  imageKey: string | null;
+  contentBlocks: any[];
+  isActive: boolean;
+}
 import anatomyImage from "@assets/Screenshot 2025-09-21 at 14.30.34_1758445266265.png";
 import videoThumbnailImage from "@assets/Screenshot 2025-09-22 at 12.15.21_1758537245258.png";
 import breathingDiagram from "@assets/Screenshot 2025-09-21 at 14.32.23_1758445423086.png";
@@ -27,6 +40,16 @@ interface UnderstandingYourCoreSectionProps extends NavigationProps {
   onArticleClick: (article: any) => void;
 }
 
+const staticVideoUrls: Record<string, { url: string; label: string }> = {
+  'breathing-activation': { url: '', label: '' },
+  '360-breathing': { url: 'https://youtu.be/B53GBfgME9E', label: '360 Degree Breathing' },
+  'tva-engagement': { url: 'https://www.youtube.com/watch?v=h7MxrsIGCxo', label: 'Core & TVA Engagement' },
+  'core-breathing': { url: '', label: '' },
+  'core-compressions': { url: 'https://youtu.be/h_S_tq0-Pv0', label: 'Core Compressions Tutorial' },
+  'pelvic-floor': { url: 'https://youtu.be/h7MxrsIGCxo', label: 'Understanding Pelvic Floor' },
+  'warning-signs': { url: 'https://www.youtube.com/watch?v=IxnoXYCtnUw', label: 'Understanding Doming & Coning' },
+};
+
 export default function UnderstandingYourCoreSection({ 
   articles, 
   onArticleClick,
@@ -37,6 +60,21 @@ export default function UnderstandingYourCoreSection({
   getNavigationText
 }: UnderstandingYourCoreSectionProps) {
   const [expandedTopics, setExpandedTopics] = useState<{[key: string]: boolean}>({});
+
+  const { data: dbTopics } = useQuery<EducationalTopic[]>({
+    queryKey: ['/api/educational-content'],
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const getVideoInfo = useMemo(() => {
+    return (slug: string): { url: string; label: string } => {
+      const dbTopic = dbTopics?.find(t => t.slug === slug);
+      if (dbTopic?.videoUrl) {
+        return { url: dbTopic.videoUrl, label: dbTopic.videoLabel || '' };
+      }
+      return staticVideoUrls[slug] || { url: '', label: '' };
+    };
+  }, [dbTopics]);
 
   const toggleTopic = (topicId: string) => {
     setExpandedTopics(prev => ({
@@ -155,9 +193,10 @@ export default function UnderstandingYourCoreSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     {/* YouTube Link Button */}
+                    {getVideoInfo('360-breathing').url && (
                     <div className="flex justify-start mb-4">
                       <a 
-                        href="https://youtu.be/B53GBfgME9E" 
+                        href={getVideoInfo('360-breathing').url}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
@@ -169,9 +208,10 @@ export default function UnderstandingYourCoreSection({
                         data-testid="link-360-breathing-video"
                       >
                         <Play className="w-2.5 h-2.5" />
-                        360 Degree Breathing
+                        {getVideoInfo('360-breathing').label || '360 Degree Breathing'}
                       </a>
                     </div>
+                    )}
                     
                     <p className="text-sm">360° breathing is a deep, diaphragmatic breathing technique that encourages expansion in all directions — front, sides, and back — rather than just the chest or belly.</p>
                     
@@ -255,9 +295,10 @@ export default function UnderstandingYourCoreSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     {/* YouTube Link Button */}
+                    {getVideoInfo('tva-engagement').url && (
                     <div className="flex justify-start mb-4">
                       <a 
-                        href="https://www.youtube.com/watch?v=h7MxrsIGCxo" 
+                        href={getVideoInfo('tva-engagement').url}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
@@ -269,9 +310,10 @@ export default function UnderstandingYourCoreSection({
                         data-testid="link-tva-engagement-video"
                       >
                         <Play className="w-2.5 h-2.5" />
-                        Core & TVA Engagement
+                        {getVideoInfo('tva-engagement').label || 'Core & TVA Engagement'}
                       </a>
                     </div>
+                    )}
 
                     <p className="text-sm">Why "pull your belly in" isn't enough — and what to do instead. Before you can rebuild strength, you need to understand what you're actually connecting to. Your Transverse Abdominis (TVA) is your body's innermost abdominal muscle — often called the "corset" muscle — and it's the foundation of true core strength. Without proper TVA engagement, even "core exercises" can make things worse.</p>
                     
@@ -487,9 +529,10 @@ export default function UnderstandingYourCoreSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     {/* YouTube Link Button */}
+                    {getVideoInfo('core-compressions').url && (
                     <div className="flex justify-start mb-4">
                       <a 
-                        href="https://youtu.be/h_S_tq0-Pv0" 
+                        href={getVideoInfo('core-compressions').url}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
@@ -501,9 +544,10 @@ export default function UnderstandingYourCoreSection({
                         data-testid="link-core-compressions-video"
                       >
                         <Play className="w-2.5 h-2.5" />
-                        Core Compressions Tutorial
+                        {getVideoInfo('core-compressions').label || 'Core Compressions Tutorial'}
                       </a>
                     </div>
+                    )}
 
                     <p className="text-sm">Core compressions are gentle, intentional exercises that help you actively bring your separated abdominal muscles back toward the midline. They're not crunches or sit-ups—they're controlled, mindful movements designed to rebuild strength and connection.</p>
                     
@@ -574,9 +618,10 @@ export default function UnderstandingYourCoreSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     {/* YouTube Link Button */}
+                    {getVideoInfo('pelvic-floor').url && (
                     <div className="flex justify-start mb-4">
                       <a 
-                        href="https://youtu.be/h7MxrsIGCxo" 
+                        href={getVideoInfo('pelvic-floor').url}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
@@ -588,9 +633,10 @@ export default function UnderstandingYourCoreSection({
                         data-testid="link-pelvic-floor-video"
                       >
                         <Play className="w-2.5 h-2.5" />
-                        Understanding Pelvic Floor
+                        {getVideoInfo('pelvic-floor').label || 'Understanding Pelvic Floor'}
                       </a>
                     </div>
+                    )}
 
                     <p className="text-sm">Your pelvic floor is a group of muscles that form a supportive "hammock" at the base of your pelvis. It plays a crucial role in core stability, bladder control, and overall strength.</p>
                     
@@ -678,9 +724,10 @@ export default function UnderstandingYourCoreSection({
                 <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-5">
                     {/* YouTube Link Button */}
+                    {getVideoInfo('warning-signs').url && (
                     <div className="flex justify-start mb-4">
                       <a 
-                        href="https://www.youtube.com/watch?v=IxnoXYCtnUw" 
+                        href={getVideoInfo('warning-signs').url}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
@@ -692,9 +739,10 @@ export default function UnderstandingYourCoreSection({
                         data-testid="link-warning-signs-video"
                       >
                         <Play className="w-2.5 h-2.5" />
-                        Understanding Doming & Coning
+                        {getVideoInfo('warning-signs').label || 'Understanding Doming & Coning'}
                       </a>
                     </div>
+                    )}
 
                     <p className="text-sm font-semibold text-primary">Doming or coning happens when your abdominal wall bulges or pushes outward during movement—usually a sign that your deep core isn't fully engaged.</p>
                     
