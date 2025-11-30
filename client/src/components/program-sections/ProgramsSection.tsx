@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2, CheckCircle, SkipForward, Eye } from "lucide-react";
 import { ProgramData } from "@/data/workoutPrograms";
 import { useWorkoutContent } from "@/hooks/useWorkoutContent";
+import { useWorkoutSessionProgress } from "@/hooks/useWorkoutSessions";
 
 interface NavigationProps {
   programId: string;
@@ -14,17 +16,76 @@ interface NavigationProps {
   getNavigationText: (direction: 'prev' | 'next') => string;
 }
 
-function StaticProgramCard({ program, isExpanded, onToggle }: { program: ProgramData; isExpanded: boolean; onToggle: () => void }) {
+interface WeekProgressData {
+  workoutsCompleted: number;
+  cardioCompleted: number;
+  isComplete: boolean;
+  isSkipped: boolean;
+  isCurrent: boolean;
+  isFuture: boolean;
+}
+
+function getProgressBadge(weekProgress: WeekProgressData | undefined, colorScheme: ProgramData['colorScheme']) {
+  if (!weekProgress) {
+    return null;
+  }
+  
+  if (weekProgress.isComplete) {
+    return (
+      <Badge className="bg-green-500 text-white text-xs px-2 py-0.5 flex items-center gap-1">
+        <CheckCircle className="w-3 h-3" />
+        Complete
+      </Badge>
+    );
+  }
+  
+  if (weekProgress.isSkipped) {
+    return (
+      <Badge className="bg-orange-500 text-white text-xs px-2 py-0.5 flex items-center gap-1">
+        <SkipForward className="w-3 h-3" />
+        Skipped
+      </Badge>
+    );
+  }
+  
+  if (weekProgress.isCurrent) {
+    return (
+      <Badge className="bg-pink-500 text-white text-xs px-2 py-0.5">
+        {weekProgress.workoutsCompleted}/4 Workouts
+      </Badge>
+    );
+  }
+  
+  if (weekProgress.isFuture) {
+    return (
+      <Badge variant="outline" className="border-gray-300 text-gray-500 text-xs px-2 py-0.5 flex items-center gap-1">
+        <Eye className="w-3 h-3" />
+        Preview
+      </Badge>
+    );
+  }
+  
+  return null;
+}
+
+function StaticProgramCard({ program, isExpanded, onToggle, weekProgress }: { 
+  program: ProgramData; 
+  isExpanded: boolean; 
+  onToggle: () => void;
+  weekProgress?: WeekProgressData;
+}) {
   const { colorScheme } = program;
+  const progressBadge = getProgressBadge(weekProgress, colorScheme);
   
   return (
-    <Card className={`overflow-hidden border-l-4 ${colorScheme.borderColor}`}>
+    <Card className={`overflow-hidden border-l-4 ${colorScheme.borderColor} ${weekProgress?.isFuture ? 'opacity-75' : ''}`}>
       <CardHeader className={`${colorScheme.bgColor} cursor-pointer`} onClick={onToggle}>
         <div className="block lg:hidden">
-          <div className="mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <div className={`${colorScheme.sectionClass} text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg`}>
               WEEK {program.week}
             </div>
+            {progressBadge}
           </div>
           <div className="mb-3">
             <CardTitle className="text-base text-gray-900 font-bold mb-2">{program.title}</CardTitle>
@@ -42,8 +103,11 @@ function StaticProgramCard({ program, isExpanded, onToggle }: { program: Program
         </div>
         <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className={`${colorScheme.sectionClass} text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap`}>
-              WEEK {program.week}
+            <div className="flex flex-col items-start gap-2">
+              <div className={`${colorScheme.sectionClass} text-white px-3 py-1 rounded font-semibold text-sm whitespace-nowrap`}>
+                WEEK {program.week}
+              </div>
+              {progressBadge}
             </div>
             <div className="min-w-0">
               <CardTitle className="text-lg text-gray-900">{program.title}</CardTitle>
@@ -189,6 +253,23 @@ export default function ProgramsSection({
   const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
   
   const { data: workoutPrograms = [], isLoading } = useWorkoutContent();
+  const { data: sessionProgress } = useWorkoutSessionProgress();
+
+  const getWeekProgress = (week: number): WeekProgressData | undefined => {
+    if (!sessionProgress) return undefined;
+    
+    const weekData = sessionProgress.weeklyProgress?.find(w => w.week === week);
+    const currentWeek = sessionProgress.currentWeek || 1;
+    
+    return {
+      workoutsCompleted: weekData?.workoutsCompleted || 0,
+      cardioCompleted: weekData?.cardioCompleted || 0,
+      isComplete: weekData?.isComplete || false,
+      isSkipped: weekData?.isSkipped || false,
+      isCurrent: week === currentWeek,
+      isFuture: week > currentWeek,
+    };
+  };
 
   const toggleProgram = (programId: string) => {
     setExpandedPrograms(prev => ({
@@ -687,6 +768,7 @@ export default function ProgramsSection({
                   program={program}
                   isExpanded={expandedWeeks[program.week] || false}
                   onToggle={() => setExpandedWeeks(prev => ({ ...prev, [program.week]: !prev[program.week] }))}
+                  weekProgress={getWeekProgress(program.week)}
                 />
               ))}
             </div>
