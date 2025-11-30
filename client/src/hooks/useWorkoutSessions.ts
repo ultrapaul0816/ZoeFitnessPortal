@@ -5,6 +5,10 @@ export interface WorkoutSessionProgress {
   currentWeek: number;
   workoutsCompletedThisWeek: number;
   cardioCompletedThisWeek: number;
+  totalWorkoutsCompleted: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastWorkoutDate: string | null;
   weeklyProgress: Array<{
     week: number;
     workoutsCompleted: number;

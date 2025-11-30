@@ -381,6 +381,10 @@ export interface IStorage {
     currentWeek: number;
     workoutsCompletedThisWeek: number;
     cardioCompletedThisWeek: number;
+    totalWorkoutsCompleted: number;
+    currentStreak: number;
+    longestStreak: number;
+    lastWorkoutDate: string | null;
     weeklyProgress: Array<{
       week: number;
       workoutsCompleted: number;
@@ -2035,6 +2039,10 @@ export class MemStorage implements IStorage {
     currentWeek: number;
     workoutsCompletedThisWeek: number;
     cardioCompletedThisWeek: number;
+    totalWorkoutsCompleted: number;
+    currentStreak: number;
+    longestStreak: number;
+    lastWorkoutDate: string | null;
     weeklyProgress: Array<{
       week: number;
       workoutsCompleted: number;
@@ -2047,6 +2055,10 @@ export class MemStorage implements IStorage {
       currentWeek: 1,
       workoutsCompletedThisWeek: 0,
       cardioCompletedThisWeek: 0,
+      totalWorkoutsCompleted: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      lastWorkoutDate: null,
       weeklyProgress: [],
     };
   }
@@ -3959,6 +3971,10 @@ class DatabaseStorage implements IStorage {
     currentWeek: number;
     workoutsCompletedThisWeek: number;
     cardioCompletedThisWeek: number;
+    totalWorkoutsCompleted: number;
+    currentStreak: number;
+    longestStreak: number;
+    lastWorkoutDate: string | null;
     weeklyProgress: Array<{
       week: number;
       workoutsCompleted: number;
@@ -3983,12 +3999,16 @@ class DatabaseStorage implements IStorage {
       isSkipped: boolean;
     }> = [];
     
+    let totalWorkoutsCompleted = 0;
+    
     for (let week = 1; week <= 6; week++) {
       const weekSessions = sessions.filter(s => s.week === week);
       const workoutsCompleted = weekSessions.filter(s => s.sessionType === 'workout').length;
       const cardioCompleted = weekSessions.filter(s => s.sessionType === 'cardio').length;
       const isComplete = workoutsCompleted >= 4 && cardioCompleted >= 2;
       const isSkipped = skippedWeekNumbers.has(week);
+      
+      totalWorkoutsCompleted += workoutsCompleted;
       
       weeklyProgress.push({
         week,
@@ -3997,6 +4017,63 @@ class DatabaseStorage implements IStorage {
         isComplete,
         isSkipped,
       });
+    }
+    
+    // Calculate streak based on workout sessions
+    // Get unique dates when workouts were completed, sorted descending
+    const workoutDates = sessions
+      .filter(s => s.sessionType === 'workout' && s.completedAt)
+      .map(s => {
+        const date = new Date(s.completedAt!);
+        return date.toISOString().split('T')[0]; // Get YYYY-MM-DD
+      })
+      .filter((v, i, a) => a.indexOf(v) === i) // unique dates
+      .sort((a, b) => b.localeCompare(a)); // descending
+    
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let lastWorkoutDate: string | null = workoutDates[0] || null;
+    
+    if (workoutDates.length > 0) {
+      // Calculate current streak (consecutive days from today or yesterday)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayStr = today.toISOString().split('T')[0];
+      
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      
+      // Check if streak is active (workout today or yesterday)
+      if (workoutDates.includes(todayStr) || workoutDates.includes(yesterdayStr)) {
+        let checkDate = workoutDates.includes(todayStr) ? today : yesterday;
+        
+        for (const dateStr of workoutDates) {
+          const checkDateStr = checkDate.toISOString().split('T')[0];
+          if (dateStr === checkDateStr) {
+            currentStreak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+          } else if (dateStr < checkDateStr) {
+            break; // Gap found, streak broken
+          }
+        }
+      }
+      
+      // Calculate longest streak
+      let streak = 1;
+      for (let i = 0; i < workoutDates.length - 1; i++) {
+        const current = new Date(workoutDates[i]);
+        const next = new Date(workoutDates[i + 1]);
+        const diffDays = (current.getTime() - next.getTime()) / (1000 * 60 * 60 * 24);
+        
+        if (diffDays === 1) {
+          streak++;
+        } else {
+          longestStreak = Math.max(longestStreak, streak);
+          streak = 1;
+        }
+      }
+      longestStreak = Math.max(longestStreak, streak, currentStreak);
     }
     
     // Find current week (first non-complete, non-skipped week, or 6 if all complete)
@@ -4008,6 +4085,10 @@ class DatabaseStorage implements IStorage {
       currentWeek,
       workoutsCompletedThisWeek: currentWeekProgress?.workoutsCompleted || 0,
       cardioCompletedThisWeek: currentWeekProgress?.cardioCompleted || 0,
+      totalWorkoutsCompleted,
+      currentStreak,
+      longestStreak,
+      lastWorkoutDate,
       weeklyProgress,
     };
   }

@@ -27,7 +27,8 @@ import {
   ChevronUp,
   Camera,
   Trophy,
-  ArrowRight
+  ArrowRight,
+  Flame
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -753,6 +754,14 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {/* Streak Display */}
+              {(sessionProgress?.currentStreak || 0) > 0 && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-400/30 to-yellow-400/30 rounded-full border border-orange-300/50">
+                  <Flame className="w-4 h-4 text-orange-200" />
+                  <span className="text-sm font-bold text-white">{sessionProgress?.currentStreak}</span>
+                  <span className="text-xs text-orange-100">day streak</span>
+                </div>
+              )}
               <div className="text-right">
                 <div className="text-2xl font-bold">{workoutsCompletedThisWeek}/4</div>
                 <div className="text-xs text-pink-100">workouts this week</div>
@@ -797,14 +806,36 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                     <div className="text-xs text-gray-500">Exercises</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-pink-600">{progress.weeklyWorkoutsCompleted}/{progress.weeklyWorkoutsTotal}</div>
+                    <div className="text-2xl font-bold text-pink-600">{workoutsCompletedThisWeek}/4</div>
                     <div className="text-xs text-gray-500">This Week</div>
                   </div>
+                  {(sessionProgress?.currentStreak || 0) > 0 && (
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-500 flex items-center justify-center gap-1">
+                        <Flame className="w-5 h-5" />
+                        {sessionProgress?.currentStreak}
+                      </div>
+                      <div className="text-xs text-gray-500">Day Streak</div>
+                    </div>
+                  )}
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">{progress.totalWorkoutsCompleted}</div>
+                    <div className="text-2xl font-bold text-purple-600">{sessionProgress?.totalWorkoutsCompleted || 0}</div>
                     <div className="text-xs text-gray-500">Total</div>
                   </div>
                 </div>
+                
+                {/* Motivational Streak Message */}
+                {(sessionProgress?.currentStreak || 0) >= 2 && (
+                  <div className="mt-3 text-center">
+                    <p className="text-sm text-orange-600 font-medium">
+                      {sessionProgress?.currentStreak === 2 && "Two days in a row! You're building momentum! 🔥"}
+                      {sessionProgress?.currentStreak === 3 && "Three day streak! Your consistency is inspiring! 💪"}
+                      {sessionProgress?.currentStreak === 4 && "Four days strong! You're unstoppable! 🌟"}
+                      {(sessionProgress?.currentStreak || 0) >= 5 && (sessionProgress?.currentStreak || 0) < 7 && `${sessionProgress?.currentStreak} day streak! You're on fire, mama! 🔥`}
+                      {(sessionProgress?.currentStreak || 0) >= 7 && `WOW! ${sessionProgress?.currentStreak} days in a row! You're absolutely crushing it! 🏆`}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Next Workout - Clear Tomorrow Message */}
