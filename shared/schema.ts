@@ -318,6 +318,21 @@ export const userCheckins = pgTable("user_checkins", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+// Daily performance check-ins for tracking habits and wellness
+export const dailyCheckins = pgTable("daily_checkins", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  date: timestamp("date").notNull(), // The date this check-in is for
+  workoutCompleted: boolean("workout_completed").default(false),
+  breathingPractice: boolean("breathing_practice").default(false),
+  waterGlasses: integer("water_glasses").default(0), // Number of glasses (target: 8)
+  cardioMinutes: integer("cardio_minutes").default(0), // Minutes of cardio/walking
+  gratitude: text("gratitude"), // What are you grateful for today?
+  struggles: text("struggles"), // What challenges are you facing?
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 // Workout program content - stores detailed program data for each week (database-driven content)
 export const workoutProgramContent = pgTable("workout_program_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -527,6 +542,18 @@ export const insertUserCheckinSchema = createInsertSchema(userCheckins).omit({
   isPartial: z.boolean().optional(),
 });
 
+// Daily check-in schema for performance tracking
+export const insertDailyCheckinSchema = createInsertSchema(dailyCheckins).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  waterGlasses: z.number().min(0).max(20).default(0),
+  cardioMinutes: z.number().min(0).max(300).default(0),
+  gratitude: z.string().max(500).optional().nullable(),
+  struggles: z.string().max(500).optional().nullable(),
+});
+
 // Workout program content schemas
 export const insertWorkoutProgramContentSchema = createInsertSchema(workoutProgramContent).omit({
   id: true,
@@ -729,6 +756,8 @@ export type EmailAutomationRule = typeof emailAutomationRules.$inferSelect;
 export type InsertEmailAutomationRule = z.infer<typeof insertEmailAutomationRuleSchema>;
 export type UserCheckin = typeof userCheckins.$inferSelect;
 export type InsertUserCheckin = z.infer<typeof insertUserCheckinSchema>;
+export type DailyCheckin = typeof dailyCheckins.$inferSelect;
+export type InsertDailyCheckin = z.infer<typeof insertDailyCheckinSchema>;
 export type WorkoutProgramContent = typeof workoutProgramContent.$inferSelect;
 export type InsertWorkoutProgramContent = z.infer<typeof insertWorkoutProgramContentSchema>;
 export type WorkoutContentExercise = typeof workoutContentExercises.$inferSelect;
