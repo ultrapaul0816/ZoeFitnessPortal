@@ -29,8 +29,8 @@ app.use(
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       httpOnly: true, // Prevents client-side JS from accessing cookie
-      secure: process.env.NODE_ENV === "production", // HTTPS only in production
-      sameSite: "lax", // CSRF protection
+      secure: true, // HTTPS only (Replit always uses HTTPS)
+      sameSite: "none", // Allow cross-site cookies for Replit's proxy/iframe
     },
   })
 );
