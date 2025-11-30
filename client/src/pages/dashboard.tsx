@@ -788,8 +788,8 @@ export default function Dashboard() {
           </section>
         )} */}
 
-        {/* TEMPORARILY HIDDEN - Today's Workout Card - Main workout experience (collapsible) */}
-        {/* {memberPrograms.length > 0 && (
+        {/* Today's Workout Card - Main workout experience (collapsible) */}
+        {memberPrograms.length > 0 && (
           <section className="mb-8">
             <TodaysWorkout 
               userId={user.id}
@@ -801,7 +801,7 @@ export default function Dashboard() {
               onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
             />
           </section>
-        )} */}
+        )}
 
         {/* Program Access Card - Full design matching the original */}
         {memberPrograms.length > 0 && (
