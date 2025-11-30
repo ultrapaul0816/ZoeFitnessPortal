@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2, CheckCircle, SkipForward, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2, CheckCircle, SkipForward, Eye, AlertTriangle } from "lucide-react";
 import { ProgramData } from "@/data/workoutPrograms";
 import { useWorkoutContent } from "@/hooks/useWorkoutContent";
-import { useWorkoutSessionProgress } from "@/hooks/useWorkoutSessions";
+import { useWorkoutSessionProgress, useSkipWeek } from "@/hooks/useWorkoutSessions";
 
 interface NavigationProps {
   programId: string;
@@ -68,18 +69,27 @@ function getProgressBadge(weekProgress: WeekProgressData | undefined, colorSchem
   return null;
 }
 
-function StaticProgramCard({ program, isExpanded, onToggle, weekProgress }: { 
+function StaticProgramCard({ program, isExpanded, onToggle, weekProgress, onSkipWarning }: { 
   program: ProgramData; 
   isExpanded: boolean; 
   onToggle: () => void;
   weekProgress?: WeekProgressData;
+  onSkipWarning?: (week: number) => void;
 }) {
   const { colorScheme } = program;
   const progressBadge = getProgressBadge(weekProgress, colorScheme);
   
+  const handleToggle = () => {
+    if (weekProgress?.isFuture && !isExpanded && onSkipWarning) {
+      onSkipWarning(program.week);
+    } else {
+      onToggle();
+    }
+  };
+  
   return (
     <Card className={`overflow-hidden border-l-4 ${colorScheme.borderColor} ${weekProgress?.isFuture ? 'opacity-75' : ''}`}>
-      <CardHeader className={`${colorScheme.bgColor} cursor-pointer`} onClick={onToggle}>
+      <CardHeader className={`${colorScheme.bgColor} cursor-pointer`} onClick={handleToggle}>
         <div className="block lg:hidden">
           <div className="mb-4 flex items-center gap-2">
             <div className={`${colorScheme.sectionClass} text-white px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap inline-block shadow-lg`}>
@@ -251,9 +261,12 @@ export default function ProgramsSection({
 }: NavigationProps) {
   const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({});
   const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
+  const [skipWarningOpen, setSkipWarningOpen] = useState(false);
+  const [pendingSkipWeek, setPendingSkipWeek] = useState<number | null>(null);
   
   const { data: workoutPrograms = [], isLoading } = useWorkoutContent();
   const { data: sessionProgress } = useWorkoutSessionProgress();
+  const skipWeekMutation = useSkipWeek();
 
   const getWeekProgress = (week: number): WeekProgressData | undefined => {
     if (!sessionProgress) return undefined;
@@ -269,6 +282,28 @@ export default function ProgramsSection({
       isCurrent: week === currentWeek,
       isFuture: week > currentWeek,
     };
+  };
+
+  const handleSkipWarning = (week: number) => {
+    setPendingSkipWeek(week);
+    setSkipWarningOpen(true);
+  };
+
+  const handleConfirmSkip = async () => {
+    if (pendingSkipWeek !== null) {
+      const currentWeek = sessionProgress?.currentWeek || 1;
+      for (let w = currentWeek; w < pendingSkipWeek; w++) {
+        await skipWeekMutation.mutateAsync(w);
+      }
+      setExpandedWeeks(prev => ({ ...prev, [pendingSkipWeek]: true }));
+    }
+    setSkipWarningOpen(false);
+    setPendingSkipWeek(null);
+  };
+
+  const handleCancelSkip = () => {
+    setSkipWarningOpen(false);
+    setPendingSkipWeek(null);
   };
 
   const toggleProgram = (programId: string) => {
@@ -289,6 +324,57 @@ export default function ProgramsSection({
 
   return (
     <div className="space-y-6">
+      {/* Skip Warning Dialog */}
+      <Dialog open={skipWarningOpen} onOpenChange={setSkipWarningOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-orange-600" />
+              </div>
+              <DialogTitle className="text-lg">Skip to Week {pendingSkipWeek}?</DialogTitle>
+            </div>
+            <DialogDescription className="text-sm text-gray-600 space-y-3">
+              <p>
+                You're about to skip ahead before completing the current week's workouts. 
+                The program is designed for progressive strength building.
+              </p>
+              <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+                <p className="text-orange-800 font-medium text-sm">
+                  Weeks {sessionProgress?.currentWeek || 1} - {(pendingSkipWeek || 1) - 1} will be marked as "Skipped"
+                </p>
+              </div>
+              <p className="text-gray-500 text-xs">
+                You can still view and complete skipped workouts anytime, but they won't count toward your progression.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={handleCancelSkip}
+              className="flex-1"
+              data-testid="button-cancel-skip"
+            >
+              Go Back
+            </Button>
+            <Button
+              onClick={handleConfirmSkip}
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+              disabled={skipWeekMutation.isPending}
+              data-testid="button-confirm-skip"
+            >
+              {skipWeekMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <SkipForward className="w-4 h-4 mr-2" />
+              )}
+              Skip Ahead
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Programs Section Title */}
       <div className="mb-8 text-left">
         <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
@@ -769,6 +855,7 @@ export default function ProgramsSection({
                   isExpanded={expandedWeeks[program.week] || false}
                   onToggle={() => setExpandedWeeks(prev => ({ ...prev, [program.week]: !prev[program.week] }))}
                   weekProgress={getWeekProgress(program.week)}
+                  onSkipWarning={handleSkipWarning}
                 />
               ))}
             </div>
