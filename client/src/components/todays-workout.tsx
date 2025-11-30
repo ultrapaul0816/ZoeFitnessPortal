@@ -25,7 +25,9 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
-  Camera
+  Camera,
+  Trophy,
+  ArrowRight
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -134,6 +136,8 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [showFirstWorkoutWelcome, setShowFirstWorkoutWelcome] = useState(true);
   const [welcomeStep, setWelcomeStep] = useState<'video' | 'photo' | 'ready'>('video');
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
+  const [showWeekComplete, setShowWeekComplete] = useState(false);
+  const prevWorkoutsCompletedRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
@@ -245,6 +249,16 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     
     prevCompletedCount.current = completedExercises.size;
   }, [completedExercises.size, progress]);
+
+  // Detect week completion (4 workouts done)
+  useEffect(() => {
+    if (workoutsCompletedThisWeek === 4 && prevWorkoutsCompletedRef.current === 3) {
+      setShowWeekComplete(true);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000);
+    }
+    prevWorkoutsCompletedRef.current = workoutsCompletedThisWeek;
+  }, [workoutsCompletedThisWeek]);
 
   const handleSendMessage = (message: string) => {
     if (!message.trim()) return;
@@ -674,6 +688,47 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
           </div>
         </div>
       )}
+
+      {/* Week Completion Celebration Dialog */}
+      <Dialog open={showWeekComplete} onOpenChange={setShowWeekComplete}>
+        <DialogContent className="sm:max-w-md text-center">
+          <DialogHeader>
+            <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mb-4 shadow-lg animate-bounce">
+              <Trophy className="w-10 h-10 text-white" />
+            </div>
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              Week {sessionProgress?.currentWeek || 1} Complete!
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 space-y-4 mt-4">
+              <p className="text-lg">
+                You did it, mama! You've completed all 4 workouts this week. 
+              </p>
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                <p className="text-green-700 font-medium">
+                  Your core is getting stronger every day. Your body is healing beautifully.
+                </p>
+              </div>
+              {(sessionProgress?.currentWeek || 1) < 6 && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200">
+                  <p className="text-purple-700 font-medium flex items-center justify-center gap-2">
+                    <ArrowRight className="w-4 h-4" />
+                    Week {(sessionProgress?.currentWeek || 1) + 1} is now unlocked!
+                  </p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            onClick={() => setShowWeekComplete(false)}
+            className="w-full mt-4 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white py-6 text-lg"
+            data-testid="button-week-complete-continue"
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            Continue My Journey
+          </Button>
+        </DialogContent>
+      </Dialog>
+
       <Card className="border-pink-200 bg-gradient-to-br from-white to-pink-50 shadow-lg overflow-hidden">
         <CardHeader className="pb-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white">
           <div className="flex items-center justify-between">
