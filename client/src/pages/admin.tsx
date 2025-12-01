@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
+import CheckinAnalyticsCard from "@/components/admin/CheckinAnalyticsCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -1106,6 +1107,9 @@ export default function Admin() {
               )}
             </CardContent>
           </Card>
+
+          {/* Daily Check-in Analytics (Aggregated Mood & Energy) */}
+          <CheckinAnalyticsCard />
 
           {/* Recent Check-ins Card */}
           <Card className="border-none shadow-md">
