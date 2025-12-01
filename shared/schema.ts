@@ -329,6 +329,8 @@ export const dailyCheckins = pgTable("daily_checkins", {
   cardioMinutes: integer("cardio_minutes").default(0), // Minutes of cardio/walking
   gratitude: text("gratitude"), // What are you grateful for today?
   struggles: text("struggles"), // What challenges are you facing?
+  mood: text("mood"), // 'great', 'good', 'okay', 'tired', 'struggling'
+  energyLevel: integer("energy_level"), // 1-5 scale
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
@@ -573,6 +575,8 @@ export const insertDailyCheckinSchema = createInsertSchema(dailyCheckins).omit({
   cardioMinutes: z.number().min(0).max(300).default(0),
   gratitude: z.string().max(500).optional().nullable(),
   struggles: z.string().max(500).optional().nullable(),
+  mood: z.enum(['great', 'good', 'okay', 'tired', 'struggling']).optional().nullable(),
+  energyLevel: z.number().int().min(1).max(5).optional().nullable(),
 });
 
 // Weekly workout session schemas for progressive tracking
