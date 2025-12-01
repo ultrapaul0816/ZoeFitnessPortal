@@ -371,6 +371,10 @@ export interface IStorage {
     avgWaterGlasses: number;
     avgCardioMinutes: number;
     currentStreak: number;
+    moodDistribution: { mood: string; count: number; emoji: string }[];
+    avgEnergyLevel: number;
+    energyTrend: 'up' | 'down' | 'stable';
+    recentMoods: { date: string; mood: string | null; energyLevel: number | null }[];
   }>;
 
   // Weekly Workout Sessions (progressive tracking: 4 workouts + 2 cardio per week)
@@ -2001,6 +2005,10 @@ export class MemStorage implements IStorage {
     avgWaterGlasses: number;
     avgCardioMinutes: number;
     currentStreak: number;
+    moodDistribution: { mood: string; count: number; emoji: string }[];
+    avgEnergyLevel: number;
+    energyTrend: 'up' | 'down' | 'stable';
+    recentMoods: { date: string; mood: string | null; energyLevel: number | null }[];
   }> {
     return {
       totalCheckins: 0,
@@ -2009,6 +2017,10 @@ export class MemStorage implements IStorage {
       avgWaterGlasses: 0,
       avgCardioMinutes: 0,
       currentStreak: 0,
+      moodDistribution: [],
+      avgEnergyLevel: 0,
+      energyTrend: 'stable',
+      recentMoods: [],
     };
   }
 
@@ -3869,6 +3881,10 @@ class DatabaseStorage implements IStorage {
     avgWaterGlasses: number;
     avgCardioMinutes: number;
     currentStreak: number;
+    moodDistribution: { mood: string; count: number; emoji: string }[];
+    avgEnergyLevel: number;
+    energyTrend: 'up' | 'down' | 'stable';
+    recentMoods: { date: string; mood: string | null; energyLevel: number | null }[];
   }> {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
@@ -3894,6 +3910,56 @@ class DatabaseStorage implements IStorage {
     
     const totalCardio = checkins.reduce((sum, c) => sum + (c.cardioMinutes || 0), 0);
     const avgCardioMinutes = totalCheckins > 0 ? Math.round(totalCardio / totalCheckins) : 0;
+
+    // Calculate mood distribution
+    const moodEmojis: Record<string, string> = {
+      great: '😊',
+      good: '🙂',
+      okay: '😐',
+      tired: '😴',
+      struggling: '😔',
+    };
+    
+    const moodCounts: Record<string, number> = {};
+    checkins.forEach(c => {
+      if (c.mood) {
+        moodCounts[c.mood] = (moodCounts[c.mood] || 0) + 1;
+      }
+    });
+    
+    const moodDistribution = Object.entries(moodCounts)
+      .map(([mood, count]) => ({
+        mood,
+        count,
+        emoji: moodEmojis[mood] || '🙂',
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    // Calculate average energy level
+    const checkinsWithEnergy = checkins.filter(c => c.energyLevel !== null && c.energyLevel !== undefined);
+    const totalEnergy = checkinsWithEnergy.reduce((sum, c) => sum + (c.energyLevel || 0), 0);
+    const avgEnergyLevel = checkinsWithEnergy.length > 0 
+      ? Math.round((totalEnergy / checkinsWithEnergy.length) * 10) / 10 
+      : 0;
+
+    // Calculate energy trend (compare last 3 days to previous 3 days)
+    let energyTrend: 'up' | 'down' | 'stable' = 'stable';
+    if (checkinsWithEnergy.length >= 6) {
+      const recent3 = checkinsWithEnergy.slice(0, 3);
+      const previous3 = checkinsWithEnergy.slice(3, 6);
+      const recentAvg = recent3.reduce((sum, c) => sum + (c.energyLevel || 0), 0) / recent3.length;
+      const previousAvg = previous3.reduce((sum, c) => sum + (c.energyLevel || 0), 0) / previous3.length;
+      
+      if (recentAvg - previousAvg > 0.5) energyTrend = 'up';
+      else if (previousAvg - recentAvg > 0.5) energyTrend = 'down';
+    }
+
+    // Get recent moods (last 7 days)
+    const recentMoods = checkins.slice(0, 7).map(c => ({
+      date: c.date.toISOString(),
+      mood: c.mood,
+      energyLevel: c.energyLevel,
+    }));
 
     // Calculate current streak (consecutive days with at least one activity)
     let currentStreak = 0;
@@ -3927,6 +3993,10 @@ class DatabaseStorage implements IStorage {
       avgWaterGlasses,
       avgCardioMinutes,
       currentStreak,
+      moodDistribution,
+      avgEnergyLevel,
+      energyTrend,
+      recentMoods,
     };
   }
 
