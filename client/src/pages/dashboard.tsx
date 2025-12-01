@@ -891,7 +891,7 @@ export default function Dashboard() {
           onClose={() => setShowCheckinModal(false)}
           onSkip={() => setShowCheckinModal(false)}
           userId={user.id}
-          existingDeliveryDate={user.deliveryDate}
+          existingDeliveryDate={user.deliveryDate ? (typeof user.deliveryDate === 'string' ? user.deliveryDate : user.deliveryDate.toISOString()) : null}
         />
       )}
 
