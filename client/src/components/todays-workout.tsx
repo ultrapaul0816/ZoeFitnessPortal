@@ -636,16 +636,16 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 <Dumbbell className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-lg">Today's Workout</h3>
+                <h3 className="font-bold text-lg">This Week's Workout</h3>
                 <p className="text-pink-100 text-sm">
-                  Week {progress.currentWeek} • Day {progress.currentDay}
+                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {todayDayType === 'workout' ? `Core ${workoutsCompletedThisWeek + 1}/4` : todayDayType === 'cardio' ? 'Cardio' : 'Rest'}
                   {isWorkoutCompletedToday && " ✓ Complete"}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right mr-2">
-                <div className="font-bold">{progress.weeklyWorkoutsCompleted}/{progress.weeklyWorkoutsTotal}</div>
+                <div className="font-bold">{workoutsCompletedThisWeek}/4</div>
                 <div className="text-xs text-pink-100">this week</div>
               </div>
               <ChevronDown className="w-5 h-5" />
