@@ -769,19 +769,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Daily Performance Check-ins (habits & wellness tracking)
-  app.post("/api/daily-checkins", async (req, res) => {
+  // Using userId in URL to avoid third-party cookie issues in iframes
+  app.post("/api/daily-checkins/:userId", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
       // Check if there's already a check-in for today
-      const existingCheckin = await storage.getTodayDailyCheckin(req.session.userId);
+      const existingCheckin = await storage.getTodayDailyCheckin(userId);
       if (existingCheckin) {
         // Update existing check-in
         const updated = await storage.updateDailyCheckin(
           existingCheckin.id,
-          req.session.userId,
+          userId,
           req.body
         );
         return res.json(updated);
@@ -790,14 +792,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create new check-in
       const checkinData = insertDailyCheckinSchema.parse({
         ...req.body,
-        userId: req.session.userId,
+        userId: userId,
         date: new Date(),
       });
 
       const checkin = await storage.createDailyCheckin(checkinData);
       
       // Log activity for admin visibility
-      await storage.createActivityLog(req.session.userId, 'daily_checkin', {
+      await storage.createActivityLog(userId, 'daily_checkin', {
         workoutCompleted: req.body.workoutCompleted,
         breathingPractice: req.body.breathingPractice,
         waterGlasses: req.body.waterGlasses,
@@ -812,13 +814,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/daily-checkins/today", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/today", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const todayCheckin = await storage.getTodayDailyCheckin(req.session.userId);
+      const todayCheckin = await storage.getTodayDailyCheckin(userId);
       res.json(todayCheckin || null);
     } catch (error: any) {
       console.error(`[DAILY-CHECKIN] Error fetching today's check-in:`, error?.message || error);
@@ -826,9 +829,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/daily-checkins/week", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/week", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
@@ -840,7 +844,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       weekStart.setDate(today.getDate() - diff);
       weekStart.setHours(0, 0, 0, 0);
 
-      const weekCheckins = await storage.getWeeklyDailyCheckins(req.session.userId, weekStart);
+      const weekCheckins = await storage.getWeeklyDailyCheckins(userId, weekStart);
       res.json(weekCheckins);
     } catch (error: any) {
       console.error(`[DAILY-CHECKIN] Error fetching week's check-ins:`, error?.message || error);
@@ -848,14 +852,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/daily-checkins/stats", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/stats", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
       const days = parseInt(req.query.days as string) || 30;
-      const stats = await storage.getDailyCheckinStats(req.session.userId, days);
+      const stats = await storage.getDailyCheckinStats(userId, days);
       res.json(stats);
     } catch (error: any) {
       console.error(`[DAILY-CHECKIN] Error fetching stats:`, error?.message || error);
@@ -863,14 +868,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/daily-checkins/:id", async (req, res) => {
+  app.patch("/api/daily-checkins/:userId/:id", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId, id } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const { id } = req.params;
-      const checkin = await storage.updateDailyCheckin(id, req.session.userId, req.body);
+      const checkin = await storage.updateDailyCheckin(id, userId, req.body);
 
       if (!checkin) {
         return res.status(404).json({ message: "Check-in not found" });
@@ -884,9 +889,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Weekly summary with WhatsApp share data
-  app.get("/api/daily-checkins/weekly-summary", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/weekly-summary", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
@@ -898,14 +904,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       weekStart.setDate(today.getDate() - diff);
       weekStart.setHours(0, 0, 0, 0);
 
-      const weekCheckins = await storage.getWeeklyDailyCheckins(req.session.userId, weekStart);
-      const stats = await storage.getDailyCheckinStats(req.session.userId, 7);
+      const weekCheckins = await storage.getWeeklyDailyCheckins(userId, weekStart);
+      const stats = await storage.getDailyCheckinStats(userId, 7);
       
       // Get user info for personalized message
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser(userId);
 
       // Calculate week number in program (if enrolled)
-      const memberPrograms = await storage.getMemberPrograms(req.session.userId);
+      const memberPrograms = await storage.getMemberPrograms(userId);
       const activeProgram = memberPrograms.find(mp => mp.isActive);
       let programWeek = 1;
       if (activeProgram) {
@@ -943,13 +949,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ===========================================
 
   // Get workout progress (current week, completions, all weeks progress)
-  app.get("/api/workout-sessions/progress", async (req, res) => {
+  // Using userId in URL to avoid third-party cookie issues in iframes
+  app.get("/api/workout-sessions/:userId/progress", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const progress = await storage.getWorkoutSessionProgress(req.session.userId);
+      const progress = await storage.getWorkoutSessionProgress(userId);
       res.json(progress);
     } catch (error: any) {
       console.error(`[WORKOUT-SESSIONS] Error fetching progress:`, error?.message || error);
@@ -958,9 +966,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Log a workout session
-  app.post("/api/workout-sessions", async (req, res) => {
+  app.post("/api/workout-sessions/:userId", async (req, res) => {
     try {
-      if (!req.session?.userId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
@@ -984,7 +993,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const session = await storage.createWorkoutSession({
-        userId: req.session.userId,
+        userId: userId,
         week,
         sessionType,
         sessionNumber,
