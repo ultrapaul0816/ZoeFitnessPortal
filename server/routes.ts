@@ -2390,6 +2390,85 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Checkin analytics for admin dashboard - aggregated mood & energy insights
+  app.get("/api/admin/checkin-analytics", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      
+      // Get all daily checkins from all users
+      const users = await storage.getAllUsers();
+      
+      // Aggregate mood data
+      const moodCounts: Record<string, number> = {};
+      const moodEmojis: Record<string, string> = {
+        great: '😊', good: '🙂', okay: '😐', tired: '😴', struggling: '😔'
+      };
+      let totalEnergy = 0;
+      let energyCount = 0;
+      const energyByDay: { date: string; avgEnergy: number; checkins: number }[] = [];
+      const dailyData: Record<string, { totalEnergy: number; count: number }> = {};
+      
+      // Gather all user stats
+      for (const user of users) {
+        const stats = await storage.getDailyCheckinStats(user.id, days);
+        
+        // Aggregate mood distribution
+        for (const moodItem of stats.moodDistribution) {
+          moodCounts[moodItem.mood] = (moodCounts[moodItem.mood] || 0) + moodItem.count;
+        }
+        
+        // Aggregate energy
+        if (stats.avgEnergyLevel > 0) {
+          totalEnergy += stats.avgEnergyLevel;
+          energyCount++;
+        }
+        
+        // Get recent moods for daily trends
+        for (const m of stats.recentMoods) {
+          if (m.energyLevel) {
+            const dateKey = m.date.split('T')[0];
+            if (!dailyData[dateKey]) {
+              dailyData[dateKey] = { totalEnergy: 0, count: 0 };
+            }
+            dailyData[dateKey].totalEnergy += m.energyLevel;
+            dailyData[dateKey].count++;
+          }
+        }
+      }
+      
+      // Convert daily data to array
+      const energyTrend = Object.entries(dailyData)
+        .map(([date, data]) => ({
+          date,
+          avgEnergy: Math.round((data.totalEnergy / data.count) * 10) / 10,
+          checkins: data.count,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+      
+      // Convert mood counts to array
+      const moodDistribution = Object.entries(moodCounts)
+        .map(([mood, count]) => ({
+          mood,
+          count,
+          emoji: moodEmojis[mood] || '🙂',
+        }))
+        .sort((a, b) => b.count - a.count);
+      
+      const avgEnergyLevel = energyCount > 0 ? Math.round((totalEnergy / energyCount) * 10) / 10 : 0;
+      
+      res.json({
+        totalUsers: users.length,
+        moodDistribution,
+        avgEnergyLevel,
+        energyTrend,
+        days,
+      });
+    } catch (error) {
+      console.error("Checkin analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch checkin analytics" });
+    }
+  });
+
   // Detailed member profile data for admin
   app.get("/api/admin/member-profile/:userId", async (req, res) => {
     try {
