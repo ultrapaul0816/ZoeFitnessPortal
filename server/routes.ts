@@ -342,27 +342,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[LOGIN] Success for: ${updatedUser.email} (isAdmin: ${updatedUser.isAdmin})`);
 
-      res.json({
-        user: {
-          id: updatedUser.id,
-          email: updatedUser.email,
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
-          isAdmin: updatedUser.isAdmin,
-          termsAccepted: updatedUser.termsAccepted,
-          disclaimerAccepted: updatedUser.disclaimerAccepted,
-          hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
-          whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
-          whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
-          phone: updatedUser.phone,
-          country: updatedUser.country,
-          bio: updatedUser.bio,
-          instagramHandle: updatedUser.instagramHandle,
-          postpartumWeeks: updatedUser.postpartumWeeks,
-          lastLoginAt: updatedUser.lastLoginAt,
-          loginCount: updatedUser.loginCount,
-          lastCheckinPromptAt: updatedUser.lastCheckinPromptAt,
-        },
+      // Explicitly save session before sending response to avoid race condition
+      req.session.save((err) => {
+        if (err) {
+          console.error(`[LOGIN] Session save error:`, err);
+          return res.status(500).json({ message: "Failed to create session" });
+        }
+        
+        res.json({
+          user: {
+            id: updatedUser.id,
+            email: updatedUser.email,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            isAdmin: updatedUser.isAdmin,
+            termsAccepted: updatedUser.termsAccepted,
+            disclaimerAccepted: updatedUser.disclaimerAccepted,
+            hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
+            whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
+            whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
+            phone: updatedUser.phone,
+            country: updatedUser.country,
+            bio: updatedUser.bio,
+            instagramHandle: updatedUser.instagramHandle,
+            postpartumWeeks: updatedUser.postpartumWeeks,
+            lastLoginAt: updatedUser.lastLoginAt,
+            loginCount: updatedUser.loginCount,
+            lastCheckinPromptAt: updatedUser.lastCheckinPromptAt,
+          },
+        });
       });
     } catch (error: any) {
       console.error(`[LOGIN] Error:`, error?.message || error);
