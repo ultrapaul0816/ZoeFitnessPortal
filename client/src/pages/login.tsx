@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,10 +12,42 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { loginSchema, type LoginData } from "@shared/schema";
-import { Shield, AlertTriangle, Mail, KeyRound, ArrowLeft, Lock } from "lucide-react";
+import { Shield, AlertTriangle, Mail, KeyRound, ArrowLeft, Lock, Eye, EyeOff, ShieldCheck, Heart, Sparkles } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 type ForgotPasswordStep = 'email' | 'code' | 'options' | 'newPassword';
+
+// Testimonials for rotation
+const testimonials = [
+  {
+    quote: "This program gave me my confidence back. I feel stronger than ever!",
+    author: "Sarah M.",
+    role: "Mama of 2"
+  },
+  {
+    quote: "Finally, a program that understands postpartum bodies. Life-changing!",
+    author: "Jessica R.",
+    role: "6 months postpartum"
+  },
+  {
+    quote: "Zoe's guidance is incredible. My core has never felt this connected.",
+    author: "Emma T.",
+    role: "First-time mama"
+  },
+  {
+    quote: "The best investment in my postpartum recovery. Thank you, Zoe!",
+    author: "Priya K.",
+    role: "Mama of 3"
+  }
+];
+
+// Get time-based greeting
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -23,6 +55,10 @@ export default function Login() {
   const [showTermsAndDisclaimer, setShowTermsAndDisclaimer] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [greeting, setGreeting] = useState(getGreeting());
   
   // Forgot password state
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -31,6 +67,22 @@ export default function Login() {
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Rotate testimonials every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update greeting periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGreeting(getGreeting());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -78,10 +130,20 @@ export default function Login() {
         return;
       }
       
+      // Friendly error messages
+      let friendlyMessage = "Invalid email or password";
+      if (error.message.toLowerCase().includes('not found')) {
+        friendlyMessage = "We couldn't find an account with that email. Please check and try again.";
+      } else if (error.message.toLowerCase().includes('password')) {
+        friendlyMessage = "That password doesn't match. Need help? Try the email code option below.";
+      } else if (error.message.toLowerCase().includes('locked') || error.message.toLowerCase().includes('too many')) {
+        friendlyMessage = "Too many attempts. Please wait a few minutes or use the email code option.";
+      }
+      
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Invalid email or password",
+        title: "Oops!",
+        description: friendlyMessage,
       });
     },
   });
@@ -104,10 +166,14 @@ export default function Login() {
       setForgotPasswordStep('code');
     },
     onError: (error: Error) => {
+      let friendlyMessage = error.message;
+      if (error.message.toLowerCase().includes('not found')) {
+        friendlyMessage = "We couldn't find an account with that email. Please check the spelling.";
+      }
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message,
+        title: "Hmm, something's not right",
+        description: friendlyMessage,
       });
     },
   });
@@ -141,8 +207,8 @@ export default function Login() {
     onError: (error: Error) => {
       toast({
         variant: "destructive",
-        title: "Invalid Code",
-        description: error.message,
+        title: "That code didn't work",
+        description: "Please check the code and try again, or request a new one.",
       });
     },
   });
@@ -174,7 +240,7 @@ export default function Login() {
     onError: (error: Error) => {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Couldn't reset password",
         description: error.message,
       });
     },
@@ -220,8 +286,6 @@ export default function Login() {
       });
       return;
     }
-    // Just move to options step - don't call API yet
-    // The code will be verified when user clicks "Log In Now" or "Reset Password"
     setForgotPasswordStep('options');
   };
 
@@ -258,219 +322,348 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-50 p-4">
-      <div className="w-full max-w-md">
-        <Card className="rounded-3xl shadow-xl border-0 bg-white/95 animate-in scale-in-95 fade-in duration-200">
-          <CardContent className="p-10">
-            {/* Logo and Header */}
-            <div className="text-center mb-10">
-              <div className="w-28 h-20 mx-auto mb-6 flex items-center justify-center animate-in scale-in-95 fade-in duration-300">
-                <img 
-                  src="/assets/logo.png" 
-                  alt="Stronger With Zoe" 
-                  className="w-full h-full object-contain drop-shadow-sm"
-                  loading="eager"
-                  width="112"
-                  height="80"
-                />
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-rose-50 via-pink-50 to-fuchsia-50 relative overflow-hidden">
+      {/* Decorative floating shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-pink-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-br from-fuchsia-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
+        <div className="absolute bottom-32 left-1/4 w-56 h-56 bg-gradient-to-br from-rose-200/30 to-pink-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-gradient-to-br from-pink-200/20 to-fuchsia-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '0.5s' }}></div>
+        {/* Subtle sparkle dots */}
+        <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-pink-400/40 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+        <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-rose-400/40 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-fuchsia-400/40 rounded-full animate-ping" style={{ animationDuration: '3.5s', animationDelay: '2s' }}></div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center p-4 relative z-10">
+        <div className="w-full max-w-md">
+          <Card className="rounded-3xl shadow-2xl border-0 bg-white/95 backdrop-blur-sm animate-in zoom-in-95 fade-in duration-500">
+            <CardContent className="p-8 sm:p-10">
+              {/* Logo and Header */}
+              <div className="text-center mb-8">
+                <div className="w-28 h-20 mx-auto mb-5 flex items-center justify-center animate-in zoom-in-95 fade-in duration-500">
+                  <img 
+                    src="/assets/logo.png" 
+                    alt="Stronger With Zoe" 
+                    className="w-full h-full object-contain drop-shadow-sm hover:scale-105 transition-transform duration-300"
+                    loading="eager"
+                    width="112"
+                    height="80"
+                  />
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '100ms' }}>
+                  {greeting}, mama! 💕
+                </h1>
+                <p className="text-gray-600 text-base animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '150ms' }}>
+                  Your 6-week core recovery journey awaits
+                </p>
               </div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-3 animate-in slide-in-from-bottom-4 fade-in duration-300">
-                Welcome Back
-              </h1>
-              <p className="text-gray-600 text-lg animate-in slide-in-from-bottom-4 fade-in duration-300">
-                Access your fitness programs
-              </p>
-            </div>
 
-            {/* Login Form */}
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
-                <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700 font-medium text-sm">Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="your@email.com"
-                            data-testid="input-email"
-                            className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700 font-medium text-sm">Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="••••••••"
-                            data-testid="input-password"
-                            className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Terms and Disclaimer Section - Only shown when needed */}
-                {showTermsAndDisclaimer && (
-                  <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 space-y-4">
-                    {/* Terms Content */}
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-1">
-                          <AlertTriangle className="w-5 h-5 text-blue-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-800 mb-2">Terms & Conditions</h3>
-                          <p className="text-xs text-gray-700 leading-relaxed">
-                            By accessing this program, you agree to our terms of service. This includes proper use of the platform, respecting intellectual property, and understanding that results may vary. You are responsible for your own health and safety while using this program.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Terms Checkbox */}
-                    <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
-                      <div className="flex-shrink-0 mt-1">
-                        <Checkbox 
-                          id="terms-acceptance"
-                          checked={termsAccepted}
-                          onCheckedChange={(checked) => setTermsAccepted(!!checked)}
-                          data-testid="checkbox-terms-acceptance"
-                          className="w-4 h-4 border-2 border-blue-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-500 data-[state=checked]:to-indigo-500 data-[state=checked]:border-blue-500"
-                        />
-                      </div>
-                      <label 
-                        htmlFor="terms-acceptance" 
-                        className="text-xs font-medium leading-relaxed cursor-pointer text-gray-800"
-                      >
-                        <strong className="text-blue-600">I accept the terms and conditions.</strong> I understand and agree to the terms of service outlined above.
-                      </label>
-                    </div>
-
-                    {/* Disclaimer Content */}
-                    <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-xl p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-1">
-                          <Shield className="w-5 h-5 text-pink-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-800 mb-2">Health Disclaimer</h3>
-                          <p className="text-xs text-gray-700 leading-relaxed">
-                            This program provides general fitness information for postpartum women. Always consult your healthcare provider before beginning any exercise program. By proceeding, you confirm you have medical clearance and understand the risks involved.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Disclaimer Checkbox */}
-                    <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
-                      <div className="flex-shrink-0 mt-1">
-                        <Checkbox 
-                          id="disclaimer-acceptance"
-                          checked={disclaimerAccepted}
-                          onCheckedChange={(checked) => setDisclaimerAccepted(!!checked)}
-                          data-testid="checkbox-disclaimer-acceptance"
-                          className="w-4 h-4 border-2 border-pink-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-pink-500 data-[state=checked]:to-rose-500 data-[state=checked]:border-pink-500"
-                        />
-                      </div>
-                      <label 
-                        htmlFor="disclaimer-acceptance" 
-                        className="text-xs font-medium leading-relaxed cursor-pointer text-gray-800"
-                      >
-                        <strong className="text-pink-600">I acknowledge that I have read and understand the disclaimer above.</strong> I confirm that I have received medical clearance from my healthcare provider to begin exercising and understand the risks involved.
-                      </label>
+              {/* Rotating Testimonial */}
+              <div className="mb-6 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '200ms' }}>
+                <div className="bg-gradient-to-r from-pink-50/80 to-rose-50/80 border border-pink-100 rounded-xl p-4 relative overflow-hidden">
+                  <div className="absolute top-2 left-3 text-pink-300 text-2xl">"</div>
+                  <div className="transition-all duration-500 ease-in-out">
+                    <p className="text-gray-700 text-sm italic pl-4 pr-2 leading-relaxed">
+                      {testimonials[currentTestimonial].quote}
+                    </p>
+                    <div className="flex items-center justify-end gap-2 mt-2 pr-2">
+                      <Heart className="w-3 h-3 text-pink-400 fill-pink-400" />
+                      <span className="text-xs text-gray-500 font-medium">
+                        {testimonials[currentTestimonial].author}, {testimonials[currentTestimonial].role}
+                      </span>
                     </div>
                   </div>
-                )}
-
-                <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 pt-2">
-                  <Button
-                    type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
-                    disabled={loginMutation.isPending || (showTermsAndDisclaimer && (!termsAccepted || !disclaimerAccepted))}
-                    data-testid="button-signin"
-                  >
-                    {loginMutation.isPending ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Signing In...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-4 h-4" />
-                        <span>Sign In with Password</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-
-            {/* Divider */}
-            <div className="mt-6 animate-in slide-in-from-bottom-4 fade-in duration-300">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500">or</span>
+                  {/* Testimonial dots */}
+                  <div className="flex justify-center gap-1.5 mt-3">
+                    {testimonials.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentTestimonial(index)}
+                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          index === currentTestimonial ? 'bg-pink-500 w-3' : 'bg-pink-200 hover:bg-pink-300'
+                        }`}
+                        aria-label={`View testimonial ${index + 1}`}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Login with OTP Button - Equal prominence */}
-            <div className="mt-6 animate-in slide-in-from-bottom-4 fade-in duration-300">
-              <Button
-                type="button"
-                onClick={handleForgotPasswordOpen}
-                variant="outline"
-                className="w-full h-12 border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
-                data-testid="button-login-otp"
-              >
-                <Mail className="w-4 h-4" />
-                <span>Sign In with Email Code</span>
-              </Button>
-              <p className="text-xs text-gray-500 text-center mt-2">
-                We'll send a 6-digit code to your email
-              </p>
-            </div>
+              {/* Login Form */}
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                  <div className="animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '250ms' }}>
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium text-sm">Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="your@email.com"
+                              autoComplete="email"
+                              data-testid="input-email"
+                              className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400 hover:border-gray-300"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-rose-500" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '300ms' }}>
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium text-sm">Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                autoComplete="current-password"
+                                data-testid="input-password"
+                                className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400 pr-12 hover:border-gray-300"
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                data-testid="button-toggle-password"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="w-5 h-5" />
+                                ) : (
+                                  <Eye className="w-5 h-5" />
+                                )}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-rose-500" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-            <div className="mt-6 text-center animate-in slide-in-from-bottom-4 fade-in duration-300">
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Need access?{" "}
-                <a
-                  href="https://strongerwithzoe.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-pink-600 font-semibold hover:text-pink-700 transition-colors duration-200 hover:underline decoration-pink-300 underline-offset-2"
-                  data-testid="link-purchase"
+                  {/* Remember Me */}
+                  <div className="flex items-center justify-between animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '350ms' }}>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="remember-me"
+                        checked={rememberMe}
+                        onCheckedChange={(checked) => setRememberMe(!!checked)}
+                        className="border-gray-300 data-[state=checked]:bg-pink-500 data-[state=checked]:border-pink-500"
+                        data-testid="checkbox-remember-me"
+                      />
+                      <label 
+                        htmlFor="remember-me" 
+                        className="text-sm text-gray-600 cursor-pointer select-none hover:text-gray-800 transition-colors"
+                      >
+                        Remember me
+                      </label>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleForgotPasswordOpen}
+                      className="text-sm text-pink-600 hover:text-pink-700 font-medium transition-colors hover:underline decoration-pink-300 underline-offset-2"
+                      data-testid="link-forgot-password"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+
+                  {/* Terms and Disclaimer Section - Only shown when needed */}
+                  {showTermsAndDisclaimer && (
+                    <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 space-y-4">
+                      {/* Terms Content */}
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 mt-1">
+                            <AlertTriangle className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-sm font-semibold text-gray-800 mb-2">Terms & Conditions</h3>
+                            <p className="text-xs text-gray-700 leading-relaxed">
+                              By accessing this program, you agree to our terms of service. This includes proper use of the platform, respecting intellectual property, and understanding that results may vary. You are responsible for your own health and safety while using this program.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Terms Checkbox */}
+                      <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <div className="flex-shrink-0 mt-1">
+                          <Checkbox 
+                            id="terms-acceptance"
+                            checked={termsAccepted}
+                            onCheckedChange={(checked) => setTermsAccepted(!!checked)}
+                            data-testid="checkbox-terms-acceptance"
+                            className="w-4 h-4 border-2 border-blue-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-500 data-[state=checked]:to-indigo-500 data-[state=checked]:border-blue-500"
+                          />
+                        </div>
+                        <label 
+                          htmlFor="terms-acceptance" 
+                          className="text-xs font-medium leading-relaxed cursor-pointer text-gray-800"
+                        >
+                          <strong className="text-blue-600">I accept the terms and conditions.</strong> I understand and agree to the terms of service outlined above.
+                        </label>
+                      </div>
+
+                      {/* Disclaimer Content */}
+                      <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-xl p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 mt-1">
+                            <Shield className="w-5 h-5 text-pink-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-sm font-semibold text-gray-800 mb-2">Health Disclaimer</h3>
+                            <p className="text-xs text-gray-700 leading-relaxed">
+                              This program provides general fitness information for postpartum women. Always consult your healthcare provider before beginning any exercise program. By proceeding, you confirm you have medical clearance and understand the risks involved.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Disclaimer Checkbox */}
+                      <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <div className="flex-shrink-0 mt-1">
+                          <Checkbox 
+                            id="disclaimer-acceptance"
+                            checked={disclaimerAccepted}
+                            onCheckedChange={(checked) => setDisclaimerAccepted(!!checked)}
+                            data-testid="checkbox-disclaimer-acceptance"
+                            className="w-4 h-4 border-2 border-pink-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-pink-500 data-[state=checked]:to-rose-500 data-[state=checked]:border-pink-500"
+                          />
+                        </div>
+                        <label 
+                          htmlFor="disclaimer-acceptance" 
+                          className="text-xs font-medium leading-relaxed cursor-pointer text-gray-800"
+                        >
+                          <strong className="text-pink-600">I acknowledge that I have read and understand the disclaimer above.</strong> I confirm that I have received medical clearance from my healthcare provider to begin exercising and understand the risks involved.
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="animate-in slide-in-from-bottom-3 fade-in duration-500 pt-1" style={{ animationDelay: '400ms' }}>
+                    <Button
+                      type="submit"
+                      className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
+                      disabled={loginMutation.isPending || (showTermsAndDisclaimer && (!termsAccepted || !disclaimerAccepted))}
+                      data-testid="button-signin"
+                    >
+                      {loginMutation.isPending ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <span>Signing you in...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                          <span>Sign In with Password</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+
+              {/* Divider */}
+              <div className="mt-5 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '450ms' }}>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-gray-400 font-medium">or</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Login with OTP Button - Equal prominence */}
+              <div className="mt-5 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '500ms' }}>
+                <Button
+                  type="button"
+                  onClick={handleForgotPasswordOpen}
+                  variant="outline"
+                  className="w-full h-12 border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
+                  data-testid="button-login-otp"
                 >
-                  Purchase a program
-                </a>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                  <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span>Sign In with Email Code</span>
+                </Button>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  We'll send a 6-digit code to your email
+                </p>
+              </div>
+
+              {/* Security Badge */}
+              <div className="mt-6 flex items-center justify-center gap-2 text-gray-400 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '550ms' }}>
+                <ShieldCheck className="w-4 h-4 text-green-500" />
+                <span className="text-xs">Your data is protected & secure</span>
+              </div>
+
+              <div className="mt-4 text-center animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '600ms' }}>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Need access?{" "}
+                  <a
+                    href="https://strongerwithzoe.in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-pink-600 font-semibold hover:text-pink-700 transition-colors duration-200 hover:underline decoration-pink-300 underline-offset-2"
+                    data-testid="link-purchase"
+                  >
+                    Purchase a program
+                  </a>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+
+      {/* Professional Footer */}
+      <footer className="relative z-10 py-6 text-center animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '700ms' }}>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs text-gray-500">
+          <span>© 2024 Stronger With Zoe. All rights reserved.</span>
+          <div className="flex items-center gap-4">
+            <a 
+              href="https://strongerwithzoe.in/privacy" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-pink-600 transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <span className="text-gray-300">|</span>
+            <a 
+              href="https://strongerwithzoe.in/terms" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-pink-600 transition-colors"
+            >
+              Terms of Service
+            </a>
+            <span className="text-gray-300">|</span>
+            <a 
+              href="mailto:support@strongerwithzoe.in"
+              className="hover:text-pink-600 transition-colors"
+            >
+              Support
+            </a>
+          </div>
+        </div>
+      </footer>
 
       {/* Login with OTP Dialog */}
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
@@ -491,7 +684,7 @@ export default function Login() {
               )}
               {forgotPasswordStep === 'options' && (
                 <>
-                  <KeyRound className="w-5 h-5 text-pink-500" />
+                  <Sparkles className="w-5 h-5 text-pink-500" />
                   Almost there!
                 </>
               )}
@@ -533,7 +726,7 @@ export default function Login() {
                 >
                   {requestOtpMutation.isPending ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       <span>Sending...</span>
                     </div>
                   ) : (
@@ -567,38 +760,23 @@ export default function Login() {
                   </div>
                   <p className="text-xs text-gray-500 text-center">Code expires in 10 minutes</p>
                 </div>
-                <Button
-                  onClick={handleLoginWithOtp}
-                  disabled={otpCode.length !== 6 || verifyOtpMutation.isPending}
-                  className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl"
-                  data-testid="button-verify-code"
-                >
-                  {verifyOtpMutation.isPending ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Logging in...</span>
-                    </div>
-                  ) : (
-                    "Log In"
-                  )}
-                </Button>
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
                     onClick={() => setForgotPasswordStep('email')}
-                    className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                    className="flex-1 h-12 rounded-xl"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-4 h-4 mr-2" />
                     Back
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
                     onClick={handleProceedToOptions}
-                    className="text-sm text-pink-600 hover:text-pink-700"
                     disabled={otpCode.length !== 6}
+                    className="flex-1 h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl"
+                    data-testid="button-verify-code"
                   >
-                    Reset password instead?
-                  </button>
+                    Continue
+                  </Button>
                 </div>
               </>
             )}
@@ -606,9 +784,6 @@ export default function Login() {
             {/* Options Step */}
             {forgotPasswordStep === 'options' && (
               <>
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
-                  <p className="text-blue-700 font-medium">Code entered! Choose an option below:</p>
-                </div>
                 <div className="space-y-3">
                   <Button
                     onClick={handleLoginWithOtp}
@@ -618,22 +793,42 @@ export default function Login() {
                   >
                     {verifyOtpMutation.isPending ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         <span>Logging in...</span>
                       </div>
                     ) : (
-                      "Log In Now"
+                      <>
+                        <Lock className="w-4 h-4 mr-2" />
+                        Log In Now
+                      </>
                     )}
                   </Button>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-4 bg-white text-gray-500">or</span>
+                    </div>
+                  </div>
                   <Button
-                    onClick={() => setForgotPasswordStep('newPassword')}
                     variant="outline"
-                    className="w-full h-12 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:bg-gray-50"
-                    data-testid="button-reset-password"
+                    onClick={() => setForgotPasswordStep('newPassword')}
+                    className="w-full h-12 rounded-xl border-2"
+                    data-testid="button-reset-password-option"
                   >
-                    Reset Password
+                    <KeyRound className="w-4 h-4 mr-2" />
+                    Set a New Password
                   </Button>
                 </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => setForgotPasswordStep('code')}
+                  className="w-full text-gray-500"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to code entry
+                </Button>
               </>
             )}
 
@@ -643,19 +838,28 @@ export default function Login() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">New Password</label>
-                    <Input
-                      type="password"
-                      placeholder="At least 8 characters"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400"
-                      data-testid="input-new-password"
-                    />
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="At least 8 characters"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 pr-12"
+                        data-testid="input-new-password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Confirm Password</label>
                     <Input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Confirm your password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -664,29 +868,31 @@ export default function Login() {
                     />
                   </div>
                 </div>
-                <Button
-                  onClick={handleResetPassword}
-                  disabled={resetPasswordMutation.isPending}
-                  className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl"
-                  data-testid="button-save-password"
-                >
-                  {resetPasswordMutation.isPending ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Saving...</span>
-                    </div>
-                  ) : (
-                    "Save New Password"
-                  )}
-                </Button>
-                <button
-                  type="button"
-                  onClick={() => setForgotPasswordStep('options')}
-                  className="w-full text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to options
-                </button>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setForgotPasswordStep('options')}
+                    className="flex-1 h-12 rounded-xl"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back
+                  </Button>
+                  <Button
+                    onClick={handleResetPassword}
+                    disabled={resetPasswordMutation.isPending}
+                    className="flex-1 h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl"
+                    data-testid="button-set-password"
+                  >
+                    {resetPasswordMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Setting...</span>
+                      </div>
+                    ) : (
+                      "Set Password"
+                    )}
+                  </Button>
+                </div>
               </>
             )}
           </div>
