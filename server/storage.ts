@@ -4019,16 +4019,38 @@ class DatabaseStorage implements IStorage {
       });
     }
     
-    // Calculate streak based on workout sessions
-    // Get unique dates when workouts were completed, sorted descending
-    const workoutDates = sessions
+    // Calculate streak based on workout sessions AND daily check-ins
+    // Get unique dates from workout sessions
+    const sessionDates = sessions
       .filter(s => s.sessionType === 'workout' && s.completedAt)
       .map(s => {
         const date = new Date(s.completedAt!);
         return date.toISOString().split('T')[0]; // Get YYYY-MM-DD
-      })
-      .filter((v, i, a) => a.indexOf(v) === i) // unique dates
+      });
+    
+    // Also get dates from daily check-ins where workout was completed
+    const userDailyCheckins = await this.db
+      .select()
+      .from(dailyCheckins)
+      .where(
+        and(
+          eq(dailyCheckins.userId, userId),
+          eq(dailyCheckins.workoutCompleted, true)
+        )
+      );
+    
+    const checkinDates = userDailyCheckins
+      .filter((c: { date: Date | null }) => c.date)
+      .map((c: { date: Date }) => {
+        const date = new Date(c.date);
+        return date.toISOString().split('T')[0];
+      });
+    
+    // Combine and deduplicate dates
+    const allWorkoutDates = Array.from(new Set([...sessionDates, ...checkinDates]))
       .sort((a, b) => b.localeCompare(a)); // descending
+    
+    const workoutDates = allWorkoutDates;
     
     let currentStreak = 0;
     let longestStreak = 0;
