@@ -713,33 +713,6 @@ export default function Dashboard() {
           className="mb-8"
         />
 
-        {/* Daily Check-in Prompt Card - Hidden after check-in complete */}
-        {memberPrograms.length > 0 && !hasCheckedInToday && (
-          <section className="mb-6">
-            <button
-              onClick={() => setShowDailyCheckinModal(true)}
-              className="w-full text-left"
-              data-testid="button-daily-checkin-card"
-            >
-              <Card className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 border-0 shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                <CardContent className="p-5">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
-                      <ClipboardCheck className="w-7 h-7 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-white">Daily Check-in</h3>
-                      <p className="text-pink-100 text-sm leading-relaxed">
-                        Take 30 seconds to log your progress. Tracking your wins creates accountability and helps you see how far you've come!
-                      </p>
-                    </div>
-                    <ChevronRight className="w-6 h-6 text-white/70 flex-shrink-0" />
-                  </div>
-                </CardContent>
-              </Card>
-            </button>
-          </section>
-        )}
 
         {/* Weekly Progress Summary with Check-in Button */}
         {memberPrograms.length > 0 && (
