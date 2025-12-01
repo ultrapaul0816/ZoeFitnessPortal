@@ -33,7 +33,7 @@ import {
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { workoutPrograms, ProgramData, Exercise } from "@/data/workoutPrograms";
-import { useWorkoutSessionProgress, useLogWorkoutSession, getDayType, getDayTypeLabel } from "@/hooks/useWorkoutSessions";
+import { useWorkoutSessionProgress, useLogWorkoutSession, getDayType, getDayTypeLabel, getWeekSchedule } from "@/hooks/useWorkoutSessions";
 import { SpotifyWidget } from "@/components/spotify-widget";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 
@@ -152,6 +152,8 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const dayOfWeek = today.getDay();
   const todayDayType = getDayType(dayOfWeek);
   const todayDayTypeLabel = getDayTypeLabel(todayDayType);
+  const weekSchedule = getWeekSchedule();
+  const todayDayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeek];
 
   const currentWeekProgress = sessionProgress?.weeklyProgress?.find(
     w => w.week === (sessionProgress?.currentWeek || 1)
@@ -727,10 +729,10 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
         <CardHeader className="pb-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold">Today's Workout</CardTitle>
+              <CardTitle className="text-xl font-bold">This Week's Workout</CardTitle>
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-pink-100 text-sm">
-                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {todayDayType === 'rest' ? 'Rest Day' : `Workout ${nextWorkoutNumber > 4 ? 4 : nextWorkoutNumber} of 4`}
+                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {todayDayType === 'workout' ? `Core ${workoutsCompletedThisWeek + 1}/4` : todayDayType === 'cardio' ? 'Cardio' : 'Rest'}
                 </p>
                 <Badge 
                   variant="secondary" 
@@ -742,7 +744,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                         : 'bg-purple-400/30 text-purple-100'
                   }`}
                 >
-                  {todayDayTypeLabel}
+                  Today: {todayDayTypeLabel}
                 </Badge>
               </div>
             </div>
@@ -775,6 +777,34 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             value={(workoutsCompletedThisWeek / 4) * 100} 
             className="h-2 mt-3 bg-pink-300"
           />
+          
+          {/* Weekly Schedule Mini View */}
+          <div className="flex justify-between mt-3 px-1">
+            {weekSchedule.map((day, idx) => {
+              const isToday = day.day === todayDayName;
+              return (
+                <div 
+                  key={idx} 
+                  className={`flex flex-col items-center ${isToday ? 'scale-110' : 'opacity-70'}`}
+                >
+                  <span className={`text-[10px] uppercase font-medium ${isToday ? 'text-white' : 'text-pink-200'}`}>
+                    {day.day}
+                  </span>
+                  <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    isToday 
+                      ? 'bg-white text-pink-600 shadow-lg' 
+                      : day.type === 'workout' 
+                        ? 'bg-pink-400/50 text-white' 
+                        : day.type === 'cardio'
+                          ? 'bg-green-400/50 text-white'
+                          : 'bg-purple-400/50 text-white'
+                  }`}>
+                    {day.type === 'workout' ? 'C' : day.type === 'cardio' ? '🏃' : '💤'}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </CardHeader>
 
         <CardContent className="p-4 space-y-4">
@@ -931,11 +961,17 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </div>
                 </div>
                 
-                {/* 3 Rounds Instruction */}
-                <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-sm">
-                  <p className="text-amber-800">
-                    <strong>How to do it:</strong> Complete all {exercises.length} exercises below, then repeat 2 more times (3 rounds total). Rest 30 sec - 1 min between movements.
-                  </p>
+                {/* 3 Rounds Instruction - Clear and simple */}
+                <div className="bg-gradient-to-r from-pink-100 to-amber-50 border-2 border-pink-200 rounded-xl px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+                      3×
+                    </div>
+                    <div>
+                      <p className="font-semibold text-pink-700">Do all {exercises.length} exercises × 3 rounds</p>
+                      <p className="text-sm text-gray-600">Complete all exercises, rest 30-60 seconds, then repeat 2 more times</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Spotify Workout Music Widget */}
@@ -1002,7 +1038,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                             {exercise.name}
                           </p>
                           <p className={`text-base font-bold mt-1 ${completedExercises.has(exercise.num) ? 'text-green-600' : 'text-pink-600'}`}>
-                            {exercise.reps} <span className="text-gray-400 font-normal">×3</span>
+                            {exercise.reps}
                           </p>
                         </div>
                       </div>

@@ -79,21 +79,33 @@ export function useSkipWeek() {
 
 export function getDayType(dayOfWeek: number): 'workout' | 'cardio' | 'rest' {
   switch (dayOfWeek) {
-    case 0: return 'workout';
-    case 1: return 'cardio';
-    case 2: return 'workout';
-    case 3: return 'cardio';
-    case 4: return 'workout';
-    case 5: return 'rest';
-    case 6: return 'workout';
+    case 0: return 'rest';      // Sunday - Rest Day
+    case 1: return 'workout';   // Monday - Core Workout
+    case 2: return 'cardio';    // Tuesday - Cardio Day
+    case 3: return 'workout';   // Wednesday - Core Workout
+    case 4: return 'cardio';    // Thursday - Cardio Day
+    case 5: return 'workout';   // Friday - Core Workout
+    case 6: return 'workout';   // Saturday - Core Workout
     default: return 'workout';
   }
 }
 
 export function getDayTypeLabel(dayType: 'workout' | 'cardio' | 'rest'): string {
   switch (dayType) {
-    case 'workout': return 'Core Workout';
+    case 'workout': return 'Core Workout Day';
     case 'cardio': return 'Cardio Day';
     case 'rest': return 'Rest Day';
   }
+}
+
+export function getWeekSchedule(): { day: string; type: 'workout' | 'cardio' | 'rest'; label: string }[] {
+  return [
+    { day: 'Mon', type: 'workout', label: 'Core' },
+    { day: 'Tue', type: 'cardio', label: 'Cardio' },
+    { day: 'Wed', type: 'workout', label: 'Core' },
+    { day: 'Thu', type: 'cardio', label: 'Cardio' },
+    { day: 'Fri', type: 'workout', label: 'Core' },
+    { day: 'Sat', type: 'workout', label: 'Core' },
+    { day: 'Sun', type: 'rest', label: 'Rest' },
+  ];
 }
