@@ -33,13 +33,26 @@ import type { DailyCheckin } from "@shared/schema";
 interface DailyCheckinModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userId?: string;
 }
 
 export default function DailyCheckinModal({
   isOpen,
   onClose,
+  userId: propUserId,
 }: DailyCheckinModalProps) {
   const { toast } = useToast();
+  
+  // Get userId from prop or localStorage
+  const userId = propUserId || (() => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        return JSON.parse(userData).id;
+      }
+    } catch {}
+    return null;
+  })();
   
   const [workoutCompleted, setWorkoutCompleted] = useState(false);
   const [breathingPractice, setBreathingPractice] = useState(false);
@@ -56,8 +69,8 @@ export default function DailyCheckinModal({
   } | null>(null);
 
   const { data: todayCheckin, isLoading } = useQuery<DailyCheckin | null>({
-    queryKey: ["/api/daily-checkins/today"],
-    enabled: isOpen,
+    queryKey: ["/api/daily-checkins", userId, "today"],
+    enabled: isOpen && !!userId,
   });
 
   useEffect(() => {
@@ -73,12 +86,13 @@ export default function DailyCheckinModal({
 
   const saveMutation = useMutation({
     mutationFn: async (data: Partial<DailyCheckin>) => {
-      const response = await apiRequest("POST", "/api/daily-checkins", data);
+      if (!userId) throw new Error("User not found");
+      const response = await apiRequest("POST", `/api/daily-checkins/${userId}`, data);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/daily-checkins"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/workout-sessions/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-checkins", userId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-sessions", userId, "progress"] });
       setSavedData({
         workoutCompleted,
         breathingPractice,

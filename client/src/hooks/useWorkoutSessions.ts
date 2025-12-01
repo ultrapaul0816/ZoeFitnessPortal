@@ -29,9 +29,23 @@ export interface WeeklyWorkoutSession {
   notes: string | null;
 }
 
-export function useWorkoutSessionProgress() {
+// Helper to get userId from localStorage
+function getUserId(): string | null {
+  try {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      return JSON.parse(userData).id;
+    }
+  } catch {}
+  return null;
+}
+
+export function useWorkoutSessionProgress(propUserId?: string) {
+  const userId = propUserId || getUserId();
+  
   return useQuery<WorkoutSessionProgress>({
-    queryKey: ["/api/workout-sessions/progress"],
+    queryKey: ["/api/workout-sessions", userId, "progress"],
+    enabled: !!userId,
   });
 }
 
@@ -42,8 +56,9 @@ export function useWeeklyWorkoutSessions(week: number) {
   });
 }
 
-export function useLogWorkoutSession() {
+export function useLogWorkoutSession(propUserId?: string) {
   const queryClient = useQueryClient();
+  const userId = propUserId || getUserId();
   
   return useMutation({
     mutationFn: async (data: {
@@ -53,18 +68,20 @@ export function useLogWorkoutSession() {
       rating?: number | null;
       notes?: string | null;
     }) => {
-      const response = await apiRequest("POST", "/api/workout-sessions", data);
+      if (!userId) throw new Error("User not found");
+      const response = await apiRequest("POST", `/api/workout-sessions/${userId}`, data);
       return response.json();
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/workout-sessions/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-sessions", userId, "progress"] });
       queryClient.invalidateQueries({ queryKey: ["/api/workout-sessions/week", variables.week] });
     },
   });
 }
 
-export function useSkipWeek() {
+export function useSkipWeek(propUserId?: string) {
   const queryClient = useQueryClient();
+  const userId = propUserId || getUserId();
   
   return useMutation({
     mutationFn: async (week: number) => {
@@ -72,7 +89,7 @@ export function useSkipWeek() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/workout-sessions/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-sessions", userId, "progress"] });
     },
   });
 }

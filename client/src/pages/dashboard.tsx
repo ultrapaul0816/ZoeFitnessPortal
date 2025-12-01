@@ -179,7 +179,7 @@ export default function Dashboard() {
 
   // Check if user has completed today's daily check-in
   const { data: todaysDailyCheckin } = useQuery({
-    queryKey: ["/api/daily-checkins/today"],
+    queryKey: ["/api/daily-checkins", user?.id, "today"],
     enabled: !!user?.id,
   });
 

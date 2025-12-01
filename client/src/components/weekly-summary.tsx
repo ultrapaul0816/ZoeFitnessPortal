@@ -52,11 +52,23 @@ interface WeeklySummaryData {
 
 interface WeeklySummaryProps {
   compact?: boolean;
+  userId?: string;
 }
 
-export default function WeeklySummary({ compact = false }: WeeklySummaryProps) {
+export default function WeeklySummary({ compact = false, userId: propUserId }: WeeklySummaryProps) {
   const [showCheckinModal, setShowCheckinModal] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Get userId from prop or localStorage
+  const userId = propUserId || (() => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        return JSON.parse(userData).id;
+      }
+    } catch {}
+    return null;
+  })();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -66,11 +78,13 @@ export default function WeeklySummary({ compact = false }: WeeklySummaryProps) {
   }, []);
 
   const { data: summary, isLoading } = useQuery<WeeklySummaryData>({
-    queryKey: ["/api/daily-checkins/weekly-summary"],
+    queryKey: ["/api/daily-checkins", userId, "weekly-summary"],
+    enabled: !!userId,
   });
 
   const { data: todayCheckin } = useQuery<DailyCheckin | null>({
-    queryKey: ["/api/daily-checkins/today"],
+    queryKey: ["/api/daily-checkins", userId, "today"],
+    enabled: !!userId,
   });
 
   const hasCheckedInToday = !!todayCheckin;
