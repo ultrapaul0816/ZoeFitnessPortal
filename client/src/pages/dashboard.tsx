@@ -20,6 +20,7 @@ import CheckinModal from "@/components/checkin-modal";
 import TodaysWorkout from "@/components/todays-workout";
 import WeeklySummary from "@/components/weekly-summary";
 import DailyCheckinModal from "@/components/daily-checkin-modal";
+import DailyMoodPopup from "@/components/daily-mood-popup";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
@@ -63,6 +64,7 @@ export default function Dashboard() {
   const [showDangerZone, setShowDangerZone] = useState(false);
   const [showCheckinModal, setShowCheckinModal] = useState(false);
   const [showDailyCheckinModal, setShowDailyCheckinModal] = useState(false);
+  const [showDailyMoodPopup, setShowDailyMoodPopup] = useState(false);
   const [checkinPromptChecked, setCheckinPromptChecked] = useState(false);
   const [profileData, setProfileData] = useState({
     fullName: "",
@@ -143,9 +145,16 @@ export default function Dashboard() {
             email: data.user.email
           }));
           
-          // OLD MOOD CHECK-IN DISABLED - Replaced by Daily Check-in system
-          // The old mood/feelings check-in had low adoption, so we simplified to just the daily check-in
-          // which tracks workouts, water, breathing, cardio, gratitude, and struggles
+          // Check if we should show the daily mood popup (once per day)
+          const lastMoodCheckin = localStorage.getItem("lastMoodCheckinDate");
+          const todayStr = new Date().toDateString();
+          
+          if (lastMoodCheckin !== todayStr) {
+            // Small delay to let the dashboard render first
+            setTimeout(() => {
+              setShowDailyMoodPopup(true);
+            }, 500);
+          }
         } else {
           // Session check failed - try localStorage as fallback (useful for admin switching views)
           // This handles timing issues where session cookie may not be immediately available
@@ -885,6 +894,14 @@ export default function Dashboard() {
           existingDeliveryDate={user.deliveryDate}
         />
       )}
+
+      {/* Daily Mood Popup (feelings + energy - once per day) */}
+      <DailyMoodPopup
+        isOpen={showDailyMoodPopup}
+        onClose={() => setShowDailyMoodPopup(false)}
+        userId={String(user.id)}
+        userName={user.firstName}
+      />
 
       {/* Daily Check-in Modal (Progress tracking) */}
       <DailyCheckinModal
