@@ -532,27 +532,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         console.log(`[PASSWORD-RESET] OTP login success for: ${email}`);
-        return res.json({
-          verified: true,
-          loggedIn: true,
-          user: {
-            id: updatedUser.id,
-            email: updatedUser.email,
-            firstName: updatedUser.firstName,
-            lastName: updatedUser.lastName,
-            isAdmin: updatedUser.isAdmin,
-            termsAccepted: updatedUser.termsAccepted,
-            disclaimerAccepted: updatedUser.disclaimerAccepted,
-            hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
-            whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
-            whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
-            phone: updatedUser.phone,
-            country: updatedUser.country,
-            bio: updatedUser.bio,
-            instagramHandle: updatedUser.instagramHandle,
-            postpartumWeeks: updatedUser.postpartumWeeks,
-            lastLoginAt: updatedUser.lastLoginAt,
-          },
+        
+        // Explicitly save session before sending response to avoid race condition
+        return req.session.save((err) => {
+          if (err) {
+            console.error(`[OTP-LOGIN] Session save error:`, err);
+            return res.status(500).json({ message: "Failed to create session" });
+          }
+          
+          res.json({
+            verified: true,
+            loggedIn: true,
+            user: {
+              id: updatedUser.id,
+              email: updatedUser.email,
+              firstName: updatedUser.firstName,
+              lastName: updatedUser.lastName,
+              isAdmin: updatedUser.isAdmin,
+              termsAccepted: updatedUser.termsAccepted,
+              disclaimerAccepted: updatedUser.disclaimerAccepted,
+              hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
+              whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
+              whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
+              phone: updatedUser.phone,
+              country: updatedUser.country,
+              bio: updatedUser.bio,
+              instagramHandle: updatedUser.instagramHandle,
+              postpartumWeeks: updatedUser.postpartumWeeks,
+              lastLoginAt: updatedUser.lastLoginAt,
+            },
+          });
         });
       }
 
@@ -624,27 +633,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = updatedUser.id;
 
       console.log(`[PASSWORD-RESET] Password reset and login success for: ${email}`);
-      res.json({
-        success: true,
-        message: "Password reset successfully",
-        user: {
-          id: updatedUser.id,
-          email: updatedUser.email,
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
-          isAdmin: updatedUser.isAdmin,
-          termsAccepted: updatedUser.termsAccepted,
-          disclaimerAccepted: updatedUser.disclaimerAccepted,
-          hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
-          whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
-          whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
-          phone: updatedUser.phone,
-          country: updatedUser.country,
-          bio: updatedUser.bio,
-          instagramHandle: updatedUser.instagramHandle,
-          postpartumWeeks: updatedUser.postpartumWeeks,
-          lastLoginAt: updatedUser.lastLoginAt,
-        },
+      
+      // Explicitly save session before sending response to avoid race condition
+      req.session.save((err) => {
+        if (err) {
+          console.error(`[PASSWORD-RESET] Session save error:`, err);
+          return res.status(500).json({ message: "Failed to create session" });
+        }
+        
+        res.json({
+          success: true,
+          message: "Password reset successfully",
+          user: {
+            id: updatedUser.id,
+            email: updatedUser.email,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            isAdmin: updatedUser.isAdmin,
+            termsAccepted: updatedUser.termsAccepted,
+            disclaimerAccepted: updatedUser.disclaimerAccepted,
+            hasWhatsAppSupport: updatedUser.hasWhatsAppSupport,
+            whatsAppSupportDuration: updatedUser.whatsAppSupportDuration,
+            whatsAppSupportExpiryDate: updatedUser.whatsAppSupportExpiryDate,
+            phone: updatedUser.phone,
+            country: updatedUser.country,
+            bio: updatedUser.bio,
+            instagramHandle: updatedUser.instagramHandle,
+            postpartumWeeks: updatedUser.postpartumWeeks,
+            lastLoginAt: updatedUser.lastLoginAt,
+          },
+        });
       });
     } catch (error: any) {
       console.error(`[PASSWORD-RESET] Reset error:`, error?.message || error);
