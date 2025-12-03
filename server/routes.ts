@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { randomUUID } from "crypto";
+import { sql } from "drizzle-orm";
 import { storage } from "./storage";
 import {
   loginSchema,
@@ -4090,6 +4092,159 @@ RESPONSE GUIDELINES:
     } catch (error) {
       console.error("Playback control error:", error);
       res.status(500).json({ message: "Failed to control playback" });
+    }
+  });
+
+  // ==================== COURSE MANAGEMENT ROUTES ====================
+
+  // Get all courses (admin)
+  app.get("/api/admin/courses", requireAdmin, async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`
+        SELECT * FROM courses ORDER BY order_index ASC, created_at DESC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      res.status(500).json({ message: "Failed to fetch courses" });
+    }
+  });
+
+  // Create course (admin)
+  app.post("/api/admin/courses", requireAdmin, async (req, res) => {
+    try {
+      const { name, slug, description, shortDescription, level, duration, status, imageUrl, thumbnailUrl, price, isVisible, orderIndex } = req.body;
+      const id = randomUUID();
+      
+      await storage.db.execute(sql`
+        INSERT INTO courses (id, name, slug, description, short_description, level, duration, status, image_url, thumbnail_url, price, is_visible, order_index)
+        VALUES (${id}, ${name}, ${slug}, ${description}, ${shortDescription || null}, ${level || 'beginner'}, ${duration || null}, ${status || 'draft'}, ${imageUrl || null}, ${thumbnailUrl || null}, ${price || 0}, ${isVisible || false}, ${orderIndex || 0})
+      `);
+      
+      const result = await storage.db.execute(sql`SELECT * FROM courses WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error creating course:", error);
+      res.status(500).json({ message: "Failed to create course" });
+    }
+  });
+
+  // Update course (admin)
+  app.patch("/api/admin/courses/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const setClauses: string[] = [];
+      const values: any[] = [];
+      
+      if (updates.name !== undefined) setClauses.push(`name = '${updates.name}'`);
+      if (updates.slug !== undefined) setClauses.push(`slug = '${updates.slug}'`);
+      if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
+      if (updates.shortDescription !== undefined) setClauses.push(`short_description = '${updates.shortDescription}'`);
+      if (updates.level !== undefined) setClauses.push(`level = '${updates.level}'`);
+      if (updates.duration !== undefined) setClauses.push(`duration = '${updates.duration}'`);
+      if (updates.status !== undefined) setClauses.push(`status = '${updates.status}'`);
+      if (updates.imageUrl !== undefined) setClauses.push(`image_url = '${updates.imageUrl}'`);
+      if (updates.thumbnailUrl !== undefined) setClauses.push(`thumbnail_url = '${updates.thumbnailUrl}'`);
+      if (updates.isVisible !== undefined) setClauses.push(`is_visible = ${updates.isVisible}`);
+      if (updates.orderIndex !== undefined) setClauses.push(`order_index = ${updates.orderIndex}`);
+      setClauses.push(`updated_at = NOW()`);
+      
+      if (setClauses.length > 0) {
+        await storage.db.execute(sql.raw(`UPDATE courses SET ${setClauses.join(', ')} WHERE id = '${id}'`));
+      }
+      
+      const result = await storage.db.execute(sql`SELECT * FROM courses WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating course:", error);
+      res.status(500).json({ message: "Failed to update course" });
+    }
+  });
+
+  // Delete course (admin)
+  app.delete("/api/admin/courses/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`DELETE FROM courses WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      res.status(500).json({ message: "Failed to delete course" });
+    }
+  });
+
+  // Get all modules (admin)
+  app.get("/api/admin/modules", requireAdmin, async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`
+        SELECT * FROM course_modules ORDER BY created_at DESC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching modules:", error);
+      res.status(500).json({ message: "Failed to fetch modules" });
+    }
+  });
+
+  // Create module (admin)
+  app.post("/api/admin/modules", requireAdmin, async (req, res) => {
+    try {
+      const { name, slug, description, moduleType, iconName, colorTheme, isReusable } = req.body;
+      const id = randomUUID();
+      
+      await storage.db.execute(sql`
+        INSERT INTO course_modules (id, name, slug, description, module_type, icon_name, color_theme, is_reusable)
+        VALUES (${id}, ${name}, ${slug}, ${description || null}, ${moduleType}, ${iconName || null}, ${colorTheme || 'pink'}, ${isReusable !== false})
+      `);
+      
+      const result = await storage.db.execute(sql`SELECT * FROM course_modules WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error creating module:", error);
+      res.status(500).json({ message: "Failed to create module" });
+    }
+  });
+
+  // Update module (admin)
+  app.patch("/api/admin/modules/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const setClauses: string[] = [];
+      
+      if (updates.name !== undefined) setClauses.push(`name = '${updates.name}'`);
+      if (updates.slug !== undefined) setClauses.push(`slug = '${updates.slug}'`);
+      if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
+      if (updates.moduleType !== undefined) setClauses.push(`module_type = '${updates.moduleType}'`);
+      if (updates.iconName !== undefined) setClauses.push(`icon_name = '${updates.iconName}'`);
+      if (updates.colorTheme !== undefined) setClauses.push(`color_theme = '${updates.colorTheme}'`);
+      if (updates.isReusable !== undefined) setClauses.push(`is_reusable = ${updates.isReusable}`);
+      setClauses.push(`updated_at = NOW()`);
+      
+      if (setClauses.length > 0) {
+        await storage.db.execute(sql.raw(`UPDATE course_modules SET ${setClauses.join(', ')} WHERE id = '${id}'`));
+      }
+      
+      const result = await storage.db.execute(sql`SELECT * FROM course_modules WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating module:", error);
+      res.status(500).json({ message: "Failed to update module" });
+    }
+  });
+
+  // Delete module (admin)
+  app.delete("/api/admin/modules/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`DELETE FROM course_modules WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting module:", error);
+      res.status(500).json({ message: "Failed to delete module" });
     }
   });
 

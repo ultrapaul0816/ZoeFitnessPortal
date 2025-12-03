@@ -41,6 +41,14 @@ The application features a 6-week program with detailed exercises, coach notes, 
 
 **Admin Check-in Analytics**: The admin dashboard includes a "Community Mood & Energy" card showing aggregated mood distribution, average energy levels, and energy trend charts across all users. This helps administrators monitor community wellness patterns.
 
+**Multi-Course Management System (In Development)**: The platform is transitioning from a single 6-week program to a multi-course learning platform. Key features include:
+- **8 New Database Tables**: courses, course_modules, course_module_mappings, module_sections, content_items, course_enrollments, user_module_progress, user_content_completion
+- **Admin Course Builder** (`/admin/courses`): Enterprise-grade interface for creating and managing courses with reusable modules
+- **Module Library**: Reusable content modules (Educational, Workout, FAQ, Progress, Nutrition) that can be shared across multiple courses
+- **Content Types**: Videos, text/articles, PDF downloads, workout exercises, polls (future)
+- **Flexible Course Structure**: Different programs can have different weekly structures (not hardcoded 6-week format)
+- **Free Navigation**: Users can freely navigate content (not locked progression), educational modules are optional reference material
+
 # External Dependencies
 - **Database**: PostgreSQL (Neon Database for production, Replit-managed for development)
 - **Deployment**: Replit

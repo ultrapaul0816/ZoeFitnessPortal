@@ -389,6 +389,119 @@ export const workoutContentExercises = pgTable("workout_content_exercises", {
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
+// ============================================================================
+// COURSE MANAGEMENT SYSTEM
+// Supports multiple courses with reusable modules
+// ============================================================================
+
+// Courses - top level products users enroll in (e.g., "Heal Your Core Complete Program")
+export const courses = pgTable("courses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(), // URL-friendly identifier
+  description: text("description").notNull(),
+  shortDescription: text("short_description"), // For cards/previews
+  imageUrl: text("image_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  level: text("level").default("beginner"), // beginner, intermediate, advanced
+  duration: text("duration"), // e.g., "6 weeks", "4 weeks"
+  price: integer("price").default(0), // Price in cents
+  status: text("status").default("draft"), // draft, published, archived
+  isVisible: boolean("is_visible").default(false),
+  orderIndex: integer("order_index").default(0), // For display ordering
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+// Course Modules - reusable building blocks (Start Here, Core Education, Nutrition, etc.)
+export const courseModules = pgTable("course_modules", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  moduleType: text("module_type").notNull(), // educational, workout, faq, progress, nutrition
+  iconName: text("icon_name"), // Lucide icon name for display
+  colorTheme: text("color_theme").default("pink"), // pink, blue, green, purple, etc.
+  isReusable: boolean("is_reusable").default(true), // Can be used in multiple courses
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+// Course-Module Mappings - links modules to courses with ordering
+export const courseModuleMappings = pgTable("course_module_mappings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  courseId: varchar("course_id").notNull(),
+  moduleId: varchar("module_id").notNull(),
+  orderIndex: integer("order_index").default(0), // Order of module in course
+  isRequired: boolean("is_required").default(false), // Must complete to finish course
+  isVisible: boolean("is_visible").default(true),
+  customName: text("custom_name"), // Override module name for this course
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+// Module Sections - chapters/sections within a module
+export const moduleSections = pgTable("module_sections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  moduleId: varchar("module_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  orderIndex: integer("order_index").default(0),
+  isVisible: boolean("is_visible").default(true),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+// Content Items - individual content pieces within sections
+export const contentItems = pgTable("content_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sectionId: varchar("section_id").notNull(),
+  title: text("title").notNull(),
+  contentType: text("content_type").notNull(), // video, text, pdf, exercise, poll
+  content: text("content"), // Rich text content or JSON for structured data
+  videoUrl: text("video_url"), // YouTube or Vimeo URL
+  videoThumbnailUrl: text("video_thumbnail_url"),
+  pdfUrl: text("pdf_url"), // PDF download URL
+  duration: text("duration"), // e.g., "5 min", "10 reps"
+  orderIndex: integer("order_index").default(0),
+  isVisible: boolean("is_visible").default(true),
+  metadata: jsonb("metadata"), // Flexible JSON for content-type specific data
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+// Course Enrollments - user enrollments in courses
+export const courseEnrollments = pgTable("course_enrollments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  courseId: varchar("course_id").notNull(),
+  enrolledAt: timestamp("enrolled_at").default(sql`now()`),
+  expiresAt: timestamp("expires_at"),
+  status: text("status").default("active"), // active, completed, expired, cancelled
+  completedAt: timestamp("completed_at"),
+  progressPercentage: integer("progress_percentage").default(0),
+});
+
+// User Module Progress - tracks progress per module
+export const userModuleProgress = pgTable("user_module_progress", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  moduleId: varchar("module_id").notNull(),
+  courseId: varchar("course_id").notNull(), // Which course context
+  startedAt: timestamp("started_at").default(sql`now()`),
+  completedAt: timestamp("completed_at"),
+  progressPercentage: integer("progress_percentage").default(0),
+  lastAccessedAt: timestamp("last_accessed_at").default(sql`now()`),
+});
+
+// User Content Completion - tracks which content items user has completed
+export const userContentCompletion = pgTable("user_content_completion", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  contentItemId: varchar("content_item_id").notNull(),
+  completedAt: timestamp("completed_at").default(sql`now()`),
+  timeSpent: integer("time_spent"), // Seconds spent on content
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -608,6 +721,64 @@ export const insertWorkoutContentExerciseSchema = createInsertSchema(workoutCont
   updatedAt: true,
 });
 
+// Course management insert schemas
+export const insertCourseSchema = createInsertSchema(courses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  status: z.enum(['draft', 'published', 'archived']).default('draft'),
+  level: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
+});
+
+export const insertCourseModuleSchema = createInsertSchema(courseModules).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  moduleType: z.enum(['educational', 'workout', 'faq', 'progress', 'nutrition']),
+  colorTheme: z.enum(['pink', 'blue', 'green', 'purple', 'orange', 'teal']).default('pink'),
+});
+
+export const insertCourseModuleMappingSchema = createInsertSchema(courseModuleMappings).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertModuleSectionSchema = createInsertSchema(moduleSections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertContentItemSchema = createInsertSchema(contentItems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  contentType: z.enum(['video', 'text', 'pdf', 'exercise', 'poll']),
+});
+
+export const insertCourseEnrollmentSchema = createInsertSchema(courseEnrollments).omit({
+  id: true,
+  enrolledAt: true,
+  completedAt: true,
+}).extend({
+  status: z.enum(['active', 'completed', 'expired', 'cancelled']).default('active'),
+});
+
+export const insertUserModuleProgressSchema = createInsertSchema(userModuleProgress).omit({
+  id: true,
+  startedAt: true,
+  completedAt: true,
+  lastAccessedAt: true,
+});
+
+export const insertUserContentCompletionSchema = createInsertSchema(userContentCompletion).omit({
+  id: true,
+  completedAt: true,
+});
+
 // Educational content - Understanding Your Core topics
 export const educationalTopics = pgTable("educational_topics", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -813,6 +984,24 @@ export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 export type EducationalTopic = typeof educationalTopics.$inferSelect;
 export type InsertEducationalTopic = z.infer<typeof insertEducationalTopicSchema>;
+
+// Course management types
+export type Course = typeof courses.$inferSelect;
+export type InsertCourse = z.infer<typeof insertCourseSchema>;
+export type CourseModule = typeof courseModules.$inferSelect;
+export type InsertCourseModule = z.infer<typeof insertCourseModuleSchema>;
+export type CourseModuleMapping = typeof courseModuleMappings.$inferSelect;
+export type InsertCourseModuleMapping = z.infer<typeof insertCourseModuleMappingSchema>;
+export type ModuleSection = typeof moduleSections.$inferSelect;
+export type InsertModuleSection = z.infer<typeof insertModuleSectionSchema>;
+export type ContentItem = typeof contentItems.$inferSelect;
+export type InsertContentItem = z.infer<typeof insertContentItemSchema>;
+export type CourseEnrollment = typeof courseEnrollments.$inferSelect;
+export type InsertCourseEnrollment = z.infer<typeof insertCourseEnrollmentSchema>;
+export type UserModuleProgress = typeof userModuleProgress.$inferSelect;
+export type InsertUserModuleProgress = z.infer<typeof insertUserModuleProgressSchema>;
+export type UserContentCompletion = typeof userContentCompletion.$inferSelect;
+export type InsertUserContentCompletion = z.infer<typeof insertUserContentCompletionSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
