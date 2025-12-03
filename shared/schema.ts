@@ -183,6 +183,7 @@ export const knowledgeArticles = pgTable("knowledge_articles", {
 // Exercise library for programs
 export const exercises = pgTable("exercises", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  displayId: text("display_id"), // 4-digit code like "EX-0001" for easy identification
   name: text("name").notNull(),
   description: text("description").notNull(),
   videoUrl: text("video_url").notNull(),
@@ -190,6 +191,7 @@ export const exercises = pgTable("exercises", {
   instructions: text("instructions"),
   category: text("category").notNull(), // core, breathing, strength, etc.
   difficulty: text("difficulty").default("beginner"), // beginner, intermediate, advanced
+  orderIndex: integer("order_index").default(0),
 });
 
 // Weekly workout plans
