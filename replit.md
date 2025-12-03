@@ -43,12 +43,13 @@ The application features a 6-week program with detailed exercises, coach notes, 
 
 **Multi-Course Management System (Complete Admin Tools)**: The platform is transitioning from a single 6-week program to a multi-course learning platform. Key features include:
 - **9 Database Tables**: courses, course_modules, course_module_mappings, module_sections, content_items, course_enrollments, user_module_progress, user_content_completion, **exercises**
-- **Admin Course Builder** (`/admin/courses`): Enterprise-grade interface for creating and managing courses with reusable modules. Courses use standardized `durationWeeks` (integer) instead of free text for consistency.
+- **Admin Course Builder** (`/admin/courses`): Enterprise-grade interface with visible action buttons (Modules, Edit, Publish/Unpublish, Archive) instead of dropdown menus. Shows course creation dates and timestamps. Courses use standardized `durationWeeks` (integer) instead of free text for consistency.
 - **Course Editor** (`/admin/courses/:courseId`): Interface for assigning and ordering modules within a course. Features checkbox multi-select for adding modules, visual ordering with drag handles, and quick access to module sections.
-- **Module Library** (`/admin/modules`): Reusable content modules (Educational, Workout, FAQ, Progress, Nutrition) with color themes that can be shared across multiple courses
+- **Module Library** (`/admin/modules`): Reusable content modules (Educational, Workout, FAQ, Progress, Nutrition) with color themes that can be shared across multiple courses. Features grid/list view toggle, section/content count badges, and "Needs content" indicators for empty modules.
 - **Module Section Editor** (`/admin/modules/:moduleId`): Full CRUD interface for managing sections within modules. Features collapsible sections, drag handles for reordering (visual only), and inline content management.
 - **Content Item Editor**: Supports 4 content types - Videos (YouTube URLs), Text/Articles, PDF Downloads, and Exercises (linked from library). Each content item has title, description, duration, and type-specific data fields.
 - **Master Exercise Library** (`/admin/exercises`): Centralized exercise management to prevent duplicate entries. Exercises include name, description, video URL, default reps, duration, category (Core, Breathing, Cardio, Strength, Flexibility, Pelvic Floor, Warmup, Cooldown), muscle groups, difficulty level, and coach notes. Content items can link to exercises from the library with optional overrides for reps and video URL.
+- **Safe Archive Pattern**: Replaced destructive "Delete" with "Archive" actions that preserve data using `isVisible: false`. Archive confirmation dialogs explain what happens and protect active user enrollments.
 - **API Routes**: Complete REST API for courses, modules, sections, content items, exercises, and course-module mappings with admin authentication
 - **Flexible Course Structure**: Different programs can have different weekly structures (not hardcoded 6-week format)
 - **Free Navigation**: Users can freely navigate content (not locked progression), educational modules are optional reference material
@@ -56,10 +57,18 @@ The application features a 6-week program with detailed exercises, coach notes, 
 **Heal Your Core Course Migration (Completed)**:
 The existing 6-week program has been migrated to the new course system:
 - **Course**: "Heal Your Core" with 6-week duration, beginner level, published status
-- **11 Modules**: Start Here, Understanding Your Core, Week 1-6 workout modules, Nutrition & Hydration, What Comes Next, FAQ
+- **11 Modules**: Start Here, Understanding Your Core (7 sections with videos), Week 1-6 workout modules, Nutrition & Hydration, What Comes Next, FAQ
 - **39 Exercises** in the Exercise Library: 5 breathing exercises, 34 main workout exercises with video URLs
+- **Understanding Your Core Module**: 7 educational sections with matching titles and videos from static data:
+  1. Breathing & Core Activation
+  2. How To Breathe Properly: 360° Breathing (video)
+  3. Understanding Your Core & TVA Engagement (video)
+  4. How To Engage Your Core With Breathing
+  5. Core Compressions & How They Help You Heal (video)
+  6. Understanding the Pelvic Floor (video)
+  7. Warning Signs: Doming, Coning & When to Modify (video)
 - **18 Sections** across workout modules: Each week has Overview, Breathing, and Main Workout sections
-- **47 Content Items**: Exercise links with video URLs, reps, and metadata linking to the Exercise Library
+- **47+ Content Items**: Exercise links with video URLs, reps, and metadata linking to the Exercise Library
 - All exercises are reusable across future courses via the Exercise Library
 
 # External Dependencies
