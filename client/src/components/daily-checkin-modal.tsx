@@ -23,6 +23,8 @@ import {
   Share2,
   CheckCircle,
   PartyPopper,
+  Users,
+  Info,
 } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -36,6 +38,24 @@ interface DailyCheckinModalProps {
   userId?: string;
 }
 
+const gratitudeOptions = [
+  { emoji: "💪", label: "My body's progress" },
+  { emoji: "👶", label: "Time with my baby" },
+  { emoji: "❤️", label: "Family support" },
+  { emoji: "🌅", label: "A moment of peace" },
+  { emoji: "🥗", label: "Healthy choices" },
+  { emoji: "😴", label: "Rest I got" },
+];
+
+const challengeOptions = [
+  { emoji: "😴", label: "Feeling tired" },
+  { emoji: "⏰", label: "Finding time" },
+  { emoji: "💭", label: "Staying motivated" },
+  { emoji: "🤕", label: "Physical discomfort" },
+  { emoji: "😰", label: "Feeling overwhelmed" },
+  { emoji: "🍼", label: "Baby's schedule" },
+];
+
 export default function DailyCheckinModal({
   isOpen,
   onClose,
@@ -43,7 +63,6 @@ export default function DailyCheckinModal({
 }: DailyCheckinModalProps) {
   const { toast } = useToast();
   
-  // Get userId from prop or localStorage
   const userId = propUserId || (() => {
     try {
       const userData = localStorage.getItem("user");
@@ -56,15 +75,15 @@ export default function DailyCheckinModal({
   
   const [workoutCompleted, setWorkoutCompleted] = useState(false);
   const [breathingPractice, setBreathingPractice] = useState(false);
-  const [waterGlasses, setWaterGlasses] = useState(0);
-  const [cardioMinutes, setCardioMinutes] = useState(0);
+  const [waterLiters, setWaterLiters] = useState(2.0);
+  const [cardioMinutes, setCardioMinutes] = useState(20);
   const [gratitude, setGratitude] = useState("");
   const [struggles, setStruggles] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [savedData, setSavedData] = useState<{
     workoutCompleted: boolean;
     breathingPractice: boolean;
-    waterGlasses: number;
+    waterLiters: number;
     cardioMinutes: number;
   } | null>(null);
 
@@ -77,10 +96,14 @@ export default function DailyCheckinModal({
     if (todayCheckin) {
       setWorkoutCompleted(todayCheckin.workoutCompleted || false);
       setBreathingPractice(todayCheckin.breathingPractice || false);
-      setWaterGlasses(todayCheckin.waterGlasses || 0);
-      setCardioMinutes(todayCheckin.cardioMinutes || 0);
+      const savedWater = todayCheckin.waterGlasses ? todayCheckin.waterGlasses * 0.25 : 2.0;
+      setWaterLiters(savedWater);
+      setCardioMinutes(todayCheckin.cardioMinutes || 20);
       setGratitude(todayCheckin.gratitude || "");
       setStruggles(todayCheckin.struggles || "");
+    } else {
+      setWaterLiters(2.0);
+      setCardioMinutes(20);
     }
   }, [todayCheckin]);
 
@@ -96,7 +119,7 @@ export default function DailyCheckinModal({
       setSavedData({
         workoutCompleted,
         breathingPractice,
-        waterGlasses,
+        waterLiters,
         cardioMinutes,
       });
       setShowSuccess(true);
@@ -111,6 +134,7 @@ export default function DailyCheckinModal({
   });
 
   const handleSave = () => {
+    const waterGlasses = Math.round(waterLiters * 4);
     saveMutation.mutate({
       workoutCompleted,
       breathingPractice,
@@ -124,8 +148,8 @@ export default function DailyCheckinModal({
   const handleReset = () => {
     setWorkoutCompleted(false);
     setBreathingPractice(false);
-    setWaterGlasses(0);
-    setCardioMinutes(0);
+    setWaterLiters(2.0);
+    setCardioMinutes(20);
     setGratitude("");
     setStruggles("");
   };
@@ -136,6 +160,24 @@ export default function DailyCheckinModal({
     onClose();
   };
 
+  const handleGratitudeSelect = (option: string) => {
+    setGratitude(prev => {
+      if (prev.includes(option)) {
+        return prev.replace(option, '').replace(/\s+,\s+|,\s+|\s+,/g, ', ').replace(/^,\s+|,\s+$/g, '').trim();
+      }
+      return prev ? `${prev}, ${option}` : option;
+    });
+  };
+
+  const handleChallengeSelect = (option: string) => {
+    setStruggles(prev => {
+      if (prev.includes(option)) {
+        return prev.replace(option, '').replace(/\s+,\s+|,\s+|\s+,/g, ', ').replace(/^,\s+|,\s+$/g, '').trim();
+      }
+      return prev ? `${prev}, ${option}` : option;
+    });
+  };
+
   const generateWhatsAppMessage = () => {
     if (!savedData) return "";
     
@@ -144,8 +186,8 @@ export default function DailyCheckinModal({
     
     if (savedData.workoutCompleted) wins.push("💪 Completed my workout");
     if (savedData.breathingPractice) wins.push("🧘 Did breathing exercises");
-    if (savedData.waterGlasses >= 8) wins.push(`💧 ${savedData.waterGlasses} glasses of water`);
-    else if (savedData.waterGlasses > 0) wins.push(`💧 ${savedData.waterGlasses} glasses of water`);
+    if (savedData.waterLiters >= 2) wins.push(`💧 ${savedData.waterLiters.toFixed(1)}L of water`);
+    else if (savedData.waterLiters > 0) wins.push(`💧 ${savedData.waterLiters.toFixed(1)}L of water`);
     if (savedData.cardioMinutes >= 30) wins.push(`🏃 ${savedData.cardioMinutes} min cardio/walking`);
     else if (savedData.cardioMinutes > 0) wins.push(`🚶 ${savedData.cardioMinutes} min walking`);
     
@@ -164,7 +206,6 @@ export default function DailyCheckinModal({
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         {showSuccess ? (
           <>
-            {/* Success State with WhatsApp Share */}
             <div className="text-center py-6 space-y-4">
               <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
                 <CheckCircle className="w-10 h-10 text-white" />
@@ -174,7 +215,6 @@ export default function DailyCheckinModal({
                 <p className="text-gray-600 mt-1">Your check-in has been saved</p>
               </div>
               
-              {/* Quick Summary */}
               <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4 text-left">
                 <h4 className="font-semibold text-pink-700 mb-2">Today's Wins:</h4>
                 <div className="space-y-1.5 text-sm text-gray-700">
@@ -190,10 +230,10 @@ export default function DailyCheckinModal({
                       <span>Breathing exercises done</span>
                     </div>
                   )}
-                  {(savedData?.waterGlasses || 0) > 0 && (
+                  {(savedData?.waterLiters || 0) > 0 && (
                     <div className="flex items-center gap-2">
                       <Droplets className="w-4 h-4 text-cyan-500" />
-                      <span>{savedData?.waterGlasses} glasses of water</span>
+                      <span>{savedData?.waterLiters.toFixed(1)}L of water</span>
                     </div>
                   )}
                   {(savedData?.cardioMinutes || 0) > 0 && (
@@ -205,7 +245,6 @@ export default function DailyCheckinModal({
                 </div>
               </div>
               
-              {/* WhatsApp Share CTA */}
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
                 <p className="text-sm text-gray-700 mb-3">
                   <span className="font-semibold text-green-700">Share with the community!</span>
@@ -243,19 +282,18 @@ export default function DailyCheckinModal({
               </DialogDescription>
             </DialogHeader>
 
-            {/* Zoe's Encouraging Message */}
             <div className="bg-gradient-to-r from-pink-100 to-rose-100 rounded-xl p-4 border border-pink-200">
               <p className="text-sm text-gray-700 leading-relaxed">
                 <span className="font-semibold text-pink-600">Hey mama!</span> Tracking your daily wins - even the small ones - helps you see how far you've come. 
                 This creates accountability and lets us celebrate your progress together. 
-                <span className="text-pink-600 font-medium"> Every glass of water counts. Every breath matters. You're doing amazing! 💗</span>
+                <span className="text-pink-600 font-medium"> Every sip of water counts. Every breath matters. You're doing amazing! 💗</span>
               </p>
               <p className="text-xs text-pink-500 mt-2 flex items-center gap-1">
                 <span>💡</span> Tip: Check in at the end of your day to capture all your wins!
               </p>
             </div>
 
-            <div className="space-y-6 py-4">
+            <div className="space-y-5 py-4">
               <div className="flex items-center justify-between p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-100">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-pink-100 rounded-lg">
@@ -297,22 +335,23 @@ export default function DailyCheckinModal({
                   </div>
                   <div className="flex-1">
                     <Label className="text-base font-medium">Water Intake</Label>
-                    <p className="text-sm text-gray-500">Glasses of water today</p>
+                    <p className="text-sm text-gray-500">Liters of water today</p>
                   </div>
-                  <span className="text-2xl font-bold text-cyan-600">{waterGlasses}</span>
+                  <span className="text-2xl font-bold text-cyan-600">{waterLiters.toFixed(1)}L</span>
                 </div>
                 <Slider
-                  value={[waterGlasses]}
-                  onValueChange={(v) => setWaterGlasses(v[0])}
-                  max={15}
-                  step={1}
+                  value={[waterLiters]}
+                  onValueChange={(v) => setWaterLiters(v[0])}
+                  min={0}
+                  max={4}
+                  step={0.25}
                   className="w-full"
                   data-testid="slider-water"
                 />
                 <div className="flex justify-between text-xs text-gray-400 mt-1">
-                  <span>0</span>
-                  <span className="text-cyan-500 font-medium">Target: 8</span>
-                  <span>15+</span>
+                  <span>0L</span>
+                  <span className="text-cyan-500 font-medium">Recommended: 2-2.5L</span>
+                  <span>4L</span>
                 </div>
               </div>
 
@@ -337,40 +376,88 @@ export default function DailyCheckinModal({
                 />
                 <div className="flex justify-between text-xs text-gray-400 mt-1">
                   <span>0</span>
-                  <span className="text-orange-500 font-medium">Target: 30 min</span>
+                  <span className="text-orange-500 font-medium">Recommended: 20-30 min</span>
                   <span>120+</span>
                 </div>
               </div>
 
               <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl border border-purple-100">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-purple-100 rounded-lg">
                     <Heart className="h-5 w-5 text-purple-600" />
                   </div>
                   <Label className="text-base font-medium">Gratitude</Label>
                 </div>
+                <p className="text-xs text-gray-500 mb-3 flex items-center gap-1">
+                  <Info className="h-3 w-3" />
+                  Expressing gratitude boosts mood and builds mental resilience
+                </p>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {gratitudeOptions.map((option) => (
+                    <button
+                      key={option.label}
+                      type="button"
+                      onClick={() => handleGratitudeSelect(option.label)}
+                      className={`px-3 py-1.5 text-sm rounded-full border transition-all ${
+                        gratitude.includes(option.label)
+                          ? 'bg-purple-500 text-white border-purple-500'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                      }`}
+                      data-testid={`button-gratitude-${option.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {option.emoji} {option.label}
+                    </button>
+                  ))}
+                </div>
                 <Textarea
-                  placeholder="What are you grateful for today?"
+                  placeholder="Or write your own gratitude..."
                   value={gratitude}
                   onChange={(e) => setGratitude(e.target.value)}
-                  className="min-h-[60px] resize-none bg-white/50"
+                  className="min-h-[50px] resize-none bg-white/50"
                   maxLength={500}
                   data-testid="textarea-gratitude"
                 />
               </div>
 
               <div className="p-4 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-rose-100 rounded-lg">
                     <Sparkles className="h-5 w-5 text-rose-600" />
                   </div>
                   <Label className="text-base font-medium">Challenges / Struggles</Label>
                 </div>
+                <div className="text-xs text-gray-500 mb-3 space-y-1">
+                  <p className="flex items-center gap-1">
+                    <Info className="h-3 w-3" />
+                    Sharing challenges helps you process and overcome them
+                  </p>
+                  <p className="flex items-center gap-1 text-pink-600">
+                    <Users className="h-3 w-3" />
+                    You're not alone - we'll show common challenges so you feel supported
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {challengeOptions.map((option) => (
+                    <button
+                      key={option.label}
+                      type="button"
+                      onClick={() => handleChallengeSelect(option.label)}
+                      className={`px-3 py-1.5 text-sm rounded-full border transition-all ${
+                        struggles.includes(option.label)
+                          ? 'bg-rose-500 text-white border-rose-500'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-rose-300 hover:bg-rose-50'
+                      }`}
+                      data-testid={`button-challenge-${option.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {option.emoji} {option.label}
+                    </button>
+                  ))}
+                </div>
                 <Textarea
-                  placeholder="What challenges are you facing? (optional)"
+                  placeholder="Or describe your challenges... (optional, anonymous)"
                   value={struggles}
                   onChange={(e) => setStruggles(e.target.value)}
-                  className="min-h-[60px] resize-none bg-white/50"
+                  className="min-h-[50px] resize-none bg-white/50"
                   maxLength={500}
                   data-testid="textarea-struggles"
                 />

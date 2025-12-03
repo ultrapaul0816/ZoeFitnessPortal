@@ -96,8 +96,7 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false, 
           </button>
         </CardTitle>
       </CardHeader>
-      {!isCollapsed && (
-      <CardContent className="space-y-4">
+      {!isCollapsed && (<CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           {hasMoodData && stats.moodDistribution![0] && (
             <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-violet-100">

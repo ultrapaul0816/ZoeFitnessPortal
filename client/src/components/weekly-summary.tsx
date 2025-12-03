@@ -20,12 +20,8 @@ import {
   ChevronDown,
   ChevronUp,
   TrendingUp,
-  TrendingDown,
-  Minus,
   Calendar,
   Pencil,
-  Zap,
-  Heart,
 } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import DailyCheckinModal from "./daily-checkin-modal";
