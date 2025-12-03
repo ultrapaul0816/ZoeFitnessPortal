@@ -4271,7 +4271,17 @@ RESPONSE GUIDELINES:
     try {
       const { moduleId } = req.params;
       const result = await storage.db.execute(sql`
-        SELECT * FROM module_sections WHERE module_id = ${moduleId} ORDER BY order_index ASC
+        SELECT 
+          s.*,
+          COALESCE(c.content_count, 0) as content_count
+        FROM module_sections s
+        LEFT JOIN (
+          SELECT section_id, COUNT(*) as content_count 
+          FROM content_items 
+          GROUP BY section_id
+        ) c ON s.id = c.section_id
+        WHERE s.module_id = ${moduleId} 
+        ORDER BY s.order_index ASC
       `);
       res.json(result.rows);
     } catch (error) {

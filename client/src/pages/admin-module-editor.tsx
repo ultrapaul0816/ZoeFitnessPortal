@@ -38,6 +38,7 @@ type ModuleSection = {
   slug: string;
   description: string | null;
   order_index: number;
+  content_count?: number;
   created_at: string;
   updated_at: string;
 };
@@ -876,6 +877,9 @@ function SectionCard({
     enabled: isExpanded,
   });
 
+  const contentCount = Number(section.content_count) || 0;
+  const displayCount = isExpanded ? contentItems.length : contentCount;
+
   return (
     <Card data-testid={`section-card-${section.id}`}>
       <CardHeader className="py-4">
@@ -901,7 +905,12 @@ function SectionCard({
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline">{contentItems.length} items</Badge>
+            <Badge 
+              variant="outline" 
+              className={displayCount === 0 ? "text-amber-600 border-amber-300" : ""}
+            >
+              {displayCount} item{displayCount !== 1 ? 's' : ''}
+            </Badge>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
