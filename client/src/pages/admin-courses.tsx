@@ -580,7 +580,7 @@ export default function AdminCourses() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => togglePublishMutation.mutate({ id: course.id, currentStatus: course.status })}
+                              onClick={() => togglePublishMutation.mutate({ id: course.id, currentStatus: course.status || "draft" })}
                               disabled={togglePublishMutation.isPending}
                               className={course.status === "published" ? "text-amber-600 border-amber-200 hover:bg-amber-50" : "text-green-600 border-green-200 hover:bg-green-50"}
                               data-testid={`button-toggle-publish-${course.id}`}
