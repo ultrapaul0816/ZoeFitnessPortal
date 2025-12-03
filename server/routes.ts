@@ -4175,11 +4175,27 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Get all modules (admin)
+  // Get all modules (admin) with section and content counts
   app.get("/api/admin/modules", requireAdmin, async (req, res) => {
     try {
       const result = await storage.db.execute(sql`
-        SELECT * FROM course_modules ORDER BY created_at DESC
+        SELECT 
+          m.*,
+          COALESCE(s.section_count, 0) as section_count,
+          COALESCE(c.content_count, 0) as content_count
+        FROM course_modules m
+        LEFT JOIN (
+          SELECT module_id, COUNT(*) as section_count 
+          FROM module_sections 
+          GROUP BY module_id
+        ) s ON m.id = s.module_id
+        LEFT JOIN (
+          SELECT ms.module_id, COUNT(*) as content_count 
+          FROM content_items ci
+          JOIN module_sections ms ON ci.section_id = ms.id
+          GROUP BY ms.module_id
+        ) c ON m.id = c.module_id
+        ORDER BY m.created_at DESC
       `);
       res.json(result.rows);
     } catch (error) {

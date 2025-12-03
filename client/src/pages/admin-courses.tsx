@@ -37,6 +37,11 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Course, CourseModule, InsertCourse, InsertCourseModule } from "@shared/schema";
 
+interface ModuleWithCounts extends CourseModule {
+  section_count?: number;
+  content_count?: number;
+}
+
 const moduleTypeIcons: Record<string, React.ElementType> = {
   educational: BookOpen,
   workout: Dumbbell,
@@ -53,6 +58,14 @@ const moduleTypeLabels: Record<string, string> = {
   nutrition: "Nutrition",
 };
 
+const moduleTypeBadgeColors: Record<string, string> = {
+  educational: "bg-blue-100 text-blue-700 border-blue-200",
+  workout: "bg-rose-100 text-rose-700 border-rose-200",
+  faq: "bg-gray-100 text-gray-700 border-gray-200",
+  progress: "bg-purple-100 text-purple-700 border-purple-200",
+  nutrition: "bg-green-100 text-green-700 border-green-200",
+};
+
 const colorThemeClasses: Record<string, string> = {
   pink: "bg-pink-100 text-pink-700 border-pink-200",
   blue: "bg-blue-100 text-blue-700 border-blue-200",
@@ -60,6 +73,12 @@ const colorThemeClasses: Record<string, string> = {
   purple: "bg-purple-100 text-purple-700 border-purple-200",
   orange: "bg-orange-100 text-orange-700 border-orange-200",
   teal: "bg-teal-100 text-teal-700 border-teal-200",
+  cyan: "bg-cyan-100 text-cyan-700 border-cyan-200",
+  emerald: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  violet: "bg-violet-100 text-violet-700 border-violet-200",
+  indigo: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  amber: "bg-amber-100 text-amber-700 border-amber-200",
+  gray: "bg-gray-100 text-gray-700 border-gray-200",
 };
 
 export default function AdminCourses() {
@@ -111,7 +130,7 @@ export default function AdminCourses() {
     enabled: !sessionLoading && !!user?.isAdmin,
   });
 
-  const { data: modules = [], isLoading: modulesLoading } = useQuery<CourseModule[]>({
+  const { data: modules = [], isLoading: modulesLoading } = useQuery<ModuleWithCounts[]>({
     queryKey: ["/api/admin/modules"],
     enabled: !sessionLoading && !!user?.isAdmin,
   });
@@ -624,31 +643,40 @@ export default function AdminCourses() {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {modules.map((module) => {
                   const Icon = moduleTypeIcons[module.moduleType] || BookOpen;
+                  const sectionCount = Number(module.section_count) || 0;
+                  const contentCount = Number(module.content_count) || 0;
+                  const isEmpty = sectionCount === 0 && contentCount === 0;
+                  
                   return (
-                    <Card key={module.id} className="hover:shadow-md transition-shadow group">
+                    <Card 
+                      key={module.id} 
+                      className={`hover:shadow-md transition-shadow group cursor-pointer ${isEmpty ? 'border-dashed border-gray-300' : ''}`}
+                      onClick={() => setLocation(`/admin/modules/${module.id}`)}
+                      data-testid={`module-card-${module.id}`}
+                    >
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between mb-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorThemeClasses[module.colorTheme || "pink"]}`}>
                             <Icon className="w-5 h-5" />
                           </div>
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <MoreVertical className="w-4 h-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => setLocation(`/admin/modules/${module.id}`)}>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setLocation(`/admin/modules/${module.id}`); }}>
                                 <FileText className="w-4 h-4 mr-2" />
                                 Manage Sections
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => openEditModule(module)}>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openEditModule(module); }}>
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit Details
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 className="text-red-600"
-                                onClick={() => deleteModuleMutation.mutate(module.id)}
+                                onClick={(e) => { e.stopPropagation(); deleteModuleMutation.mutate(module.id); }}
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
                                 Delete
@@ -658,12 +686,24 @@ export default function AdminCourses() {
                         </div>
                         <h3 className="font-semibold text-gray-900 mb-1">{module.name}</h3>
                         <p className="text-sm text-gray-500 mb-3 line-clamp-2">{module.description || "No description"}</p>
+                        
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                            <Layers className="w-3.5 h-3.5" />
+                            <span>{sectionCount} section{sectionCount !== 1 ? 's' : ''}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>{contentCount} item{contentCount !== 1 ? 's' : ''}</span>
+                          </div>
+                        </div>
+                        
                         <div className="flex items-center justify-between">
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className={`text-xs border ${moduleTypeBadgeColors[module.moduleType] || "bg-gray-100 text-gray-700"}`}>
                             {moduleTypeLabels[module.moduleType]}
                           </Badge>
-                          {module.isReusable && (
-                            <span className="text-xs text-gray-400">Reusable</span>
+                          {isEmpty && (
+                            <span className="text-xs text-amber-600 font-medium">Needs content</span>
                           )}
                         </div>
                       </CardContent>
