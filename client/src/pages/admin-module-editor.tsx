@@ -71,6 +71,7 @@ type CourseModule = {
 
 type Exercise = {
   id: string;
+  display_id: string | null;
   name: string;
   slug: string;
   description: string | null;
@@ -519,11 +520,14 @@ export default function AdminModuleEditor() {
         </Dialog>
 
         <Dialog open={!!showCreateContent} onOpenChange={() => setShowCreateContent(null)}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Add Content Item</DialogTitle>
-              <DialogDescription>Add a video, text, PDF, or exercise to this section.</DialogDescription>
-            </DialogHeader>
+          <DialogContent className="max-w-lg p-0 overflow-hidden">
+            <div className="bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-4">
+              <DialogHeader className="text-white">
+                <DialogTitle className="text-white text-lg font-semibold">Add Content Item</DialogTitle>
+                <DialogDescription className="text-pink-100">Add a video, text, PDF, or exercise to this section.</DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="px-6 pb-6">
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label>Content Type</Label>
@@ -598,11 +602,12 @@ export default function AdminModuleEditor() {
                       <SelectTrigger>
                         <SelectValue placeholder="Choose an exercise..." />
                       </SelectTrigger>
-                      <SelectContent className="max-h-60">
+                      <SelectContent className="max-h-80">
                         {exercises.map(ex => (
                           <SelectItem key={ex.id} value={ex.id}>
                             <div className="flex items-center gap-2">
-                              <span>{ex.name}</span>
+                              <span className="text-pink-600 font-mono text-xs bg-pink-50 px-1.5 py-0.5 rounded">{ex.display_id || 'EX-????'}</span>
+                              <span className="font-medium">{ex.name}</span>
                               <span className="text-xs text-gray-400 capitalize">({ex.category})</span>
                             </div>
                           </SelectItem>
@@ -687,15 +692,19 @@ export default function AdminModuleEditor() {
                 Add Content
               </Button>
             </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
 
         <Dialog open={!!editingContent} onOpenChange={() => setEditingContent(null)}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Edit Content Item</DialogTitle>
-              <DialogDescription>Update content details</DialogDescription>
-            </DialogHeader>
+          <DialogContent className="max-w-lg p-0 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-4">
+              <DialogHeader className="text-white">
+                <DialogTitle className="text-white text-lg font-semibold">Edit Content Item</DialogTitle>
+                <DialogDescription className="text-blue-100">Update content details</DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="px-6 pb-6">
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label>Content Type</Label>
@@ -766,11 +775,12 @@ export default function AdminModuleEditor() {
                       <SelectTrigger>
                         <SelectValue placeholder="Choose an exercise..." />
                       </SelectTrigger>
-                      <SelectContent className="max-h-60">
+                      <SelectContent className="max-h-80">
                         {exercises.map(ex => (
                           <SelectItem key={ex.id} value={ex.id}>
                             <div className="flex items-center gap-2">
-                              <span>{ex.name}</span>
+                              <span className="text-pink-600 font-mono text-xs bg-pink-50 px-1.5 py-0.5 rounded">{ex.display_id || 'EX-????'}</span>
+                              <span className="font-medium">{ex.name}</span>
                               <span className="text-xs text-gray-400 capitalize">({ex.category})</span>
                             </div>
                           </SelectItem>
@@ -840,12 +850,13 @@ export default function AdminModuleEditor() {
               <Button 
                 onClick={handleUpdateContent}
                 disabled={updateContentMutation.isPending}
-                className="bg-gradient-to-r from-pink-500 to-rose-500"
+                className="bg-gradient-to-r from-blue-500 to-indigo-500"
               >
                 {updateContentMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Save Changes
               </Button>
             </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
