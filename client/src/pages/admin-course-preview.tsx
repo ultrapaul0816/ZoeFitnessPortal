@@ -520,6 +520,22 @@ export default function AdminCoursePreview() {
                                                         </div>
                                                       )}
                                                       
+                                                      {/* Show images from metadata */}
+                                                      {item.metadata?.images && item.metadata.images.length > 0 && (
+                                                        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                          {item.metadata.images.map((img: { path: string; alt: string }, imgIdx: number) => (
+                                                            <div key={imgIdx} className="rounded-lg overflow-hidden border bg-white shadow-sm">
+                                                              <img 
+                                                                src={img.path} 
+                                                                alt={img.alt}
+                                                                className="w-full h-auto object-contain"
+                                                              />
+                                                              <p className="text-xs text-gray-500 p-2 bg-gray-50 border-t">{img.alt}</p>
+                                                            </div>
+                                                          ))}
+                                                        </div>
+                                                      )}
+                                                      
                                                       {/* Show description for other items */}
                                                       {item.content_type !== 'text' && (item.description || item.exercise_description) && (
                                                         <p className="text-xs text-gray-500 mt-1 line-clamp-2">
