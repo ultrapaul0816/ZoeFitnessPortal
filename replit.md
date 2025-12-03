@@ -53,6 +53,15 @@ The application features a 6-week program with detailed exercises, coach notes, 
 - **Flexible Course Structure**: Different programs can have different weekly structures (not hardcoded 6-week format)
 - **Free Navigation**: Users can freely navigate content (not locked progression), educational modules are optional reference material
 
+**Heal Your Core Course Migration (Completed)**:
+The existing 6-week program has been migrated to the new course system:
+- **Course**: "Heal Your Core" with 6-week duration, beginner level, published status
+- **11 Modules**: Start Here, Understanding Your Core, Week 1-6 workout modules, Nutrition & Hydration, What Comes Next, FAQ
+- **39 Exercises** in the Exercise Library: 5 breathing exercises, 34 main workout exercises with video URLs
+- **18 Sections** across workout modules: Each week has Overview, Breathing, and Main Workout sections
+- **47 Content Items**: Exercise links with video URLs, reps, and metadata linking to the Exercise Library
+- All exercises are reusable across future courses via the Exercise Library
+
 # External Dependencies
 - **Database**: PostgreSQL (Neon Database for production, Replit-managed for development)
 - **Deployment**: Replit
