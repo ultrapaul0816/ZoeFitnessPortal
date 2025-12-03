@@ -38,7 +38,10 @@ import {
   List,
   Apple,
   Lightbulb,
-  Award
+  Award,
+  Calendar,
+  Power,
+  PowerOff
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Course, CourseModule, InsertCourse, InsertCourseModule } from "@shared/schema";
@@ -94,6 +97,14 @@ export default function AdminCourses() {
   const [activeTab, setActiveTab] = useState(() => 
     location.includes("/admin/modules") ? "modules" : "courses"
   );
+
+  useEffect(() => {
+    if (location.includes("/admin/modules")) {
+      setActiveTab("modules");
+    } else if (location.includes("/admin/courses") && !location.includes("/admin/courses/")) {
+      setActiveTab("courses");
+    }
+  }, [location]);
   const [showCreateCourse, setShowCreateCourse] = useState(false);
   const [showCreateModule, setShowCreateModule] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
@@ -187,6 +198,25 @@ export default function AdminCourses() {
     },
     onError: (error: Error) => {
       toast({ title: "Failed to archive course", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const togglePublishMutation = useMutation({
+    mutationFn: async ({ id, currentStatus }: { id: string; currentStatus: string }) => {
+      const newStatus = currentStatus === "published" ? "draft" : "published";
+      const isVisible = newStatus === "published";
+      await apiRequest("PATCH", `/api/admin/courses/${id}`, { status: newStatus, isVisible });
+      return newStatus;
+    },
+    onSuccess: (newStatus) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/courses"] });
+      toast({ 
+        title: newStatus === "published" ? "Course published" : "Course unpublished",
+        description: newStatus === "published" ? "Course is now visible to users" : "Course is now hidden from users"
+      });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to update course status", description: error.message, variant: "destructive" });
     },
   });
 
@@ -488,58 +518,100 @@ export default function AdminCourses() {
               </Card>
             ) : (
               <div className="grid gap-4">
-                {courses.map((course) => (
-                  <Card key={course.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900">{course.name}</h3>
-                            <Badge variant={course.status === "published" ? "default" : "secondary"}>
-                              {course.status}
-                            </Badge>
-                            {course.isVisible ? (
-                              <Eye className="w-4 h-4 text-green-500" />
-                            ) : (
-                              <EyeOff className="w-4 h-4 text-gray-400" />
-                            )}
+                {courses.map((course) => {
+                  const createdDate = course.createdAt ? new Date(course.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null;
+                  
+                  return (
+                    <Card key={course.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="text-lg font-semibold text-gray-900">{course.name}</h3>
+                              <Badge 
+                                variant={course.status === "published" ? "default" : "secondary"}
+                                className={course.status === "published" ? "bg-green-500" : ""}
+                              >
+                                {course.status}
+                              </Badge>
+                              {course.isVisible ? (
+                                <Eye className="w-4 h-4 text-green-500" />
+                              ) : (
+                                <EyeOff className="w-4 h-4 text-gray-400" />
+                              )}
+                            </div>
+                            <p className="text-gray-500 text-sm mb-3">{course.shortDescription || course.description}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <span className="capitalize">{course.level}</span>
+                              {course.durationWeeks && <span>{course.durationWeeks} weeks</span>}
+                              <span className="text-gray-300">|</span>
+                              <span>/{course.slug}</span>
+                              {createdDate && (
+                                <>
+                                  <span className="text-gray-300">|</span>
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="w-3.5 h-3.5" />
+                                    Created {createdDate}
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-gray-500 text-sm mb-3">{course.shortDescription || course.description}</p>
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span className="capitalize">{course.level}</span>
-                            {course.durationWeeks && <span>{course.durationWeeks} weeks</span>}
-                            <span className="text-gray-300">|</span>
-                            <span>/{course.slug}</span>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setLocation(`/admin/courses/${course.id}`)}
+                              className="text-pink-600 border-pink-200 hover:bg-pink-50"
+                              data-testid={`button-manage-modules-${course.id}`}
+                            >
+                              <Layers className="w-4 h-4 mr-1" />
+                              Modules
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openEditCourse(course)}
+                              data-testid={`button-edit-course-${course.id}`}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => togglePublishMutation.mutate({ id: course.id, currentStatus: course.status })}
+                              disabled={togglePublishMutation.isPending}
+                              className={course.status === "published" ? "text-amber-600 border-amber-200 hover:bg-amber-50" : "text-green-600 border-green-200 hover:bg-green-50"}
+                              data-testid={`button-toggle-publish-${course.id}`}
+                            >
+                              {course.status === "published" ? (
+                                <>
+                                  <PowerOff className="w-4 h-4 mr-1" />
+                                  Unpublish
+                                </>
+                              ) : (
+                                <>
+                                  <Power className="w-4 h-4 mr-1" />
+                                  Publish
+                                </>
+                              )}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setArchivingCourse(course)}
+                              className="text-gray-500 border-gray-200 hover:bg-gray-50"
+                              data-testid={`button-archive-course-${course.id}`}
+                            >
+                              <Archive className="w-4 h-4" />
+                            </Button>
                           </div>
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreVertical className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setLocation(`/admin/courses/${course.id}`)}>
-                              <Layers className="w-4 h-4 mr-2" />
-                              Manage Modules
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => openEditCourse(course)}>
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              className="text-amber-600"
-                              onClick={() => setArchivingCourse(course)}
-                            >
-                              <Archive className="w-4 h-4 mr-2" />
-                              Archive
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </TabsContent>
