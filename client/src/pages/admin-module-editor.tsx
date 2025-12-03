@@ -68,6 +68,21 @@ type CourseModule = {
   updated_at: string;
 };
 
+type Exercise = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  video_url: string | null;
+  thumbnail_url: string | null;
+  default_reps: string | null;
+  default_duration_seconds: number | null;
+  category: string;
+  muscle_groups: string[];
+  difficulty: string;
+  coach_notes: string | null;
+};
+
 const generateSlug = (name: string) => {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 };
@@ -121,6 +136,14 @@ export default function AdminModuleEditor() {
   const { data: sections = [], isLoading: sectionsLoading } = useQuery<ModuleSection[]>({
     queryKey: ['/api/admin/modules', moduleId, 'sections'],
     enabled: !!moduleId,
+  });
+
+  const { data: exercises = [] } = useQuery<Exercise[]>({
+    queryKey: ['/api/admin/exercises'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/exercises');
+      return res.json();
+    },
   });
 
   const createSectionMutation = useMutation({
@@ -549,7 +572,48 @@ export default function AdminModuleEditor() {
               {contentForm.contentType === "exercise" && (
                 <>
                   <div className="space-y-2">
-                    <Label>Reps / Duration</Label>
+                    <Label>Select Exercise from Library</Label>
+                    <Select 
+                      value={contentForm.contentData.exerciseId || ""} 
+                      onValueChange={(v) => {
+                        const selectedExercise = exercises.find(e => e.id === v);
+                        if (selectedExercise) {
+                          setContentForm({ 
+                            ...contentForm,
+                            title: selectedExercise.name,
+                            description: selectedExercise.description || "",
+                            durationMinutes: selectedExercise.default_duration_seconds ? Math.ceil(selectedExercise.default_duration_seconds / 60) : null,
+                            contentData: { 
+                              ...contentForm.contentData, 
+                              exerciseId: v,
+                              reps: selectedExercise.default_reps || "",
+                              videoUrl: selectedExercise.video_url || "",
+                              coachNotes: selectedExercise.coach_notes || "",
+                            } 
+                          });
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose an exercise..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {exercises.map(ex => (
+                          <SelectItem key={ex.id} value={ex.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{ex.name}</span>
+                              <span className="text-xs text-gray-400 capitalize">({ex.category})</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {exercises.length === 0 && (
+                      <p className="text-sm text-gray-500">No exercises in library. <a href="/admin/exercises" className="text-pink-500 hover:underline">Add exercises first</a>.</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Reps / Duration (override)</Label>
                     <Input
                       placeholder="e.g., 10 reps or 30 seconds"
                       value={contentForm.contentData.reps || ""}
@@ -560,7 +624,7 @@ export default function AdminModuleEditor() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Video URL (optional)</Label>
+                    <Label>Video URL (override, optional)</Label>
                     <Input
                       placeholder="https://www.youtube.com/watch?v=..."
                       value={contentForm.contentData.videoUrl || ""}
@@ -676,7 +740,45 @@ export default function AdminModuleEditor() {
               {contentForm.contentType === "exercise" && (
                 <>
                   <div className="space-y-2">
-                    <Label>Reps / Duration</Label>
+                    <Label>Select Exercise from Library</Label>
+                    <Select 
+                      value={contentForm.contentData.exerciseId || ""} 
+                      onValueChange={(v) => {
+                        const selectedExercise = exercises.find(e => e.id === v);
+                        if (selectedExercise) {
+                          setContentForm({ 
+                            ...contentForm,
+                            title: selectedExercise.name,
+                            description: selectedExercise.description || "",
+                            durationMinutes: selectedExercise.default_duration_seconds ? Math.ceil(selectedExercise.default_duration_seconds / 60) : null,
+                            contentData: { 
+                              ...contentForm.contentData, 
+                              exerciseId: v,
+                              reps: selectedExercise.default_reps || "",
+                              videoUrl: selectedExercise.video_url || "",
+                              coachNotes: selectedExercise.coach_notes || "",
+                            } 
+                          });
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose an exercise..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {exercises.map(ex => (
+                          <SelectItem key={ex.id} value={ex.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{ex.name}</span>
+                              <span className="text-xs text-gray-400 capitalize">({ex.category})</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Reps / Duration (override)</Label>
                     <Input
                       value={contentForm.contentData.reps || ""}
                       onChange={(e) => setContentForm({ 
@@ -686,7 +788,7 @@ export default function AdminModuleEditor() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Video URL</Label>
+                    <Label>Video URL (override)</Label>
                     <Input
                       value={contentForm.contentData.videoUrl || ""}
                       onChange={(e) => setContentForm({ 
