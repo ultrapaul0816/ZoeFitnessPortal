@@ -4291,17 +4291,44 @@ RESPONSE GUIDELINES:
           const sectionsWithContent = await Promise.all(
             sectionsResult.rows.map(async (section: any) => {
               const contentResult = await storage.db.execute(sql`
-                SELECT ci.*, e.name as exercise_name, e.video_url as exercise_video_url, 
-                       e.default_reps as exercise_default_reps, e.category as exercise_category,
-                       e.display_id as exercise_display_id, e.description as exercise_description
-                FROM content_items ci
-                LEFT JOIN exercises e ON ci.exercise_id = e.id
-                WHERE ci.section_id = ${section.id}
-                ORDER BY ci.order_index ASC
+                SELECT * FROM content_items
+                WHERE section_id = ${section.id}
+                ORDER BY order_index ASC
               `);
+              
+              // For exercise type content, enrich with exercise data from metadata
+              const enrichedContent = await Promise.all(
+                contentResult.rows.map(async (item: any) => {
+                  if (item.content_type === 'exercise' && item.metadata) {
+                    const metadata = typeof item.metadata === 'string' 
+                      ? JSON.parse(item.metadata) 
+                      : item.metadata;
+                    if (metadata.exerciseId) {
+                      const exerciseResult = await storage.db.execute(sql`
+                        SELECT display_id, name, description, video_url, default_reps, category
+                        FROM exercises WHERE id = ${metadata.exerciseId}
+                      `);
+                      if (exerciseResult.rows.length > 0) {
+                        const exercise = exerciseResult.rows[0];
+                        return {
+                          ...item,
+                          exercise_name: exercise.name,
+                          exercise_video_url: exercise.video_url,
+                          exercise_default_reps: exercise.default_reps,
+                          exercise_category: exercise.category,
+                          exercise_display_id: exercise.display_id,
+                          exercise_description: exercise.description
+                        };
+                      }
+                    }
+                  }
+                  return item;
+                })
+              );
+              
               return {
                 ...section,
-                contentItems: contentResult.rows
+                contentItems: enrichedContent
               };
             })
           );
