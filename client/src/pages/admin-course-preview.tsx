@@ -43,17 +43,22 @@ interface ContentItem {
   id: string;
   title: string;
   content_type: string;
+  content?: string;
   description?: string;
   video_url?: string;
+  duration?: string;
   duration_minutes?: number;
   exercise_id?: string;
   exercise_name?: string;
   exercise_video_url?: string;
+  exercise_duration?: string;
   exercise_default_reps?: string;
   exercise_category?: string;
   exercise_display_id?: string;
   exercise_description?: string;
+  exercise_difficulty?: string;
   reps_override?: string;
+  metadata?: any;
 }
 
 interface Section {
@@ -508,7 +513,15 @@ export default function AdminCoursePreview() {
                                                         )}
                                                       </div>
                                                       
-                                                      {(item.description || item.exercise_description) && (
+                                                      {/* Show content for text items */}
+                                                      {item.content_type === 'text' && item.content && (
+                                                        <div className="mt-2 p-3 bg-gray-50 rounded-lg border text-sm text-gray-700 whitespace-pre-wrap">
+                                                          {item.content}
+                                                        </div>
+                                                      )}
+                                                      
+                                                      {/* Show description for other items */}
+                                                      {item.content_type !== 'text' && (item.description || item.exercise_description) && (
                                                         <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                                                           {item.description || item.exercise_description}
                                                         </p>
@@ -521,16 +534,25 @@ export default function AdminCoursePreview() {
                                                             {item.reps_override || item.exercise_default_reps}
                                                           </span>
                                                         )}
-                                                        {item.duration_minutes && (
+                                                        {(item.duration || item.exercise_duration || item.duration_minutes) && (
                                                           <span className="flex items-center gap-1">
                                                             <Clock className="w-3 h-3" />
-                                                            {item.duration_minutes} min
+                                                            {item.duration || item.exercise_duration || `${item.duration_minutes} min`}
                                                           </span>
                                                         )}
-                                                        {item.exercise_category && (
-                                                          <Badge variant="outline" className="text-xs">
-                                                            {item.exercise_category}
-                                                          </Badge>
+                                                        {(item.exercise_category || item.exercise_difficulty) && (
+                                                          <div className="flex items-center gap-1">
+                                                            {item.exercise_category && (
+                                                              <Badge variant="outline" className="text-xs">
+                                                                {item.exercise_category}
+                                                              </Badge>
+                                                            )}
+                                                            {item.exercise_difficulty && (
+                                                              <Badge variant="outline" className="text-xs">
+                                                                {item.exercise_difficulty}
+                                                              </Badge>
+                                                            )}
+                                                          </div>
                                                         )}
                                                         {videoUrl && (
                                                           <a 
