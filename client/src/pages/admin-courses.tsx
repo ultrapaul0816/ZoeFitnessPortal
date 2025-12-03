@@ -109,7 +109,7 @@ export default function AdminCourses() {
   const [showCreateModule, setShowCreateModule] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [editingModule, setEditingModule] = useState<CourseModule | null>(null);
-  const [moduleViewMode, setModuleViewMode] = useState<"grid" | "list">("grid");
+  const [moduleViewMode, setModuleViewMode] = useState<"grid" | "list">("list");
   const [archivingCourse, setArchivingCourse] = useState<Course | null>(null);
   const [archivingModule, setArchivingModule] = useState<CourseModule | null>(null);
 
@@ -813,7 +813,17 @@ export default function AdminCourses() {
                 })}
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="bg-white rounded-lg border">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 gap-4 px-4 py-3 border-b bg-gray-50 text-sm font-medium text-gray-600">
+                  <div className="col-span-5">Module Name</div>
+                  <div className="col-span-2">Type</div>
+                  <div className="col-span-1 text-center">Sections</div>
+                  <div className="col-span-1 text-center">Items</div>
+                  <div className="col-span-1 text-center">Status</div>
+                  <div className="col-span-2 text-right">Actions</div>
+                </div>
+                {/* Table Body */}
                 {modules.map((module) => {
                   const Icon = moduleTypeIcons[module.moduleType] || BookOpen;
                   const sectionCount = Number(module.section_count) || 0;
@@ -821,66 +831,96 @@ export default function AdminCourses() {
                   const isEmpty = sectionCount === 0 && contentCount === 0;
                   
                   return (
-                    <Card 
+                    <div 
                       key={module.id} 
-                      className={`hover:shadow-md transition-shadow group cursor-pointer ${isEmpty ? 'border-dashed border-gray-300' : ''}`}
-                      onClick={() => setLocation(`/admin/modules/${module.id}`)}
-                      data-testid={`module-list-${module.id}`}
+                      className={`grid grid-cols-12 gap-4 px-4 py-3 border-b last:border-b-0 items-center hover:bg-gray-50 transition-colors group ${isEmpty ? 'bg-amber-50/30' : ''}`}
+                      data-testid={`module-row-${module.id}`}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${colorThemeClasses[module.colorTheme || "pink"]}`}>
-                            <Icon className="w-5 h-5" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-gray-900 truncate">{module.name}</h3>
-                              <Badge className={`text-xs border flex-shrink-0 ${moduleTypeBadgeColors[module.moduleType] || "bg-gray-100 text-gray-700"}`}>
-                                {moduleTypeLabels[module.moduleType]}
-                              </Badge>
-                              {isEmpty && (
-                                <span className="text-xs text-amber-600 font-medium flex-shrink-0">Needs content</span>
-                              )}
-                            </div>
-                            <p className="text-sm text-gray-500 truncate">{module.description || "No description"}</p>
-                          </div>
-                          <div className="flex items-center gap-4 flex-shrink-0">
-                            <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                              <Layers className="w-3.5 h-3.5" />
-                              <span>{sectionCount}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                              <FileText className="w-3.5 h-3.5" />
-                              <span>{contentCount}</span>
-                            </div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                  <MoreVertical className="w-4 h-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setLocation(`/admin/modules/${module.id}`); }}>
-                                  <FileText className="w-4 h-4 mr-2" />
-                                  Manage Sections
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openEditModule(module); }}>
-                                  <Edit className="w-4 h-4 mr-2" />
-                                  Edit Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  className="text-amber-600"
-                                  onClick={(e) => { e.stopPropagation(); setArchivingModule(module); }}
-                                >
-                                  <Archive className="w-4 h-4 mr-2" />
-                                  Archive
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
+                      {/* Module Name - Clickable */}
+                      <div 
+                        className="col-span-5 flex items-center gap-3 cursor-pointer"
+                        onClick={() => setLocation(`/admin/modules/${module.id}`)}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colorThemeClasses[module.colorTheme || "pink"]}`}>
+                          <Icon className="w-4 h-4" />
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="min-w-0">
+                          <h3 className="font-medium text-gray-900 truncate hover:text-pink-600 transition-colors">{module.name}</h3>
+                          <p className="text-xs text-gray-500 truncate">{module.description || "No description"}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Type */}
+                      <div className="col-span-2">
+                        <Badge className={`text-xs border ${moduleTypeBadgeColors[module.moduleType] || "bg-gray-100 text-gray-700"}`}>
+                          {moduleTypeLabels[module.moduleType]}
+                        </Badge>
+                      </div>
+                      
+                      {/* Sections Count - Clickable */}
+                      <div 
+                        className="col-span-1 text-center cursor-pointer"
+                        onClick={() => setLocation(`/admin/modules/${module.id}`)}
+                        title="Click to manage sections"
+                      >
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md hover:bg-pink-100 text-gray-700 hover:text-pink-700 transition-colors text-sm">
+                          <Layers className="w-3.5 h-3.5" />
+                          {sectionCount}
+                        </span>
+                      </div>
+                      
+                      {/* Items Count - Clickable */}
+                      <div 
+                        className="col-span-1 text-center cursor-pointer"
+                        onClick={() => setLocation(`/admin/modules/${module.id}`)}
+                        title="Click to manage content items"
+                      >
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md hover:bg-pink-100 text-gray-700 hover:text-pink-700 transition-colors text-sm">
+                          <FileText className="w-3.5 h-3.5" />
+                          {contentCount}
+                        </span>
+                      </div>
+                      
+                      {/* Status */}
+                      <div className="col-span-1 text-center">
+                        {isEmpty ? (
+                          <span className="text-xs text-amber-600 font-medium">Needs content</span>
+                        ) : (
+                          <span className="text-xs text-green-600 font-medium">Ready</span>
+                        )}
+                      </div>
+                      
+                      {/* Actions */}
+                      <div className="col-span-2 flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setLocation(`/admin/modules/${module.id}`)}
+                          className="h-8 px-2 text-gray-600 hover:text-pink-600"
+                          title="Manage Sections"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditModule(module)}
+                          className="h-8 px-2 text-gray-600 hover:text-blue-600"
+                          title="Edit Details"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setArchivingModule(module)}
+                          className="h-8 px-2 text-gray-600 hover:text-amber-600"
+                          title="Archive"
+                        >
+                          <Archive className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
