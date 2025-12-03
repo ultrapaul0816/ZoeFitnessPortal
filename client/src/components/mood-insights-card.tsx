@@ -1,10 +1,12 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Zap, TrendingUp, TrendingDown, Minus, Sparkles } from "lucide-react";
+import { Heart, Zap, TrendingUp, TrendingDown, Minus, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 
 interface MoodInsightsCardProps {
   userId?: string;
   compact?: boolean;
+  defaultCollapsed?: boolean;
 }
 
 interface CheckinStats {
@@ -20,7 +22,9 @@ interface CheckinStats {
   recentMoods?: { date: string; mood: string | null; energyLevel: number | null }[];
 }
 
-export default function MoodInsightsCard({ userId: propUserId, compact = false }: MoodInsightsCardProps) {
+export default function MoodInsightsCard({ userId: propUserId, compact = false, defaultCollapsed = false }: MoodInsightsCardProps) {
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  
   const userId = propUserId || (() => {
     try {
       const userData = localStorage.getItem("user");
@@ -30,6 +34,16 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false }
     } catch {}
     return null;
   })();
+
+  // Auto-collapse after 1 second on initial load
+  useEffect(() => {
+    if (!defaultCollapsed) {
+      const timer = setTimeout(() => {
+        setIsCollapsed(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [defaultCollapsed]);
 
   const { data: stats, isLoading } = useQuery<CheckinStats>({
     queryKey: ["/api/daily-checkins", userId, "stats"],
@@ -57,17 +71,32 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false }
 
   return (
     <Card className="bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 border-violet-100 shadow-sm overflow-hidden">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 cursor-pointer" onClick={() => setIsCollapsed(!isCollapsed)}>
         <CardTitle className="flex items-center gap-2 text-lg">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
             <Heart className="h-4 w-4 text-white" />
           </div>
-          <span className="bg-gradient-to-r from-violet-700 to-purple-700 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-violet-700 to-purple-700 bg-clip-text text-transparent flex-1">
             Your Mood & Energy
           </span>
           <Sparkles className="h-4 w-4 text-amber-400" />
+          <button 
+            className="p-1 rounded-full hover:bg-violet-100 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCollapsed(!isCollapsed);
+            }}
+            data-testid="button-toggle-mood-card"
+          >
+            {isCollapsed ? (
+              <ChevronDown className="h-4 w-4 text-violet-500" />
+            ) : (
+              <ChevronUp className="h-4 w-4 text-violet-500" />
+            )}
+          </button>
         </CardTitle>
       </CardHeader>
+      {!isCollapsed && (
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           {hasMoodData && stats.moodDistribution![0] && (
@@ -160,6 +189,7 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false }
           </div>
         )}
       </CardContent>
+      )}
     </Card>
   );
 }

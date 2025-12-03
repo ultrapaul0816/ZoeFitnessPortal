@@ -89,13 +89,13 @@ export default function DailyMoodPopup({
 
   useEffect(() => {
     if (selectedMood && step === 1) {
-      setCountdown(2);
+      setCountdown(1);
     }
   }, [selectedMood]);
 
   useEffect(() => {
     if (selectedEnergy && step === 2) {
-      setCountdown(2);
+      setCountdown(1);
     }
   }, [selectedEnergy]);
 
