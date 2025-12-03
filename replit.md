@@ -43,9 +43,11 @@ The application features a 6-week program with detailed exercises, coach notes, 
 
 **Multi-Course Management System (In Development)**: The platform is transitioning from a single 6-week program to a multi-course learning platform. Key features include:
 - **8 New Database Tables**: courses, course_modules, course_module_mappings, module_sections, content_items, course_enrollments, user_module_progress, user_content_completion
-- **Admin Course Builder** (`/admin/courses`): Enterprise-grade interface for creating and managing courses with reusable modules
-- **Module Library**: Reusable content modules (Educational, Workout, FAQ, Progress, Nutrition) that can be shared across multiple courses
-- **Content Types**: Videos, text/articles, PDF downloads, workout exercises, polls (future)
+- **Admin Course Builder** (`/admin/courses`): Enterprise-grade interface for creating and managing courses with reusable modules. Courses use standardized `durationWeeks` (integer) instead of free text for consistency.
+- **Module Library** (`/admin/modules`): Reusable content modules (Educational, Workout, FAQ, Progress, Nutrition) with color themes that can be shared across multiple courses
+- **Module Section Editor** (`/admin/modules/:moduleId`): Full CRUD interface for managing sections within modules. Features collapsible sections, drag handles for reordering (visual only), and inline content management.
+- **Content Item Editor**: Supports 4 content types - Videos (YouTube URLs), Text/Articles, PDF Downloads, and Exercises (with reps/duration). Each content item has title, description, duration, and type-specific data fields.
+- **API Routes**: Complete REST API for courses, modules, sections, and content items with admin authentication
 - **Flexible Course Structure**: Different programs can have different weekly structures (not hardcoded 6-week format)
 - **Free Navigation**: Users can freely navigate content (not locked progression), educational modules are optional reference material
 
