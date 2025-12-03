@@ -34,10 +34,10 @@ The application features a 6-week program with detailed exercises, coach notes, 
 **Spotify Workout Music Integration**: Users can listen to curated workout playlists via a mini player widget in the "Today's Workout" view. This integration uses Replit's built-in Spotify Connector for OAuth and offers 6 weekly curated playlists. A playlist browser displays all options, and the widget shows real-time playback state.
 
 **Dual Check-in System**: Features two complementary wellness tracking systems:
-1. **Daily Mood Popup** (2-screen flow): Auto-shows once per day on login, capturing mood ('great'/'good'/'okay'/'tired'/'struggling') and energy level (1-5 scale). Quick and unobtrusive with smooth transitions.
-2. **Workout Completion Check-in**: Detailed performance logging with 7 tracking points (workout completion, breathing practice, water, cardio, gratitude, struggles). Accessible via floating action button.
+1. **Daily Mood Popup** (2-screen flow): Auto-shows once per day on login, capturing mood ('great'/'good'/'okay'/'tired'/'struggling') and energy level (1-5 scale). 1-second auto-advance for snappy UX with smooth transitions.
+2. **Workout Completion Check-in**: Detailed performance logging with 7 tracking points (workout completion, breathing practice, water in liters with 2L pre-selected, cardio with 20 min default, gratitude with quick-select options, and challenges with community support messaging). Quick-select buttons for gratitude/challenges reduce friction while educational context explains mental health benefits. Accessible via floating action button.
 
-**Weekly Summary & Mood Insights**: Dashboard displays check-in streaks, progress bars for water and cardio, consistency percentages, and a visual calendar. The new "Mood & Energy" card shows top mood, average energy level with trend indicators (rising/stable/dipping), and a 7-day mood history strip. A one-click WhatsApp sharing feature generates a pre-formatted weekly summary message.
+**Weekly Summary & Mood Insights**: Dashboard displays check-in streaks with encouraging messages for new users, progress bars for water and cardio, consistency percentages, and a visual calendar. The collapsible "Mood & Energy" card (auto-collapses after 1 second) shows top mood, average energy level with trend indicators (rising/stable/dipping), and a 7-day mood history strip. A one-click WhatsApp sharing feature generates a pre-formatted weekly summary message.
 
 **Admin Check-in Analytics**: The admin dashboard includes a "Community Mood & Energy" card showing aggregated mood distribution, average energy levels, and energy trend charts across all users. This helps administrators monitor community wellness patterns.
 
