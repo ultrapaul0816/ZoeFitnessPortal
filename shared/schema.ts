@@ -423,6 +423,7 @@ export const courseModules = pgTable("course_modules", {
   iconName: text("icon_name"), // Lucide icon name for display
   colorTheme: text("color_theme").default("pink"), // pink, blue, green, purple, etc.
   isReusable: boolean("is_reusable").default(true), // Can be used in multiple courses
+  isVisible: boolean("is_visible").default(true), // Hide instead of delete
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });

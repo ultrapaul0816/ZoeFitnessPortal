@@ -20,7 +20,6 @@ import {
   GraduationCap, 
   Layers, 
   Edit, 
-  Trash2, 
   Eye, 
   EyeOff, 
   MoreVertical,
@@ -32,7 +31,14 @@ import {
   Loader2,
   ChevronRight,
   GripVertical,
-  ArrowUpDown
+  ArrowUpDown,
+  Archive,
+  AlertTriangle,
+  LayoutGrid,
+  List,
+  Apple,
+  Lightbulb,
+  Award
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Course, CourseModule, InsertCourse, InsertCourseModule } from "@shared/schema";
@@ -43,11 +49,11 @@ interface ModuleWithCounts extends CourseModule {
 }
 
 const moduleTypeIcons: Record<string, React.ElementType> = {
-  educational: BookOpen,
+  educational: Lightbulb,
   workout: Dumbbell,
   faq: HelpCircle,
-  progress: ArrowUpDown,
-  nutrition: FileText,
+  progress: Award,
+  nutrition: Apple,
 };
 
 const moduleTypeLabels: Record<string, string> = {
@@ -92,6 +98,9 @@ export default function AdminCourses() {
   const [showCreateModule, setShowCreateModule] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [editingModule, setEditingModule] = useState<CourseModule | null>(null);
+  const [moduleViewMode, setModuleViewMode] = useState<"grid" | "list">("grid");
+  const [archivingCourse, setArchivingCourse] = useState<Course | null>(null);
+  const [archivingModule, setArchivingModule] = useState<CourseModule | null>(null);
 
   const [courseForm, setCourseForm] = useState<{
     name: string;
@@ -167,16 +176,17 @@ export default function AdminCourses() {
     },
   });
 
-  const deleteCourseMutation = useMutation({
+  const archiveCourseMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/courses/${id}`);
+      await apiRequest("PATCH", `/api/admin/courses/${id}`, { status: "archived", isVisible: false });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/courses"] });
-      toast({ title: "Course deleted successfully" });
+      setArchivingCourse(null);
+      toast({ title: "Course archived successfully", description: "The course is now hidden from users" });
     },
     onError: (error: Error) => {
-      toast({ title: "Failed to delete course", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to archive course", description: error.message, variant: "destructive" });
     },
   });
 
@@ -212,16 +222,17 @@ export default function AdminCourses() {
     },
   });
 
-  const deleteModuleMutation = useMutation({
+  const archiveModuleMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/modules/${id}`);
+      await apiRequest("PATCH", `/api/admin/modules/${id}`, { isVisible: false });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/modules"] });
-      toast({ title: "Module deleted successfully" });
+      setArchivingModule(null);
+      toast({ title: "Module archived successfully", description: "The module is now hidden" });
     },
     onError: (error: Error) => {
-      toast({ title: "Failed to delete module", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to archive module", description: error.message, variant: "destructive" });
     },
   });
 
@@ -517,11 +528,11 @@ export default function AdminCourses() {
                               Edit Details
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              className="text-red-600"
-                              onClick={() => deleteCourseMutation.mutate(course.id)}
+                              className="text-amber-600"
+                              onClick={() => setArchivingCourse(course)}
                             >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
+                              <Archive className="w-4 h-4 mr-2" />
+                              Archive
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -535,7 +546,25 @@ export default function AdminCourses() {
 
           {/* Modules Tab */}
           <TabsContent value="modules" className="space-y-4">
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={moduleViewMode === "grid" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setModuleViewMode("grid")}
+                  className={moduleViewMode === "grid" ? "bg-pink-500 hover:bg-pink-600" : ""}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={moduleViewMode === "list" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setModuleViewMode("list")}
+                  className={moduleViewMode === "list" ? "bg-pink-500 hover:bg-pink-600" : ""}
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+              </div>
               <Dialog open={showCreateModule} onOpenChange={setShowCreateModule}>
                 <DialogTrigger asChild>
                   <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600">
@@ -639,7 +668,7 @@ export default function AdminCourses() {
                   </Button>
                 </CardContent>
               </Card>
-            ) : (
+            ) : moduleViewMode === "grid" ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {modules.map((module) => {
                   const Icon = moduleTypeIcons[module.moduleType] || BookOpen;
@@ -675,11 +704,11 @@ export default function AdminCourses() {
                                 Edit Details
                               </DropdownMenuItem>
                               <DropdownMenuItem 
-                                className="text-red-600"
-                                onClick={(e) => { e.stopPropagation(); deleteModuleMutation.mutate(module.id); }}
+                                className="text-amber-600"
+                                onClick={(e) => { e.stopPropagation(); setArchivingModule(module); }}
                               >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
+                                <Archive className="w-4 h-4 mr-2" />
+                                Archive
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -705,6 +734,78 @@ export default function AdminCourses() {
                           {isEmpty && (
                             <span className="text-xs text-amber-600 font-medium">Needs content</span>
                           )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {modules.map((module) => {
+                  const Icon = moduleTypeIcons[module.moduleType] || BookOpen;
+                  const sectionCount = Number(module.section_count) || 0;
+                  const contentCount = Number(module.content_count) || 0;
+                  const isEmpty = sectionCount === 0 && contentCount === 0;
+                  
+                  return (
+                    <Card 
+                      key={module.id} 
+                      className={`hover:shadow-md transition-shadow group cursor-pointer ${isEmpty ? 'border-dashed border-gray-300' : ''}`}
+                      onClick={() => setLocation(`/admin/modules/${module.id}`)}
+                      data-testid={`module-list-${module.id}`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${colorThemeClasses[module.colorTheme || "pink"]}`}>
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900 truncate">{module.name}</h3>
+                              <Badge className={`text-xs border flex-shrink-0 ${moduleTypeBadgeColors[module.moduleType] || "bg-gray-100 text-gray-700"}`}>
+                                {moduleTypeLabels[module.moduleType]}
+                              </Badge>
+                              {isEmpty && (
+                                <span className="text-xs text-amber-600 font-medium flex-shrink-0">Needs content</span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500 truncate">{module.description || "No description"}</p>
+                          </div>
+                          <div className="flex items-center gap-4 flex-shrink-0">
+                            <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                              <Layers className="w-3.5 h-3.5" />
+                              <span>{sectionCount}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                              <FileText className="w-3.5 h-3.5" />
+                              <span>{contentCount}</span>
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setLocation(`/admin/modules/${module.id}`); }}>
+                                  <FileText className="w-4 h-4 mr-2" />
+                                  Manage Sections
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openEditModule(module); }}>
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Edit Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  className="text-amber-600"
+                                  onClick={(e) => { e.stopPropagation(); setArchivingModule(module); }}
+                                >
+                                  <Archive className="w-4 h-4 mr-2" />
+                                  Archive
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -877,6 +978,84 @@ export default function AdminCourses() {
               >
                 {updateModuleMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Archive Course Confirmation Dialog */}
+        <Dialog open={!!archivingCourse} onOpenChange={() => setArchivingCourse(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                Archive Course
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to archive "{archivingCourse?.name}"?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>What happens when you archive:</strong>
+                </p>
+                <ul className="text-sm text-amber-700 mt-2 space-y-1 list-disc list-inside">
+                  <li>Course will be hidden from new users</li>
+                  <li>Existing enrolled users retain access until expiry</li>
+                  <li>You can restore it later by changing status to published</li>
+                  <li>No data will be deleted</li>
+                </ul>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setArchivingCourse(null)}>Cancel</Button>
+              <Button 
+                onClick={() => archivingCourse && archiveCourseMutation.mutate(archivingCourse.id)}
+                disabled={archiveCourseMutation.isPending}
+                className="bg-amber-500 hover:bg-amber-600"
+              >
+                {archiveCourseMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Archive Course
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Archive Module Confirmation Dialog */}
+        <Dialog open={!!archivingModule} onOpenChange={() => setArchivingModule(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                Archive Module
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to archive "{archivingModule?.name}"?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>What happens when you archive:</strong>
+                </p>
+                <ul className="text-sm text-amber-700 mt-2 space-y-1 list-disc list-inside">
+                  <li>Module will be hidden from all courses</li>
+                  <li>Content and sections are preserved</li>
+                  <li>You can restore it later from the database</li>
+                  <li>No data will be deleted</li>
+                </ul>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setArchivingModule(null)}>Cancel</Button>
+              <Button 
+                onClick={() => archivingModule && archiveModuleMutation.mutate(archivingModule.id)}
+                disabled={archiveModuleMutation.isPending}
+                className="bg-amber-500 hover:bg-amber-600"
+              >
+                {archiveModuleMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Archive Module
               </Button>
             </DialogFooter>
           </DialogContent>
