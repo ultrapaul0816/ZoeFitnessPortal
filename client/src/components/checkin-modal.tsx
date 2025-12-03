@@ -7,12 +7,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import {
   Heart,
   Sparkles,
-  Target,
   X,
   ChevronRight,
   ChevronLeft,
@@ -49,14 +46,6 @@ const ENERGY_OPTIONS = [
   { value: 1, label: "Exhausted", emoji: "😴", color: "from-gray-400 to-slate-500" },
 ];
 
-const GOAL_OPTIONS = [
-  "Strengthen my core",
-  "Improve energy levels",
-  "Build overall strength",
-  "Better posture",
-  "More self-care time",
-  "Connect with other mums",
-];
 
 function calculatePostpartumWeeks(deliveryDate: Date): number {
   const now = new Date();
@@ -75,15 +64,13 @@ export default function CheckinModal({
   const [step, setStep] = useState(1);
   const [mood, setMood] = useState<string>("");
   const [energyLevel, setEnergyLevel] = useState<number | null>(null);
-  const [goals, setGoals] = useState<string[]>([]);
-  const [notes, setNotes] = useState("");
   const [countdown, setCountdown] = useState<number | null>(null);
   const [checkinId, setCheckinId] = useState<string | null>(null);
   const [wantsToUpdate, setWantsToUpdate] = useState(false);
   
   const { toast } = useToast();
 
-  const totalSteps = 3;
+  const totalSteps = 2;
 
   const { data: todayCheckin, isLoading: isLoadingTodayCheckin } = useQuery<UserCheckin | null>({
     queryKey: ["/api/checkins/today"],
@@ -173,36 +160,16 @@ export default function CheckinModal({
     setCountdown(1);
   };
 
-  const handleEnergySelect = (value: number) => {
+  const handleEnergySelect = async (value: number) => {
     setEnergyLevel(value);
-    saveProgressively({ mood, energyLevel: value }, true);
-    setCountdown(1);
-  };
-
-  const cancelCountdown = () => {
-    setCountdown(null);
-  };
-
-  const advanceStep = () => {
-    if (step < totalSteps) {
-      setStep(step + 1);
-    }
-  };
-
-  const handleSkip = () => {
-    dismissMutation.mutate();
-  };
-
-  const handleComplete = async () => {
+    
     const postpartumWeeks = existingDeliveryDate 
       ? calculatePostpartumWeeks(new Date(existingDeliveryDate)) 
       : null;
 
     const finalData = {
       mood: mood || null,
-      energyLevel,
-      goals: goals.length > 0 ? goals : null,
-      notes: notes || null,
+      energyLevel: value,
       postpartumWeeksAtCheckin: postpartumWeeks,
       isPartial: false,
     };
@@ -220,13 +187,20 @@ export default function CheckinModal({
     onClose();
   };
 
-  const toggleGoal = (goal: string) => {
-    setGoals(prev => 
-      prev.includes(goal) 
-        ? prev.filter(g => g !== goal)
-        : [...prev, goal]
-    );
+  const cancelCountdown = () => {
+    setCountdown(null);
   };
+
+  const advanceStep = () => {
+    if (step < totalSteps) {
+      setStep(step + 1);
+    }
+  };
+
+  const handleSkip = () => {
+    dismissMutation.mutate();
+  };
+
 
   const renderStep = () => {
     if (step === 1) {
@@ -318,57 +292,8 @@ export default function CheckinModal({
       );
     }
 
-    if (step === 3) {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Target className="w-7 h-7 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">What are you focusing on?</h3>
-            <p className="text-sm text-gray-500">Select your current goals (optional)</p>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2">
-            {GOAL_OPTIONS.map((goal) => (
-              <button
-                key={goal}
-                onClick={() => toggleGoal(goal)}
-                className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
-                  goals.includes(goal)
-                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md"
-                    : "bg-gray-50 hover:bg-gray-100 text-gray-700"
-                }`}
-                data-testid={`button-goal-${goal.replace(/\s+/g, '-').toLowerCase()}`}
-              >
-                {goals.includes(goal) && <Check className="w-4 h-4 inline mr-1" />}
-                {goal}
-              </button>
-            ))}
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-gray-600">
-              Anything else on your mind? (optional)
-            </Label>
-            <Textarea
-              id="notes"
-              placeholder="Share how you're doing, any challenges, or wins..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="border-gray-200 focus:border-pink-300 focus:ring-pink-200 resize-none"
-              rows={3}
-              data-testid="textarea-notes"
-            />
-          </div>
-        </div>
-      );
-    }
-
     return null;
   };
-
-  const isLastStep = step === totalSteps;
 
   const getMoodEmoji = (moodValue: string | null | undefined) => {
     const option = MOOD_OPTIONS.find(m => m.value === moodValue);
@@ -407,15 +332,6 @@ export default function CheckinModal({
               <span className="text-gray-700">
                 {ENERGY_OPTIONS.find(e => e.value === todayCheckin.energyLevel)?.label || "Energy level " + todayCheckin.energyLevel}
               </span>
-            </div>
-          )}
-          {todayCheckin.goals && todayCheckin.goals.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {todayCheckin.goals.map((goal, i) => (
-                <span key={i} className="px-2 py-0.5 text-xs bg-pink-100 text-pink-700 rounded-full">
-                  {goal}
-                </span>
-              ))}
             </div>
           )}
         </div>
@@ -473,8 +389,6 @@ export default function CheckinModal({
                     setCheckinId(todayCheckin.id);
                     if (todayCheckin.mood) setMood(todayCheckin.mood);
                     if (todayCheckin.energyLevel) setEnergyLevel(todayCheckin.energyLevel);
-                    if (todayCheckin.goals) setGoals(todayCheckin.goals);
-                    if (todayCheckin.notes) setNotes(todayCheckin.notes);
                   }}
                   className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-2"
                   data-testid="button-update-checkin"
@@ -536,38 +450,20 @@ export default function CheckinModal({
                   </Button>
                 )}
 
-                <div className="flex items-center gap-2">
-                  {!isLastStep ? (
-                    <Button
-                      onClick={() => {
-                        cancelCountdown();
-                        advanceStep();
-                      }}
-                      disabled={step === 1 && !mood || step === 2 && energyLevel === null}
-                      className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-1"
-                      data-testid="button-next-step"
-                    >
-                      Continue
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={handleComplete}
-                      disabled={saveCheckinMutation.isPending || updateCheckinMutation.isPending}
-                      className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-2"
-                      data-testid="button-submit-checkin"
-                    >
-                      {saveCheckinMutation.isPending || updateCheckinMutation.isPending ? (
-                        "Saving..."
-                      ) : (
-                        <>
-                          <Check className="w-4 h-4" />
-                          Complete
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </div>
+                {step === 1 && (
+                  <Button
+                    onClick={() => {
+                      cancelCountdown();
+                      advanceStep();
+                    }}
+                    disabled={!mood}
+                    className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white flex items-center gap-1"
+                    data-testid="button-next-step"
+                  >
+                    Continue
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
             </>
           )}
