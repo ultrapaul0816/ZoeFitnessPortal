@@ -41,13 +41,14 @@ The application features a 6-week program with detailed exercises, coach notes, 
 
 **Admin Check-in Analytics**: The admin dashboard includes a "Community Mood & Energy" card showing aggregated mood distribution, average energy levels, and energy trend charts across all users. This helps administrators monitor community wellness patterns.
 
-**Multi-Course Management System (In Development)**: The platform is transitioning from a single 6-week program to a multi-course learning platform. Key features include:
+**Multi-Course Management System (Complete Admin Tools)**: The platform is transitioning from a single 6-week program to a multi-course learning platform. Key features include:
 - **8 New Database Tables**: courses, course_modules, course_module_mappings, module_sections, content_items, course_enrollments, user_module_progress, user_content_completion
 - **Admin Course Builder** (`/admin/courses`): Enterprise-grade interface for creating and managing courses with reusable modules. Courses use standardized `durationWeeks` (integer) instead of free text for consistency.
+- **Course Editor** (`/admin/courses/:courseId`): Interface for assigning and ordering modules within a course. Features checkbox multi-select for adding modules, visual ordering with drag handles, and quick access to module sections.
 - **Module Library** (`/admin/modules`): Reusable content modules (Educational, Workout, FAQ, Progress, Nutrition) with color themes that can be shared across multiple courses
 - **Module Section Editor** (`/admin/modules/:moduleId`): Full CRUD interface for managing sections within modules. Features collapsible sections, drag handles for reordering (visual only), and inline content management.
 - **Content Item Editor**: Supports 4 content types - Videos (YouTube URLs), Text/Articles, PDF Downloads, and Exercises (with reps/duration). Each content item has title, description, duration, and type-specific data fields.
-- **API Routes**: Complete REST API for courses, modules, sections, and content items with admin authentication
+- **API Routes**: Complete REST API for courses, modules, sections, content items, and course-module mappings with admin authentication
 - **Flexible Course Structure**: Different programs can have different weekly structures (not hardcoded 6-week format)
 - **Free Navigation**: Users can freely navigate content (not locked progression), educational modules are optional reference material
 
