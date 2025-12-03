@@ -4305,7 +4305,7 @@ RESPONSE GUIDELINES:
                       : item.metadata;
                     if (metadata.exerciseId) {
                       const exerciseResult = await storage.db.execute(sql`
-                        SELECT display_id, name, description, video_url, default_reps, category
+                        SELECT display_id, name, description, video_url, duration, category, difficulty
                         FROM exercises WHERE id = ${metadata.exerciseId}
                       `);
                       if (exerciseResult.rows.length > 0) {
@@ -4314,10 +4314,11 @@ RESPONSE GUIDELINES:
                           ...item,
                           exercise_name: exercise.name,
                           exercise_video_url: exercise.video_url,
-                          exercise_default_reps: exercise.default_reps,
+                          exercise_duration: exercise.duration,
                           exercise_category: exercise.category,
                           exercise_display_id: exercise.display_id,
-                          exercise_description: exercise.description
+                          exercise_description: exercise.description,
+                          exercise_difficulty: exercise.difficulty
                         };
                       }
                     }
