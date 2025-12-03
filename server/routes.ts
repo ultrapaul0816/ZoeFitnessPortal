@@ -4248,6 +4248,156 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // ==================== MODULE SECTIONS ROUTES ====================
+
+  // Get sections for a module
+  app.get("/api/admin/modules/:moduleId/sections", requireAdmin, async (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      const result = await storage.db.execute(sql`
+        SELECT * FROM module_sections WHERE module_id = ${moduleId} ORDER BY order_index ASC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      res.status(500).json({ message: "Failed to fetch sections" });
+    }
+  });
+
+  // Create section
+  app.post("/api/admin/modules/:moduleId/sections", requireAdmin, async (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      const { name, slug, description, orderIndex } = req.body;
+      const id = randomUUID();
+      
+      await storage.db.execute(sql`
+        INSERT INTO module_sections (id, module_id, name, slug, description, order_index)
+        VALUES (${id}, ${moduleId}, ${name}, ${slug}, ${description || null}, ${orderIndex || 0})
+      `);
+      
+      const result = await storage.db.execute(sql`SELECT * FROM module_sections WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error creating section:", error);
+      res.status(500).json({ message: "Failed to create section" });
+    }
+  });
+
+  // Update section
+  app.patch("/api/admin/sections/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const setClauses: string[] = [];
+      
+      if (updates.name !== undefined) setClauses.push(`name = '${updates.name}'`);
+      if (updates.slug !== undefined) setClauses.push(`slug = '${updates.slug}'`);
+      if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
+      if (updates.orderIndex !== undefined) setClauses.push(`order_index = ${updates.orderIndex}`);
+      setClauses.push(`updated_at = NOW()`);
+      
+      if (setClauses.length > 0) {
+        await storage.db.execute(sql.raw(`UPDATE module_sections SET ${setClauses.join(', ')} WHERE id = '${id}'`));
+      }
+      
+      const result = await storage.db.execute(sql`SELECT * FROM module_sections WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating section:", error);
+      res.status(500).json({ message: "Failed to update section" });
+    }
+  });
+
+  // Delete section
+  app.delete("/api/admin/sections/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`DELETE FROM module_sections WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting section:", error);
+      res.status(500).json({ message: "Failed to delete section" });
+    }
+  });
+
+  // ==================== CONTENT ITEMS ROUTES ====================
+
+  // Get content items for a section
+  app.get("/api/admin/sections/:sectionId/content", requireAdmin, async (req, res) => {
+    try {
+      const { sectionId } = req.params;
+      const result = await storage.db.execute(sql`
+        SELECT * FROM content_items WHERE section_id = ${sectionId} ORDER BY order_index ASC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching content items:", error);
+      res.status(500).json({ message: "Failed to fetch content items" });
+    }
+  });
+
+  // Create content item
+  app.post("/api/admin/sections/:sectionId/content", requireAdmin, async (req, res) => {
+    try {
+      const { sectionId } = req.params;
+      const { contentType, title, description, contentData, durationMinutes, orderIndex } = req.body;
+      const id = randomUUID();
+      
+      await storage.db.execute(sql`
+        INSERT INTO content_items (id, section_id, content_type, title, description, content_data, duration_minutes, order_index)
+        VALUES (${id}, ${sectionId}, ${contentType}, ${title}, ${description || null}, ${JSON.stringify(contentData || {})}, ${durationMinutes || null}, ${orderIndex || 0})
+      `);
+      
+      const result = await storage.db.execute(sql`SELECT * FROM content_items WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error creating content item:", error);
+      res.status(500).json({ message: "Failed to create content item" });
+    }
+  });
+
+  // Update content item
+  app.patch("/api/admin/content/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const setClauses: string[] = [];
+      
+      if (updates.contentType !== undefined) setClauses.push(`content_type = '${updates.contentType}'`);
+      if (updates.title !== undefined) setClauses.push(`title = '${updates.title}'`);
+      if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
+      if (updates.contentData !== undefined) setClauses.push(`content_data = '${JSON.stringify(updates.contentData)}'`);
+      if (updates.durationMinutes !== undefined) setClauses.push(`duration_minutes = ${updates.durationMinutes || 'NULL'}`);
+      if (updates.orderIndex !== undefined) setClauses.push(`order_index = ${updates.orderIndex}`);
+      setClauses.push(`updated_at = NOW()`);
+      
+      if (setClauses.length > 0) {
+        await storage.db.execute(sql.raw(`UPDATE content_items SET ${setClauses.join(', ')} WHERE id = '${id}'`));
+      }
+      
+      const result = await storage.db.execute(sql`SELECT * FROM content_items WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating content item:", error);
+      res.status(500).json({ message: "Failed to update content item" });
+    }
+  });
+
+  // Delete content item
+  app.delete("/api/admin/content/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`DELETE FROM content_items WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting content item:", error);
+      res.status(500).json({ message: "Failed to delete content item" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
