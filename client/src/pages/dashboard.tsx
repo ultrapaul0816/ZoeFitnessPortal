@@ -16,7 +16,6 @@ import PremiumProgramCard from "@/components/premium-program-card";
 import CommunityModal from "@/components/community-modal";
 import ProfileSettings from "@/components/profile-settings";
 import ProfileBanner from "@/components/profile-banner";
-import CheckinModal from "@/components/checkin-modal";
 import TodaysWorkout from "@/components/todays-workout";
 import WeeklySummary from "@/components/weekly-summary";
 import DailyCheckinModal from "@/components/daily-checkin-modal";
@@ -63,7 +62,6 @@ export default function Dashboard() {
   const [showNotificationsDialog, setShowNotificationsDialog] = useState(false);
   const [showPurchasesDialog, setShowPurchasesDialog] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
-  const [showCheckinModal, setShowCheckinModal] = useState(false);
   const [showDailyCheckinModal, setShowDailyCheckinModal] = useState(false);
   const [showDailyMoodPopup, setShowDailyMoodPopup] = useState(false);
   const [checkinPromptChecked, setCheckinPromptChecked] = useState(false);
@@ -635,7 +633,7 @@ export default function Dashboard() {
                 className="p-2 sm:p-3 relative transition-all duration-300 md:hover:scale-110 active:scale-95 group touch-manipulation"
                 data-testid="button-daily-checkin"
                 aria-label="Daily check-in"
-                onClick={() => setShowCheckinModal(true)}
+                onClick={() => setShowDailyMoodPopup(true)}
                 title="Daily Check-in"
               >
                 <div className="relative">
@@ -892,16 +890,6 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Check-in Modal (Profile completion) */}
-      {showCheckinModal && (
-        <CheckinModal
-          isOpen={showCheckinModal}
-          onClose={() => setShowCheckinModal(false)}
-          onSkip={() => setShowCheckinModal(false)}
-          userId={user.id}
-          existingDeliveryDate={user.deliveryDate ? (typeof user.deliveryDate === 'string' ? user.deliveryDate : user.deliveryDate.toISOString()) : null}
-        />
-      )}
 
       {/* Daily Mood Popup (feelings + energy - once per day) */}
       <DailyMoodPopup

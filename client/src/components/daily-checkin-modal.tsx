@@ -62,6 +62,7 @@ export default function DailyCheckinModal({
   userId: propUserId,
 }: DailyCheckinModalProps) {
   const { toast } = useToast();
+  const [isClosing, setIsClosing] = useState(false);
   
   const userId = propUserId || (() => {
     try {
@@ -155,9 +156,13 @@ export default function DailyCheckinModal({
   };
 
   const handleClose = () => {
-    setShowSuccess(false);
-    setSavedData(null);
-    onClose();
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowSuccess(false);
+      setSavedData(null);
+      setIsClosing(false);
+      onClose();
+    }, 200);
   };
 
   const handleGratitudeSelect = (option: string) => {
@@ -202,8 +207,8 @@ export default function DailyCheckinModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+    <Dialog open={isOpen && !isClosing} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className={`max-w-md max-h-[90vh] overflow-y-auto transition-all duration-200 ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
         {showSuccess ? (
           <>
             <div className="text-center py-6 space-y-4">
