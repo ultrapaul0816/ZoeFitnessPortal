@@ -561,6 +561,16 @@ export default function AdminCourses() {
                             <Button
                               variant="outline"
                               size="sm"
+                              onClick={() => setLocation(`/admin/courses/${course.id}/preview`)}
+                              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                              data-testid={`button-preview-course-${course.id}`}
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              Preview
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={() => setLocation(`/admin/courses/${course.id}`)}
                               className="text-pink-600 border-pink-200 hover:bg-pink-50"
                               data-testid={`button-manage-modules-${course.id}`}

@@ -4129,6 +4129,84 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Upload course image (admin)
+  app.post("/api/admin/courses/:id/image", requireAdmin, upload.single('image'), handleMulterError, async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      // Upload to Cloudinary with course-specific folder
+      const uploadPromise = new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'course-images',
+            resource_type: 'image',
+            transformation: [
+              { width: 1200, height: 675, crop: 'fill', gravity: 'center' },
+              { quality: 'auto:good' }
+            ]
+          },
+          (error, result) => {
+            if (error) {
+              console.error("[COURSE IMAGE UPLOAD ERROR]:", error.message);
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+        uploadStream.end(req.file!.buffer);
+      });
+
+      // Also create a thumbnail version
+      const thumbnailPromise = new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'course-images/thumbnails',
+            resource_type: 'image',
+            transformation: [
+              { width: 400, height: 225, crop: 'fill', gravity: 'center' },
+              { quality: 'auto:good' }
+            ]
+          },
+          (error, result) => {
+            if (error) {
+              console.error("[COURSE THUMBNAIL UPLOAD ERROR]:", error.message);
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+        uploadStream.end(req.file!.buffer);
+      });
+
+      const [fullResult, thumbResult]: any = await Promise.all([uploadPromise, thumbnailPromise]);
+
+      // Update course with image URLs
+      await storage.db.execute(sql`
+        UPDATE courses 
+        SET image_url = ${fullResult.secure_url}, 
+            thumbnail_url = ${thumbResult.secure_url},
+            updated_at = NOW()
+        WHERE id = ${id}
+      `);
+
+      const result = await storage.db.execute(sql`SELECT * FROM courses WHERE id = ${id}`);
+      res.json({
+        imageUrl: fullResult.secure_url,
+        thumbnailUrl: thumbResult.secure_url,
+        course: result.rows[0]
+      });
+    } catch (error) {
+      console.error("[COURSE IMAGE UPLOAD ERROR]:", error);
+      res.status(500).json({ message: "Failed to upload course image", error: error instanceof Error ? error.message : String(error) });
+    }
+  });
+
   // Update course (admin)
   app.patch("/api/admin/courses/:id", requireAdmin, async (req, res) => {
     try {
@@ -4172,6 +4250,94 @@ RESPONSE GUIDELINES:
     } catch (error) {
       console.error("Error deleting course:", error);
       res.status(500).json({ message: "Failed to delete course" });
+    }
+  });
+
+  // Get course preview with full content structure (admin)
+  app.get("/api/admin/courses/:id/preview", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Get course details
+      const courseResult = await storage.db.execute(sql`SELECT * FROM courses WHERE id = ${id}`);
+      if (courseResult.rows.length === 0) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+      const course = courseResult.rows[0];
+
+      // Get modules assigned to this course with their mappings
+      const modulesResult = await storage.db.execute(sql`
+        SELECT 
+          m.*,
+          cmm.order_index as mapping_order,
+          cmm.is_required
+        FROM course_modules m
+        JOIN course_module_mappings cmm ON m.id = cmm.module_id
+        WHERE cmm.course_id = ${id}
+        ORDER BY cmm.order_index ASC
+      `);
+
+      // For each module, get sections and content
+      const modulesWithContent = await Promise.all(
+        modulesResult.rows.map(async (module: any) => {
+          // Get sections for this module
+          const sectionsResult = await storage.db.execute(sql`
+            SELECT * FROM module_sections 
+            WHERE module_id = ${module.id}
+            ORDER BY order_index ASC
+          `);
+
+          // For each section, get content items
+          const sectionsWithContent = await Promise.all(
+            sectionsResult.rows.map(async (section: any) => {
+              const contentResult = await storage.db.execute(sql`
+                SELECT ci.*, e.name as exercise_name, e.video_url as exercise_video_url, 
+                       e.default_reps as exercise_default_reps, e.category as exercise_category,
+                       e.display_id as exercise_display_id, e.description as exercise_description
+                FROM content_items ci
+                LEFT JOIN exercises e ON ci.exercise_id = e.id
+                WHERE ci.section_id = ${section.id}
+                ORDER BY ci.order_index ASC
+              `);
+              return {
+                ...section,
+                contentItems: contentResult.rows
+              };
+            })
+          );
+
+          return {
+            ...module,
+            sections: sectionsWithContent
+          };
+        })
+      );
+
+      // Calculate content statistics
+      const stats = {
+        totalModules: modulesWithContent.length,
+        totalSections: modulesWithContent.reduce((sum, m: any) => sum + m.sections.length, 0),
+        totalItems: modulesWithContent.reduce((sum, m: any) => 
+          sum + m.sections.reduce((sSum: number, s: any) => sSum + s.contentItems.length, 0), 0),
+        modulesWithContent: modulesWithContent.filter((m: any) => 
+          m.sections.some((s: any) => s.contentItems.length > 0)).length,
+        emptyModules: modulesWithContent.filter((m: any) => 
+          !m.sections.some((s: any) => s.contentItems.length > 0)).map((m: any) => m.name),
+        emptySections: modulesWithContent.flatMap((m: any) => 
+          m.sections.filter((s: any) => s.contentItems.length === 0).map((s: any) => ({
+            module: m.name,
+            section: s.title
+          })))
+      };
+
+      res.json({
+        course,
+        modules: modulesWithContent,
+        stats
+      });
+    } catch (error) {
+      console.error("Error fetching course preview:", error);
+      res.status(500).json({ message: "Failed to fetch course preview" });
     }
   });
 

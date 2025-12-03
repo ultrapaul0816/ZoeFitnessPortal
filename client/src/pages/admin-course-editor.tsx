@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSession } from "@/hooks/use-session";
@@ -24,7 +24,9 @@ import {
   Eye,
   EyeOff,
   Clock,
-  Users
+  Users,
+  Upload,
+  Image as ImageIcon
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -104,6 +106,8 @@ export default function AdminCourseEditor() {
 
   const [showAddModule, setShowAddModule] = useState(false);
   const [selectedModules, setSelectedModules] = useState<Set<string>>(new Set());
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { data: course, isLoading: courseLoading } = useQuery<Course>({
     queryKey: ['/api/admin/courses', courseId],
@@ -168,6 +172,66 @@ export default function AdminCourseEditor() {
   const assignedModuleIds = new Set(assignedModules.map(m => m.module_id));
   const availableModules = allModules.filter(m => !assignedModuleIds.has(m.id));
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !courseId) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select an image file (JPG, PNG, etc.)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select an image smaller than 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`/api/admin/courses/${courseId}/image`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ['/api/admin/courses', courseId] });
+      
+      toast({
+        title: "Image Uploaded",
+        description: "Course image has been updated successfully",
+      });
+    } catch (error) {
+      console.error('Image upload error:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingImage(false);
+      if (imageInputRef.current) {
+        imageInputRef.current.value = '';
+      }
+    }
+  };
+
   useEffect(() => {
     if (!sessionLoading && !user?.isAdmin) {
       setLocation("/");
@@ -211,36 +275,82 @@ export default function AdminCourseEditor() {
 
         {course && (
           <Card className="mb-6 overflow-hidden">
-            <div className="bg-gradient-to-r from-pink-500 to-rose-500 p-6 text-white">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold mb-2" data-testid="text-course-name">{course.name}</h1>
-                  <p className="opacity-90 mb-4">{course.short_description || course.description}</p>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary" className="bg-white/20 text-white border-0 capitalize">
-                      {course.level}
-                    </Badge>
-                    {course.duration_weeks && (
-                      <Badge variant="secondary" className="bg-white/20 text-white border-0">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {course.duration_weeks} weeks
+            <div className="relative h-48 bg-gradient-to-r from-pink-500 to-rose-500">
+              {course.image_url ? (
+                <img 
+                  src={course.image_url} 
+                  alt={course.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : null}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              
+              {/* Image Upload Button */}
+              <div className="absolute top-4 right-4">
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                  className="bg-white/90 hover:bg-white text-gray-900"
+                >
+                  {isUploadingImage ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4 mr-2" />
+                  )}
+                  {course.image_url ? 'Change Image' : 'Upload Image'}
+                </Button>
+              </div>
+              
+              {/* Course Info Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h1 className="text-2xl font-bold mb-2" data-testid="text-course-name">{course.name}</h1>
+                    <p className="opacity-90 mb-4">{course.short_description || course.description}</p>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary" className="bg-white/20 text-white border-0 capitalize">
+                        {course.level}
                       </Badge>
-                    )}
-                    <Badge variant="secondary" className="bg-white/20 text-white border-0 capitalize">
-                      {course.status}
-                    </Badge>
-                    {course.is_visible ? (
-                      <Badge variant="secondary" className="bg-white/20 text-white border-0">
-                        <Eye className="w-3 h-3 mr-1" />
-                        Visible
+                      {course.duration_weeks && (
+                        <Badge variant="secondary" className="bg-white/20 text-white border-0">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {course.duration_weeks} weeks
+                        </Badge>
+                      )}
+                      <Badge variant="secondary" className="bg-white/20 text-white border-0 capitalize">
+                        {course.status}
                       </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="bg-white/20 text-white border-0">
-                        <EyeOff className="w-3 h-3 mr-1" />
-                        Hidden
-                      </Badge>
-                    )}
+                      {course.is_visible ? (
+                        <Badge variant="secondary" className="bg-white/20 text-white border-0">
+                          <Eye className="w-3 h-3 mr-1" />
+                          Visible
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-white/20 text-white border-0">
+                          <EyeOff className="w-3 h-3 mr-1" />
+                          Hidden
+                        </Badge>
+                      )}
+                    </div>
                   </div>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setLocation(`/admin/courses/${courseId}/preview`)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white border-0"
+                    data-testid="button-preview-course"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview Course
+                  </Button>
                 </div>
               </div>
             </div>
