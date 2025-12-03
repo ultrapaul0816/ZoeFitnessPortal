@@ -617,19 +617,19 @@ export default function Admin() {
       {activeTab === 'overview' && (
         <div className="space-y-6">
         {/* Admin Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-pink-50 to-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
                 <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Total Members</h3>
-                <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                  <Users className="w-5 h-5 text-pink-600" />
+                <div className="w-9 h-9 bg-pink-100 rounded-full flex items-center justify-center">
+                  <Users className="w-4 h-4 text-pink-600" />
                 </div>
               </div>
-              <p className="text-4xl font-bold text-gray-800 mb-1" data-testid="stat-total-members">
+              <p className="text-3xl font-bold text-gray-800 mb-1" data-testid="stat-total-members">
                 {adminStats?.totalMembers || 0}
               </p>
-              <p className="text-sm text-green-600 flex items-center gap-1">
+              <p className="text-xs text-green-600 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 +12% this month
               </p>
@@ -637,17 +637,17 @@ export default function Admin() {
           </Card>
 
           <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
                 <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Active Members</h3>
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <UserCheck className="w-5 h-5 text-green-600" />
+                <div className="w-9 h-9 bg-green-100 rounded-full flex items-center justify-center">
+                  <UserCheck className="w-4 h-4 text-green-600" />
                 </div>
               </div>
-              <p className="text-4xl font-bold text-gray-800 mb-1" data-testid="stat-active-members">
+              <p className="text-3xl font-bold text-gray-800 mb-1" data-testid="stat-active-members">
                 {adminStats?.activeMembers || 0}
               </p>
-              <p className="text-sm text-green-600 flex items-center gap-1">
+              <p className="text-xs text-green-600 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 87% active rate
               </p>
@@ -655,17 +655,17 @@ export default function Admin() {
           </Card>
 
           <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-amber-50 to-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
                 <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Expiring Soon</h3>
-                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-amber-600" />
+                <div className="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-amber-600" />
                 </div>
               </div>
-              <p className="text-4xl font-bold text-gray-800 mb-1" data-testid="stat-expiring">
+              <p className="text-3xl font-bold text-gray-800 mb-1" data-testid="stat-expiring">
                 {adminStats?.expiringSoon || 0}
               </p>
-              <p className="text-sm text-amber-600">Next 7 days</p>
+              <p className="text-xs text-amber-600">Next 7 days</p>
             </CardContent>
           </Card>
         </div>
@@ -721,7 +721,7 @@ export default function Admin() {
         )}
 
         {/* Activity Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           {/* Compact Activity Feed */}
           <Card className="border-pink-200 bg-pink-50/30">
             <CardHeader className="pb-2">
@@ -953,7 +953,7 @@ export default function Admin() {
         )}
 
         {/* Check-in Analytics Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Check-in Analytics Card */}
           <Card className="border-none shadow-md">
             <CardHeader className="pb-3">
