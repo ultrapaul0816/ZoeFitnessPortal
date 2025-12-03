@@ -4398,6 +4398,141 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // ==================== COURSE-MODULE MAPPING ROUTES ====================
+
+  // Get modules assigned to a course
+  app.get("/api/admin/courses/:courseId/modules", requireAdmin, async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const result = await storage.db.execute(sql`
+        SELECT cmm.*, cm.name, cm.slug, cm.description, cm.module_type, cm.icon_name, cm.color_theme
+        FROM course_module_mappings cmm
+        JOIN course_modules cm ON cmm.module_id = cm.id
+        WHERE cmm.course_id = ${courseId}
+        ORDER BY cmm.order_index ASC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching course modules:", error);
+      res.status(500).json({ message: "Failed to fetch course modules" });
+    }
+  });
+
+  // Assign module to course
+  app.post("/api/admin/courses/:courseId/modules", requireAdmin, async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const { moduleId, orderIndex } = req.body;
+      const id = randomUUID();
+      
+      // Check if mapping already exists
+      const existing = await storage.db.execute(sql`
+        SELECT id FROM course_module_mappings 
+        WHERE course_id = ${courseId} AND module_id = ${moduleId}
+      `);
+      
+      if (existing.rows.length > 0) {
+        return res.status(400).json({ message: "Module already assigned to this course" });
+      }
+      
+      await storage.db.execute(sql`
+        INSERT INTO course_module_mappings (id, course_id, module_id, order_index)
+        VALUES (${id}, ${courseId}, ${moduleId}, ${orderIndex || 0})
+      `);
+      
+      const result = await storage.db.execute(sql`
+        SELECT cmm.*, cm.name, cm.slug, cm.description, cm.module_type, cm.icon_name, cm.color_theme
+        FROM course_module_mappings cmm
+        JOIN course_modules cm ON cmm.module_id = cm.id
+        WHERE cmm.id = ${id}
+      `);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error assigning module to course:", error);
+      res.status(500).json({ message: "Failed to assign module to course" });
+    }
+  });
+
+  // Update module order in course
+  app.patch("/api/admin/course-modules/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { orderIndex } = req.body;
+      
+      await storage.db.execute(sql`
+        UPDATE course_module_mappings 
+        SET order_index = ${orderIndex}, updated_at = NOW()
+        WHERE id = ${id}
+      `);
+      
+      const result = await storage.db.execute(sql`
+        SELECT cmm.*, cm.name, cm.slug, cm.description, cm.module_type, cm.icon_name, cm.color_theme
+        FROM course_module_mappings cmm
+        JOIN course_modules cm ON cmm.module_id = cm.id
+        WHERE cmm.id = ${id}
+      `);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating module order:", error);
+      res.status(500).json({ message: "Failed to update module order" });
+    }
+  });
+
+  // Remove module from course
+  app.delete("/api/admin/course-modules/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`DELETE FROM course_module_mappings WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing module from course:", error);
+      res.status(500).json({ message: "Failed to remove module from course" });
+    }
+  });
+
+  // Bulk update module order in course
+  app.put("/api/admin/courses/:courseId/modules/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const { moduleOrders } = req.body; // Array of { id, orderIndex }
+      
+      for (const item of moduleOrders) {
+        await storage.db.execute(sql`
+          UPDATE course_module_mappings 
+          SET order_index = ${item.orderIndex}, updated_at = NOW()
+          WHERE id = ${item.id} AND course_id = ${courseId}
+        `);
+      }
+      
+      const result = await storage.db.execute(sql`
+        SELECT cmm.*, cm.name, cm.slug, cm.description, cm.module_type, cm.icon_name, cm.color_theme
+        FROM course_module_mappings cmm
+        JOIN course_modules cm ON cmm.module_id = cm.id
+        WHERE cmm.course_id = ${courseId}
+        ORDER BY cmm.order_index ASC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error reordering modules:", error);
+      res.status(500).json({ message: "Failed to reorder modules" });
+    }
+  });
+
+  // Get single course by ID (for editor)
+  app.get("/api/admin/courses/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await storage.db.execute(sql`SELECT * FROM courses WHERE id = ${id}`);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error fetching course:", error);
+      res.status(500).json({ message: "Failed to fetch course" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
