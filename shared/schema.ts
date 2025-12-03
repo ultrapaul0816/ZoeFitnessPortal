@@ -404,7 +404,7 @@ export const courses = pgTable("courses", {
   imageUrl: text("image_url"),
   thumbnailUrl: text("thumbnail_url"),
   level: text("level").default("beginner"), // beginner, intermediate, advanced
-  duration: text("duration"), // e.g., "6 weeks", "4 weeks"
+  durationWeeks: integer("duration_weeks"), // Duration in weeks (e.g., 6 for "6 weeks")
   price: integer("price").default(0), // Price in cents
   status: text("status").default("draft"), // draft, published, archived
   isVisible: boolean("is_visible").default(false),

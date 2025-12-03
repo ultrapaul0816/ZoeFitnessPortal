@@ -78,7 +78,7 @@ export default function AdminCourses() {
     description: string;
     shortDescription: string;
     level: "beginner" | "intermediate" | "advanced";
-    duration: string;
+    durationWeeks: number | null;
     status: "draft" | "published" | "archived";
   }>({
     name: "",
@@ -86,7 +86,7 @@ export default function AdminCourses() {
     description: "",
     shortDescription: "",
     level: "beginner",
-    duration: "",
+    durationWeeks: null,
     status: "draft",
   });
 
@@ -211,7 +211,7 @@ export default function AdminCourses() {
       description: "",
       shortDescription: "",
       level: "beginner",
-      duration: "",
+      durationWeeks: null,
       status: "draft",
     });
   };
@@ -276,9 +276,9 @@ export default function AdminCourses() {
       slug: course.slug,
       description: course.description,
       shortDescription: course.shortDescription || "",
-      level: course.level || "beginner",
-      duration: course.duration || "",
-      status: course.status || "draft",
+      level: (course.level as "beginner" | "intermediate" | "advanced") || "beginner",
+      durationWeeks: course.durationWeeks || null,
+      status: (course.status as "draft" | "published" | "archived") || "draft",
     });
   };
 
@@ -288,8 +288,8 @@ export default function AdminCourses() {
       name: module.name,
       slug: module.slug,
       description: module.description || "",
-      moduleType: module.moduleType,
-      colorTheme: module.colorTheme || "pink",
+      moduleType: module.moduleType as "educational" | "workout" | "faq" | "progress" | "nutrition",
+      colorTheme: (module.colorTheme as "pink" | "blue" | "green" | "purple" | "orange" | "teal") || "pink",
     });
   };
 
@@ -400,7 +400,7 @@ export default function AdminCourses() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Level</Label>
-                        <Select value={courseForm.level} onValueChange={(v) => setCourseForm({ ...courseForm, level: v })}>
+                        <Select value={courseForm.level} onValueChange={(v) => setCourseForm({ ...courseForm, level: v as "beginner" | "intermediate" | "advanced" })}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -412,11 +412,13 @@ export default function AdminCourses() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Duration</Label>
+                        <Label>Duration (weeks)</Label>
                         <Input
-                          placeholder="e.g., 6 weeks"
-                          value={courseForm.duration}
-                          onChange={(e) => setCourseForm({ ...courseForm, duration: e.target.value })}
+                          type="number"
+                          min="1"
+                          placeholder="e.g., 6"
+                          value={courseForm.durationWeeks || ""}
+                          onChange={(e) => setCourseForm({ ...courseForm, durationWeeks: e.target.value ? parseInt(e.target.value) : null })}
                         />
                       </div>
                     </div>
@@ -473,7 +475,7 @@ export default function AdminCourses() {
                           <p className="text-gray-500 text-sm mb-3">{course.shortDescription || course.description}</p>
                           <div className="flex items-center gap-4 text-sm text-gray-500">
                             <span className="capitalize">{course.level}</span>
-                            {course.duration && <span>{course.duration}</span>}
+                            {course.durationWeeks && <span>{course.durationWeeks} weeks</span>}
                             <span className="text-gray-300">|</span>
                             <span>/{course.slug}</span>
                           </div>
@@ -554,7 +556,7 @@ export default function AdminCourses() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Module Type</Label>
-                        <Select value={moduleForm.moduleType} onValueChange={(v) => setModuleForm({ ...moduleForm, moduleType: v })}>
+                        <Select value={moduleForm.moduleType} onValueChange={(v) => setModuleForm({ ...moduleForm, moduleType: v as "educational" | "workout" | "faq" | "progress" | "nutrition" })}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -569,7 +571,7 @@ export default function AdminCourses() {
                       </div>
                       <div className="space-y-2">
                         <Label>Color Theme</Label>
-                        <Select value={moduleForm.colorTheme} onValueChange={(v) => setModuleForm({ ...moduleForm, colorTheme: v })}>
+                        <Select value={moduleForm.colorTheme} onValueChange={(v) => setModuleForm({ ...moduleForm, colorTheme: v as "pink" | "blue" | "green" | "purple" | "orange" | "teal" })}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -711,7 +713,7 @@ export default function AdminCourses() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label>Level</Label>
-                  <Select value={courseForm.level} onValueChange={(v) => setCourseForm({ ...courseForm, level: v })}>
+                  <Select value={courseForm.level} onValueChange={(v) => setCourseForm({ ...courseForm, level: v as "beginner" | "intermediate" | "advanced" })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -723,15 +725,17 @@ export default function AdminCourses() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Duration</Label>
+                  <Label>Duration (weeks)</Label>
                   <Input
-                    value={courseForm.duration}
-                    onChange={(e) => setCourseForm({ ...courseForm, duration: e.target.value })}
+                    type="number"
+                    min="1"
+                    value={courseForm.durationWeeks || ""}
+                    onChange={(e) => setCourseForm({ ...courseForm, durationWeeks: e.target.value ? parseInt(e.target.value) : null })}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Status</Label>
-                  <Select value={courseForm.status} onValueChange={(v) => setCourseForm({ ...courseForm, status: v })}>
+                  <Select value={courseForm.status} onValueChange={(v) => setCourseForm({ ...courseForm, status: v as "draft" | "published" | "archived" })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -791,7 +795,7 @@ export default function AdminCourses() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Module Type</Label>
-                  <Select value={moduleForm.moduleType} onValueChange={(v) => setModuleForm({ ...moduleForm, moduleType: v })}>
+                  <Select value={moduleForm.moduleType} onValueChange={(v) => setModuleForm({ ...moduleForm, moduleType: v as "educational" | "workout" | "faq" | "progress" | "nutrition" })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -806,7 +810,7 @@ export default function AdminCourses() {
                 </div>
                 <div className="space-y-2">
                   <Label>Color Theme</Label>
-                  <Select value={moduleForm.colorTheme} onValueChange={(v) => setModuleForm({ ...moduleForm, colorTheme: v })}>
+                  <Select value={moduleForm.colorTheme} onValueChange={(v) => setModuleForm({ ...moduleForm, colorTheme: v as "pink" | "blue" | "green" | "purple" | "orange" | "teal" })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

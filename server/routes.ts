@@ -4113,12 +4113,12 @@ RESPONSE GUIDELINES:
   // Create course (admin)
   app.post("/api/admin/courses", requireAdmin, async (req, res) => {
     try {
-      const { name, slug, description, shortDescription, level, duration, status, imageUrl, thumbnailUrl, price, isVisible, orderIndex } = req.body;
+      const { name, slug, description, shortDescription, level, durationWeeks, status, imageUrl, thumbnailUrl, price, isVisible, orderIndex } = req.body;
       const id = randomUUID();
       
       await storage.db.execute(sql`
-        INSERT INTO courses (id, name, slug, description, short_description, level, duration, status, image_url, thumbnail_url, price, is_visible, order_index)
-        VALUES (${id}, ${name}, ${slug}, ${description}, ${shortDescription || null}, ${level || 'beginner'}, ${duration || null}, ${status || 'draft'}, ${imageUrl || null}, ${thumbnailUrl || null}, ${price || 0}, ${isVisible || false}, ${orderIndex || 0})
+        INSERT INTO courses (id, name, slug, description, short_description, level, duration_weeks, status, image_url, thumbnail_url, price, is_visible, order_index)
+        VALUES (${id}, ${name}, ${slug}, ${description}, ${shortDescription || null}, ${level || 'beginner'}, ${durationWeeks || null}, ${status || 'draft'}, ${imageUrl || null}, ${thumbnailUrl || null}, ${price || 0}, ${isVisible || false}, ${orderIndex || 0})
       `);
       
       const result = await storage.db.execute(sql`SELECT * FROM courses WHERE id = ${id}`);
@@ -4143,7 +4143,7 @@ RESPONSE GUIDELINES:
       if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
       if (updates.shortDescription !== undefined) setClauses.push(`short_description = '${updates.shortDescription}'`);
       if (updates.level !== undefined) setClauses.push(`level = '${updates.level}'`);
-      if (updates.duration !== undefined) setClauses.push(`duration = '${updates.duration}'`);
+      if (updates.durationWeeks !== undefined) setClauses.push(`duration_weeks = ${updates.durationWeeks || 'NULL'}`);
       if (updates.status !== undefined) setClauses.push(`status = '${updates.status}'`);
       if (updates.imageUrl !== undefined) setClauses.push(`image_url = '${updates.imageUrl}'`);
       if (updates.thumbnailUrl !== undefined) setClauses.push(`thumbnail_url = '${updates.thumbnailUrl}'`);
