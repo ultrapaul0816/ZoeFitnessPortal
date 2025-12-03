@@ -123,7 +123,8 @@ export default function AdminExercises() {
       if (selectedCategory !== 'all') params.append('category', selectedCategory);
       if (searchQuery) params.append('search', searchQuery);
       const res = await fetch(`/api/admin/exercises?${params}`);
-      return res.json();
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
     },
   });
 

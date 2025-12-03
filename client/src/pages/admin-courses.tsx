@@ -64,9 +64,11 @@ const colorThemeClasses: Record<string, string> = {
 
 export default function AdminCourses() {
   const { user, loading: sessionLoading } = useSession();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("courses");
+  const [activeTab, setActiveTab] = useState(() => 
+    location.includes("/admin/modules") ? "modules" : "courses"
+  );
   const [showCreateCourse, setShowCreateCourse] = useState(false);
   const [showCreateModule, setShowCreateModule] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
