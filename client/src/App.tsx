@@ -14,6 +14,7 @@ import AdminAutomationSettings from "@/pages/admin-automation-settings";
 import AdminCourses from "@/pages/admin-courses";
 import AdminModuleEditor from "@/pages/admin-module-editor";
 import AdminCourseEditor from "@/pages/admin-course-editor";
+import AdminExercises from "@/pages/admin-exercises";
 import MyLibrary from "@/pages/my-library";
 import Community from "@/pages/community";
 import NotFound from "@/pages/not-found";
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/admin/modules" component={AdminCourses} />
       <Route path="/admin/modules/:moduleId" component={AdminModuleEditor} />
       <Route path="/admin/courses/:courseId" component={AdminCourseEditor} />
+      <Route path="/admin/exercises" component={AdminExercises} />
       <Route path="/heal-your-core" component={() => (
         <Suspense fallback={<PageLoader message="Loading your program..." />}>
           <HealYourCorePage />

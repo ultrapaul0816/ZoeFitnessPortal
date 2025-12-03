@@ -4533,6 +4533,113 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // ==================== EXERCISE LIBRARY ROUTES ====================
+
+  // Get all exercises
+  app.get("/api/admin/exercises", requireAdmin, async (req, res) => {
+    try {
+      const { category, search } = req.query;
+      let query = `SELECT * FROM exercises WHERE 1=1`;
+      
+      if (category && category !== 'all') {
+        query += ` AND category = '${category}'`;
+      }
+      if (search) {
+        query += ` AND (LOWER(name) LIKE LOWER('%${search}%') OR LOWER(description) LIKE LOWER('%${search}%'))`;
+      }
+      query += ` ORDER BY order_index ASC, name ASC`;
+      
+      const result = await storage.db.execute(sql.raw(query));
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching exercises:", error);
+      res.status(500).json({ message: "Failed to fetch exercises" });
+    }
+  });
+
+  // Get single exercise
+  app.get("/api/admin/exercises/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await storage.db.execute(sql`SELECT * FROM exercises WHERE id = ${id}`);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error fetching exercise:", error);
+      res.status(500).json({ message: "Failed to fetch exercise" });
+    }
+  });
+
+  // Create exercise
+  app.post("/api/admin/exercises", requireAdmin, async (req, res) => {
+    try {
+      const { name, slug, description, videoUrl, thumbnailUrl, defaultReps, defaultDurationSeconds, category, muscleGroups, difficulty, coachNotes } = req.body;
+      const id = randomUUID();
+      
+      const muscleGroupsArray = muscleGroups || [];
+      
+      await storage.db.execute(sql`
+        INSERT INTO exercises (id, name, slug, description, video_url, thumbnail_url, default_reps, default_duration_seconds, category, muscle_groups, difficulty, coach_notes)
+        VALUES (${id}, ${name}, ${slug}, ${description || null}, ${videoUrl || null}, ${thumbnailUrl || null}, ${defaultReps || null}, ${defaultDurationSeconds || null}, ${category || 'core'}, ${muscleGroupsArray}, ${difficulty || 'beginner'}, ${coachNotes || null})
+      `);
+      
+      const result = await storage.db.execute(sql`SELECT * FROM exercises WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error creating exercise:", error);
+      res.status(500).json({ message: "Failed to create exercise" });
+    }
+  });
+
+  // Update exercise
+  app.patch("/api/admin/exercises/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const setClauses: string[] = [];
+      
+      if (updates.name !== undefined) setClauses.push(`name = '${updates.name}'`);
+      if (updates.slug !== undefined) setClauses.push(`slug = '${updates.slug}'`);
+      if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
+      if (updates.videoUrl !== undefined) setClauses.push(`video_url = '${updates.videoUrl}'`);
+      if (updates.thumbnailUrl !== undefined) setClauses.push(`thumbnail_url = '${updates.thumbnailUrl}'`);
+      if (updates.defaultReps !== undefined) setClauses.push(`default_reps = '${updates.defaultReps}'`);
+      if (updates.defaultDurationSeconds !== undefined) setClauses.push(`default_duration_seconds = ${updates.defaultDurationSeconds || 'NULL'}`);
+      if (updates.category !== undefined) setClauses.push(`category = '${updates.category}'`);
+      if (updates.muscleGroups !== undefined) setClauses.push(`muscle_groups = ARRAY[${updates.muscleGroups.map((g: string) => `'${g}'`).join(',')}]::text[]`);
+      if (updates.difficulty !== undefined) setClauses.push(`difficulty = '${updates.difficulty}'`);
+      if (updates.coachNotes !== undefined) setClauses.push(`coach_notes = '${updates.coachNotes}'`);
+      if (updates.isActive !== undefined) setClauses.push(`is_active = ${updates.isActive}`);
+      if (updates.orderIndex !== undefined) setClauses.push(`order_index = ${updates.orderIndex}`);
+      setClauses.push(`updated_at = NOW()`);
+      
+      if (setClauses.length > 0) {
+        await storage.db.execute(sql.raw(`UPDATE exercises SET ${setClauses.join(', ')} WHERE id = '${id}'`));
+      }
+      
+      const result = await storage.db.execute(sql`SELECT * FROM exercises WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating exercise:", error);
+      res.status(500).json({ message: "Failed to update exercise" });
+    }
+  });
+
+  // Delete exercise
+  app.delete("/api/admin/exercises/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`DELETE FROM exercises WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting exercise:", error);
+      res.status(500).json({ message: "Failed to delete exercise" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
