@@ -16,6 +16,7 @@ import AdminModuleEditor from "@/pages/admin-module-editor";
 import AdminCourseEditor from "@/pages/admin-course-editor";
 import AdminCoursePreview from "@/pages/admin-course-preview";
 import AdminExercises from "@/pages/admin-exercises";
+import AdminWorkouts from "@/pages/admin-workouts";
 import MyLibrary from "@/pages/my-library";
 import Community from "@/pages/community";
 import NotFound from "@/pages/not-found";
@@ -50,6 +51,7 @@ function Router() {
       <Route path="/admin/courses/:courseId" component={AdminCourseEditor} />
       <Route path="/admin/courses/:courseId/preview" component={AdminCoursePreview} />
       <Route path="/admin/exercises" component={AdminExercises} />
+      <Route path="/admin/workouts" component={AdminWorkouts} />
       <Route path="/heal-your-core" component={() => (
         <Suspense fallback={<PageLoader message="Loading your program..." />}>
           <HealYourCorePage />
