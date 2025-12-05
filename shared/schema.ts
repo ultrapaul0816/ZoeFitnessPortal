@@ -505,6 +505,40 @@ export const userContentCompletion = pgTable("user_content_completion", {
   timeSpent: integer("time_spent"), // Seconds spent on content
 });
 
+// Structured Workouts - reusable workout templates with rounds and rest
+export const structuredWorkouts = pgTable("structured_workouts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description"),
+  workoutType: text("workout_type").notNull().default("strength"), // strength, cardio, breathing, mobility, warmup, cooldown
+  totalDuration: text("total_duration"), // e.g., "30 min", "45 min"
+  rounds: integer("rounds").default(1), // Number of rounds to repeat all exercises
+  restBetweenRounds: integer("rest_between_rounds").default(60), // Seconds rest between rounds
+  restBetweenExercises: integer("rest_between_exercises").default(30), // Seconds rest between exercises
+  difficulty: text("difficulty").default("beginner"), // beginner, intermediate, advanced
+  equipmentNeeded: text("equipment_needed").array(), // ["yoga mat", "resistance band"]
+  coachNotes: text("coach_notes"), // Coach tips and guidance
+  isVisible: boolean("is_visible").default(true),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+// Workout Exercise Links - exercises within a structured workout
+export const workoutExerciseLinks = pgTable("workout_exercise_links", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  workoutId: varchar("workout_id").notNull(), // References structuredWorkouts
+  exerciseId: varchar("exercise_id").notNull(), // References exercises table
+  orderIndex: integer("order_index").default(0), // Order in workout
+  reps: text("reps"), // e.g., "12", "8-10", "to failure"
+  sets: integer("sets").default(1), // Number of sets per exercise
+  duration: text("duration"), // e.g., "30 seconds", "1 minute" (for timed exercises)
+  restAfter: integer("rest_after").default(30), // Seconds rest after this exercise (override)
+  sideSpecific: boolean("side_specific").default(false), // If true, repeat for each side
+  coachNotes: text("coach_notes"), // Exercise-specific coaching tips
+  videoUrlOverride: text("video_url_override"), // Override the exercise's default video
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -782,6 +816,20 @@ export const insertUserContentCompletionSchema = createInsertSchema(userContentC
   completedAt: true,
 });
 
+export const insertStructuredWorkoutSchema = createInsertSchema(structuredWorkouts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  workoutType: z.enum(['strength', 'cardio', 'breathing', 'mobility', 'warmup', 'cooldown']).default('strength'),
+  difficulty: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
+});
+
+export const insertWorkoutExerciseLinkSchema = createInsertSchema(workoutExerciseLinks).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Educational content - Understanding Your Core topics
 export const educationalTopics = pgTable("educational_topics", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1005,6 +1053,10 @@ export type UserModuleProgress = typeof userModuleProgress.$inferSelect;
 export type InsertUserModuleProgress = z.infer<typeof insertUserModuleProgressSchema>;
 export type UserContentCompletion = typeof userContentCompletion.$inferSelect;
 export type InsertUserContentCompletion = z.infer<typeof insertUserContentCompletionSchema>;
+export type StructuredWorkout = typeof structuredWorkouts.$inferSelect;
+export type InsertStructuredWorkout = z.infer<typeof insertStructuredWorkoutSchema>;
+export type WorkoutExerciseLink = typeof workoutExerciseLinks.$inferSelect;
+export type InsertWorkoutExerciseLink = z.infer<typeof insertWorkoutExerciseLinkSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
