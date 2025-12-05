@@ -4860,6 +4860,234 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // ================== STRUCTURED WORKOUTS API ==================
+  
+  // Get all structured workouts
+  app.get("/api/admin/structured-workouts", requireAdmin, async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`
+        SELECT sw.*, 
+          (SELECT COUNT(*) FROM workout_exercise_links WHERE workout_id = sw.id) as exercise_count
+        FROM structured_workouts sw 
+        WHERE sw.is_visible = true
+        ORDER BY sw.created_at DESC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching structured workouts:", error);
+      res.status(500).json({ message: "Failed to fetch workouts" });
+    }
+  });
+
+  // Get single structured workout with exercises
+  app.get("/api/admin/structured-workouts/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Get workout
+      const workoutResult = await storage.db.execute(sql`
+        SELECT * FROM structured_workouts WHERE id = ${id}
+      `);
+      
+      if (workoutResult.rows.length === 0) {
+        return res.status(404).json({ message: "Workout not found" });
+      }
+      
+      // Get exercises linked to this workout
+      const exercisesResult = await storage.db.execute(sql`
+        SELECT wel.*, e.name as exercise_name, e.video_url as exercise_video_url, 
+               e.description as exercise_description, e.category as exercise_category
+        FROM workout_exercise_links wel
+        JOIN exercises e ON e.id = wel.exercise_id
+        WHERE wel.workout_id = ${id}
+        ORDER BY wel.order_index
+      `);
+      
+      res.json({
+        ...workoutResult.rows[0],
+        exercises: exercisesResult.rows
+      });
+    } catch (error) {
+      console.error("Error fetching structured workout:", error);
+      res.status(500).json({ message: "Failed to fetch workout" });
+    }
+  });
+
+  // Create structured workout
+  app.post("/api/admin/structured-workouts", requireAdmin, async (req, res) => {
+    try {
+      const { 
+        name, description, workoutType, totalDuration, rounds, 
+        restBetweenRounds, restBetweenExercises, difficulty, 
+        equipmentNeeded, coachNotes 
+      } = req.body;
+      
+      const id = randomUUID();
+      const equipmentArray = equipmentNeeded || [];
+      
+      await storage.db.execute(sql`
+        INSERT INTO structured_workouts (
+          id, name, description, workout_type, total_duration, rounds,
+          rest_between_rounds, rest_between_exercises, difficulty,
+          equipment_needed, coach_notes, is_visible
+        ) VALUES (
+          ${id}, ${name}, ${description || null}, ${workoutType || 'strength'}, 
+          ${totalDuration || null}, ${rounds || 1}, ${restBetweenRounds || 60}, 
+          ${restBetweenExercises || 30}, ${difficulty || 'beginner'},
+          ${equipmentArray}, ${coachNotes || null}, true
+        )
+      `);
+      
+      const result = await storage.db.execute(sql`SELECT * FROM structured_workouts WHERE id = ${id}`);
+      res.status(201).json(result.rows[0]);
+    } catch (error) {
+      console.error("Error creating structured workout:", error);
+      res.status(500).json({ message: "Failed to create workout" });
+    }
+  });
+
+  // Update structured workout
+  app.patch("/api/admin/structured-workouts/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const setClauses: string[] = [];
+      if (updates.name !== undefined) setClauses.push(`name = '${updates.name}'`);
+      if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
+      if (updates.workoutType !== undefined) setClauses.push(`workout_type = '${updates.workoutType}'`);
+      if (updates.totalDuration !== undefined) setClauses.push(`total_duration = '${updates.totalDuration}'`);
+      if (updates.rounds !== undefined) setClauses.push(`rounds = ${updates.rounds}`);
+      if (updates.restBetweenRounds !== undefined) setClauses.push(`rest_between_rounds = ${updates.restBetweenRounds}`);
+      if (updates.restBetweenExercises !== undefined) setClauses.push(`rest_between_exercises = ${updates.restBetweenExercises}`);
+      if (updates.difficulty !== undefined) setClauses.push(`difficulty = '${updates.difficulty}'`);
+      if (updates.equipmentNeeded !== undefined) setClauses.push(`equipment_needed = ARRAY[${updates.equipmentNeeded.map((e: string) => `'${e}'`).join(',')}]::text[]`);
+      if (updates.coachNotes !== undefined) setClauses.push(`coach_notes = '${updates.coachNotes}'`);
+      setClauses.push(`updated_at = NOW()`);
+      
+      if (setClauses.length > 0) {
+        await storage.db.execute(sql.raw(`UPDATE structured_workouts SET ${setClauses.join(', ')} WHERE id = '${id}'`));
+      }
+      
+      const result = await storage.db.execute(sql`SELECT * FROM structured_workouts WHERE id = ${id}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating structured workout:", error);
+      res.status(500).json({ message: "Failed to update workout" });
+    }
+  });
+
+  // Delete (archive) structured workout
+  app.delete("/api/admin/structured-workouts/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`UPDATE structured_workouts SET is_visible = false WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error archiving structured workout:", error);
+      res.status(500).json({ message: "Failed to archive workout" });
+    }
+  });
+
+  // ================== WORKOUT EXERCISE LINKS API ==================
+  
+  // Add exercise to workout
+  app.post("/api/admin/structured-workouts/:workoutId/exercises", requireAdmin, async (req, res) => {
+    try {
+      const { workoutId } = req.params;
+      const { exerciseId, orderIndex, reps, sets, duration, restAfter, sideSpecific, coachNotes, videoUrlOverride } = req.body;
+      
+      const id = randomUUID();
+      
+      await storage.db.execute(sql`
+        INSERT INTO workout_exercise_links (
+          id, workout_id, exercise_id, order_index, reps, sets, duration,
+          rest_after, side_specific, coach_notes, video_url_override
+        ) VALUES (
+          ${id}, ${workoutId}, ${exerciseId}, ${orderIndex || 0}, ${reps || null},
+          ${sets || 1}, ${duration || null}, ${restAfter || 30}, ${sideSpecific || false},
+          ${coachNotes || null}, ${videoUrlOverride || null}
+        )
+      `);
+      
+      const result = await storage.db.execute(sql`
+        SELECT wel.*, e.name as exercise_name, e.video_url as exercise_video_url
+        FROM workout_exercise_links wel
+        JOIN exercises e ON e.id = wel.exercise_id
+        WHERE wel.id = ${id}
+      `);
+      res.status(201).json(result.rows[0]);
+    } catch (error) {
+      console.error("Error adding exercise to workout:", error);
+      res.status(500).json({ message: "Failed to add exercise" });
+    }
+  });
+
+  // Update exercise in workout
+  app.patch("/api/admin/workout-exercise-links/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const setClauses: string[] = [];
+      if (updates.orderIndex !== undefined) setClauses.push(`order_index = ${updates.orderIndex}`);
+      if (updates.reps !== undefined) setClauses.push(`reps = '${updates.reps}'`);
+      if (updates.sets !== undefined) setClauses.push(`sets = ${updates.sets}`);
+      if (updates.duration !== undefined) setClauses.push(`duration = '${updates.duration}'`);
+      if (updates.restAfter !== undefined) setClauses.push(`rest_after = ${updates.restAfter}`);
+      if (updates.sideSpecific !== undefined) setClauses.push(`side_specific = ${updates.sideSpecific}`);
+      if (updates.coachNotes !== undefined) setClauses.push(`coach_notes = '${updates.coachNotes}'`);
+      if (updates.videoUrlOverride !== undefined) setClauses.push(`video_url_override = '${updates.videoUrlOverride}'`);
+      
+      if (setClauses.length > 0) {
+        await storage.db.execute(sql.raw(`UPDATE workout_exercise_links SET ${setClauses.join(', ')} WHERE id = '${id}'`));
+      }
+      
+      const result = await storage.db.execute(sql`
+        SELECT wel.*, e.name as exercise_name, e.video_url as exercise_video_url
+        FROM workout_exercise_links wel
+        JOIN exercises e ON e.id = wel.exercise_id
+        WHERE wel.id = ${id}
+      `);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating workout exercise link:", error);
+      res.status(500).json({ message: "Failed to update exercise" });
+    }
+  });
+
+  // Remove exercise from workout
+  app.delete("/api/admin/workout-exercise-links/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`DELETE FROM workout_exercise_links WHERE id = ${id}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing exercise from workout:", error);
+      res.status(500).json({ message: "Failed to remove exercise" });
+    }
+  });
+
+  // Reorder exercises in workout
+  app.post("/api/admin/structured-workouts/:workoutId/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { workoutId } = req.params;
+      const { exerciseOrder } = req.body; // Array of { id, orderIndex }
+      
+      for (const item of exerciseOrder) {
+        await storage.db.execute(sql`
+          UPDATE workout_exercise_links SET order_index = ${item.orderIndex} 
+          WHERE id = ${item.id} AND workout_id = ${workoutId}
+        `);
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error reordering exercises:", error);
+      res.status(500).json({ message: "Failed to reorder exercises" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
