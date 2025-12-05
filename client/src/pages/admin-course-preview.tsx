@@ -36,7 +36,9 @@ import {
   Apple,
   Lightbulb,
   Award,
-  Image as ImageIcon
+  Image as ImageIcon,
+  RotateCcw,
+  Timer
 } from "lucide-react";
 
 interface ContentItem {
@@ -58,7 +60,28 @@ interface ContentItem {
   exercise_description?: string;
   exercise_difficulty?: string;
   reps_override?: string;
+  structured_workout_id?: string;
+  workout_name?: string;
+  workout_type?: string;
+  workout_rounds?: number;
+  workout_rest_between_exercises?: number;
+  workout_rest_between_rounds?: number;
+  workout_total_duration?: string;
+  workout_difficulty?: string;
+  workout_exercises?: WorkoutExercise[];
   metadata?: any;
+}
+
+interface WorkoutExercise {
+  id: string;
+  exercise_name: string;
+  exercise_video_url?: string;
+  reps?: string;
+  sets?: number;
+  duration?: string;
+  rest_after?: number;
+  side_specific?: boolean;
+  order_index: number;
 }
 
 interface Section {
@@ -492,7 +515,8 @@ export default function AdminCoursePreview() {
                                                         {item.content_type === "text" && <FileText className="w-5 h-5 text-gray-500" />}
                                                         {item.content_type === "exercise" && <Dumbbell className="w-5 h-5 text-gray-500" />}
                                                         {item.content_type === "pdf" && <FileText className="w-5 h-5 text-gray-500" />}
-                                                        {!["video", "text", "exercise", "pdf"].includes(item.content_type) && (
+                                                        {item.content_type === "workout" && <RotateCcw className="w-5 h-5 text-purple-500" />}
+                                                        {!["video", "text", "exercise", "pdf", "workout"].includes(item.content_type) && (
                                                           <BookOpen className="w-5 h-5 text-gray-500" />
                                                         )}
                                                       </div>
@@ -537,10 +561,81 @@ export default function AdminCoursePreview() {
                                                       )}
                                                       
                                                       {/* Show description for other items */}
-                                                      {item.content_type !== 'text' && (item.description || item.exercise_description) && (
+                                                      {item.content_type !== 'text' && item.content_type !== 'workout' && (item.description || item.exercise_description) && (
                                                         <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                                                           {item.description || item.exercise_description}
                                                         </p>
+                                                      )}
+                                                      
+                                                      {/* Show structured workout details */}
+                                                      {item.content_type === 'workout' && (
+                                                        <div className="mt-3 space-y-3">
+                                                          {/* Workout stats */}
+                                                          <div className="flex flex-wrap gap-3 text-xs">
+                                                            {item.workout_rounds && (
+                                                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                                                <RotateCcw className="w-3 h-3 mr-1" />
+                                                                {item.workout_rounds} round{item.workout_rounds > 1 ? 's' : ''}
+                                                              </Badge>
+                                                            )}
+                                                            {item.workout_rest_between_exercises && (
+                                                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                                <Timer className="w-3 h-3 mr-1" />
+                                                                {item.workout_rest_between_exercises}s rest between exercises
+                                                              </Badge>
+                                                            )}
+                                                            {item.workout_total_duration && (
+                                                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                                <Clock className="w-3 h-3 mr-1" />
+                                                                {item.workout_total_duration}
+                                                              </Badge>
+                                                            )}
+                                                            {item.workout_difficulty && (
+                                                              <Badge variant="outline" className="capitalize">
+                                                                {item.workout_difficulty}
+                                                              </Badge>
+                                                            )}
+                                                          </div>
+                                                          
+                                                          {/* Exercise list */}
+                                                          {item.workout_exercises && item.workout_exercises.length > 0 && (
+                                                            <div className="bg-gray-50 rounded-lg p-3 border">
+                                                              <h6 className="text-xs font-semibold text-gray-600 mb-2">
+                                                                Exercises ({item.workout_exercises.length})
+                                                              </h6>
+                                                              <div className="space-y-2">
+                                                                {item.workout_exercises.map((ex, exIdx) => (
+                                                                  <div key={ex.id} className="flex items-center gap-2 text-sm">
+                                                                    <span className="w-5 h-5 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-xs font-medium">
+                                                                      {exIdx + 1}
+                                                                    </span>
+                                                                    <span className="font-medium text-gray-800">{ex.exercise_name}</span>
+                                                                    {ex.reps && (
+                                                                      <span className="text-gray-500 text-xs">{ex.reps}</span>
+                                                                    )}
+                                                                    {ex.sets && ex.sets > 1 && (
+                                                                      <Badge variant="outline" className="text-xs">{ex.sets} sets</Badge>
+                                                                    )}
+                                                                    {ex.side_specific && (
+                                                                      <Badge variant="outline" className="text-xs">Each side</Badge>
+                                                                    )}
+                                                                    {ex.exercise_video_url && (
+                                                                      <a 
+                                                                        href={ex.exercise_video_url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="ml-auto text-blue-600 hover:text-blue-800"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                      >
+                                                                        <PlayCircle className="w-4 h-4" />
+                                                                      </a>
+                                                                    )}
+                                                                  </div>
+                                                                ))}
+                                                              </div>
+                                                            </div>
+                                                          )}
+                                                        </div>
                                                       )}
                                                       
                                                       <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">

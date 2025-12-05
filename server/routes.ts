@@ -4297,6 +4297,7 @@ RESPONSE GUIDELINES:
               `);
               
               // For exercise type content, enrich with exercise data from metadata
+              // For workout type content, enrich with structured workout data
               const enrichedContent = await Promise.all(
                 contentResult.rows.map(async (item: any) => {
                   if (item.content_type === 'exercise' && item.metadata) {
@@ -4323,6 +4324,38 @@ RESPONSE GUIDELINES:
                       }
                     }
                   }
+                  
+                  // Enrich workout content items
+                  if (item.content_type === 'workout' && item.structured_workout_id) {
+                    const workoutResult = await storage.db.execute(sql`
+                      SELECT * FROM structured_workouts WHERE id = ${item.structured_workout_id}
+                    `);
+                    if (workoutResult.rows.length > 0) {
+                      const workout = workoutResult.rows[0] as any;
+                      
+                      // Get workout exercises
+                      const exercisesResult = await storage.db.execute(sql`
+                        SELECT wel.*, e.name as exercise_name, e.video_url as exercise_video_url
+                        FROM workout_exercise_links wel
+                        JOIN exercises e ON e.id = wel.exercise_id
+                        WHERE wel.workout_id = ${item.structured_workout_id}
+                        ORDER BY wel.order_index
+                      `);
+                      
+                      return {
+                        ...item,
+                        workout_name: workout.name,
+                        workout_type: workout.workout_type,
+                        workout_rounds: workout.rounds,
+                        workout_rest_between_exercises: workout.rest_between_exercises,
+                        workout_rest_between_rounds: workout.rest_between_rounds,
+                        workout_total_duration: workout.total_duration,
+                        workout_difficulty: workout.difficulty,
+                        workout_exercises: exercisesResult.rows
+                      };
+                    }
+                  }
+                  
                   return item;
                 })
               );
