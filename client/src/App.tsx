@@ -18,6 +18,8 @@ import AdminCoursePreview from "@/pages/admin-course-preview";
 import AdminExercises from "@/pages/admin-exercises";
 import AdminWorkouts from "@/pages/admin-workouts";
 import MyLibrary from "@/pages/my-library";
+import MyCourses from "@/pages/my-courses";
+import CourseViewer from "@/pages/course-viewer";
 import Community from "@/pages/community";
 import NotFound from "@/pages/not-found";
 
@@ -63,6 +65,8 @@ function Router() {
         </Suspense>
       )} />
       <Route path="/my-library" component={MyLibrary} />
+      <Route path="/my-courses" component={MyCourses} />
+      <Route path="/courses/:courseId" component={CourseViewer} />
       <Route path="/community" component={Community} />
       <Route component={NotFound} />
     </Switch>
