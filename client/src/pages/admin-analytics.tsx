@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,9 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Users, TrendingUp, Activity, Heart, Globe, Instagram, MessageCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useLocation } from "wouter";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 
 interface Analytics {
   demographics: {
@@ -49,38 +48,23 @@ interface Analytics {
 const COLORS = ['#FF69B4', '#FF85C1', '#FFA0CF', '#FFBCDD', '#FFD7EB', '#FFE8F3'];
 
 export default function AdminAnalytics() {
-  const [, setLocation] = useLocation();
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      setLocation("/");
-      return;
-    }
-    const parsedUser = JSON.parse(userData);
-    if (!parsedUser.isAdmin) {
-      setLocation("/dashboard");
-      return;
-    }
-    setUser(parsedUser);
-  }, [setLocation]);
+  const { isLoading: authLoading, isAdmin } = useAdminAuth();
 
   const { data: analytics, isLoading, isError, error } = useQuery<Analytics>({
     queryKey: ["/api/admin/analytics"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
-  const handleNavigate = (path: string) => {
-    setLocation(path);
-  };
-
-  if (!user?.isAdmin) {
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
       </div>
     );
+  }
+
+  if (!isAdmin) {
+    return null;
   }
 
   const completionData = analytics ? [
@@ -542,8 +526,7 @@ export default function AdminAnalytics() {
   return (
     <AdminLayout
       activeTab="analytics"
-      onTabChange={() => setLocation("/admin")}
-      onNavigate={handleNavigate}
+      onTabChange={() => {}}
     >
       {renderContent()}
     </AdminLayout>

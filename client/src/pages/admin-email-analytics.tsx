@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useSession } from "@/hooks/use-session";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLocation } from "wouter";
 import { Mail, TrendingUp, Users, Eye, Loader2, BarChart3 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { format } from "date-fns";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 
 interface EmailAnalytics {
   overview: {
@@ -39,19 +38,14 @@ interface EmailAnalytics {
 const COLORS = ['#EC4899', '#F472B6', '#FB7185', '#FDA4AF', '#FCA5A5', '#FBBF24'];
 
 export default function AdminEmailAnalytics() {
-  const { user, loading: sessionLoading } = useSession();
-  const [, setLocation] = useLocation();
+  const { isLoading: authLoading, isAdmin } = useAdminAuth();
 
   const { data: analytics, isLoading, isError } = useQuery<EmailAnalytics>({
     queryKey: ["/api/admin/analytics/email-campaigns"],
-    enabled: !sessionLoading && !!user && user.isAdmin,
+    enabled: isAdmin,
   });
 
-  const handleNavigate = (path: string) => {
-    setLocation(path);
-  };
-
-  if (sessionLoading) {
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
@@ -59,13 +53,7 @@ export default function AdminEmailAnalytics() {
     );
   }
 
-  if (!user || !user.isAdmin) {
-    setLocation("/");
-    return null;
-  }
-
-  if (isError) {
-    setLocation("/");
+  if (!isAdmin || isError) {
     return null;
   }
 
@@ -306,8 +294,7 @@ export default function AdminEmailAnalytics() {
   return (
     <AdminLayout
       activeTab="email-analytics"
-      onTabChange={() => setLocation("/admin")}
-      onNavigate={handleNavigate}
+      onTabChange={() => {}}
     >
       {renderContent()}
     </AdminLayout>

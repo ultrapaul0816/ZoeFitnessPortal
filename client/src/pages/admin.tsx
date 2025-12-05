@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -30,10 +29,10 @@ import { cn } from "@/lib/utils";
 import type { User, Program, AdminCreateUser } from "@shared/schema";
 import { adminCreateUserSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 
 export default function Admin() {
-  const [, setLocation] = useLocation();
-  const [user, setUser] = useState<any>(null);
+  const { isLoading: authLoading, isAdmin, user: authUser } = useAdminAuth();
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [assetDisplayNames, setAssetDisplayNames] = useState<{[key: string]: string}>({});
@@ -72,20 +71,6 @@ export default function Admin() {
     },
   });
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      setLocation("/");
-      return;
-    }
-    const parsedUser = JSON.parse(userData);
-    if (!parsedUser.isAdmin) {
-      setLocation("/dashboard");
-      return;
-    }
-    setUser(parsedUser);
-  }, [setLocation]);
-
   const { data: adminStats } = useQuery<{ 
     totalMembers: number; 
     activeMembers: number; 
@@ -100,22 +85,22 @@ export default function Admin() {
     }>;
   }>({
     queryKey: ["/api/admin/stats"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   const { data: allUsers = [] } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   const { data: programs = [] } = useQuery<Program[]>({
     queryKey: ["/api/programs"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   const { data: assets = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/assets"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   // Fetch recent activity logs for activity feed
@@ -132,7 +117,7 @@ export default function Admin() {
     };
   }>>({
     queryKey: ["/api/admin/activity-logs"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
@@ -152,7 +137,7 @@ export default function Admin() {
     lastLoginAt: string | null;
   }>>({
     queryKey: ["/api/admin/actionable/no-photos"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   const { data: recentCompleters = [] } = useQuery<Array<{
@@ -164,7 +149,7 @@ export default function Admin() {
     workoutName: string;
   }>>({
     queryKey: ["/api/admin/actionable/recent-completers"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   // Check-in data queries
@@ -183,7 +168,7 @@ export default function Admin() {
     };
   }>>({
     queryKey: ["/api/admin/actionable/recent-checkins"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   const { data: checkinAnalytics } = useQuery<{
@@ -208,7 +193,7 @@ export default function Admin() {
     };
   }>({
     queryKey: ["/api/admin/actionable/checkin-analytics"],
-    enabled: !!user?.isAdmin,
+    enabled: isAdmin,
   });
 
   // Full member profile data query
@@ -606,13 +591,23 @@ export default function Admin() {
     },
   });
 
-  if (!user?.isAdmin) return null;
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-white">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+          <p className="text-gray-600">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) return null;
 
   return (
     <AdminLayout 
       activeTab={activeTab} 
       onTabChange={setActiveTab}
-      onNavigate={setLocation}
     >
       {activeTab === 'overview' && (
         <div className="space-y-6">

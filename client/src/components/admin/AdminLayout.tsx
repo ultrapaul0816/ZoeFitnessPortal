@@ -40,7 +40,7 @@ interface AdminLayoutProps {
   children: React.ReactNode;
   activeTab: string;
   onTabChange: (tab: string) => void;
-  onNavigate: (path: string) => void;
+  onNavigate?: (path: string) => void;
 }
 
 const navItems: NavItem[] = [
@@ -63,6 +63,8 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [, setLocation] = useLocation();
+  
+  const navigate = onNavigate || setLocation;
 
   const handleNavClick = (item: NavItem) => {
     if (item.path) {
@@ -211,7 +213,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  onClick={() => onNavigate("/dashboard")}
+                  onClick={() => navigate("/dashboard")}
                   className="w-full flex items-center justify-center p-3.5 rounded-2xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-md hover:scale-105 group"
                   data-testid="nav-exit-admin"
                 >
@@ -225,7 +227,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
           </TooltipProvider>
         ) : (
           <button
-            onClick={() => onNavigate("/dashboard")}
+            onClick={() => navigate("/dashboard")}
             className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 text-left group hover:shadow-md hover:scale-[1.01] relative overflow-hidden"
             data-testid="nav-exit-admin"
           >
