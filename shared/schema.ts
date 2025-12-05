@@ -459,11 +459,12 @@ export const contentItems = pgTable("content_items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   sectionId: varchar("section_id").notNull(),
   title: text("title").notNull(),
-  contentType: text("content_type").notNull(), // video, text, pdf, exercise, poll
+  contentType: text("content_type").notNull(), // video, text, pdf, exercise, poll, workout
   content: text("content"), // Rich text content or JSON for structured data
   videoUrl: text("video_url"), // YouTube or Vimeo URL
   videoThumbnailUrl: text("video_thumbnail_url"),
   pdfUrl: text("pdf_url"), // PDF download URL
+  structuredWorkoutId: varchar("structured_workout_id"), // Link to structured_workouts for workout type
   duration: text("duration"), // e.g., "5 min", "10 reps"
   orderIndex: integer("order_index").default(0),
   isVisible: boolean("is_visible").default(true),

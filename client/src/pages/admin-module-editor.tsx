@@ -27,7 +27,8 @@ import {
   Dumbbell,
   ChevronDown,
   ChevronUp,
-  MoreVertical
+  MoreVertical,
+  RotateCcw
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -46,7 +47,7 @@ type ModuleSection = {
 type ContentItem = {
   id: string;
   section_id: string;
-  content_type: "video" | "text" | "pdf" | "exercise";
+  content_type: "video" | "text" | "pdf" | "exercise" | "workout";
   title: string;
   description: string | null;
   content_data: any;
@@ -94,6 +95,7 @@ const contentTypeIcons: Record<string, typeof Video> = {
   text: FileText,
   pdf: Download,
   exercise: Dumbbell,
+  workout: RotateCcw,
 };
 
 export default function AdminModuleEditor() {
@@ -117,7 +119,7 @@ export default function AdminModuleEditor() {
   });
 
   const [contentForm, setContentForm] = useState({
-    contentType: "video" as "video" | "text" | "pdf" | "exercise",
+    contentType: "video" as "video" | "text" | "pdf" | "exercise" | "workout",
     title: "",
     description: "",
     durationMinutes: null as number | null,
@@ -144,6 +146,25 @@ export default function AdminModuleEditor() {
     queryKey: ['/api/admin/exercises'],
     queryFn: async () => {
       const res = await fetch('/api/admin/exercises');
+      return res.json();
+    },
+  });
+
+  type StructuredWorkout = {
+    id: string;
+    name: string;
+    description: string | null;
+    workout_type: string;
+    total_duration: string | null;
+    rounds: number;
+    difficulty: string;
+    exercise_count?: number;
+  };
+
+  const { data: structuredWorkouts = [] } = useQuery<StructuredWorkout[]>({
+    queryKey: ['/api/admin/structured-workouts'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/structured-workouts');
       return res.json();
     },
   });
@@ -524,7 +545,7 @@ export default function AdminModuleEditor() {
             <div className="bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-4">
               <DialogHeader className="text-white">
                 <DialogTitle className="text-white text-lg font-semibold">Add Content Item</DialogTitle>
-                <DialogDescription className="text-pink-100">Add a video, text, PDF, or exercise to this section.</DialogDescription>
+                <DialogDescription className="text-pink-100">Add a video, text, PDF, exercise or workout to this section.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="px-6 pb-6">
@@ -540,6 +561,7 @@ export default function AdminModuleEditor() {
                     <SelectItem value="text">Text / Article</SelectItem>
                     <SelectItem value="pdf">PDF Download</SelectItem>
                     <SelectItem value="exercise">Exercise</SelectItem>
+                    <SelectItem value="workout">Structured Workout</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -669,6 +691,58 @@ export default function AdminModuleEditor() {
                   />
                 </div>
               )}
+              {contentForm.contentType === "workout" && (
+                <div className="space-y-2">
+                  <Label>Select Structured Workout</Label>
+                  <Select 
+                    value={contentForm.contentData.workoutId || ""} 
+                    onValueChange={(v) => {
+                      const selectedWorkout = structuredWorkouts.find(w => w.id === v);
+                      if (selectedWorkout) {
+                        setContentForm({ 
+                          ...contentForm,
+                          title: selectedWorkout.name,
+                          description: selectedWorkout.description || "",
+                          durationMinutes: selectedWorkout.total_duration ? parseInt(selectedWorkout.total_duration) : null,
+                          contentData: { 
+                            ...contentForm.contentData, 
+                            workoutId: v,
+                            workoutType: selectedWorkout.workout_type,
+                            rounds: selectedWorkout.rounds,
+                            exerciseCount: selectedWorkout.exercise_count,
+                          } 
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a workout..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {structuredWorkouts.map(workout => (
+                        <SelectItem key={workout.id} value={workout.id}>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{workout.name}</span>
+                            <span className="text-xs text-gray-400">
+                              ({workout.rounds} rounds • {workout.exercise_count || 0} exercises)
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {structuredWorkouts.length === 0 && (
+                    <p className="text-sm text-gray-500">No workouts available. <a href="/admin/workouts" className="text-pink-500 hover:underline">Create workouts first</a>.</p>
+                  )}
+                  {contentForm.contentData.workoutId && (
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+                      <p><strong>Type:</strong> {contentForm.contentData.workoutType}</p>
+                      <p><strong>Rounds:</strong> {contentForm.contentData.rounds}</p>
+                      <p><strong>Exercises:</strong> {contentForm.contentData.exerciseCount || 0}</p>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="space-y-2">
                 <Label>Duration (minutes, optional)</Label>
                 <Input
@@ -717,6 +791,7 @@ export default function AdminModuleEditor() {
                     <SelectItem value="text">Text / Article</SelectItem>
                     <SelectItem value="pdf">PDF Download</SelectItem>
                     <SelectItem value="exercise">Exercise</SelectItem>
+                    <SelectItem value="workout">Structured Workout</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -745,6 +820,54 @@ export default function AdminModuleEditor() {
                       contentData: { ...contentForm.contentData, videoUrl: e.target.value } 
                     })}
                   />
+                </div>
+              )}
+              {contentForm.contentType === "workout" && (
+                <div className="space-y-2">
+                  <Label>Select Structured Workout</Label>
+                  <Select 
+                    value={contentForm.contentData.workoutId || ""} 
+                    onValueChange={(v) => {
+                      const selectedWorkout = structuredWorkouts.find(w => w.id === v);
+                      if (selectedWorkout) {
+                        setContentForm({ 
+                          ...contentForm,
+                          title: selectedWorkout.name,
+                          description: selectedWorkout.description || "",
+                          contentData: { 
+                            ...contentForm.contentData, 
+                            workoutId: v,
+                            workoutType: selectedWorkout.workout_type,
+                            rounds: selectedWorkout.rounds,
+                            exerciseCount: selectedWorkout.exercise_count,
+                          } 
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a workout..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {structuredWorkouts.map(workout => (
+                        <SelectItem key={workout.id} value={workout.id}>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{workout.name}</span>
+                            <span className="text-xs text-gray-400">
+                              ({workout.rounds} rounds • {workout.exercise_count || 0} exercises)
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {contentForm.contentData.workoutId && (
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+                      <p><strong>Type:</strong> {contentForm.contentData.workoutType}</p>
+                      <p><strong>Rounds:</strong> {contentForm.contentData.rounds}</p>
+                      <p><strong>Exercises:</strong> {contentForm.contentData.exerciseCount || 0}</p>
+                    </div>
+                  )}
                 </div>
               )}
               {contentForm.contentType === "exercise" && (
