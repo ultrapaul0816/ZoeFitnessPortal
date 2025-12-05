@@ -5121,6 +5121,233 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // ============================================
+  // USER-FACING COURSE API ROUTES
+  // ============================================
+
+  // Get all courses user is enrolled in
+  app.get("/api/courses/enrolled", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const result = await storage.db.execute(sql`
+        SELECT 
+          c.*,
+          ce.enrolled_at,
+          ce.status as enrollment_status,
+          ce.progress_percentage,
+          ce.completed_at
+        FROM courses c
+        JOIN course_enrollments ce ON c.id = ce.course_id
+        WHERE ce.user_id = ${userId}
+          AND c.status = 'published'
+          AND c.is_visible = true
+        ORDER BY ce.enrolled_at DESC
+      `);
+
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching enrolled courses:", error);
+      res.status(500).json({ message: "Failed to fetch courses" });
+    }
+  });
+
+  // Get all available courses (for browsing)
+  app.get("/api/courses/available", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session?.userId;
+
+      const result = await storage.db.execute(sql`
+        SELECT 
+          c.*,
+          CASE WHEN ce.id IS NOT NULL THEN true ELSE false END as is_enrolled
+        FROM courses c
+        LEFT JOIN course_enrollments ce ON c.id = ce.course_id AND ce.user_id = ${userId}
+        WHERE c.status = 'published'
+          AND c.is_visible = true
+        ORDER BY c.order_index ASC
+      `);
+
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching available courses:", error);
+      res.status(500).json({ message: "Failed to fetch courses" });
+    }
+  });
+
+  // Get single course with full content (user view)
+  app.get("/api/courses/:courseId", requireAuth, async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const userId = (req as any).session?.userId;
+
+      // Check if user is enrolled
+      const enrollmentCheck = await storage.db.execute(sql`
+        SELECT * FROM course_enrollments 
+        WHERE course_id = ${courseId} AND user_id = ${userId}
+      `);
+
+      if (enrollmentCheck.rows.length === 0) {
+        return res.status(403).json({ message: "Not enrolled in this course" });
+      }
+
+      // Get course details
+      const courseResult = await storage.db.execute(sql`
+        SELECT * FROM courses WHERE id = ${courseId} AND status = 'published'
+      `);
+      
+      if (courseResult.rows.length === 0) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+      const course = courseResult.rows[0];
+
+      // Get modules with sections and content
+      const modulesResult = await storage.db.execute(sql`
+        SELECT 
+          m.*,
+          cmm.order_index as mapping_order,
+          cmm.is_required
+        FROM course_modules m
+        JOIN course_module_mappings cmm ON m.id = cmm.module_id
+        WHERE cmm.course_id = ${courseId}
+        ORDER BY cmm.order_index ASC
+      `);
+
+      const modulesWithContent = await Promise.all(
+        modulesResult.rows.map(async (module: any) => {
+          const sectionsResult = await storage.db.execute(sql`
+            SELECT * FROM module_sections 
+            WHERE module_id = ${module.id}
+            ORDER BY order_index ASC
+          `);
+
+          const sectionsWithContent = await Promise.all(
+            sectionsResult.rows.map(async (section: any) => {
+              const contentResult = await storage.db.execute(sql`
+                SELECT * FROM content_items
+                WHERE section_id = ${section.id}
+                ORDER BY order_index ASC
+              `);
+              
+              // Enrich content items
+              const enrichedContent = await Promise.all(
+                contentResult.rows.map(async (item: any) => {
+                  // Handle exercise type
+                  if (item.content_type === 'exercise' && item.metadata) {
+                    const metadata = typeof item.metadata === 'string' 
+                      ? JSON.parse(item.metadata) 
+                      : item.metadata;
+                    if (metadata.exerciseId) {
+                      const exerciseResult = await storage.db.execute(sql`
+                        SELECT * FROM exercises WHERE id = ${metadata.exerciseId}
+                      `);
+                      if (exerciseResult.rows.length > 0) {
+                        const exercise = exerciseResult.rows[0] as any;
+                        return {
+                          ...item,
+                          exercise_name: exercise.name,
+                          exercise_video_url: exercise.video_url,
+                          exercise_duration: exercise.duration,
+                          exercise_category: exercise.category,
+                          exercise_description: exercise.description,
+                        };
+                      }
+                    }
+                  }
+                  
+                  // Handle workout type
+                  if (item.content_type === 'workout' && item.structured_workout_id) {
+                    const workoutResult = await storage.db.execute(sql`
+                      SELECT * FROM structured_workouts WHERE id = ${item.structured_workout_id}
+                    `);
+                    if (workoutResult.rows.length > 0) {
+                      const workout = workoutResult.rows[0] as any;
+                      
+                      const exercisesResult = await storage.db.execute(sql`
+                        SELECT wel.*, e.name as exercise_name, e.video_url as exercise_video_url,
+                               e.description as exercise_description, e.category as exercise_category
+                        FROM workout_exercise_links wel
+                        JOIN exercises e ON e.id = wel.exercise_id
+                        WHERE wel.workout_id = ${item.structured_workout_id}
+                        ORDER BY wel.order_index
+                      `);
+                      
+                      return {
+                        ...item,
+                        workout_name: workout.name,
+                        workout_description: workout.description,
+                        workout_type: workout.workout_type,
+                        workout_rounds: workout.rounds,
+                        workout_rest_between_exercises: workout.rest_between_exercises,
+                        workout_rest_between_rounds: workout.rest_between_rounds,
+                        workout_total_duration: workout.total_duration,
+                        workout_difficulty: workout.difficulty,
+                        workout_coach_notes: workout.coach_notes,
+                        workout_exercises: exercisesResult.rows
+                      };
+                    }
+                  }
+                  
+                  return item;
+                })
+              );
+              
+              return { ...section, contentItems: enrichedContent };
+            })
+          );
+
+          return { ...module, sections: sectionsWithContent };
+        })
+      );
+
+      res.json({
+        course,
+        modules: modulesWithContent,
+        enrollment: enrollmentCheck.rows[0]
+      });
+    } catch (error) {
+      console.error("Error fetching course:", error);
+      res.status(500).json({ message: "Failed to fetch course" });
+    }
+  });
+
+  // Enroll user in a course
+  app.post("/api/courses/:courseId/enroll", requireAuth, async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const userId = (req as any).session?.userId;
+      
+      // Check if already enrolled
+      const existingEnrollment = await storage.db.execute(sql`
+        SELECT * FROM course_enrollments 
+        WHERE course_id = ${courseId} AND user_id = ${userId}
+      `);
+
+      if (existingEnrollment.rows.length > 0) {
+        return res.json(existingEnrollment.rows[0]);
+      }
+
+      // Create enrollment
+      const enrollmentId = `enrollment-${Date.now()}`;
+      await storage.db.execute(sql`
+        INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, enrolled_at)
+        VALUES (${enrollmentId}, ${courseId}, ${userId}, 'active', 0, NOW())
+      `);
+
+      const result = await storage.db.execute(sql`
+        SELECT * FROM course_enrollments WHERE id = ${enrollmentId}
+      `);
+
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      res.status(500).json({ message: "Failed to enroll in course" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
