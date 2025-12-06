@@ -13,6 +13,7 @@ import {
   Clock, 
   Play,
   ChevronRight,
+  ChevronDown,
   Video,
   FileText,
   Dumbbell,
@@ -20,7 +21,8 @@ import {
   GraduationCap,
   Menu,
   Timer,
-  RotateCcw
+  RotateCcw,
+  ExternalLink
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileSettings from "@/components/profile-settings";
@@ -97,7 +99,16 @@ export default function CourseViewer() {
   const [user, setUser] = useState<User | null>(null);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const { toast } = useToast();
+
+  const toggleItem = (itemId: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
 
   const { data: courseData, isLoading, error } = useQuery<CourseData>({
     queryKey: ["/api/courses", courseId],
@@ -120,18 +131,18 @@ export default function CourseViewer() {
   }, [courseData?.modules]);
 
   const getContentIcon = (type: string) => {
-    const iconClass = "w-4 h-4";
+    const iconClass = "w-5 h-5";
     switch (type) {
       case "video":
-        return <Video className={`${iconClass} text-pink-500`} />;
+        return <Video className={`${iconClass} text-pink-600`} />;
       case "exercise":
-        return <Dumbbell className={`${iconClass} text-pink-500`} />;
+        return <Dumbbell className={`${iconClass} text-pink-600`} />;
       case "workout":
-        return <Dumbbell className={`${iconClass} text-pink-500`} />;
+        return <Dumbbell className={`${iconClass} text-pink-600`} />;
       case "pdf":
-        return <Download className={`${iconClass} text-pink-500`} />;
+        return <Download className={`${iconClass} text-pink-600`} />;
       default:
-        return <FileText className={`${iconClass} text-gray-500`} />;
+        return <FileText className={`${iconClass} text-pink-600`} />;
     }
   };
 
@@ -317,16 +328,69 @@ export default function CourseViewer() {
       );
     }
 
+    const isExpanded = expandedItems.includes(item.id);
+    const hasContent = item.description || item.video_url;
+    
+    if (item.content_type === "pdf" && item.video_url) {
+      return (
+        <a 
+          href={item.video_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
+        >
+          <div className="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center flex-shrink-0">
+            <Download className="w-5 h-5 text-pink-600" />
+          </div>
+          <div className="flex-1">
+            <p className="font-medium text-gray-800 text-sm">{item.title}</p>
+            <p className="text-xs text-pink-600 mt-0.5">Tap to download</p>
+          </div>
+          <ExternalLink className="w-4 h-4 text-gray-400" />
+        </a>
+      );
+    }
+
     return (
-      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-        {getContentIcon(item.content_type)}
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-gray-800 text-sm">{item.title}</p>
-          {item.description && (
-            <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</p>
+      <button 
+        onClick={() => hasContent && toggleItem(item.id)}
+        className={`w-full text-left p-4 bg-gray-50 rounded-lg transition-colors ${hasContent ? 'hover:bg-gray-100 active:bg-gray-200 cursor-pointer' : ''}`}
+      >
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center flex-shrink-0">
+            {getContentIcon(item.content_type)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-800 text-sm">{item.title}</p>
+            {!isExpanded && item.description && (
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+            )}
+          </div>
+          {hasContent && (
+            <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
           )}
         </div>
-      </div>
+        
+        {isExpanded && item.description && (
+          <div className="mt-3 pt-3 border-t border-gray-200 ml-13">
+            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+              {item.description}
+            </p>
+            {item.video_url && (
+              <a 
+                href={item.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-2 mt-3 text-pink-600 hover:text-pink-700 text-sm font-medium"
+              >
+                <Play className="w-4 h-4" />
+                Watch Video
+              </a>
+            )}
+          </div>
+        )}
+      </button>
     );
   };
 
