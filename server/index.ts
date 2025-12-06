@@ -16,6 +16,17 @@ const dbConnectionString = isProduction
   ? (process.env.PROD_DATABASE_URL || process.env.DATABASE_URL)
   : process.env.DATABASE_URL;
 const PgSession = connectPgSimple(session);
+
+// Configure cookie based on environment
+const cookieConfig = {
+  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  httpOnly: true,
+  secure: isProduction, // Only require HTTPS in production
+  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+};
+
+console.log(`[SESSION] Config - isProduction: ${isProduction}, secure: ${cookieConfig.secure}, sameSite: ${cookieConfig.sameSite}`);
+
 app.use(
   session({
     store: new PgSession({
@@ -26,12 +37,7 @@ app.use(
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      httpOnly: true, // Prevents client-side JS from accessing cookie
-      secure: true, // HTTPS only (Replit always uses HTTPS)
-      sameSite: "lax", // Works better with Replit's proxy environment
-    },
+    cookie: cookieConfig,
   })
 );
 
