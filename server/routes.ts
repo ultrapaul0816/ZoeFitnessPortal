@@ -343,6 +343,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = updatedUser.id;
 
       console.log(`[LOGIN] Success for: ${updatedUser.email} (isAdmin: ${updatedUser.isAdmin})`);
+      console.log(`[LOGIN] Session ID: ${req.sessionID}`);
 
       // Explicitly save session before sending response to avoid race condition
       req.session.save((err) => {
@@ -350,6 +351,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error(`[LOGIN] Session save error:`, err);
           return res.status(500).json({ message: "Failed to create session" });
         }
+        
+        console.log(`[LOGIN] Session saved successfully for: ${updatedUser.email}, sessionId: ${req.sessionID}`);
         
         res.json({
           user: {
@@ -383,6 +386,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Check current session and return user if logged in
   app.get("/api/auth/session", async (req, res) => {
     try {
+      console.log(`[SESSION] Check - sessionId: ${req.sessionID}, userId: ${req.session?.userId}, cookie: ${req.headers.cookie?.substring(0, 50)}...`);
+      
       if (!req.session?.userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
