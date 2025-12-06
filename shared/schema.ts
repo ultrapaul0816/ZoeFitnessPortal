@@ -27,6 +27,7 @@ export const users = pgTable("users", {
   instagramHandle: text("instagram_handle"),
   postpartumWeeks: integer("postpartum_weeks"),
   deliveryDate: timestamp("delivery_date"),
+  goals: text("goals").array(), // ['core-strength', 'energy', 'pain-relief', 'confidence', 'flexibility']
   lastLoginAt: timestamp("last_login_at"),
   loginCount: integer("login_count").default(0),
   lastCheckinPromptAt: timestamp("last_checkin_prompt_at"),
@@ -940,6 +941,7 @@ export const updateUserProfileSchema = z.object({
   bio: z.string().max(500, "Bio is too long").optional(),
   instagramHandle: z.string().max(50, "Instagram handle is too long").optional(),
   postpartumWeeks: z.union([z.number().int().positive().max(520, "Please enter a valid number of weeks"), z.null()]).optional(), // Max ~10 years, allow null for clearing
+  goals: z.union([z.array(z.string()), z.null()]).optional(), // ['core-strength', 'energy', 'pain-relief', 'confidence', 'flexibility']
 });
 
 // Admin create user schema

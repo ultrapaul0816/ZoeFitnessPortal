@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle, Target, Clock, Dumbbell, Play, Camera, MessageCircle, GraduationCap } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
+import GoalsOnboarding from "@/components/goals-onboarding";
 import { useQuery } from "@tanstack/react-query";
 import { 
   evaluateCompleteness, 
@@ -63,6 +64,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   });
   const [profileCompleteness, setProfileCompleteness] = useState<ReturnType<typeof evaluateCompleteness> | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const countryRef = useRef<HTMLButtonElement>(null);
 
@@ -88,6 +90,9 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
       
       // Always sync selectedPhoto with stored data (clear if no photo saved)
       setSelectedPhoto(syncedProfile.photo || null);
+      
+      // Load goals from user data
+      setSelectedGoals(user.goals || []);
       
       // Evaluate completeness
       const completeness = evaluateCompleteness(syncedProfile);
@@ -149,6 +154,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
         bio: profileData.bio || '',
         instagramHandle: profileData.socials || '', // socials field maps to instagramHandle
         postpartumWeeks: null, // Default to null (clearing)
+        goals: selectedGoals.length > 0 ? selectedGoals : null,
       };
       
       // Convert postpartum time text to weeks
@@ -882,6 +888,19 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               </div>
               <p className="text-xs text-gray-500">Share your Instagram to connect with the community</p>
             </div>
+          </div>
+
+          {/* My Fitness Goals */}
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">My Fitness Goals</h2>
+            <p className="text-gray-600 mb-4">Help me personalize your journey by selecting what matters most to you</p>
+            
+            <GoalsOnboarding
+              selectedGoals={selectedGoals}
+              onGoalsChange={setSelectedGoals}
+              variant="inline"
+              showHeader={false}
+            />
           </div>
 
           {/* My Private Info */}
