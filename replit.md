@@ -70,7 +70,8 @@ The platform supports multiple courses with a flexible structure.
 -   **Course Preview**: Full user-view preview with a Content Audit tab for completeness status.
 -   **Module Library**: Reusable content modules (Educational, Workout, FAQ, Progress, Nutrition) with color themes and professional table/grid views.
 -   **Module Section Editor**: Full CRUD interface for sections within modules, with reordering and inline content management.
--   **Content Item Editor**: Supports 5 content types (Videos, Text, PDF Downloads, Exercises, Structured Workouts) with specific data fields and colored gradient headers.
+-   **Content Item Editor**: Supports 5 content types (Videos, Text, PDF Downloads, Exercises, Structured Workouts) with specific data fields and colored gradient headers. Features AI-powered content generation using OpenAI to write descriptions in Zoe's encouraging voice.
+-   **Content Templates**: Quick-start templates for common content types (Welcome Video, Workout Introduction, Educational Tip, Progress Checkpoint, Nutrition Guide, Cooldown & Stretch) that pre-fill forms with Zoe-styled content.
 -   **Structured Workout Builder**: Complete workout builder supporting warmup/main workout/cooldown phases, multiple rounds, drag-and-drop exercise sequencing, and definable rounds/rests/duration.
 -   **Master Exercise Library**: Centralized exercise management with unique IDs, name, description, video URL, default reps/duration, category, muscle groups, difficulty, and coach notes.
 -   **Safe Archive Pattern**: Non-destructive "Archive" actions preserve data.
