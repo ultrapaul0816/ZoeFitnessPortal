@@ -28,7 +28,8 @@ import {
   ChevronDown,
   ChevronUp,
   MoreVertical,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -247,6 +248,28 @@ export default function AdminModuleEditor() {
       toast({ title: "Failed to delete content item", description: error.message, variant: "destructive" });
     },
   });
+
+  const generateContentMutation = useMutation({
+    mutationFn: async ({ title, contentType }: { title: string; contentType: string }) => {
+      const response = await apiRequest("POST", "/api/admin/generate-content", { title, contentType });
+      return response.json();
+    },
+    onSuccess: (data: { description: string }) => {
+      setContentForm(prev => ({ ...prev, description: data.description }));
+      toast({ title: "Content generated!", description: "Review and edit as needed." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to generate content", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleGenerateContent = () => {
+    if (!contentForm.title) {
+      toast({ title: "Enter a title first", description: "AI needs a title to generate the description.", variant: "destructive" });
+      return;
+    }
+    generateContentMutation.mutate({ title: contentForm.title, contentType: contentForm.contentType });
+  };
 
   const resetSectionForm = () => {
     setSectionForm({ name: "", slug: "", description: "", orderIndex: 0 });
@@ -575,12 +598,29 @@ export default function AdminModuleEditor() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description (optional)</Label>
+                <div className="flex items-center justify-between">
+                  <Label>Description (optional)</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGenerateContent}
+                    disabled={!contentForm.title || generateContentMutation.isPending}
+                    className="gap-1 text-xs"
+                  >
+                    {generateContentMutation.isPending ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3 h-3" />
+                    )}
+                    Generate with AI
+                  </Button>
+                </div>
                 <Textarea
-                  placeholder="Brief description of this content"
+                  placeholder="Brief description of this content (or click 'Generate with AI')"
                   value={contentForm.description}
                   onChange={(e) => setContentForm({ ...contentForm, description: e.target.value })}
-                  rows={2}
+                  rows={3}
                 />
               </div>
               {contentForm.contentType === "video" && (

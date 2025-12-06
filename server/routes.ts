@@ -4656,6 +4656,71 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Generate AI content description
+  app.post("/api/admin/generate-content", requireAdmin, async (req, res) => {
+    try {
+      const { title, contentType, context } = req.body;
+      
+      if (!title) {
+        return res.status(400).json({ message: "Title is required" });
+      }
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const contentTypeDescriptions: Record<string, string> = {
+        video: "an educational video",
+        text: "a text article or informational content",
+        pdf: "a downloadable PDF resource",
+        exercise: "a postpartum recovery exercise",
+        workout: "a structured workout routine",
+      };
+
+      const systemPrompt = `You are Zoe, a warm and supportive postpartum fitness coach helping create course content descriptions for mothers.
+
+Your tone is:
+- Warm, encouraging, and empathetic
+- Uses casual, friendly language
+- Occasionally says "mama" or "You've got this!"
+- Never judgmental, always supportive
+- Expert in postpartum recovery
+
+Write a compelling, helpful description (2-4 sentences) for course content. The description should:
+1. Explain what the user will learn or do
+2. Highlight the benefits for postpartum recovery
+3. Be encouraging and motivating
+4. Be concise but informative
+
+Do NOT use markdown formatting. Just plain text.`;
+
+      const userPrompt = `Write a description for this ${contentTypeDescriptions[contentType] || "content item"}:
+
+Title: "${title}"
+${context ? `Additional context: ${context}` : ""}
+
+Keep it to 2-4 sentences, warm and encouraging.`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        max_tokens: 200,
+        temperature: 0.7,
+      });
+
+      const generatedDescription = response.choices[0]?.message?.content?.trim() || "";
+      
+      res.json({ description: generatedDescription });
+    } catch (error) {
+      console.error("Error generating content:", error);
+      res.status(500).json({ message: "Failed to generate content" });
+    }
+  });
+
   // ==================== COURSE-MODULE MAPPING ROUTES ====================
 
   // Get modules assigned to a course
