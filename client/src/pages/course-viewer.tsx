@@ -185,33 +185,24 @@ export default function CourseViewer() {
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
             {item.workout_exercises.length} Exercises
           </p>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {item.workout_exercises.map((exercise: any, idx: number) => (
               <div 
                 key={exercise.id || idx}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                className="bg-gray-50 rounded-lg overflow-hidden"
               >
-                <span className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-medium flex-shrink-0">
-                  {idx + 1}
-                </span>
-                
-                {exercise.exercise_video_url && (
-                  <div className="w-16 h-12 rounded overflow-hidden flex-shrink-0">
-                    <img 
-                      src={getYouTubeThumbnail(exercise.exercise_video_url) || ""}
-                      alt={exercise.exercise_name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-800 text-sm truncate">
-                    {exercise.exercise_name}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    {exercise.reps && <span>{exercise.reps} reps</span>}
-                    {exercise.duration_seconds && <span>{exercise.duration_seconds}s</span>}
+                <div className="flex items-start gap-3 p-3">
+                  <span className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-medium flex-shrink-0 mt-0.5">
+                    {idx + 1}
+                  </span>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800 text-sm leading-tight">
+                      {exercise.exercise_name}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {exercise.reps && <span>{exercise.reps}</span>}
+                      {exercise.duration_seconds && <span>{exercise.duration_seconds}s</span>}
+                    </p>
                   </div>
                 </div>
                 
@@ -220,11 +211,24 @@ export default function CourseViewer() {
                     href={exercise.exercise_video_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-pink-600 hover:text-pink-700 text-xs font-medium"
+                    className="flex items-center gap-3 px-3 pb-3"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Play className="w-3 h-3" />
-                    Watch
+                    <div className="w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+                      <img 
+                        src={getYouTubeThumbnail(exercise.exercise_video_url) || ""}
+                        alt={exercise.exercise_name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                          <Play className="w-4 h-4 text-pink-500 ml-0.5" />
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-pink-600 hover:text-pink-700 text-sm font-medium">
+                      Watch Video
+                    </span>
                   </a>
                 )}
               </div>
@@ -242,20 +246,11 @@ export default function CourseViewer() {
 
     if (item.content_type === "exercise") {
       return (
-        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-          {item.exercise_video_url && (
-            <div className="w-16 h-12 rounded overflow-hidden flex-shrink-0">
-              <img 
-                src={getYouTubeThumbnail(item.exercise_video_url) || ""}
-                alt={item.exercise_name || item.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-gray-800 text-sm">{item.exercise_name || item.title}</p>
+        <div className="bg-gray-50 rounded-lg overflow-hidden">
+          <div className="p-3">
+            <p className="font-medium text-gray-800 text-sm leading-tight">{item.exercise_name || item.title}</p>
             {item.description && (
-              <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</p>
+              <p className="text-xs text-gray-500 mt-1">{item.description}</p>
             )}
           </div>
           {item.exercise_video_url && (
@@ -263,10 +258,23 @@ export default function CourseViewer() {
               href={item.exercise_video_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-pink-600 hover:text-pink-700 text-xs font-medium"
+              className="flex items-center gap-3 px-3 pb-3"
             >
-              <Play className="w-3 h-3" />
-              Watch
+              <div className="w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+                <img 
+                  src={getYouTubeThumbnail(item.exercise_video_url) || ""}
+                  alt={item.exercise_name || item.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                    <Play className="w-4 h-4 text-pink-500 ml-0.5" />
+                  </div>
+                </div>
+              </div>
+              <span className="text-pink-600 hover:text-pink-700 text-sm font-medium">
+                Watch Video
+              </span>
             </a>
           )}
         </div>
