@@ -21,6 +21,7 @@ import WeeklySummary from "@/components/weekly-summary";
 import DailyCheckinModal from "@/components/daily-checkin-modal";
 import DailyMoodPopup from "@/components/daily-mood-popup";
 import MoodInsightsCard from "@/components/mood-insights-card";
+import ZoeEncouragement from "@/components/zoe-encouragement";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
@@ -702,6 +703,14 @@ export default function Dashboard() {
             <p className="text-sm text-muted-foreground">Ready to get stronger today?</p>
           </div>
         )}
+
+        {/* Coach Zoe's Daily Tip */}
+        <ZoeEncouragement 
+          user={user} 
+          context="dashboard" 
+          variant="card"
+          className="mb-6"
+        />
 
         {/* Profile Completion Banner */}
         <ProfileBanner 
