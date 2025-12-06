@@ -1,21 +1,17 @@
 import { useState, useEffect } from "react";
 import { useLocation, useRoute, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { 
   ArrowLeft, 
   BookOpen, 
   Clock, 
-  Calendar,
   Play,
-  CheckCircle2,
-  ChevronDown,
   ChevronRight,
   Video,
   FileText,
@@ -23,10 +19,8 @@ import {
   Download,
   GraduationCap,
   Menu,
-  Heart,
   Timer,
-  RotateCcw,
-  Zap
+  RotateCcw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileSettings from "@/components/profile-settings";
@@ -95,17 +89,6 @@ const getYouTubeThumbnail = (url: string | null | undefined): string | null => {
   return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
 };
 
-const getModuleColor = (theme: string | null) => {
-  const colors: Record<string, string> = {
-    pink: "from-pink-500 to-pink-600",
-    purple: "from-purple-500 to-purple-600", 
-    blue: "from-blue-500 to-blue-600",
-    green: "from-green-500 to-green-600",
-    orange: "from-orange-500 to-orange-600",
-  };
-  return colors[theme || "pink"] || colors.pink;
-};
-
 export default function CourseViewer() {
   const [, navigate] = useLocation();
   const [, params] = useRoute("/courses/:courseId");
@@ -116,6 +99,11 @@ export default function CourseViewer() {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const { toast } = useToast();
 
+  const { data: courseData, isLoading, error } = useQuery<CourseData>({
+    queryKey: ["/api/courses", courseId],
+    enabled: !!courseId,
+  });
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
@@ -125,59 +113,53 @@ export default function CourseViewer() {
     setUser(JSON.parse(userData));
   }, [navigate]);
 
-  const { data: courseData, isLoading, error } = useQuery<CourseData>({
-    queryKey: ["/api/courses", courseId],
-    enabled: !!courseId,
-  });
-
-  const toggleModule = (moduleId: string) => {
-    setExpandedModules((prev) =>
-      prev.includes(moduleId)
-        ? prev.filter((id) => id !== moduleId)
-        : [...prev, moduleId]
-    );
-  };
+  useEffect(() => {
+    if (courseData?.modules && courseData.modules.length > 0) {
+      setExpandedModules([courseData.modules[0].id]);
+    }
+  }, [courseData?.modules]);
 
   const getContentIcon = (type: string) => {
+    const iconClass = "w-4 h-4";
     switch (type) {
       case "video":
-        return <Video className="w-4 h-4 text-blue-500" />;
+        return <Video className={`${iconClass} text-pink-500`} />;
       case "exercise":
-        return <Dumbbell className="w-4 h-4 text-pink-500" />;
+        return <Dumbbell className={`${iconClass} text-pink-500`} />;
       case "workout":
-        return <Zap className="w-4 h-4 text-orange-500" />;
+        return <Dumbbell className={`${iconClass} text-pink-500`} />;
       case "pdf":
-        return <Download className="w-4 h-4 text-green-500" />;
+        return <Download className={`${iconClass} text-pink-500`} />;
       default:
-        return <FileText className="w-4 h-4 text-gray-500" />;
+        return <FileText className={`${iconClass} text-gray-500`} />;
     }
   };
 
   const WorkoutDisplay = ({ item }: { item: ContentItem }) => (
-    <div className="bg-gradient-to-br from-pink-50 to-white rounded-xl border border-pink-100 overflow-hidden">
-      <div className="bg-gradient-to-r from-pink-500 to-pink-600 p-4 text-white">
-        <h4 className="font-semibold text-lg">{item.workout_name || item.title}</h4>
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="p-4 border-b border-gray-100">
+        <h4 className="font-semibold text-gray-900">{item.workout_name || item.title}</h4>
         {item.workout_description && (
-          <p className="text-pink-100 text-sm mt-1">{item.workout_description}</p>
+          <p className="text-gray-600 text-sm mt-1">{item.workout_description}</p>
         )}
-        <div className="flex flex-wrap gap-3 mt-3 text-sm">
+        <div className="flex flex-wrap gap-2 mt-3">
           {item.workout_total_duration && (
-            <div className="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1">
-              <Timer className="w-4 h-4" />
-              <span>{item.workout_total_duration} min</span>
-            </div>
+            <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 rounded-full px-2 py-1">
+              <Timer className="w-3 h-3" />
+              {item.workout_total_duration} min
+            </span>
           )}
           {item.workout_rounds && (
-            <div className="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1">
-              <RotateCcw className="w-4 h-4" />
-              <span>{item.workout_rounds} rounds</span>
-            </div>
+            <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 rounded-full px-2 py-1">
+              <RotateCcw className="w-3 h-3" />
+              {item.workout_rounds} rounds
+            </span>
           )}
           {item.workout_rest_between_exercises && (
-            <div className="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1">
-              <Clock className="w-4 h-4" />
-              <span>{item.workout_rest_between_exercises}s rest</span>
-            </div>
+            <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 rounded-full px-2 py-1">
+              <Clock className="w-3 h-3" />
+              {item.workout_rest_between_exercises}s rest
+            </span>
           )}
         </div>
       </div>
@@ -188,11 +170,11 @@ export default function CourseViewer() {
             <img 
               src={zoeImagePath} 
               alt="Zoe" 
-              className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+              className="w-8 h-8 rounded-full border border-pink-200"
             />
             <div>
-              <p className="text-sm font-medium text-pink-700">Zoe's Notes</p>
-              <p className="text-sm text-gray-600 mt-1">{item.workout_coach_notes}</p>
+              <p className="text-xs font-medium text-pink-700">Coach Zoe</p>
+              <p className="text-sm text-gray-600 mt-0.5">{item.workout_coach_notes}</p>
             </div>
           </div>
         </div>
@@ -200,22 +182,21 @@ export default function CourseViewer() {
 
       {item.workout_exercises && item.workout_exercises.length > 0 && (
         <div className="p-4">
-          <h5 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-            <Dumbbell className="w-4 h-4 text-pink-500" />
-            Exercises ({item.workout_exercises.length})
-          </h5>
-          <div className="space-y-3">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+            {item.workout_exercises.length} Exercises
+          </p>
+          <div className="space-y-2">
             {item.workout_exercises.map((exercise: any, idx: number) => (
               <div 
                 key={exercise.id || idx}
-                className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
               >
-                <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-medium text-sm">
+                <span className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-medium flex-shrink-0">
                   {idx + 1}
-                </div>
+                </span>
                 
                 {exercise.exercise_video_url && (
-                  <div className="w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-12 rounded overflow-hidden flex-shrink-0">
                     <img 
                       src={getYouTubeThumbnail(exercise.exercise_video_url) || ""}
                       alt={exercise.exercise_name}
@@ -225,17 +206,12 @@ export default function CourseViewer() {
                 )}
                 
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-800 truncate">
+                  <p className="font-medium text-gray-800 text-sm truncate">
                     {exercise.exercise_name}
                   </p>
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
                     {exercise.reps && <span>{exercise.reps} reps</span>}
                     {exercise.duration_seconds && <span>{exercise.duration_seconds}s</span>}
-                    {exercise.exercise_category && (
-                      <Badge variant="outline" className="text-xs">
-                        {exercise.exercise_category}
-                      </Badge>
-                    )}
                   </div>
                 </div>
                 
@@ -244,10 +220,10 @@ export default function CourseViewer() {
                     href={exercise.exercise_video_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    className="flex items-center gap-1 text-pink-600 hover:text-pink-700 text-xs font-medium"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Play className="w-4 h-4" />
+                    <Play className="w-3 h-3" />
                     Watch
                   </a>
                 )}
@@ -266,9 +242,9 @@ export default function CourseViewer() {
 
     if (item.content_type === "exercise") {
       return (
-        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
           {item.exercise_video_url && (
-            <div className="w-24 h-16 rounded-lg overflow-hidden flex-shrink-0">
+            <div className="w-16 h-12 rounded overflow-hidden flex-shrink-0">
               <img 
                 src={getYouTubeThumbnail(item.exercise_video_url) || ""}
                 alt={item.exercise_name || item.title}
@@ -276,10 +252,10 @@ export default function CourseViewer() {
               />
             </div>
           )}
-          <div className="flex-1">
-            <p className="font-medium">{item.exercise_name || item.title}</p>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-800 text-sm">{item.exercise_name || item.title}</p>
             {item.description && (
-              <p className="text-sm text-gray-500 mt-1">{item.description}</p>
+              <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</p>
             )}
           </div>
           {item.exercise_video_url && (
@@ -287,9 +263,9 @@ export default function CourseViewer() {
               href={item.exercise_video_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+              className="flex items-center gap-1 text-pink-600 hover:text-pink-700 text-xs font-medium"
             >
-              <Play className="w-4 h-4" />
+              <Play className="w-3 h-3" />
               Watch
             </a>
           )}
@@ -299,46 +275,48 @@ export default function CourseViewer() {
 
     if (item.content_type === "video") {
       return (
-        <div className="rounded-lg overflow-hidden">
+        <a 
+          href={item.video_url || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+        >
           {item.video_url && (
-            <a 
-              href={item.video_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block relative group"
-            >
+            <div className="w-20 h-14 rounded overflow-hidden flex-shrink-0 relative">
               <img 
                 src={getYouTubeThumbnail(item.video_url) || ""}
                 alt={item.title}
-                className="w-full h-40 object-cover"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
-                  <Play className="w-8 h-8 text-pink-500 ml-1" />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                  <Play className="w-4 h-4 text-pink-500 ml-0.5" />
                 </div>
               </div>
-            </a>
+            </div>
           )}
-          <div className="p-4 bg-gray-50">
-            <p className="font-medium">{item.title}</p>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-800 text-sm">{item.title}</p>
             {item.description && (
-              <p className="text-sm text-gray-500 mt-1">{item.description}</p>
+              <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</p>
+            )}
+            {item.duration_minutes && (
+              <p className="text-xs text-gray-400 mt-1">{item.duration_minutes} min</p>
             )}
           </div>
-        </div>
+          <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        </a>
       );
     }
 
     return (
-      <div className="p-4 bg-gray-50 rounded-lg">
-        <div className="flex items-start gap-3">
-          {getContentIcon(item.content_type)}
-          <div>
-            <p className="font-medium">{item.title}</p>
-            {item.description && (
-              <p className="text-sm text-gray-500 mt-1">{item.description}</p>
-            )}
-          </div>
+      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+        {getContentIcon(item.content_type)}
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-gray-800 text-sm">{item.title}</p>
+          {item.description && (
+            <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</p>
+          )}
         </div>
       </div>
     );
@@ -346,11 +324,11 @@ export default function CourseViewer() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white p-6">
-        <Skeleton className="h-64 w-full rounded-xl mb-6" />
-        <div className="space-y-4">
+      <div className="min-h-screen bg-gray-50 p-6">
+        <Skeleton className="h-32 w-full rounded-xl mb-6" />
+        <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-24 w-full rounded-lg" />
+            <Skeleton key={i} className="h-16 w-full rounded-lg" />
           ))}
         </div>
       </div>
@@ -359,16 +337,16 @@ export default function CourseViewer() {
 
   if (error || !courseData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
-            <GraduationCap className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Course Not Found</h2>
-            <p className="text-gray-500 mb-4">
+            <GraduationCap className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">Course Not Found</h2>
+            <p className="text-gray-500 text-sm mb-4">
               This course might not exist or you may not be enrolled.
             </p>
             <Link href="/my-courses">
-              <Button className="bg-gradient-to-r from-pink-500 to-pink-600">
+              <Button className="bg-pink-500 hover:bg-pink-600">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Courses
               </Button>
@@ -382,158 +360,122 @@ export default function CourseViewer() {
   const { course, modules, enrollment } = courseData;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-      <header className="bg-white border-b border-gray-200 shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-3xl mx-auto px-4">
+          <div className="flex items-center justify-between h-14">
             <Link href="/my-courses">
-              <Button variant="ghost" className="gap-2 text-pink-600 hover:bg-pink-50">
+              <Button variant="ghost" size="sm" className="gap-1 text-gray-600 hover:text-gray-900 -ml-2">
                 <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">My Courses</span>
+                <span className="hidden sm:inline">Back</span>
               </Button>
             </Link>
             
-            <div className="text-center">
-              <span className="text-lg font-bold bg-gradient-to-r from-pink-500 to-pink-600 bg-clip-text text-transparent">
-                {course.name}
-              </span>
-            </div>
+            <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
+              {course.name}
+            </span>
 
             <button 
-              className="p-3 transition-all duration-300 hover:scale-110 active:scale-95"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setShowProfileSettings(!showProfileSettings)}
+              data-testid="button-menu"
             >
-              <Menu className="w-6 h-6 text-pink-500" />
+              <Menu className="w-5 h-5 text-gray-600" />
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="mb-6 bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl p-6 text-white relative overflow-hidden">
+      <main className="max-w-3xl mx-auto px-4 py-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
           <div className="flex items-start gap-4">
             <div className="flex-1">
-              <Badge className="bg-white/20 text-white mb-2">{course.level}</Badge>
-              <h1 className="text-2xl font-bold mb-2">{course.name}</h1>
-              <p className="text-pink-100 mb-4">{course.description}</p>
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="secondary" className="text-xs bg-pink-50 text-pink-700 border-0">
+                  {course.level}
+                </Badge>
+                <span className="text-xs text-gray-500">{course.duration_weeks} weeks</span>
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 mb-1">{course.name}</h1>
+              <p className="text-gray-600 text-sm">{course.description}</p>
               
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{course.duration_weeks} weeks</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <BookOpen className="w-4 h-4" />
-                  <span>{modules.length} modules</span>
-                </div>
-              </div>
-
               <div className="mt-4">
-                <div className="flex items-center justify-between text-sm mb-1">
-                  <span>Your Progress</span>
-                  <span>{Math.round(enrollment.progress_percentage || 0)}%</span>
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <span className="text-gray-500">Progress</span>
+                  <span className="font-medium text-pink-600">{Math.round(enrollment.progress_percentage || 0)}%</span>
                 </div>
-                <Progress value={enrollment.progress_percentage || 0} className="h-2 bg-white/30" />
+                <Progress value={enrollment.progress_percentage || 0} className="h-1.5" />
               </div>
             </div>
-            
-            <div className="hidden md:block">
-              <img 
-                src={zoeImagePath} 
-                alt="Zoe" 
-                className="w-20 h-20 rounded-full border-4 border-white/30 object-cover"
-              />
-            </div>
-          </div>
-          <div className="absolute -right-8 -bottom-8 opacity-10">
-            <Heart className="w-40 h-40" />
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {modules.map((module, moduleIdx) => (
-            <Collapsible
-              key={module.id}
-              open={expandedModules.includes(module.id)}
-              onOpenChange={() => toggleModule(module.id)}
+            <Accordion 
+              key={module.id} 
+              type="single" 
+              collapsible
+              defaultValue={moduleIdx === 0 ? module.id : undefined}
+              className="bg-white rounded-xl border border-gray-200 overflow-hidden"
             >
-              <Card className="overflow-hidden border-pink-100">
-                <CollapsibleTrigger className="w-full">
-                  <div className={`bg-gradient-to-r ${getModuleColor(module.color_theme)} p-4 text-white flex items-center justify-between`}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-medium">
-                        {moduleIdx + 1}
-                      </div>
-                      <div className="text-left">
-                        <h3 className="font-semibold">{module.name}</h3>
-                        {module.description && (
-                          <p className="text-sm text-white/80 mt-0.5">{module.description}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-white/20 text-white">
-                        {module.sections.length} sections
-                      </Badge>
-                      <ChevronDown className={`w-5 h-5 transition-transform ${expandedModules.includes(module.id) ? 'rotate-180' : ''}`} />
+              <AccordionItem value={module.id} className="border-0">
+                <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-gray-50 data-[state=open]:bg-gray-50">
+                  <div className="flex items-center gap-3 text-left">
+                    <span className="w-7 h-7 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 text-sm font-semibold flex-shrink-0">
+                      {moduleIdx + 1}
+                    </span>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 text-sm">{module.name}</h3>
+                      {module.description && (
+                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{module.description}</p>
+                      )}
                     </div>
                   </div>
-                </CollapsibleTrigger>
+                </AccordionTrigger>
                 
-                <CollapsibleContent>
-                  <div className="p-4 space-y-4">
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-4 pt-2">
                     {module.sections.map((section, sectionIdx) => (
-                      <div key={section.id} className="border border-gray-100 rounded-lg overflow-hidden">
-                        <div className="bg-gray-50 px-4 py-3 flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-sm font-medium">
+                      <div key={section.id}>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-xs font-medium">
                             {sectionIdx + 1}
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-800">{section.name}</h4>
-                            {section.description && (
-                              <p className="text-sm text-gray-500">{section.description}</p>
-                            )}
-                          </div>
+                          </span>
+                          <h4 className="font-medium text-gray-800 text-sm">{section.name}</h4>
                         </div>
                         
-                        {section.contentItems.length > 0 && (
-                          <div className="p-4 space-y-3">
+                        {section.contentItems.length > 0 ? (
+                          <div className="space-y-2 ml-7">
                             {section.contentItems.map((item) => (
                               <ContentItemDisplay key={item.id} item={item} />
                             ))}
                           </div>
-                        )}
-                        
-                        {section.contentItems.length === 0 && (
-                          <div className="p-4 text-center text-gray-400 text-sm">
-                            No content in this section yet
-                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-400 ml-7">No content yet</p>
                         )}
                       </div>
                     ))}
                     
                     {module.sections.length === 0 && (
-                      <div className="text-center py-8 text-gray-400">
-                        <BookOpen className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>No sections in this module yet</p>
-                      </div>
+                      <p className="text-sm text-gray-400 text-center py-4">No sections in this module</p>
                     )}
                   </div>
-                </CollapsibleContent>
-              </Card>
-            </Collapsible>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           ))}
         </div>
 
         {modules.length === 0 && (
-          <Card className="border-dashed border-2 border-pink-200">
+          <Card className="border-dashed border-2 border-gray-200">
             <CardContent className="py-12 text-center">
-              <GraduationCap className="w-16 h-16 mx-auto text-pink-300 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              <GraduationCap className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-1">
                 Content Coming Soon
               </h3>
-              <p className="text-gray-500 max-w-md mx-auto">
-                This course is being prepared with love. Check back soon!
+              <p className="text-gray-500 text-sm">
+                This course is being prepared. Check back soon!
               </p>
             </CardContent>
           </Card>
