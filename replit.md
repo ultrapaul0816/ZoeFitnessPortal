@@ -31,6 +31,26 @@ The application provides a 6-week program with detailed exercises, coach notes, 
 ## AI Coach
 **Ask Zoe AI Coach**: An AI-powered chat interface using OpenAI (via Replit AI Integrations) provides personalized coaching. Zoe offers support based on user profile, workout history, full program content, and current progress, suggesting alternatives and encouraging proper form while avoiding medical advice.
 
+## Zoe's Personalized Voice
+**ZoeEncouragement Component**: A reusable component that displays Coach Zoe's personalized encouragement, tips, and motivation throughout the app. It provides context-aware messages based on the current page (dashboard, workouts, courses, community), the user's name, and their progress. Messages include daily tips, workout motivation, and celebratory acknowledgments.
+
+## User Goals & Personalization
+**Fitness Goals Collection**: Users can select their fitness goals during onboarding and profile setup. Goals include:
+- Rebuild Core Strength
+- Boost Energy
+- Reduce Back Pain  
+- Feel Confident Again
+- Improve Flexibility
+
+Goals are stored in the user's database profile and will be used to personalize the experience, workout recommendations, and Zoe's coaching messages.
+
+## Admin Preview Mode
+**Admin Preview Page**: Administrators can preview the app as users would see it on mobile devices. The feature includes:
+- Device frame simulation (iPhone 14 Pro, iPhone SE, Android)
+- Portrait/landscape orientation toggle
+- Quick navigation to key pages (dashboard, courses, community)
+- Live preview of the actual app within a simulated mobile frame
+
 ## Communication & Engagement
 **Email Automation & Campaigns**: Includes email campaign management with a database-stored template library, dynamic variable replacement, open tracking, audience targeting, test emails, and scheduling. An Email Analytics Dashboard provides performance metrics. Seven trigger-based email automation rules support welcome, workout congratulations, program completion, incomplete signup reminders, and cascading re-engagement based on inactivity.
 **Spotify Workout Music Integration**: Users can access curated workout playlists via a mini player widget in the "Today's Workout" view, utilizing Replit's Spotify Connector for OAuth and offering 6 weekly curated playlists.
