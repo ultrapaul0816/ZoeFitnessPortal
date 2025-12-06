@@ -30,7 +30,7 @@ app.use(
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       httpOnly: true, // Prevents client-side JS from accessing cookie
       secure: true, // HTTPS only (Replit always uses HTTPS)
-      sameSite: "none", // Allow cross-site cookies for Replit's proxy/iframe
+      sameSite: "lax", // Works better with Replit's proxy environment
     },
   })
 );
