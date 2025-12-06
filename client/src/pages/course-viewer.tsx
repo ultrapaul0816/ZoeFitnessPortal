@@ -329,7 +329,6 @@ export default function CourseViewer() {
     }
 
     const isExpanded = expandedItems.includes(item.id);
-    const hasContent = item.description || item.video_url;
     
     if (item.content_type === "pdf" && item.video_url) {
       return (
@@ -353,8 +352,8 @@ export default function CourseViewer() {
 
     return (
       <button 
-        onClick={() => hasContent && toggleItem(item.id)}
-        className={`w-full text-left p-4 bg-gray-50 rounded-lg transition-colors ${hasContent ? 'hover:bg-gray-100 active:bg-gray-200 cursor-pointer' : ''}`}
+        onClick={() => toggleItem(item.id)}
+        className="w-full text-left p-4 bg-gray-50 rounded-lg transition-colors hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
       >
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center flex-shrink-0">
@@ -366,16 +365,20 @@ export default function CourseViewer() {
               <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.description}</p>
             )}
           </div>
-          {hasContent && (
-            <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-          )}
+          <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
         </div>
         
-        {isExpanded && item.description && (
+        {isExpanded && (
           <div className="mt-3 pt-3 border-t border-gray-200 ml-13">
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-              {item.description}
-            </p>
+            {item.description ? (
+              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+                {item.description}
+              </p>
+            ) : (
+              <p className="text-sm text-gray-400 italic">
+                Content coming soon...
+              </p>
+            )}
             {item.video_url && (
               <a 
                 href={item.video_url}
