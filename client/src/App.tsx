@@ -17,6 +17,7 @@ import AdminCourseEditor from "@/pages/admin-course-editor";
 import AdminCoursePreview from "@/pages/admin-course-preview";
 import AdminExercises from "@/pages/admin-exercises";
 import AdminWorkouts from "@/pages/admin-workouts";
+import AdminPreview from "@/pages/admin-preview";
 import MyLibrary from "@/pages/my-library";
 import MyCourses from "@/pages/my-courses";
 import CourseViewer from "@/pages/course-viewer";
@@ -54,6 +55,7 @@ function Router() {
       <Route path="/admin/courses/:courseId/preview" component={AdminCoursePreview} />
       <Route path="/admin/exercises" component={AdminExercises} />
       <Route path="/admin/workouts" component={AdminWorkouts} />
+      <Route path="/admin/preview" component={AdminPreview} />
       <Route path="/heal-your-core" component={() => (
         <Suspense fallback={<PageLoader message="Loading your program..." />}>
           <HealYourCorePage />
