@@ -99,6 +99,73 @@ const contentTypeIcons: Record<string, typeof Video> = {
   workout: RotateCcw,
 };
 
+type ContentTemplate = {
+  id: string;
+  name: string;
+  icon: string;
+  contentType: "video" | "text" | "pdf" | "exercise" | "workout";
+  title: string;
+  description: string;
+  contentData?: any;
+};
+
+const contentTemplates: ContentTemplate[] = [
+  {
+    id: "welcome-video",
+    name: "Welcome Video",
+    icon: "🎬",
+    contentType: "video",
+    title: "Welcome to [Module Name]",
+    description: "In this video, Zoe welcomes you to this module and shares what you'll learn. Get ready to feel supported every step of the way, mama!",
+    contentData: { videoUrl: "" },
+  },
+  {
+    id: "workout-intro",
+    name: "Workout Introduction",
+    icon: "💪",
+    contentType: "video",
+    title: "Today's Workout Overview",
+    description: "Before we begin, let's go over what we'll be working on today. Remember: listen to your body, take breaks when needed, and celebrate showing up for yourself!",
+    contentData: { videoUrl: "" },
+  },
+  {
+    id: "educational-tip",
+    name: "Educational Tip",
+    icon: "📚",
+    contentType: "text",
+    title: "Understanding Your Body",
+    description: "Your postpartum body is incredible, mama! In this section, we'll explore how to support your recovery with evidence-based guidance and gentle encouragement.",
+    contentData: { textContent: "" },
+  },
+  {
+    id: "progress-check",
+    name: "Progress Checkpoint",
+    icon: "🌟",
+    contentType: "text",
+    title: "Week [X] Progress Check",
+    description: "Amazing work making it this far! Let's take a moment to reflect on your journey and celebrate your wins. Every small step counts toward your recovery.",
+    contentData: { textContent: "" },
+  },
+  {
+    id: "nutrition-guide",
+    name: "Nutrition Guide",
+    icon: "🥗",
+    contentType: "pdf",
+    title: "Nourishing Your Postpartum Body",
+    description: "Download this guide for practical nutrition tips to fuel your recovery and boost your energy. Simple, realistic advice for busy mamas!",
+    contentData: { pdfUrl: "", fileName: "" },
+  },
+  {
+    id: "cooldown",
+    name: "Cooldown & Stretch",
+    icon: "🧘",
+    contentType: "video",
+    title: "Gentle Cooldown",
+    description: "Let's finish strong with a calming cooldown. These stretches will help your muscles recover and leave you feeling relaxed and accomplished.",
+    contentData: { videoUrl: "" },
+  },
+];
+
 export default function AdminModuleEditor() {
   const [, setLocation] = useLocation();
   const [, params] = useRoute("/admin/modules/:moduleId");
@@ -564,15 +631,43 @@ export default function AdminModuleEditor() {
         </Dialog>
 
         <Dialog open={!!showCreateContent} onOpenChange={() => setShowCreateContent(null)}>
-          <DialogContent className="max-w-lg p-0 overflow-hidden">
+          <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
             <div className="bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-4">
               <DialogHeader className="text-white">
                 <DialogTitle className="text-white text-lg font-semibold">Add Content Item</DialogTitle>
-                <DialogDescription className="text-pink-100">Add a video, text, PDF, exercise or workout to this section.</DialogDescription>
+                <DialogDescription className="text-pink-100">Start with a template or build from scratch.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="px-6 pb-6">
             <div className="space-y-4 py-4">
+              {/* Quick Templates */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Quick Start Templates</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {contentTemplates.map(template => (
+                    <button
+                      key={template.id}
+                      type="button"
+                      onClick={() => {
+                        setContentForm({
+                          ...contentForm,
+                          contentType: template.contentType,
+                          title: template.title,
+                          description: template.description,
+                          contentData: template.contentData || {},
+                        });
+                      }}
+                      className="flex flex-col items-center gap-1 p-2 rounded-lg border border-gray-200 hover:border-pink-300 hover:bg-pink-50 transition-colors text-center"
+                    >
+                      <span className="text-lg">{template.icon}</span>
+                      <span className="text-xs text-gray-600 leading-tight">{template.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <Separator className="my-2" />
+
               <div className="space-y-2">
                 <Label>Content Type</Label>
                 <Select value={contentForm.contentType} onValueChange={(v) => setContentForm({ ...contentForm, contentType: v as any })}>
