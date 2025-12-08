@@ -190,7 +190,6 @@ export default function Dashboard() {
     course_image_url: string | null;
     course_weeks: number | null;
     course_difficulty: string | null;
-    course_type: string | null;
     course_status: string;
   }>>({
     queryKey: ["/api/my-course-enrollments"],
@@ -876,12 +875,6 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2 text-gray-700">
                               <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
                               <span className="text-sm capitalize">{enrollment.course_difficulty} level</span>
-                            </div>
-                          )}
-                          {enrollment.course_type && (
-                            <div className="flex items-center gap-2 text-gray-700">
-                              <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">🏋️</span>
-                              <span className="text-sm capitalize">{enrollment.course_type}</span>
                             </div>
                           )}
                         </div>

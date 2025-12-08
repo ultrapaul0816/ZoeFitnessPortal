@@ -1327,9 +1327,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           c.name as course_name,
           c.description as course_description,
           c.image_url as course_image_url,
-          c.weeks_count as course_weeks,
-          c.difficulty as course_difficulty,
-          c.course_type as course_type,
+          c.duration_weeks as course_weeks,
+          c.level as course_difficulty,
           c.status as course_status
         FROM course_enrollments ce
         JOIN courses c ON ce.course_id = c.id
