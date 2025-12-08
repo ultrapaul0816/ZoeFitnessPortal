@@ -5418,6 +5418,149 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // ==========================================
+  // ADMIN COURSE ENROLLMENT MANAGEMENT
+  // ==========================================
+
+  // Get course enrollments for a specific user (admin)
+  app.get("/api/admin/users/:userId/course-enrollments", requireAdmin, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      const enrollments = await storage.db.execute(sql`
+        SELECT ce.*, c.name as course_name, c.description as course_description, c.image_url as course_image_url
+        FROM course_enrollments ce
+        JOIN courses c ON ce.course_id = c.id
+        WHERE ce.user_id = ${userId}
+        ORDER BY ce.enrolled_at DESC
+      `);
+
+      res.json(enrollments.rows);
+    } catch (error) {
+      console.error("Error fetching user course enrollments:", error);
+      res.status(500).json({ message: "Failed to fetch course enrollments" });
+    }
+  });
+
+  // Enroll a user in a course (admin)
+  app.post("/api/admin/users/:userId/course-enrollments", requireAdmin, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { courseId, expiresAt } = req.body;
+
+      if (!courseId) {
+        return res.status(400).json({ message: "Course ID is required" });
+      }
+
+      // Check if already enrolled
+      const existingEnrollment = await storage.db.execute(sql`
+        SELECT * FROM course_enrollments 
+        WHERE course_id = ${courseId} AND user_id = ${userId}
+      `);
+
+      if (existingEnrollment.rows.length > 0) {
+        return res.status(400).json({ message: "User is already enrolled in this course" });
+      }
+
+      // Create enrollment
+      const enrollmentId = `enrollment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (expiresAt) {
+        await storage.db.execute(sql`
+          INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, enrolled_at, expires_at)
+          VALUES (${enrollmentId}, ${courseId}, ${userId}, 'active', 0, NOW(), ${new Date(expiresAt)})
+        `);
+      } else {
+        await storage.db.execute(sql`
+          INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, enrolled_at)
+          VALUES (${enrollmentId}, ${courseId}, ${userId}, 'active', 0, NOW())
+        `);
+      }
+
+      const result = await storage.db.execute(sql`
+        SELECT ce.*, c.name as course_name, c.description as course_description, c.image_url as course_image_url
+        FROM course_enrollments ce
+        JOIN courses c ON ce.course_id = c.id
+        WHERE ce.id = ${enrollmentId}
+      `);
+
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error enrolling user in course:", error);
+      res.status(500).json({ message: "Failed to enroll user in course" });
+    }
+  });
+
+  // Remove a user from a course (admin)
+  app.delete("/api/admin/course-enrollments/:enrollmentId", requireAdmin, async (req, res) => {
+    try {
+      const { enrollmentId } = req.params;
+
+      await storage.db.execute(sql`
+        DELETE FROM course_enrollments WHERE id = ${enrollmentId}
+      `);
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing course enrollment:", error);
+      res.status(500).json({ message: "Failed to remove course enrollment" });
+    }
+  });
+
+  // Bulk enroll multiple users in a course (admin)
+  app.post("/api/admin/courses/:courseId/bulk-enroll", requireAdmin, async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const { userIds, expiresAt } = req.body;
+
+      if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ message: "User IDs array is required" });
+      }
+
+      const results = { enrolled: 0, skipped: 0, errors: 0 };
+
+      for (const userId of userIds) {
+        try {
+          // Check if already enrolled
+          const existingEnrollment = await storage.db.execute(sql`
+            SELECT * FROM course_enrollments 
+            WHERE course_id = ${courseId} AND user_id = ${userId}
+          `);
+
+          if (existingEnrollment.rows.length > 0) {
+            results.skipped++;
+            continue;
+          }
+
+          // Create enrollment
+          const enrollmentId = `enrollment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          
+          if (expiresAt) {
+            await storage.db.execute(sql`
+              INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, enrolled_at, expires_at)
+              VALUES (${enrollmentId}, ${courseId}, ${userId}, 'active', 0, NOW(), ${new Date(expiresAt)})
+            `);
+          } else {
+            await storage.db.execute(sql`
+              INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, enrolled_at)
+              VALUES (${enrollmentId}, ${courseId}, ${userId}, 'active', 0, NOW())
+            `);
+          }
+          
+          results.enrolled++;
+        } catch (error) {
+          console.error(`Error enrolling user ${userId}:`, error);
+          results.errors++;
+        }
+      }
+
+      res.json(results);
+    } catch (error) {
+      console.error("Error bulk enrolling users:", error);
+      res.status(500).json({ message: "Failed to bulk enroll users" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

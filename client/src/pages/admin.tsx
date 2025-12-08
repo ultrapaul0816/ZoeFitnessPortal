@@ -127,6 +127,38 @@ export default function Admin() {
     enabled: !!selectedMember?.id,
   });
 
+  // Fetch all courses for course enrollment dropdown
+  const { data: allCourses = [] } = useQuery<Array<{
+    id: string;
+    name: string;
+    description: string | null;
+    imageUrl: string | null;
+    status: string;
+  }>>({
+    queryKey: ["/api/admin/courses"],
+    enabled: isAdmin,
+  });
+
+  // Fetch member's course enrollments when a member is selected
+  const { data: memberCourseEnrollments = [] } = useQuery<Array<{
+    id: string;
+    user_id: string;
+    course_id: string;
+    enrolled_at: string;
+    expires_at: string | null;
+    status: string;
+    progress_percentage: number;
+    course_name: string;
+    course_description: string | null;
+    course_image_url: string | null;
+  }>>({
+    queryKey: ["/api/admin/users", selectedMember?.id, "course-enrollments"],
+    enabled: !!selectedMember?.id,
+  });
+
+  // State for selected course to add
+  const [selectedCourseForMember, setSelectedCourseForMember] = useState<string>('');
+
   // Actionable dashboard data queries
   const { data: membersWithoutPhotos = [] } = useQuery<Array<{
     id: string;
@@ -2126,6 +2158,147 @@ export default function Admin() {
                         </Button>
                         <p className="text-xs text-gray-500 mt-1">
                           Extend member's access to all programs by 12 months
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2.5 COURSE ENROLLMENT */}
+                  <div className="pt-3 border-t">
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2 mb-3">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Course Enrollment
+                    </h4>
+                    <div className="space-y-3">
+                      {memberCourseEnrollments.length > 0 && (
+                        <div>
+                          <Label className="text-sm font-medium mb-2 block">Currently Enrolled Courses</Label>
+                          <div className="space-y-2">
+                            {memberCourseEnrollments.map((enrollment: any) => (
+                              <div key={enrollment.id} className="p-2 bg-purple-50 border border-purple-200 rounded-lg flex items-center gap-2">
+                                {enrollment.course_image_url && (
+                                  <img 
+                                    src={enrollment.course_image_url} 
+                                    alt={enrollment.course_name}
+                                    className="w-8 h-8 rounded object-cover"
+                                  />
+                                )}
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-purple-800">{enrollment.course_name}</p>
+                                  <div className="flex items-center gap-2 text-xs text-purple-600">
+                                    <span>Enrolled: {enrollment.enrolled_at ? new Date(enrollment.enrolled_at).toLocaleDateString() : 'Unknown'}</span>
+                                    {enrollment.progress_percentage > 0 && (
+                                      <span className="text-green-600">• {enrollment.progress_percentage}% complete</span>
+                                    )}
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  onClick={async () => {
+                                    if (!confirm(`Remove ${enrollment.course_name} enrollment for ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                                      return;
+                                    }
+                                    
+                                    try {
+                                      const response = await fetch(`/api/admin/course-enrollments/${enrollment.id}`, {
+                                        method: 'DELETE',
+                                      });
+
+                                      if (!response.ok) {
+                                        const errorData = await response.json();
+                                        throw new Error(errorData.message || 'Failed to remove enrollment');
+                                      }
+
+                                      await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
+                                      toast({
+                                        variant: "success",
+                                        title: "Success",
+                                        description: `Removed ${enrollment.course_name} enrollment successfully`,
+                                      });
+                                    } catch (error) {
+                                      toast({
+                                        variant: "destructive",
+                                        title: "Error",
+                                        description: error instanceof Error ? error.message : "Failed to remove enrollment",
+                                      });
+                                    }
+                                  }}
+                                  data-testid={`button-remove-course-enrollment-${enrollment.id}`}
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <Label>Add Course</Label>
+                        <div className="flex gap-2 mt-1">
+                          <Select 
+                            value={selectedCourseForMember}
+                            onValueChange={setSelectedCourseForMember}
+                          >
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Select course to enroll" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">No Course</SelectItem>
+                              {allCourses
+                                .filter(c => c.status === 'published' && !memberCourseEnrollments.some((e: any) => e.course_id === c.id))
+                                .map((course) => (
+                                  <SelectItem key={course.id} value={course.id}>
+                                    {course.name}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            disabled={!selectedCourseForMember || selectedCourseForMember === 'none'}
+                            onClick={async () => {
+                              if (!selectedCourseForMember || selectedCourseForMember === 'none') return;
+                              
+                              try {
+                                const response = await apiRequest("POST", `/api/admin/users/${selectedMember.id}/course-enrollments`, {
+                                  courseId: selectedCourseForMember,
+                                });
+
+                                if (!response.ok) {
+                                  const errorData = await response.json();
+                                  throw new Error(errorData.message || 'Failed to enroll in course');
+                                }
+
+                                await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
+                                setSelectedCourseForMember('');
+                                
+                                const courseName = allCourses.find(c => c.id === selectedCourseForMember)?.name || 'course';
+                                toast({
+                                  variant: "success",
+                                  title: "Success",
+                                  description: `Enrolled ${selectedMember.firstName} in ${courseName}`,
+                                });
+                              } catch (error) {
+                                toast({
+                                  variant: "destructive",
+                                  title: "Error",
+                                  description: error instanceof Error ? error.message : "Failed to enroll in course",
+                                });
+                              }
+                            }}
+                            data-testid="button-add-course-enrollment"
+                          >
+                            <Plus className="w-4 h-4 mr-1" /> Add
+                          </Button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Enroll user in a course (only published courses shown, already enrolled courses hidden)
                         </p>
                       </div>
                     </div>
