@@ -156,8 +156,9 @@ export default function Admin() {
     enabled: !!selectedMember?.id,
   });
 
-  // State for selected course to add
+  // State for selected course to add and its duration
   const [selectedCourseForMember, setSelectedCourseForMember] = useState<string>('');
+  const [courseEnrollmentDuration, setCourseEnrollmentDuration] = useState<string>('3');
 
   // Actionable dashboard data queries
   const { data: membersWithoutPhotos = [] } = useQuery<Array<{
@@ -2041,78 +2042,176 @@ export default function Admin() {
                       {memberCourseEnrollments.length > 0 && (
                         <div>
                           <Label className="text-sm font-medium mb-2 block">Currently Enrolled Courses</Label>
-                          <div className="space-y-2">
-                            {memberCourseEnrollments.map((enrollment: any) => (
-                              <div key={enrollment.id} className="p-2 bg-purple-50 border border-purple-200 rounded-lg flex items-center gap-2">
-                                {enrollment.course_image_url && (
-                                  <img 
-                                    src={enrollment.course_image_url} 
-                                    alt={enrollment.course_name}
-                                    className="w-8 h-8 rounded object-cover"
-                                  />
-                                )}
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium text-purple-800">{enrollment.course_name}</p>
-                                  <div className="flex items-center gap-2 text-xs text-purple-600">
-                                    <span>Enrolled: {enrollment.enrolled_at ? new Date(enrollment.enrolled_at).toLocaleDateString() : 'Unknown'}</span>
-                                    {enrollment.progress_percentage > 0 && (
-                                      <span className="text-green-600">• {enrollment.progress_percentage}% complete</span>
+                          <div className="space-y-3">
+                            {memberCourseEnrollments.map((enrollment: any) => {
+                              const isExpired = enrollment.expires_at && new Date(enrollment.expires_at) < new Date();
+                              return (
+                                <div key={enrollment.id} className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    {enrollment.course_image_url && (
+                                      <img 
+                                        src={enrollment.course_image_url} 
+                                        alt={enrollment.course_name}
+                                        className="w-10 h-10 rounded object-cover"
+                                      />
+                                    )}
+                                    <div className="flex-1">
+                                      <p className="text-sm font-medium text-purple-800">{enrollment.course_name}</p>
+                                      <div className="flex flex-wrap items-center gap-2 text-xs text-purple-600">
+                                        <span>Enrolled: {enrollment.enrolled_at ? new Date(enrollment.enrolled_at).toLocaleDateString() : 'Unknown'}</span>
+                                        {enrollment.progress_percentage > 0 && (
+                                          <span className="text-green-600">• {enrollment.progress_percentage}% complete</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      onClick={async () => {
+                                        if (!confirm(`Remove ${enrollment.course_name} enrollment for ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
+                                          return;
+                                        }
+                                        
+                                        try {
+                                          const response = await fetch(`/api/admin/course-enrollments/${enrollment.id}`, {
+                                            method: 'DELETE',
+                                          });
+
+                                          if (!response.ok) {
+                                            const errorData = await response.json();
+                                            throw new Error(errorData.message || 'Failed to remove enrollment');
+                                          }
+
+                                          await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
+                                          toast({
+                                            variant: "success",
+                                            title: "Success",
+                                            description: `Removed ${enrollment.course_name} enrollment successfully`,
+                                          });
+                                        } catch (error) {
+                                          toast({
+                                            variant: "destructive",
+                                            title: "Error",
+                                            description: error instanceof Error ? error.message : "Failed to remove enrollment",
+                                          });
+                                        }
+                                      }}
+                                      data-testid={`button-remove-course-enrollment-${enrollment.id}`}
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                    </Button>
+                                  </div>
+                                  
+                                  {/* Validity Period */}
+                                  <div className={`p-2 rounded-lg mb-2 ${isExpired ? 'bg-red-50 border border-red-200' : enrollment.expires_at ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'}`}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <div className={`w-2 h-2 rounded-full ${isExpired ? 'bg-red-500' : enrollment.expires_at ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                                      <p className={`text-xs font-medium ${isExpired ? 'text-red-700' : enrollment.expires_at ? 'text-green-700' : 'text-gray-600'}`}>
+                                        {isExpired ? 'Expired' : enrollment.expires_at ? 'Active' : 'No Expiry Set'}
+                                      </p>
+                                    </div>
+                                    {enrollment.expires_at && (
+                                      <p className={`text-xs ${isExpired ? 'text-red-600' : 'text-green-600'}`}>
+                                        {isExpired ? 'Expired' : 'Expires'}: {new Date(enrollment.expires_at).toLocaleDateString('en-US', { 
+                                          year: 'numeric', 
+                                          month: 'long', 
+                                          day: 'numeric' 
+                                        })}
+                                      </p>
                                     )}
                                   </div>
+
+                                  {/* Extend Validity Buttons */}
+                                  <div className="flex gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex-1 text-xs"
+                                      onClick={async () => {
+                                        try {
+                                          const response = await fetch(`/api/admin/course-enrollments/${enrollment.id}`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ extendMonths: 3 }),
+                                          });
+
+                                          if (!response.ok) {
+                                            const errorData = await response.json();
+                                            throw new Error(errorData.message || 'Failed to extend validity');
+                                          }
+
+                                          await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
+                                          toast({
+                                            variant: "success",
+                                            title: "Success",
+                                            description: `Extended ${enrollment.course_name} validity by 3 months`,
+                                          });
+                                        } catch (error) {
+                                          toast({
+                                            variant: "destructive",
+                                            title: "Error",
+                                            description: error instanceof Error ? error.message : "Failed to extend validity",
+                                          });
+                                        }
+                                      }}
+                                      data-testid={`button-extend-course-3months-${enrollment.id}`}
+                                    >
+                                      +3 Months
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex-1 text-xs"
+                                      onClick={async () => {
+                                        try {
+                                          const response = await fetch(`/api/admin/course-enrollments/${enrollment.id}`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ extendMonths: 12 }),
+                                          });
+
+                                          if (!response.ok) {
+                                            const errorData = await response.json();
+                                            throw new Error(errorData.message || 'Failed to extend validity');
+                                          }
+
+                                          await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
+                                          toast({
+                                            variant: "success",
+                                            title: "Success",
+                                            description: `Extended ${enrollment.course_name} validity by 12 months`,
+                                          });
+                                        } catch (error) {
+                                          toast({
+                                            variant: "destructive",
+                                            title: "Error",
+                                            description: error instanceof Error ? error.message : "Failed to extend validity",
+                                          });
+                                        }
+                                      }}
+                                      data-testid={`button-extend-course-12months-${enrollment.id}`}
+                                    >
+                                      +12 Months
+                                    </Button>
+                                  </div>
                                 </div>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                  onClick={async () => {
-                                    if (!confirm(`Remove ${enrollment.course_name} enrollment for ${selectedMember.firstName} ${selectedMember.lastName}?`)) {
-                                      return;
-                                    }
-                                    
-                                    try {
-                                      const response = await fetch(`/api/admin/course-enrollments/${enrollment.id}`, {
-                                        method: 'DELETE',
-                                      });
-
-                                      if (!response.ok) {
-                                        const errorData = await response.json();
-                                        throw new Error(errorData.message || 'Failed to remove enrollment');
-                                      }
-
-                                      await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
-                                      toast({
-                                        variant: "success",
-                                        title: "Success",
-                                        description: `Removed ${enrollment.course_name} enrollment successfully`,
-                                      });
-                                    } catch (error) {
-                                      toast({
-                                        variant: "destructive",
-                                        title: "Error",
-                                        description: error instanceof Error ? error.message : "Failed to remove enrollment",
-                                      });
-                                    }
-                                  }}
-                                  data-testid={`button-remove-course-enrollment-${enrollment.id}`}
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                </Button>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                       )}
 
-                      <div>
-                        <Label>Add Course</Label>
-                        <div className="flex gap-2 mt-1">
+                      <div className="space-y-3">
+                        <div>
+                          <Label>Add Course</Label>
                           <Select 
                             value={selectedCourseForMember}
                             onValueChange={setSelectedCourseForMember}
                           >
-                            <SelectTrigger className="flex-1">
+                            <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select course to enroll" />
                             </SelectTrigger>
                             <SelectContent>
@@ -2126,46 +2225,84 @@ export default function Admin() {
                                 ))}
                             </SelectContent>
                           </Select>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            disabled={!selectedCourseForMember || selectedCourseForMember === 'none'}
-                            onClick={async () => {
-                              if (!selectedCourseForMember || selectedCourseForMember === 'none') return;
-                              
-                              try {
-                                const response = await apiRequest("POST", `/api/admin/users/${selectedMember.id}/course-enrollments`, {
-                                  courseId: selectedCourseForMember,
-                                });
-
-                                if (!response.ok) {
-                                  const errorData = await response.json();
-                                  throw new Error(errorData.message || 'Failed to enroll in course');
-                                }
-
-                                await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
-                                setSelectedCourseForMember('');
-                                
-                                const courseName = allCourses.find(c => c.id === selectedCourseForMember)?.name || 'course';
-                                toast({
-                                  variant: "success",
-                                  title: "Success",
-                                  description: `Enrolled ${selectedMember.firstName} in ${courseName}`,
-                                });
-                              } catch (error) {
-                                toast({
-                                  variant: "destructive",
-                                  title: "Error",
-                                  description: error instanceof Error ? error.message : "Failed to enroll in course",
-                                });
-                              }
-                            }}
-                            data-testid="button-add-course-enrollment"
-                          >
-                            <Plus className="w-4 h-4 mr-1" /> Add
-                          </Button>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        
+                        {selectedCourseForMember && selectedCourseForMember !== 'none' && (
+                          <>
+                            <div>
+                              <Label>Access Duration</Label>
+                              <Select 
+                                value={courseEnrollmentDuration}
+                                onValueChange={setCourseEnrollmentDuration}
+                              >
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue placeholder="Select duration" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="3">3 Months</SelectItem>
+                                  <SelectItem value="6">6 Months</SelectItem>
+                                  <SelectItem value="12">12 Months</SelectItem>
+                                  <SelectItem value="lifetime">Lifetime Access</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <p className="text-xs text-gray-500 mt-1">
+                                How long the user will have access to this course
+                              </p>
+                            </div>
+                            
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="w-full"
+                              onClick={async () => {
+                                if (!selectedCourseForMember || selectedCourseForMember === 'none') return;
+                                
+                                try {
+                                  let expiresAt = null;
+                                  if (courseEnrollmentDuration !== 'lifetime') {
+                                    const months = parseInt(courseEnrollmentDuration);
+                                    const expiry = new Date();
+                                    expiry.setMonth(expiry.getMonth() + months);
+                                    expiresAt = expiry.toISOString();
+                                  }
+                                  
+                                  const response = await apiRequest("POST", `/api/admin/users/${selectedMember.id}/course-enrollments`, {
+                                    courseId: selectedCourseForMember,
+                                    expiresAt,
+                                  });
+
+                                  if (!response.ok) {
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.message || 'Failed to enroll in course');
+                                  }
+
+                                  await queryClient.refetchQueries({ queryKey: ["/api/admin/users", selectedMember.id, "course-enrollments"] });
+                                  setSelectedCourseForMember('');
+                                  setCourseEnrollmentDuration('3');
+                                  
+                                  const courseName = allCourses.find(c => c.id === selectedCourseForMember)?.name || 'course';
+                                  const durationText = courseEnrollmentDuration === 'lifetime' ? 'with lifetime access' : `for ${courseEnrollmentDuration} months`;
+                                  toast({
+                                    variant: "success",
+                                    title: "Success",
+                                    description: `Enrolled ${selectedMember.firstName} in ${courseName} ${durationText}`,
+                                  });
+                                } catch (error) {
+                                  toast({
+                                    variant: "destructive",
+                                    title: "Error",
+                                    description: error instanceof Error ? error.message : "Failed to enroll in course",
+                                  });
+                                }
+                              }}
+                              data-testid="button-add-course-enrollment"
+                            >
+                              <Plus className="w-4 h-4 mr-1" /> Add Course Enrollment
+                            </Button>
+                          </>
+                        )}
+                        
+                        <p className="text-xs text-gray-500">
                           Enroll user in a course (only published courses shown, already enrolled courses hidden)
                         </p>
                       </div>

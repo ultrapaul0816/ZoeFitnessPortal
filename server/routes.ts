@@ -5491,6 +5491,59 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // Update/extend course enrollment validity (admin)
+  app.patch("/api/admin/course-enrollments/:enrollmentId", requireAdmin, async (req, res) => {
+    try {
+      const { enrollmentId } = req.params;
+      const { expiresAt, extendMonths, hasWhatsAppSupport } = req.body;
+
+      // Get current enrollment
+      const currentEnrollment = await storage.db.execute(sql`
+        SELECT * FROM course_enrollments WHERE id = ${enrollmentId}
+      `);
+
+      if (currentEnrollment.rows.length === 0) {
+        return res.status(404).json({ message: "Enrollment not found" });
+      }
+
+      const enrollment = currentEnrollment.rows[0];
+
+      // Calculate new expiry date
+      let newExpiresAt = enrollment.expires_at;
+      
+      if (extendMonths) {
+        const baseDate = enrollment.expires_at ? new Date(enrollment.expires_at) : new Date();
+        if (baseDate < new Date()) {
+          // If expired, extend from today
+          newExpiresAt = new Date();
+        } else {
+          newExpiresAt = new Date(baseDate);
+        }
+        newExpiresAt.setMonth(newExpiresAt.getMonth() + extendMonths);
+      } else if (expiresAt) {
+        newExpiresAt = new Date(expiresAt);
+      }
+
+      await storage.db.execute(sql`
+        UPDATE course_enrollments 
+        SET expires_at = ${newExpiresAt}
+        WHERE id = ${enrollmentId}
+      `);
+
+      const result = await storage.db.execute(sql`
+        SELECT ce.*, c.name as course_name, c.description as course_description, c.image_url as course_image_url
+        FROM course_enrollments ce
+        JOIN courses c ON ce.course_id = c.id
+        WHERE ce.id = ${enrollmentId}
+      `);
+
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating course enrollment:", error);
+      res.status(500).json({ message: "Failed to update course enrollment" });
+    }
+  });
+
   // Remove a user from a course (admin)
   app.delete("/api/admin/course-enrollments/:enrollmentId", requireAdmin, async (req, res) => {
     try {
