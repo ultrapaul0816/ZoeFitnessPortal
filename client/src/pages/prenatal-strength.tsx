@@ -31,11 +31,10 @@ import {
   Scale,
   Target,
   CheckCircle2,
-  Star,
-  Droplets,
-  Leaf
+  Star
 } from "lucide-react";
 import type { User } from "@shared/schema";
+import NutritionSection from "@/components/program-sections/NutritionSection";
 
 export default function PrenatalStrengthPage() {
   const [, navigate] = useLocation();
@@ -246,7 +245,7 @@ export default function PrenatalStrengthPage() {
                   </TabsTrigger>
                   <TabsTrigger value="trimester1" data-testid="tab-trimester1" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
                     <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Trim 1</span>
+                    <span className="font-medium text-center leading-tight">Trimester 1</span>
                   </TabsTrigger>
                   <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
                     <Apple className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
@@ -751,51 +750,22 @@ export default function PrenatalStrengthPage() {
 
           {/* NUTRITION TAB */}
           <TabsContent value="nutrition" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-teal-50 border-teal-200 shadow-lg">
-              <CardContent className="p-6">
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full mb-4 shadow-lg">
-                    <Apple className="w-7 h-7 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-teal-800 mb-2">Nutrition & Hydration</h2>
-                  <p className="text-gray-600">Fuel your body and baby with proper nutrition</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="bg-teal-100 border border-teal-300 rounded-lg p-4">
-                    <h4 className="font-bold text-teal-800 mb-2 flex items-center gap-2"><Leaf className="w-5 h-5" /> Eating for Two (But Not Really)</h4>
-                    <p className="text-sm text-teal-700">You don't need to double your food intake during pregnancy. Focus on nutrient-dense foods that support your baby's development and your energy levels. Quality over quantity is key.</p>
-                  </div>
-
-                  <div className="bg-emerald-100 border border-emerald-300 rounded-lg p-4">
-                    <h4 className="font-bold text-emerald-800 mb-2">Essential Nutrients</h4>
-                    <ul className="text-sm text-emerald-700 space-y-1">
-                      <li>• <strong>Folate:</strong> Leafy greens, citrus fruits, fortified cereals</li>
-                      <li>• <strong>Iron:</strong> Lean meats, beans, spinach</li>
-                      <li>• <strong>Calcium:</strong> Dairy, fortified plant milks, leafy greens</li>
-                      <li>• <strong>Protein:</strong> Eggs, lean meats, legumes, nuts</li>
-                      <li>• <strong>Omega-3s:</strong> Fatty fish, walnuts, flaxseeds</li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
-                    <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2"><Droplets className="w-5 h-5" /> Staying Hydrated</h4>
-                    <p className="text-sm text-blue-700">Aim for 8-10 glasses of water daily. Proper hydration helps with energy, digestion, and prevents common pregnancy discomforts like constipation and headaches. Listen to your body and drink when thirsty.</p>
-                  </div>
-
-                  <div className="bg-amber-100 border border-amber-300 rounded-lg p-4">
-                    <h4 className="font-bold text-amber-800 mb-2 flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Foods to Avoid</h4>
-                    <ul className="text-sm text-amber-700 space-y-1">
-                      <li>• Raw or undercooked meats and eggs</li>
-                      <li>• High-mercury fish (shark, swordfish, king mackerel)</li>
-                      <li>• Unpasteurized dairy and juices</li>
-                      <li>• Excessive caffeine (limit to 200mg/day)</li>
-                      <li>• Alcohol</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <NutritionSection 
+              canGoNext={canGoNext}
+              canGoPrevious={canGoPrevious}
+              navigateToNextTab={navigateToNextTab}
+              navigateToPreviousTab={navigateToPreviousTab}
+              getNavigationText={(direction: 'prev' | 'next') => {
+                const currentIndex = tabOrder.indexOf(activeTab);
+                if (direction === 'prev' && currentIndex > 0) {
+                  return getTabName(tabOrder[currentIndex - 1]);
+                }
+                if (direction === 'next' && currentIndex < tabOrder.length - 1) {
+                  return getTabName(tabOrder[currentIndex + 1]);
+                }
+                return '';
+              }}
+            />
           </TabsContent>
 
           {/* POSTPARTUM PREP TAB */}
