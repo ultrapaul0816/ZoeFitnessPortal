@@ -830,7 +830,7 @@ export default function Dashboard() {
                 return (
                   <div key={enrollment.id} className="w-full max-w-md">
                     <button
-                      onClick={() => setLocation(`/course/${enrollment.course_id}`)}
+                      onClick={() => setLocation(`/courses/${enrollment.course_id}`)}
                       className={`w-full bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-200'} hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left`}
                       data-testid={`button-view-course-${enrollment.course_id}`}
                     >
