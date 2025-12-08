@@ -80,9 +80,18 @@ The platform supports multiple courses with a flexible structure.
 -   **Free Navigation**: Users can freely navigate content without locked progression, and educational modules are optional.
 
 **User-Facing Course Experience**:
+-   **Dashboard Course Cards**: The dashboard dynamically displays all enrolled courses as clickable cards with course image, name, description, weeks, difficulty, progress bar, and access status. Expired courses show a visual overlay and disabled state.
 -   **My Courses Page**: Displays enrolled and browsable courses with progress tracking.
 -   **Course Viewer**: Full course content display with expandable modules/sections and rich structured workout displays.
 -   **Navigation**: "My Courses" link added to profile settings menu.
+
+**Admin Course Enrollment Management**:
+-   **Course Enrollment in Member Edit**: Admins can enroll/unenroll users in courses directly from the member edit panel. Features include:
+    - View currently enrolled courses with validity status (Active/Expired/No Expiry Set)
+    - Add new course enrollment with configurable duration (3, 6, 12 months, or Lifetime)
+    - Extend course validity by 3 or 12 months for existing enrollments
+    - Remove course enrollments
+-   **API Endpoints**: `/api/my-course-enrollments` for user's own enrollments, `/api/admin/users/:userId/course-enrollments` for admin management, with PATCH support for extending validity.
 
 **Heal Your Core Course Migration**: The original 6-week program has been migrated to the new course system as "Heal Your Core" course, comprising 11 modules and 39 exercises.
 

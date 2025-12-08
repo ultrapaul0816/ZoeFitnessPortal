@@ -1309,6 +1309,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's course enrollments (for logged-in user)
+  app.get("/api/my-course-enrollments", async (req, res) => {
+    try {
+      const user = req.session?.user || (req as any).user;
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const enrollments = await storage.db.execute(sql`
+        SELECT 
+          ce.id,
+          ce.user_id,
+          ce.course_id,
+          ce.enrolled_at,
+          ce.expires_at,
+          ce.status,
+          ce.progress_percentage,
+          ce.completed_at,
+          c.name as course_name,
+          c.description as course_description,
+          c.image_url as course_image_url,
+          c.weeks_count as course_weeks,
+          c.difficulty as course_difficulty,
+          c.course_type as course_type,
+          c.status as course_status
+        FROM course_enrollments ce
+        JOIN courses c ON ce.course_id = c.id
+        WHERE ce.user_id = ${user.id}
+        AND c.status = 'published'
+        ORDER BY ce.enrolled_at DESC
+      `);
+
+      res.json(enrollments.rows);
+    } catch (error) {
+      console.error("Error fetching user course enrollments:", error);
+      res.status(500).json({ message: "Failed to fetch course enrollments" });
+    }
+  });
+
   // Workouts
   app.get("/api/workouts/:programId", async (req, res) => {
     try {

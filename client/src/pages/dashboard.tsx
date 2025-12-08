@@ -175,6 +175,28 @@ export default function Dashboard() {
     enabled: !!user?.id,
   });
 
+  // Fetch user's enrolled courses
+  const { data: courseEnrollments = [] } = useQuery<Array<{
+    id: string;
+    user_id: string;
+    course_id: string;
+    enrolled_at: string;
+    expires_at: string | null;
+    status: string;
+    progress_percentage: number;
+    completed_at: string | null;
+    course_name: string;
+    course_description: string | null;
+    course_image_url: string | null;
+    course_weeks: number | null;
+    course_difficulty: string | null;
+    course_type: string | null;
+    course_status: string;
+  }>>({
+    queryKey: ["/api/my-course-enrollments"],
+    enabled: !!user?.id,
+  });
+
   const { data: notifications = [] } = useQuery<Notification[]>({
     queryKey: ["/api/notifications", user?.id],
     enabled: !!user?.id,
@@ -800,8 +822,112 @@ export default function Dashboard() {
           </section>
         )}
 
-        {/* Program Access Card - Full design matching the original */}
-        {memberPrograms.length > 0 && (
+        {/* Enrolled Courses Cards */}
+        {courseEnrollments.length > 0 && (
+          <section className="mb-8">
+            <div className="flex flex-wrap justify-center gap-6">
+              {courseEnrollments.map((enrollment) => {
+                const isExpired = enrollment.expires_at && new Date(enrollment.expires_at) < new Date();
+                return (
+                  <div key={enrollment.id} className="w-full max-w-md">
+                    <button
+                      onClick={() => setLocation(`/course/${enrollment.course_id}`)}
+                      className={`w-full bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-200'} hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left`}
+                      data-testid={`button-view-course-${enrollment.course_id}`}
+                    >
+                      {/* Course Cover Image */}
+                      <div className="relative w-full aspect-[4/5] overflow-hidden">
+                        {enrollment.course_image_url ? (
+                          <img 
+                            src={enrollment.course_image_url} 
+                            alt={enrollment.course_name} 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
+                            <BookOpen className="w-16 h-16 text-white opacity-50" />
+                          </div>
+                        )}
+                        {isExpired && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <span className="bg-red-500 text-white px-4 py-2 rounded-full font-medium">Access Expired</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Course Details */}
+                      <div className="p-5 space-y-4">
+                        <h3 className="text-xl font-bold text-gray-900">{enrollment.course_name}</h3>
+                        {enrollment.course_description && (
+                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                            {enrollment.course_description}
+                          </p>
+                        )}
+                        
+                        {/* Course Info */}
+                        <div className="space-y-2 pt-2">
+                          {enrollment.course_weeks && (
+                            <div className="flex items-center gap-2 text-gray-700">
+                              <Calendar className="w-4 h-4 text-pink-500" />
+                              <span className="text-sm">{enrollment.course_weeks} Weeks</span>
+                            </div>
+                          )}
+                          {enrollment.course_difficulty && (
+                            <div className="flex items-center gap-2 text-gray-700">
+                              <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
+                              <span className="text-sm capitalize">{enrollment.course_difficulty} level</span>
+                            </div>
+                          )}
+                          {enrollment.course_type && (
+                            <div className="flex items-center gap-2 text-gray-700">
+                              <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">🏋️</span>
+                              <span className="text-sm capitalize">{enrollment.course_type}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Progress & Access Badge */}
+                        <div className="pt-2 space-y-2">
+                          {enrollment.progress_percentage > 0 && (
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full transition-all"
+                                  style={{ width: `${enrollment.progress_percentage}%` }}
+                                />
+                              </div>
+                              <span className="text-xs font-medium text-gray-600">{enrollment.progress_percentage}%</span>
+                            </div>
+                          )}
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 border ${isExpired ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'} text-sm font-medium rounded-full`}>
+                            <span>{isExpired ? '⚠️' : '☆'}</span> {isExpired ? 'Expired' : 'Premium Access'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Continue Button */}
+                      <div className="px-5 pb-5">
+                        <div className={`w-full py-3 ${isExpired ? 'bg-gray-400' : 'bg-gradient-to-r from-purple-500 to-pink-500'} text-white font-semibold rounded-lg flex items-center justify-center gap-2`}>
+                          <Play className="w-4 h-4" />
+                          {isExpired ? 'Contact Support' : enrollment.progress_percentage > 0 ? 'Continue' : 'Start Course'}
+                        </div>
+                        {!isExpired && (
+                          <p className="text-center text-green-600 text-sm mt-2 flex items-center justify-center gap-1">
+                            <CheckCircle className="w-4 h-4" />
+                            You have full access to this course
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Legacy Program Access Card (for backward compatibility) */}
+        {memberPrograms.length > 0 && courseEnrollments.length === 0 && (
           <section className="mb-8 flex justify-center">
             <div className="w-full max-w-md">
               <button
@@ -809,7 +935,6 @@ export default function Dashboard() {
                 className="w-full bg-white rounded-2xl border border-gray-200 hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left"
                 data-testid="button-view-full-program"
               >
-                {/* Program Cover Image - Tall aspect ratio */}
                 <div className="relative w-full aspect-[4/5] overflow-hidden">
                   <img 
                     src={PROGRAM_IMAGE_URL} 
@@ -817,15 +942,11 @@ export default function Dashboard() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                
-                {/* Program Details */}
                 <div className="p-5 space-y-4">
                   <h3 className="text-xl font-bold text-gray-900">Your Postpartum Strength Recovery Program</h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
                     A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.
                   </p>
-                  
-                  {/* Program Info */}
                   <div className="space-y-2 pt-2">
                     <div className="flex items-center gap-2 text-gray-700">
                       <Calendar className="w-4 h-4 text-pink-500" />
@@ -835,21 +956,13 @@ export default function Dashboard() {
                       <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
                       <span className="text-sm">Postnatal level</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">🏋️</span>
-                      <span className="text-sm">Minimal Equipment</span>
-                    </div>
                   </div>
-                  
-                  {/* Premium Access Badge */}
                   <div className="pt-2">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-green-500 text-green-600 text-sm font-medium rounded-full">
                       <span>☆</span> Premium Access
                     </span>
                   </div>
                 </div>
-                
-                {/* Continue Button */}
                 <div className="px-5 pb-5">
                   <div className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg flex items-center justify-center gap-2">
                     <Play className="w-4 h-4" />
@@ -866,7 +979,7 @@ export default function Dashboard() {
         )}
 
         {/* No Programs Message */}
-        {memberPrograms.length === 0 && (
+        {memberPrograms.length === 0 && courseEnrollments.length === 0 && (
           <section className="mb-8">
             <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl p-8 shadow-lg border border-pink-200 text-center">
               <p className="text-gray-500 text-lg">No programs assigned yet.</p>
