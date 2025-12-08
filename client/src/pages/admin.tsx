@@ -1904,6 +1904,63 @@ export default function Admin() {
                     )}
                   </div>
 
+                  {/* Enrolled Courses */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
+                      <div className="w-1 h-4 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full"></div>
+                      Enrolled Courses
+                    </h4>
+                    
+                    {memberCourseEnrollments.length > 0 ? (
+                      <div className="space-y-2">
+                        {memberCourseEnrollments.map((enrollment: any) => (
+                          <div key={enrollment.id} className="p-3 bg-white border-2 border-purple-100 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                {enrollment.course_image_url && (
+                                  <img 
+                                    src={enrollment.course_image_url} 
+                                    alt={enrollment.course_name}
+                                    className="w-10 h-10 rounded object-cover"
+                                  />
+                                )}
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-purple-800">{enrollment.course_name}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Enrolled: {enrollment.enrolled_at ? new Date(enrollment.enrolled_at).toLocaleDateString() : 'Unknown'}
+                                  </p>
+                                  {enrollment.progress_percentage > 0 && (
+                                    <div className="mt-1">
+                                      <div className="flex items-center gap-2">
+                                        <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                                          <div 
+                                            className="bg-purple-500 h-1.5 rounded-full transition-all" 
+                                            style={{ width: `${enrollment.progress_percentage}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-xs font-medium text-purple-600">{enrollment.progress_percentage}%</span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              {enrollment.expires_at && (
+                                <div className="text-right">
+                                  <p className="text-xs text-muted-foreground">Expires</p>
+                                  <p className="text-xs font-medium">
+                                    {new Date(enrollment.expires_at).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No courses enrolled</p>
+                    )}
+                  </div>
+
                   {/* WhatsApp Community */}
                   <div className="space-y-4">
                     <h4 className="font-semibold text-sm text-pink-700 uppercase tracking-wide flex items-center gap-2">
