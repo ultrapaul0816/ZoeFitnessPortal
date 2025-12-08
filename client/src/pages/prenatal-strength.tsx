@@ -11,18 +11,24 @@ import {
   Dumbbell, 
   ArrowLeft, 
   Heart,
-  Calendar,
   Baby,
-  Apple,
-  Brain,
   Menu,
   Sparkles,
-  HelpCircle,
   ChevronRight,
   ChevronLeft,
-  Video,
-  FileText,
-  ExternalLink
+  AlertTriangle,
+  BookOpen,
+  Calendar,
+  Clock,
+  Timer,
+  Zap,
+  Shield,
+  Stethoscope,
+  Hand,
+  Scale,
+  Target,
+  CheckCircle2,
+  Star
 } from "lucide-react";
 import type { User } from "@shared/schema";
 
@@ -34,7 +40,7 @@ export default function PrenatalStrengthPage() {
   const prevActiveTabRef = useRef(activeTab);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-  const tabOrder = ["start-here", "understanding", "trimester1", "trimester2", "trimester3", "nutrition", "postpartum", "faqs"];
+  const tabOrder = ["start-here", "trimester1"];
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -83,13 +89,7 @@ export default function PrenatalStrengthPage() {
   const getTabName = (tabValue: string) => {
     const tabNames: Record<string, string> = {
       'start-here': 'Start Here',
-      'understanding': 'Your Body',
-      'trimester1': 'Trimester 1',
-      'trimester2': 'Trimester 2',
-      'trimester3': 'Trimester 3',
-      'nutrition': 'Nutrition',
-      'postpartum': 'Postpartum Prep',
-      'faqs': 'FAQs'
+      'trimester1': 'Trimester 1'
     };
     return tabNames[tabValue] || tabValue;
   };
@@ -110,62 +110,23 @@ export default function PrenatalStrengthPage() {
     );
   }
 
-  const course = (courseData as any)?.course;
-  const modules = (courseData as any)?.modules || [];
+  const programOptions = [
+    { program: "Program 1", days: "5 Days", theme: "Feeling Fierce", themeDesc: "High energy, full-body, strong", workout: "Strength & Flow", workoutDesc: "Full-body strength with breath + mobility", color: "from-pink-500 to-rose-600" },
+    { program: "Program 2", days: "4 Days", theme: "Steady & Strong", themeDesc: "Moderate energy, focused effort", workout: "Balanced Strength", workoutDesc: "Strength focus with mobility support", color: "from-purple-500 to-indigo-600" },
+    { program: "Program 3", days: "3 Days", theme: "Balanced & Easy", themeDesc: "Manageable pace, gentle strength", workout: "Gentle Strength", workoutDesc: "Light full body + glutes/core", color: "from-blue-500 to-cyan-600" },
+    { program: "Program 4", days: "2 Days", theme: "Gentle Flow", themeDesc: "For tired, sore, or low-energy days", workout: "Soft Strength", workoutDesc: "Seated/standing light movement", color: "from-teal-500 to-emerald-600" },
+    { program: "Program 5", days: "3 Days", theme: "Pick & Play", themeDesc: "For variety/freedom to mix & match", workout: "Build Your Own", workoutDesc: "Choose from workout menus", color: "from-amber-500 to-orange-600" },
+  ];
 
-  const getModuleContent = (moduleId: string) => {
-    return modules.find((m: any) => m.id === moduleId);
-  };
-
-  const renderModuleContent = (moduleData: any) => {
-    if (!moduleData) return <p className="text-gray-500">Content coming soon...</p>;
-    
-    const sections = moduleData.sections || [];
-    
-    return (
-      <div className="space-y-4">
-        {sections.map((section: any, idx: number) => (
-          <Accordion key={section.id || idx} type="single" collapsible>
-            <AccordionItem value={section.id || `section-${idx}`} className="border rounded-lg bg-white shadow-sm">
-              <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-sm font-bold">
-                    {idx + 1}
-                  </span>
-                  <span className="font-medium text-gray-800">{section.name}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                {section.description && (
-                  <p className="text-gray-600 mb-4">{section.description}</p>
-                )}
-                {section.contentItems && section.contentItems.length > 0 && (
-                  <div className="space-y-3">
-                    {section.contentItems.map((item: any) => (
-                      <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                        {item.content_type === 'video' && <Video className="w-5 h-5 text-blue-500" />}
-                        {item.content_type === 'text' && <FileText className="w-5 h-5 text-gray-500" />}
-                        {item.content_type === 'pdf' && <FileText className="w-5 h-5 text-red-500" />}
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{item.title}</p>
-                          {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
-                        </div>
-                        {item.video_url && (
-                          <a href={item.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        ))}
-      </div>
-    );
-  };
+  const exampleWeekPlan = [
+    { day: "Monday", focus: "Workout 1" },
+    { day: "Tuesday", focus: "Rest / Leisure Movement" },
+    { day: "Wednesday", focus: "Workout 2" },
+    { day: "Thursday", focus: "Light Cardio / Walk" },
+    { day: "Friday", focus: "Workout 3" },
+    { day: "Saturday", focus: "Rest / Stretch / Leisure" },
+    { day: "Sunday", focus: "Workout 4" },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -236,7 +197,7 @@ export default function PrenatalStrengthPage() {
                   </div>
                   <div className="text-left flex-1">
                     <h3 className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-700 bg-clip-text text-transparent">Hello {user.firstName}!</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 font-medium mt-0.5">Stay strong and healthy during your pregnancy</p>
+                    <p className="text-xs sm:text-sm text-gray-600 font-medium mt-0.5">Pregnancy with Zoe - Trimester 1</p>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
@@ -253,11 +214,11 @@ export default function PrenatalStrengthPage() {
                 <div className="flex items-center justify-between text-xs sm:text-sm">
                   <div className="flex items-center space-x-2">
                     <Baby className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
-                    <span className="text-gray-700 font-medium">Your prenatal fitness journey</span>
+                    <span className="text-gray-700 font-medium">Weeks 1-13 Prenatal Workouts</span>
                   </div>
                   <div className="flex items-center space-x-1 flex-shrink-0">
                     <Sparkles className="w-3 h-3 text-purple-400" />
-                    <span className="text-purple-600 font-semibold text-xs">12-Week Program</span>
+                    <span className="text-purple-600 font-semibold text-xs">Trimester 1</span>
                   </div>
                 </div>
               </div>
@@ -265,38 +226,14 @@ export default function PrenatalStrengthPage() {
             
             <div className="overflow-x-auto scrollbar-hide px-0">
               <div className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
-                <TabsList className="tab-flow-container flex gap-2 sm:gap-3 md:gap-4 h-auto bg-transparent border-0 shadow-none w-max md:w-full md:grid md:grid-cols-8 mx-0">
-                  <TabsTrigger value="start-here" data-testid="tab-start-here" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                <TabsList className="tab-flow-container flex gap-2 sm:gap-3 md:gap-4 h-auto bg-transparent border-0 shadow-none w-max md:w-full md:grid md:grid-cols-2 mx-0">
+                  <TabsTrigger value="start-here" data-testid="tab-start-here" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[70px] min-w-[120px] sm:min-w-[140px] md:min-w-[180px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6 mb-1 sm:mb-2" />
                     <span className="font-medium text-center leading-tight">Start Here</span>
                   </TabsTrigger>
-                  <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Brain className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Your Body</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="trimester1" data-testid="tab-trimester1" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Trim 1</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="trimester2" data-testid="tab-trimester2" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Trim 2</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="trimester3" data-testid="tab-trimester3" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Heart className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Trim 3</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Apple className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Nutrition</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="postpartum" data-testid="tab-postpartum" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Baby className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Postpartum</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">FAQs</span>
+                  <TabsTrigger value="trimester1" data-testid="tab-trimester1" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[70px] min-w-[120px] sm:min-w-[140px] md:min-w-[180px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Trimester 1 Workouts</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -321,12 +258,12 @@ export default function PrenatalStrengthPage() {
                   const isAnimating = animatingNumber === index;
                   const isCurrentStep = index === currentIndex;
                   
-                  const colors = ['#c084fc', '#a78bfa', '#818cf8', '#6366f1', '#8b5cf6', '#14b8a6', '#f472b6', '#ec4899'];
+                  const colors = ['#c084fc', '#ec4899'];
                   
                   return (
                     <div 
                       key={tab}
-                      className={`relative w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 flex items-center justify-center text-xs sm:text-sm font-bold z-10 transition-all duration-500 ${
+                      className={`relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border-2 flex items-center justify-center text-sm sm:text-base font-bold z-10 transition-all duration-500 ${
                         isUnlocked ? 'text-white border-white shadow-lg' : 'bg-gray-300 text-gray-500 border-gray-200'
                       } ${isAnimating ? 'scale-125 shadow-2xl' : ''} ${isCurrentStep && isUnlocked ? 'ring-4 ring-white ring-opacity-50' : ''}`}
                       style={{
@@ -352,7 +289,7 @@ export default function PrenatalStrengthPage() {
                 <div className="marquee-content">
                   {Array.from({ length: 10 }).map((_, i) => (
                     <span key={i} className="text-xs text-gray-600 font-medium">
-                      <strong>IMPORTANT:</strong> Always consult your healthcare provider before starting any exercise program during pregnancy. Listen to your body and stop if you feel any discomfort.
+                      <strong>IMPORTANT:</strong> This guide is based on my personal experience and research as Zoe Modgill; it's not intended to replace professional medical advice, diagnosis, or treatment.
                     </span>
                   ))}
                 </div>
@@ -360,82 +297,382 @@ export default function PrenatalStrengthPage() {
             </div>
           </div>
 
-          <TabsContent value="start-here" className="mt-6">
+          {/* START HERE TAB */}
+          <TabsContent value="start-here" className="mt-6 space-y-6">
+            
+            {/* Section 1: Disclaimer */}
+            <Accordion type="single" collapsible defaultValue="disclaimer">
+              <AccordionItem value="disclaimer" className="border-2 border-amber-200 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 shadow-lg overflow-hidden">
+                <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-amber-100/50 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-md">
+                      <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg sm:text-xl font-bold text-amber-800">Disclaimer</h3>
+                      <p className="text-xs sm:text-sm text-amber-600">Important information before you begin</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-4 text-gray-700">
+                    <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-amber-200">
+                      <Stethoscope className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-amber-800">Consult Your Doctor</p>
+                        <p className="text-sm">Before beginning any exercise program or making dietary changes during pregnancy, consult your obstetrician, midwife, or healthcare provider, especially if you have a medical condition, complications in your pregnancy, or are new to physical activity.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-amber-200">
+                      <Hand className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-amber-800">Listen to Your Body</p>
+                        <p className="text-sm">Every pregnancy is unique. Pay close attention to how you feel during any activity. Stop exercising immediately if you experience pain, dizziness, shortness of breath, nausea, or any unusual symptoms. Always prioritize your comfort and safety.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-amber-200">
+                      <Shield className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-amber-800">Not a Medical Professional</p>
+                        <p className="text-sm">The content in this guide is based on professional training and experience in prenatal fitness and nutrition. However, I am not a licensed medical professional or registered dietitian. Recommendations in this guide are general and may not suit everyone.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-amber-200">
+                      <Scale className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-amber-800">Liability</p>
+                        <p className="text-sm">By using this guide, you assume full responsibility for your participation in any exercises, activities, or dietary adjustments. The author and publisher disclaim any liability for injuries, health conditions, or adverse effects resulting from the use or misuse of this guide.</p>
+                      </div>
+                    </div>
+                    <div className="bg-amber-100 border border-amber-300 rounded-lg p-4 mt-4">
+                      <p className="text-sm text-amber-800 italic font-medium">Your safety and well-being are of utmost importance. Always prioritize open communication with your healthcare provider and listen to your body's cues throughout your pregnancy journey.</p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            {/* Section 2: Welcome */}
+            <Accordion type="single" collapsible>
+              <AccordionItem value="welcome" className="border-2 border-pink-200 rounded-xl bg-gradient-to-br from-pink-50 to-rose-50 shadow-lg overflow-hidden">
+                <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-pink-100/50 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-md">
+                      <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg sm:text-xl font-bold text-pink-800">Welcome</h3>
+                      <p className="text-xs sm:text-sm text-pink-600">A message from Zoe</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-4 text-gray-700">
+                    <p className="text-lg font-medium text-pink-700">Dear Mama,</p>
+                    <p><span className="font-semibold">First of all — congratulations!</span> This guide isn't about pushing harder or striving for perfection. It's about moving with intention, honoring your changing body, and supporting your strength from the inside out.</p>
+                    <p>Each week of pregnancy may feel different — some days you're energised, other days just brushing your hair feels like a win. This plan meets you wherever you are.</p>
+                    <p>This guide was built for real life. For tired days, strong days, emotional days, and everything in between. Whether you're moving 2 days or 5, each plan will support your body, your core, and your energy — without overloading your system.</p>
+                    
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">
+                      <h4 className="font-bold text-purple-800 mb-2">Trimester 1 Training Overview</h4>
+                      <p className="text-sm">Training during the first trimester is all about setting a solid foundation for both your physical and mental well-being as you embark on this incredible journey of motherhood. It's a time to focus on gentle, consistent exercise that helps maintain your fitness level, manage stress, and prepare your body for the changes ahead. Incorporating a mix of strength training, cardio, and flexibility exercises can enhance your stamina, support your growing body, and boost your mood.</p>
+                      <p className="text-sm mt-2">Always listen to your body, modify exercises as needed, and prioritize rest and hydration. Remember, the goal is to stay active and healthy, not to push limits. Celebrate every small victory, knowing that each step you take is a step toward a healthier pregnancy and a stronger you.</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 mt-4 text-pink-600">
+                      <p className="font-medium">With love and warmth,</p>
+                    </div>
+                    <p className="text-xl font-bold text-pink-700">Zoe 💕</p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            {/* Section 3: How to Use This Workout Guide */}
+            <Accordion type="single" collapsible>
+              <AccordionItem value="how-to-use" className="border-2 border-purple-200 rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 shadow-lg overflow-hidden">
+                <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-purple-100/50 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center shadow-md">
+                      <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg sm:text-xl font-bold text-purple-800">How to Use This Workout Guide</h3>
+                      <p className="text-xs sm:text-sm text-purple-600">Choose the program that fits your energy</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-4">
+                    <p className="text-gray-700">This guide is designed to help you stay active, strong, and connected to your changing body in a way that's supportive, safe, and energizing. This guide is divided into 5 easy-to-follow programs, designed around how you feel each week — because energy, symptoms, and emotions can fluctuate daily in the first trimester.</p>
+                    
+                    <h4 className="font-bold text-purple-800 mt-4 mb-3">Here's an Overview:</h4>
+                    <div className="grid gap-3">
+                      {programOptions.map((prog, idx) => (
+                        <div key={idx} className={`bg-gradient-to-r ${prog.color} p-4 rounded-lg text-white shadow-md`}>
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl font-bold opacity-80">{idx + 1}</span>
+                              <div>
+                                <p className="font-bold">{prog.program} - {prog.days}</p>
+                                <p className="text-sm opacity-90">{prog.theme}</p>
+                                <p className="text-xs opacity-75">{prog.themeDesc}</p>
+                              </div>
+                            </div>
+                            <div className="text-right sm:text-left bg-white/20 rounded-lg px-3 py-2">
+                              <p className="font-semibold text-sm">{prog.workout}</p>
+                              <p className="text-xs opacity-90">{prog.workoutDesc}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="bg-purple-100 border border-purple-300 rounded-lg p-4 mt-4">
+                      <h4 className="font-bold text-purple-800 mb-2">How to Choose the Right Program</h4>
+                      <p className="text-sm text-purple-700 mb-3">Because the first trimester is unpredictable, this system is built to adapt with you. Here's how to decide:</p>
+                      <ul className="space-y-2 text-sm text-purple-700">
+                        <li className="flex items-center gap-2"><Zap className="w-4 h-4 text-pink-500" /> Feeling energetic and strong? → Go for <strong>Program 1</strong></li>
+                        <li className="flex items-center gap-2"><Target className="w-4 h-4 text-purple-500" /> Steady, moderate days? → Pick <strong>Program 2</strong></li>
+                        <li className="flex items-center gap-2"><Heart className="w-4 h-4 text-blue-500" /> Low to mid-energy? → Choose <strong>Program 3</strong></li>
+                        <li className="flex items-center gap-2"><Star className="w-4 h-4 text-teal-500" /> Exhausted or sore? → Try <strong>Program 4</strong></li>
+                        <li className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-amber-500" /> Want to create your own? → Use <strong>Program 5</strong></li>
+                      </ul>
+                      <p className="text-sm text-purple-600 mt-3 italic">There's no pressure — it's designed for flexibility and flow.</p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            {/* Section 4: How to Structure Your Week */}
+            <Accordion type="single" collapsible>
+              <AccordionItem value="structure-week" className="border-2 border-blue-200 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg overflow-hidden">
+                <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-blue-100/50 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center shadow-md">
+                      <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg sm:text-xl font-bold text-blue-800">How to Structure Your Week</h3>
+                      <p className="text-xs sm:text-sm text-blue-600">Plan your strength days and cardio</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-4">
+                    <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
+                      <h4 className="font-bold text-blue-800 flex items-center gap-2 mb-2"><span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span> Pick Your Base Program</h4>
+                      <p className="text-sm text-blue-700">Choose one of the 5 programs from the guide based on current energy, mood, schedule.</p>
+                      <p className="text-sm text-blue-600 mt-1">Within each workout you can opt for the beginner option where needed at any time.</p>
+                    </div>
+
+                    <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
+                      <h4 className="font-bold text-blue-800 flex items-center gap-2 mb-2"><span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span> Plan Your Strength Days</h4>
+                      <p className="text-sm text-blue-700">These will be your main workout days from the program you selected. Spread them out in the week.</p>
+                      <p className="text-sm text-blue-600 mt-1">Example: Mon | Wed | Fri | Sat (if doing a 4-day plan)</p>
+                    </div>
+
+                    <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
+                      <h4 className="font-bold text-blue-800 flex items-center gap-2 mb-2"><span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span> Where Cardio Fits In</h4>
+                      <p className="text-sm text-blue-700">Cardio is optional and should feel good - not exhausting. Add a brisk walk, light cardio flow, or outdoor leisure activity on rest or leisure days if it feels good.</p>
+                      <p className="text-sm text-blue-600 mt-1 italic">💬 Use the Talk Test: If you can hold a conversation while moving, you're in the safe zone.</p>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h5 className="font-bold text-green-800 mb-2 flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Safe Prenatal Cardio Options:</h5>
+                        <ul className="text-sm text-green-700 space-y-1">
+                          <li>• Brisk walking / running if you are used to it</li>
+                          <li>• Light cycling</li>
+                          <li>• Low-impact circuits</li>
+                        </ul>
+                      </div>
+                      <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                        <h5 className="font-bold text-teal-800 mb-2">On Leisure Movement Days:</h5>
+                        <p className="text-sm text-teal-700 mb-2">Move gently and joyfully:</p>
+                        <ul className="text-sm text-teal-700 space-y-1">
+                          <li>• Take a slow walk</li>
+                          <li>• Stretch lightly</li>
+                          <li>• Dance in your living room</li>
+                          <li>• Swim, garden, or clean with intention</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mt-4">
+                      <h5 className="font-bold text-indigo-800 mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /> Example Week Plan (For a 4-Day Steady & Strong Program)</h5>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                        {exampleWeekPlan.map((day, idx) => (
+                          <div key={idx} className={`p-2 rounded-lg text-center ${day.focus.includes('Workout') ? 'bg-pink-100 border border-pink-300' : 'bg-gray-100 border border-gray-200'}`}>
+                            <p className="font-bold text-xs text-gray-700">{day.day}</p>
+                            <p className={`text-xs mt-1 ${day.focus.includes('Workout') ? 'text-pink-700 font-medium' : 'text-gray-600'}`}>{day.focus}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                      <h5 className="font-bold text-purple-800 mb-2">On Rest Days:</h5>
+                      <p className="text-sm text-purple-700">Feet up, nap, meditate, relax — no pressure.</p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            {/* Section 5: How to Follow Your Daily Workout */}
+            <Accordion type="single" collapsible>
+              <AccordionItem value="daily-workout" className="border-2 border-teal-200 rounded-xl bg-gradient-to-br from-teal-50 to-emerald-50 shadow-lg overflow-hidden">
+                <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-teal-100/50 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full flex items-center justify-center shadow-md">
+                      <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg sm:text-xl font-bold text-teal-800">How to Follow Your Daily Workout</h3>
+                      <p className="text-xs sm:text-sm text-teal-600">Navigate exercises, reps, and modifications</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-4">
+                    <div className="bg-teal-100 border border-teal-300 rounded-lg p-4">
+                      <h4 className="font-bold text-teal-800 mb-3">How to Navigate Your Workout:</h4>
+                      <ul className="space-y-2 text-sm text-teal-700">
+                        <li><span className="font-semibold">Clickable Links for Exercises:</span> Each exercise is clickable. Simply click on the blue underlined exercise name to see a video demo with instructions.</li>
+                        <li><span className="font-semibold">Reps & Modifications:</span> The workout specifies the reps for each exercise. If you're new or need extra support, you can always modify by choosing a beginner option listed under each exercise.</li>
+                        <li><span className="font-semibold">Reps:</span> This is the number of times you'll repeat each movement. Example: 10-12 reps.</li>
+                        <li><span className="font-semibold">Beginner Option:</span> If needed, choose no weights or an easier modification.</li>
+                        <li><span className="font-semibold">Notes:</span> Each exercise has additional notes that guide you on form, posture, and breathwork.</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-emerald-100 border border-emerald-300 rounded-lg p-4">
+                      <h4 className="font-bold text-emerald-800 mb-3">How to Follow the Workout Program:</h4>
+                      <ul className="space-y-2 text-sm text-emerald-700">
+                        <li><span className="font-semibold">Warm-Up:</span> Start by doing the Warm-Up section first. Follow along with the video or instructions.</li>
+                        <li><span className="font-semibold">Main Workout:</span> (3 Rounds) Here, you'll be repeating each exercise for the specified rounds.</li>
+                        <li><span className="font-semibold">Time interval:</span> (45 seconds to 1 minute rest) between exercises. Use this time to recover but stay active by walking or stretching lightly.</li>
+                        <li><span className="font-semibold">Finisher Flow:</span> This part of the workout helps to cool down your body and relax.</li>
+                        <li><span className="font-semibold">Cool Down:</span> Finally, finish with the Cool Down to ensure your body recovers.</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <h4 className="font-bold text-yellow-800 mb-3">Adjustments & Precautions:</h4>
+                      <ul className="space-y-2 text-sm text-yellow-700">
+                        <li>• Listen to your body and adjust exercises if they don't feel comfortable.</li>
+                        <li>• Use lighter weights or no weights if necessary.</li>
+                        <li>• <span className="font-semibold">Advanced Modifications:</span> If you're feeling stronger or more experienced, you can increase your weight or reps to make the exercise more challenging.</li>
+                        <li>• Stay hydrated and take longer rests if fatigued.</li>
+                      </ul>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h5 className="font-bold text-blue-800 mb-2">Quick Access: Play All</h5>
+                        <p className="text-sm text-blue-700">To save time, you can use the Play All feature for the entire workout. This will play a video playlist of all the exercises in that section. It's a quick reference to follow the exercises seamlessly.</p>
+                      </div>
+                      <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
+                        <h5 className="font-bold text-pink-800 mb-2">Printing the Workout</h5>
+                        <p className="text-sm text-pink-700">Print the workout sheet and refer to it during your session. Write down your modifications or any personal notes for each exercise.</p>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            {/* Section 6: Rest Between Exercises */}
+            <Accordion type="single" collapsible>
+              <AccordionItem value="rest" className="border-2 border-rose-200 rounded-xl bg-gradient-to-br from-rose-50 to-pink-50 shadow-lg overflow-hidden">
+                <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-rose-100/50 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full flex items-center justify-center shadow-md">
+                      <Timer className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg sm:text-xl font-bold text-rose-800">Rest Between Exercises & Rounds</h3>
+                      <p className="text-xs sm:text-sm text-rose-600">Recovery guidelines for your workouts</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6">
+                  <div className="space-y-4">
+                    <div className="bg-rose-100 border border-rose-300 rounded-lg p-4">
+                      <h4 className="font-bold text-rose-800 flex items-center gap-2 mb-2"><Star className="w-4 h-4 text-yellow-500" /> Between Exercises:</h4>
+                      <p className="text-sm text-rose-700">Take <strong>15-30 seconds</strong> of rest — just enough to catch your breath and feel ready to move again.</p>
+                      <p className="text-sm text-rose-600 mt-1">If you're feeling breathless, light-headed, or need more time, pause longer. You can sip water, shake out your arms, or simply reset your breath.</p>
+                    </div>
+
+                    <div className="bg-rose-100 border border-rose-300 rounded-lg p-4">
+                      <h4 className="font-bold text-rose-800 flex items-center gap-2 mb-2"><Star className="w-4 h-4 text-yellow-500" /> Between Rounds:</h4>
+                      <p className="text-sm text-rose-700">Rest for <strong>1-2 minutes</strong> between each round.</p>
+                      <p className="text-sm text-rose-600 mt-1">Use this time to check in: "How do I feel? Can I do one more round with quality?"</p>
+                      <p className="text-sm text-rose-600 mt-1">If yes — go again. If not — stop. <strong>1-2 solid rounds are still a win.</strong></p>
+                    </div>
+
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                      <h4 className="font-bold text-purple-800 flex items-center gap-2 mb-2"><Star className="w-4 h-4 text-yellow-500" /> What Matters Most:</h4>
+                      <p className="text-sm text-purple-700">Your breath is your best guide. <strong>If you can speak a full sentence, you're likely in the safe zone.</strong></p>
+                    </div>
+
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h4 className="font-bold text-red-800 flex items-center gap-2 mb-2"><AlertTriangle className="w-4 h-4" /> Always Rest If:</h4>
+                      <ul className="space-y-1 text-sm text-red-700">
+                        <li>❖ Your heart rate spikes</li>
+                        <li>❖ You feel overheated or dizzy</li>
+                        <li>❖ You feel breathless or mentally tired</li>
+                      </ul>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+          </TabsContent>
+
+          {/* TRIMESTER 1 TAB */}
+          <TabsContent value="trimester1" className="mt-6">
             <Card className="bg-gradient-to-br from-white to-purple-50 border-purple-200 shadow-lg">
               <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-purple-800 mb-2">Welcome - Start Here</h2>
-                <p className="text-gray-600 mb-6">Essential preparatory information for your prenatal fitness journey</p>
-                {renderModuleContent(getModuleContent('prenatal-start-here'))}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full mb-4 shadow-lg">
+                    <Baby className="w-8 h-8 text-white" />
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-purple-800 mb-2">Trimester 1</h2>
+                  <p className="text-lg text-pink-600 font-medium">(Weeks 1-13)</p>
+                  <p className="text-gray-600 mt-4 max-w-2xl mx-auto">The first trimester is all about adjustment. Your body is laying the groundwork for your baby's development, and you may feel symptoms like nausea, fatigue, or mood swings. Movement can help ease these challenges while maintaining your energy.</p>
+                </div>
 
-          <TabsContent value="understanding" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-lg">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-blue-800 mb-2">Understanding Your Changing Body</h2>
-                <p className="text-gray-600 mb-6">Learn how your body changes during pregnancy and how to exercise safely</p>
-                {renderModuleContent(getModuleContent('prenatal-understanding-body'))}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {programOptions.map((prog, idx) => (
+                    <div key={idx} className={`bg-gradient-to-br ${prog.color} p-5 rounded-xl text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer`}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-3xl font-bold opacity-50">{idx + 1}</span>
+                        <div>
+                          <p className="font-bold text-lg">{prog.program}</p>
+                          <p className="text-sm opacity-90">{prog.days} / week</p>
+                        </div>
+                      </div>
+                      <div className="bg-white/20 rounded-lg p-3 mb-3">
+                        <p className="font-semibold">{prog.theme}</p>
+                        <p className="text-xs opacity-90">{prog.themeDesc}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{prog.workout}</p>
+                        <p className="text-xs opacity-80">{prog.workoutDesc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-          <TabsContent value="trimester1" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-indigo-50 border-indigo-200 shadow-lg">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-indigo-800 mb-2">Trimester 1: Foundation</h2>
-                <p className="text-gray-600 mb-6">Build a strong foundation during your first trimester</p>
-                {renderModuleContent(getModuleContent('prenatal-trimester-1'))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="trimester2" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-violet-50 border-violet-200 shadow-lg">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-violet-800 mb-2">Trimester 2: Strength</h2>
-                <p className="text-gray-600 mb-6">Maintain and build strength during your second trimester</p>
-                {renderModuleContent(getModuleContent('prenatal-trimester-2'))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="trimester3" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-pink-50 border-pink-200 shadow-lg">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-pink-800 mb-2">Trimester 3: Preparation</h2>
-                <p className="text-gray-600 mb-6">Prepare your body for birth in your third trimester</p>
-                {renderModuleContent(getModuleContent('prenatal-trimester-3'))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="nutrition" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-teal-50 border-teal-200 shadow-lg">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-teal-800 mb-2">Nutrition & Hydration</h2>
-                <p className="text-gray-600 mb-6">Fuel your body and baby with proper nutrition</p>
-                {renderModuleContent(getModuleContent('prenatal-nutrition'))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="postpartum" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-rose-50 border-rose-200 shadow-lg">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-rose-800 mb-2">Preparing for Postpartum</h2>
-                <p className="text-gray-600 mb-6">Get ready for your recovery after birth</p>
-                {renderModuleContent(getModuleContent('prenatal-whats-next'))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="faqs" className="mt-6">
-            <Card className="bg-gradient-to-br from-white to-gray-50 border-gray-200 shadow-lg">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Frequently Asked Questions</h2>
-                <p className="text-gray-600 mb-6">Common questions about prenatal fitness</p>
-                {renderModuleContent(getModuleContent('prenatal-faq'))}
+                <div className="mt-8 bg-purple-100 border border-purple-300 rounded-xl p-6 text-center">
+                  <Clock className="w-8 h-8 text-purple-600 mx-auto mb-3" />
+                  <h4 className="font-bold text-purple-800 mb-2">Workouts Coming Soon</h4>
+                  <p className="text-sm text-purple-700">The detailed workout exercises and videos for each program will be added here. Check back soon!</p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
