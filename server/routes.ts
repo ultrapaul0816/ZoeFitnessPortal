@@ -1310,12 +1310,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user's course enrollments (for logged-in user)
-  app.get("/api/my-course-enrollments", async (req, res) => {
+  app.get("/api/my-course-enrollments", requireAuth, async (req, res) => {
     try {
-      const user = req.session?.user || (req as any).user;
-      if (!user) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
+      const userId = req.session.userId;
 
       const enrollments = await storage.db.execute(sql`
         SELECT 
@@ -1336,7 +1333,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           c.status as course_status
         FROM course_enrollments ce
         JOIN courses c ON ce.course_id = c.id
-        WHERE ce.user_id = ${user.id}
+        WHERE ce.user_id = ${userId}
         AND c.status = 'published'
         ORDER BY ce.enrolled_at DESC
       `);
