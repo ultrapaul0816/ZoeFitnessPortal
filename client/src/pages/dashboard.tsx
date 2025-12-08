@@ -827,10 +827,13 @@ export default function Dashboard() {
             <div className="flex flex-wrap justify-center gap-6">
               {courseEnrollments.map((enrollment) => {
                 const isExpired = enrollment.expires_at && new Date(enrollment.expires_at) < new Date();
+                const courseUrl = enrollment.course_id === 'heal-your-core-course' 
+                  ? '/heal-your-core' 
+                  : `/courses/${enrollment.course_id}`;
                 return (
                   <div key={enrollment.id} className="w-full max-w-md">
                     <button
-                      onClick={() => setLocation(`/courses/${enrollment.course_id}`)}
+                      onClick={() => setLocation(courseUrl)}
                       className={`w-full bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-200'} hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left`}
                       data-testid={`button-view-course-${enrollment.course_id}`}
                     >
