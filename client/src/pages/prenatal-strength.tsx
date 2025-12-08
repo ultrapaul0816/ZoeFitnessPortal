@@ -12,8 +12,11 @@ import {
   ArrowLeft, 
   Heart,
   Baby,
+  Apple,
+  Brain,
   Menu,
   Sparkles,
+  HelpCircle,
   ChevronRight,
   ChevronLeft,
   AlertTriangle,
@@ -28,7 +31,9 @@ import {
   Scale,
   Target,
   CheckCircle2,
-  Star
+  Star,
+  Droplets,
+  Leaf
 } from "lucide-react";
 import type { User } from "@shared/schema";
 
@@ -40,7 +45,7 @@ export default function PrenatalStrengthPage() {
   const prevActiveTabRef = useRef(activeTab);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-  const tabOrder = ["start-here", "trimester1"];
+  const tabOrder = ["start-here", "understanding", "trimester1", "nutrition", "postpartum", "faqs"];
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -89,7 +94,11 @@ export default function PrenatalStrengthPage() {
   const getTabName = (tabValue: string) => {
     const tabNames: Record<string, string> = {
       'start-here': 'Start Here',
-      'trimester1': 'Trimester 1'
+      'understanding': 'Your Body',
+      'trimester1': 'Trimester 1',
+      'nutrition': 'Nutrition',
+      'postpartum': 'Postpartum Prep',
+      'faqs': 'FAQs'
     };
     return tabNames[tabValue] || tabValue;
   };
@@ -226,14 +235,30 @@ export default function PrenatalStrengthPage() {
             
             <div className="overflow-x-auto scrollbar-hide px-0">
               <div className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
-                <TabsList className="tab-flow-container flex gap-2 sm:gap-3 md:gap-4 h-auto bg-transparent border-0 shadow-none w-max md:w-full md:grid md:grid-cols-2 mx-0">
-                  <TabsTrigger value="start-here" data-testid="tab-start-here" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[70px] min-w-[120px] sm:min-w-[140px] md:min-w-[180px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6 mb-1 sm:mb-2" />
+                <TabsList className="tab-flow-container flex gap-2 sm:gap-3 md:gap-4 h-auto bg-transparent border-0 shadow-none w-max md:w-full md:grid md:grid-cols-6 mx-0">
+                  <TabsTrigger value="start-here" data-testid="tab-start-here" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
                     <span className="font-medium text-center leading-tight">Start Here</span>
                   </TabsTrigger>
-                  <TabsTrigger value="trimester1" data-testid="tab-trimester1" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[70px] min-w-[120px] sm:min-w-[140px] md:min-w-[180px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
-                    <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6 mb-1 sm:mb-2" />
-                    <span className="font-medium text-center leading-tight">Trimester 1 Workouts</span>
+                  <TabsTrigger value="understanding" data-testid="tab-understanding" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <Brain className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Your Body</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="trimester1" data-testid="tab-trimester1" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Trim 1</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="nutrition" data-testid="tab-nutrition" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <Apple className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Nutrition</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="postpartum" data-testid="tab-postpartum" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <Baby className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">Postpartum</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="faqs" data-testid="tab-faqs" className="text-xs sm:text-sm min-h-[60px] sm:min-h-[65px] md:min-h-[60px] min-w-[70px] sm:min-w-[75px] md:min-w-[80px] flex-col p-2 sm:p-3 md:p-4 bg-white shadow-md hover:shadow-lg border border-gray-200 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-purple-300 relative z-10 flex-shrink-0">
+                    <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 md:w-5 md:h-5 mb-1 sm:mb-2" />
+                    <span className="font-medium text-center leading-tight">FAQs</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -258,12 +283,12 @@ export default function PrenatalStrengthPage() {
                   const isAnimating = animatingNumber === index;
                   const isCurrentStep = index === currentIndex;
                   
-                  const colors = ['#c084fc', '#ec4899'];
+                  const colors = ['#c084fc', '#a78bfa', '#818cf8', '#14b8a6', '#f472b6', '#ec4899'];
                   
                   return (
                     <div 
                       key={tab}
-                      className={`relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border-2 flex items-center justify-center text-sm sm:text-base font-bold z-10 transition-all duration-500 ${
+                      className={`relative w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 flex items-center justify-center text-xs sm:text-sm font-bold z-10 transition-all duration-500 ${
                         isUnlocked ? 'text-white border-white shadow-lg' : 'bg-gray-300 text-gray-500 border-gray-200'
                       } ${isAnimating ? 'scale-125 shadow-2xl' : ''} ${isCurrentStep && isUnlocked ? 'ring-4 ring-white ring-opacity-50' : ''}`}
                       style={{
@@ -633,6 +658,53 @@ export default function PrenatalStrengthPage() {
 
           </TabsContent>
 
+          {/* UNDERSTANDING YOUR BODY TAB */}
+          <TabsContent value="understanding" className="mt-6">
+            <Card className="bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-lg">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full mb-4 shadow-lg">
+                    <Brain className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-blue-800 mb-2">Understanding Your Changing Body</h2>
+                  <p className="text-gray-600">Learn how your body changes during pregnancy and how to exercise safely</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
+                    <h4 className="font-bold text-blue-800 mb-2">Physical Changes During Pregnancy</h4>
+                    <p className="text-sm text-blue-700">During pregnancy, your body goes through remarkable changes. Your center of gravity shifts forward, your ligaments become more relaxed due to the hormone relaxin, and your cardiovascular system works harder. Understanding these changes helps you exercise safely and effectively.</p>
+                  </div>
+
+                  <div className="bg-indigo-100 border border-indigo-300 rounded-lg p-4">
+                    <h4 className="font-bold text-indigo-800 mb-2">Trimester by Trimester</h4>
+                    <ul className="text-sm text-indigo-700 space-y-2">
+                      <li><strong>First Trimester:</strong> Fatigue and nausea may affect your energy. Focus on establishing good movement habits.</li>
+                      <li><strong>Second Trimester:</strong> Often called the "honeymoon phase" - energy returns and you can maintain good intensity.</li>
+                      <li><strong>Third Trimester:</strong> Focus shifts to birth preparation and maintaining mobility as your belly grows.</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-green-100 border border-green-300 rounded-lg p-4">
+                    <h4 className="font-bold text-green-800 mb-2">Safe Movement Guidelines</h4>
+                    <ul className="text-sm text-green-700 space-y-1">
+                      <li>• Avoid lying flat on your back after the first trimester</li>
+                      <li>• Avoid exercises that risk falling or abdominal trauma</li>
+                      <li>• Skip deep twists that compress your belly</li>
+                      <li>• Modify exercises as your body changes</li>
+                      <li>• Stay well-hydrated and avoid overheating</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-purple-100 border border-purple-300 rounded-lg p-4">
+                    <h4 className="font-bold text-purple-800 mb-2">Breathing During Pregnancy</h4>
+                    <p className="text-sm text-purple-700">As your baby grows, your diaphragm has less room to expand. Learning proper 360-degree breathing helps maintain core connection, reduces stress, and prepares you for labor. Practice expanding your ribs to the sides and back, not just forward.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* TRIMESTER 1 TAB */}
           <TabsContent value="trimester1" className="mt-6">
             <Card className="bg-gradient-to-br from-white to-purple-50 border-purple-200 shadow-lg">
@@ -673,6 +745,154 @@ export default function PrenatalStrengthPage() {
                   <h4 className="font-bold text-purple-800 mb-2">Workouts Coming Soon</h4>
                   <p className="text-sm text-purple-700">The detailed workout exercises and videos for each program will be added here. Check back soon!</p>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* NUTRITION TAB */}
+          <TabsContent value="nutrition" className="mt-6">
+            <Card className="bg-gradient-to-br from-white to-teal-50 border-teal-200 shadow-lg">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full mb-4 shadow-lg">
+                    <Apple className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-teal-800 mb-2">Nutrition & Hydration</h2>
+                  <p className="text-gray-600">Fuel your body and baby with proper nutrition</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-teal-100 border border-teal-300 rounded-lg p-4">
+                    <h4 className="font-bold text-teal-800 mb-2 flex items-center gap-2"><Leaf className="w-5 h-5" /> Eating for Two (But Not Really)</h4>
+                    <p className="text-sm text-teal-700">You don't need to double your food intake during pregnancy. Focus on nutrient-dense foods that support your baby's development and your energy levels. Quality over quantity is key.</p>
+                  </div>
+
+                  <div className="bg-emerald-100 border border-emerald-300 rounded-lg p-4">
+                    <h4 className="font-bold text-emerald-800 mb-2">Essential Nutrients</h4>
+                    <ul className="text-sm text-emerald-700 space-y-1">
+                      <li>• <strong>Folate:</strong> Leafy greens, citrus fruits, fortified cereals</li>
+                      <li>• <strong>Iron:</strong> Lean meats, beans, spinach</li>
+                      <li>• <strong>Calcium:</strong> Dairy, fortified plant milks, leafy greens</li>
+                      <li>• <strong>Protein:</strong> Eggs, lean meats, legumes, nuts</li>
+                      <li>• <strong>Omega-3s:</strong> Fatty fish, walnuts, flaxseeds</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
+                    <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2"><Droplets className="w-5 h-5" /> Staying Hydrated</h4>
+                    <p className="text-sm text-blue-700">Aim for 8-10 glasses of water daily. Proper hydration helps with energy, digestion, and prevents common pregnancy discomforts like constipation and headaches. Listen to your body and drink when thirsty.</p>
+                  </div>
+
+                  <div className="bg-amber-100 border border-amber-300 rounded-lg p-4">
+                    <h4 className="font-bold text-amber-800 mb-2 flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Foods to Avoid</h4>
+                    <ul className="text-sm text-amber-700 space-y-1">
+                      <li>• Raw or undercooked meats and eggs</li>
+                      <li>• High-mercury fish (shark, swordfish, king mackerel)</li>
+                      <li>• Unpasteurized dairy and juices</li>
+                      <li>• Excessive caffeine (limit to 200mg/day)</li>
+                      <li>• Alcohol</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* POSTPARTUM PREP TAB */}
+          <TabsContent value="postpartum" className="mt-6">
+            <Card className="bg-gradient-to-br from-white to-rose-50 border-rose-200 shadow-lg">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mb-4 shadow-lg">
+                    <Baby className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-rose-800 mb-2">Preparing for Postpartum</h2>
+                  <p className="text-gray-600">Get ready for your recovery after birth</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-rose-100 border border-rose-300 rounded-lg p-4">
+                    <h4 className="font-bold text-rose-800 mb-2">What to Expect After Birth</h4>
+                    <p className="text-sm text-rose-700">Your body has done incredible work growing and birthing a baby. Give yourself grace during recovery. The first 6 weeks are about rest, bonding, and gentle movement when you feel ready.</p>
+                  </div>
+
+                  <div className="bg-pink-100 border border-pink-300 rounded-lg p-4">
+                    <h4 className="font-bold text-pink-800 mb-2">Your Recovery Journey</h4>
+                    <ul className="text-sm text-pink-700 space-y-2">
+                      <li><strong>Week 1-2:</strong> Focus on rest, gentle walking, and pelvic floor awareness</li>
+                      <li><strong>Week 3-4:</strong> Continue gentle movement, reconnecting with your core</li>
+                      <li><strong>Week 5-6:</strong> Gradual increase in activity as cleared by your provider</li>
+                      <li><strong>6+ Weeks:</strong> Return to structured exercise program (like Heal Your Core!)</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-purple-100 border border-purple-300 rounded-lg p-4">
+                    <h4 className="font-bold text-purple-800 mb-2">What's Next: Heal Your Core</h4>
+                    <p className="text-sm text-purple-700">After your 6-week check-up, you'll be ready to start the Heal Your Core postpartum recovery program. This program is specifically designed to rebuild your core strength, heal diastasis recti, and restore your confidence.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* FAQS TAB */}
+          <TabsContent value="faqs" className="mt-6">
+            <Card className="bg-gradient-to-br from-white to-gray-50 border-gray-200 shadow-lg">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full mb-4 shadow-lg">
+                    <HelpCircle className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800 mb-2">Frequently Asked Questions</h2>
+                  <p className="text-gray-600">Common questions about prenatal fitness</p>
+                </div>
+
+                <Accordion type="single" collapsible className="space-y-3">
+                  <AccordionItem value="faq-1" className="border border-gray-200 rounded-lg bg-white">
+                    <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                      <span className="text-left font-medium text-gray-800">Is exercise safe during pregnancy?</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <p className="text-sm text-gray-600">Yes, exercise is generally safe and beneficial during a healthy pregnancy. Always consult your healthcare provider before starting or continuing an exercise program. Listen to your body and modify as needed.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="faq-2" className="border border-gray-200 rounded-lg bg-white">
+                    <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                      <span className="text-left font-medium text-gray-800">How often should I exercise?</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <p className="text-sm text-gray-600">Aim for 2-5 days per week depending on your energy levels and chosen program. Consistency is more important than intensity. Some movement is always better than none.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="faq-3" className="border border-gray-200 rounded-lg bg-white">
+                    <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                      <span className="text-left font-medium text-gray-800">What if I wasn't exercising before pregnancy?</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <p className="text-sm text-gray-600">It's never too late to start! Begin with gentle movements and the lower-intensity programs (Program 3 or 4). Gradually build up as your body adapts. Always get clearance from your healthcare provider first.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="faq-4" className="border border-gray-200 rounded-lg bg-white">
+                    <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                      <span className="text-left font-medium text-gray-800">What exercises should I avoid?</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <p className="text-sm text-gray-600">Avoid contact sports, exercises with high fall risk, lying flat on your back after the first trimester, deep twists, and exercises that cause pain or discomfort. When in doubt, modify or skip.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="faq-5" className="border border-gray-200 rounded-lg bg-white">
+                    <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                      <span className="text-left font-medium text-gray-800">When should I stop exercising?</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <p className="text-sm text-gray-600">Stop immediately and contact your healthcare provider if you experience vaginal bleeding, dizziness, shortness of breath before starting exercise, chest pain, headache, muscle weakness, calf pain or swelling, uterine contractions, decreased fetal movement, or fluid leaking.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
           </TabsContent>
