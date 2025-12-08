@@ -829,6 +829,8 @@ export default function Dashboard() {
                 const isExpired = enrollment.expires_at && new Date(enrollment.expires_at) < new Date();
                 const courseUrl = enrollment.course_id === 'heal-your-core-course' 
                   ? '/heal-your-core' 
+                  : enrollment.course_id === 'prenatal-strength-course'
+                  ? '/prenatal-strength'
                   : `/courses/${enrollment.course_id}`;
                 return (
                   <div key={enrollment.id} className="w-full max-w-md">

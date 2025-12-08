@@ -21,6 +21,7 @@ import AdminPreview from "@/pages/admin-preview";
 import MyLibrary from "@/pages/my-library";
 import MyCourses from "@/pages/my-courses";
 import CourseViewer from "@/pages/course-viewer";
+import PrenatalStrength from "@/pages/prenatal-strength";
 import Community from "@/pages/community";
 import NotFound from "@/pages/not-found";
 
@@ -68,6 +69,7 @@ function Router() {
       )} />
       <Route path="/my-library" component={MyLibrary} />
       <Route path="/my-courses" component={MyCourses} />
+      <Route path="/prenatal-strength" component={PrenatalStrength} />
       <Route path="/courses/:courseId" component={CourseViewer} />
       <Route path="/community" component={Community} />
       <Route component={NotFound} />
