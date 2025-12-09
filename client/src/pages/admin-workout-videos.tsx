@@ -331,8 +331,7 @@ export default function AdminWorkoutVideos() {
             { day: 2, title: "Day 2: Stretch + Breath Recovery Flow", duration: "20-25 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
               { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-p4-seated-same-side-leg-stretch-reach', 'prenatal-p4-kneeling-ball-squeeze-lean-back', 'prenatal-p4-kneeling-lunge-hip-flexor-reaches', 'prenatal-p4-squat-arm-rainbows', 'prenatal-p4-cross-legged-lat-stretch'] },
-              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-p4-chest-stretch-opener', 'prenatal-p4-supine-head-lifts-belly-pump'] },
-              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p4-supine-core-compressions', 'prenatal-p4-chest-stretch-opener-d2', 'prenatal-p4-supine-head-lifts-belly-pump-d2'] },
+              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p4-supine-core-compressions', 'prenatal-p4-chest-stretch-opener', 'prenatal-p4-supine-head-lifts-belly-pump'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
           ]
