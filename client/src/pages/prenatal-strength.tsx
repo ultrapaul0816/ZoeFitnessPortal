@@ -3878,7 +3878,7 @@ export default function PrenatalStrengthPage() {
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">2</td>
-                                        <td className="py-2"><ExerciseLink name="Seated 90 90 Glute Lift + Cross Legged Neck Rotations" exercises={exercises} /></td>
+                                        <td className="py-2"><ExerciseLink name="Seated 90 90 Glute Lift Supported Reach + Cross Legged Neck Rotations" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">6/side + 6 breaths</td>
                                         <td className="py-2 text-gray-500 italic text-xs">Keep hips grounded during lifts. Neck movements should be soft and smooth.</td>
                                       </tr>
