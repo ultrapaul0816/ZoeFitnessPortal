@@ -55,19 +55,21 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline ${className}`}
+        className={`inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline whitespace-nowrap ${className}`}
         data-testid="button-play-all"
       >
-        <Play className="w-3 h-3" /> {label}
+        <Play className="w-3 h-3 flex-shrink-0" />
+        <span className="hidden sm:inline">{label}</span>
       </a>
     );
   }
   return (
     <span 
-      className={`inline-flex items-center gap-1 text-gray-400 text-xs font-medium ${className}`}
+      className={`inline-flex items-center gap-1 text-gray-400 text-xs font-medium whitespace-nowrap ${className}`}
       data-testid="button-play-all"
     >
-      <Play className="w-3 h-3" /> {label}
+      <Play className="w-3 h-3 flex-shrink-0" />
+      <span className="hidden sm:inline">{label}</span>
     </span>
   );
 }
