@@ -37,18 +37,64 @@ import {
 import type { User } from "@shared/schema";
 import NutritionSection from "@/components/program-sections/NutritionSection";
 
-function PlayAllButton({ label = "PLAY ALL", className = "" }: { label?: string; className?: string }) {
+type ExerciseData = {
+  id: string;
+  name: string;
+  video_url: string | null;
+};
+
+// Context for exercise data
+const ExerciseContext = ({ children, exercises }: { children: React.ReactNode; exercises: ExerciseData[] }) => {
+  return <>{children}</>;
+};
+
+function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: string; className?: string; url?: string }) {
+  if (url) {
+    return (
+      <a 
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline ${className}`}
+        data-testid="button-play-all"
+      >
+        <Play className="w-3 h-3" /> {label}
+      </a>
+    );
+  }
   return (
-    <button 
-      className={`inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline ${className}`}
-      onClick={() => {
-        // TODO: Connect to video playlist when URLs are added via admin
-      }}
+    <span 
+      className={`inline-flex items-center gap-1 text-gray-400 text-xs font-medium ${className}`}
       data-testid="button-play-all"
     >
       <Play className="w-3 h-3" /> {label}
-    </button>
+    </span>
   );
+}
+
+// Component to render exercise name as clickable link if video URL exists
+function ExerciseLink({ name, exercises }: { name: string; exercises: ExerciseData[] }) {
+  // Find exercise by name (case-insensitive partial match)
+  const exercise = exercises.find(ex => 
+    ex.name.toLowerCase().includes(name.toLowerCase()) || 
+    name.toLowerCase().includes(ex.name.toLowerCase())
+  );
+  
+  if (exercise?.video_url) {
+    return (
+      <a 
+        href={exercise.video_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
+        data-testid={`link-exercise-${exercise.id}`}
+      >
+        {name}
+      </a>
+    );
+  }
+  
+  return <span className="text-cyan-600 font-medium">{name}</span>;
 }
 
 export default function PrenatalStrengthPage() {
@@ -87,6 +133,28 @@ export default function PrenatalStrengthPage() {
     queryKey: ["/api/courses/prenatal-strength-course"],
     enabled: !!user,
   });
+
+  // Fetch exercises from database to get video URLs
+  const { data: exercises = [] } = useQuery<ExerciseData[]>({
+    queryKey: ["/api/exercises"],
+    queryFn: async () => {
+      const res = await fetch('/api/exercises');
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
+  });
+
+  // Fetch section settings for Play All URLs
+  const { data: sectionSettings = {} } = useQuery<Record<string, string>>({
+    queryKey: ["/api/section-settings"],
+    queryFn: async () => {
+      const res = await fetch('/api/section-settings');
+      return res.json();
+    },
+  });
+
+  // Helper to get play all URL for a section
+  const getPlayAllUrl = (sectionKey: string) => sectionSettings[sectionKey] || '';
 
   const navigateToNextTab = () => {
     const currentIndex = tabOrder.indexOf(activeTab);
@@ -822,33 +890,33 @@ export default function PrenatalStrengthPage() {
                                 <tbody className="divide-y divide-purple-100">
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">1</td>
-                                    <td className="py-2 text-cyan-600 font-medium">DB Squat Thruster</td>
+                                    <td className="py-2"><ExerciseLink name="DB Squat Thruster" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">10-12</td>
-                                    <td className="py-2 text-cyan-600">Bodyweight Squats</td>
+                                    <td className="py-2"><ExerciseLink name="Bodyweight Squats" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">2</td>
-                                    <td className="py-2 text-cyan-600 font-medium">DB Deadlifts</td>
+                                    <td className="py-2"><ExerciseLink name="DB Deadlifts" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">10-12</td>
-                                    <td className="py-2 text-cyan-600">Band Deadlifts</td>
+                                    <td className="py-2"><ExerciseLink name="Band Deadlifts" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">3</td>
-                                    <td className="py-2 text-cyan-600 font-medium">DB Same Leg Lunge Front Raise</td>
+                                    <td className="py-2"><ExerciseLink name="DB Same Leg Lunge Front Raise" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">8-10/side</td>
-                                    <td className="py-2 text-cyan-600">Same Leg Lunges with Wall Support</td>
+                                    <td className="py-2"><ExerciseLink name="Same Leg Lunges with Wall Support" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">4</td>
-                                    <td className="py-2 text-cyan-600 font-medium">Supported Glute Bridge Marches</td>
+                                    <td className="py-2"><ExerciseLink name="Supported Glute Bridge Marches" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">8-10/side</td>
-                                    <td className="py-2 text-cyan-600">Pillow Glute Bridges</td>
+                                    <td className="py-2"><ExerciseLink name="Pillow Glute Bridges" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">5</td>
-                                    <td className="py-2 text-cyan-600 font-medium">Side Plank Hip Lifts</td>
+                                    <td className="py-2"><ExerciseLink name="Side Plank Hip Lifts" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">8-10/side</td>
-                                    <td className="py-2 text-cyan-600">Side Lying Straight Leg Lifts</td>
+                                    <td className="py-2"><ExerciseLink name="Side Lying Straight Leg Lifts" exercises={exercises} /></td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -874,19 +942,19 @@ export default function PrenatalStrengthPage() {
                                 <tbody className="divide-y divide-teal-100">
                                   <tr>
                                     <td className="py-2 text-teal-600 font-medium">1</td>
-                                    <td className="py-2 text-cyan-600 font-medium">Supine Core Compressions</td>
+                                    <td className="py-2"><ExerciseLink name="Supine Core Compressions" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">10 Breaths</td>
                                     <td className="py-2 text-gray-500 italic text-xs">Ribs expand, exhale slowly</td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-teal-600 font-medium">2</td>
-                                    <td className="py-2 text-cyan-600 font-medium">Childs Pose Open Palms & Travel</td>
+                                    <td className="py-2"><ExerciseLink name="Childs Pose Open Palms & Travel" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">3 each direction</td>
                                     <td className="py-2 text-gray-500 italic text-xs">Connect movement to breath</td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-teal-600 font-medium">3</td>
-                                    <td className="py-2 text-cyan-600 font-medium">Child Pose Single Leg Inner Thigh Stretch</td>
+                                    <td className="py-2"><ExerciseLink name="Child Pose Single Leg Inner Thigh Stretch" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600">1 Min each side</td>
                                     <td className="py-2 text-gray-500 italic text-xs">Flow and decompress spine</td>
                                   </tr>
