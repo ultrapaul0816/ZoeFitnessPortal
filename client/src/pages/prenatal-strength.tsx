@@ -59,7 +59,7 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
         data-testid="button-play-all"
       >
         <Play className="w-3 h-3 flex-shrink-0" />
-        <span className="hidden sm:inline">{label}</span>
+        <span className="sm:inline"><span className="hidden sm:inline">PLAY </span>ALL</span>
       </a>
     );
   }
@@ -69,7 +69,7 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
       data-testid="button-play-all"
     >
       <Play className="w-3 h-3 flex-shrink-0" />
-      <span className="hidden sm:inline">{label}</span>
+      <span className="sm:inline"><span className="hidden sm:inline">PLAY </span>ALL</span>
     </span>
   );
 }
