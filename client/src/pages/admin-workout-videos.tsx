@@ -229,7 +229,32 @@ export default function AdminWorkoutVideos() {
         {
           id: "program3", 
           name: "Program 3: Balanced & Easy (3 Days)",
-          days: [] // Coming soon
+          days: [
+            { day: 1, title: "Day 1: Light Full Body Strength", duration: "25-30 mins", exerciseIds: [
+              'prenatal-p3-squat-overhead-arm-reach', 'prenatal-p3-db-standing-bent-over-narrow',
+              'prenatal-p3-band-standing-side-leg-abductors', 'prenatal-p3-mini-band-supine-leg-marches',
+              'prenatal-p3-db-bicep-curl-arnold-press', 'prenatal-p3-standing-arm-rotations',
+              'prenatal-p3-cross-legged-twists', 'prenatal-p3-supine-core-compressions',
+              'prenatal-p3-squat-seated-chair', 'prenatal-p3-band-seated-narrow-rows',
+              'prenatal-p3-side-lying-straight-leg-lifts', 'prenatal-p3-glute-bridges', 'prenatal-p3-seated-arnold-press'
+            ]},
+            { day: 2, title: "Day 2: Core + Glutes Connection", duration: "25 mins", exerciseIds: [
+              'prenatal-p3-wall-sit-with-ball', 'prenatal-p3-swiss-ball-seated-marches',
+              'prenatal-p3-banded-kneeling-fire-hydrants', 'prenatal-p3-side-plank-knee-rested-leg-lifts',
+              'prenatal-p3-mini-band-elbow-side-plank-clams', 'prenatal-p3-seated-crossed-leg-glute-stretch',
+              'prenatal-p3-core-seated-chair-compressions', 'prenatal-p3-child-pose-single-leg-inner-thigh',
+              'prenatal-p3-ball-squeeze-glute-bridges', 'prenatal-p3-seated-bent-knee-leg-lifts',
+              'prenatal-p3-kneeling-fire-hydrants', 'prenatal-p3-mini-band-side-lying-clams-hold'
+            ]},
+            { day: 3, title: "Day 3: Mobility Flow & Recovery", duration: "20-25 mins", exerciseIds: [
+              'prenatal-p3-bear-crawl-pelvic-tilts-thread', 'prenatal-p3-kneeling-ball-squeeze-lean-back',
+              'prenatal-p3-child-pose-hips-lifted', 'prenatal-p3-seated-crossed-glute-stretch-d3',
+              'prenatal-p3-butterfly-elbow-rotations', 'prenatal-p3-supine-core-compressions-d3',
+              'prenatal-p3-cross-legged-cross-hands-release', 'prenatal-p3-chest-stretch-opener',
+              'prenatal-p3-bear-crawl-pelvic-tilts-only', 'prenatal-p3-seated-lean-back-core-hold',
+              'prenatal-p3-hands-on-thighs-butterfly'
+            ]},
+          ]
         },
       ]
     },
