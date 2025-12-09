@@ -3391,49 +3391,49 @@ export default function PrenatalStrengthPage() {
                                         <td className="py-2 text-orange-600 font-medium">1</td>
                                         <td className="py-2"><ExerciseLink name="DB Squat Thruster" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Full Body</td>
-                                        <td className="py-2 text-amber-600">Band Squat to Front Raise</td>
+                                        <td className="py-2"><ExerciseLink name="Band Squat to Front Raise" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">2</td>
                                         <td className="py-2"><ExerciseLink name="Single Arm Single Leg Row" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Lower + Upper</td>
-                                        <td className="py-2 text-amber-600">DB Bird Dog Rows</td>
+                                        <td className="py-2"><ExerciseLink name="DB Bird Dog Rows" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">3</td>
                                         <td className="py-2"><ExerciseLink name="DB Supported Chest Press" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Glutes + Arms</td>
-                                        <td className="py-2 text-amber-600">Knee Pushups</td>
+                                        <td className="py-2"><ExerciseLink name="Knee Pushups" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">4</td>
                                         <td className="py-2"><ExerciseLink name="DB - Alt Leg Lunge Rainbows" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Full Body</td>
-                                        <td className="py-2 text-amber-600">Squat with Arm Rainbows</td>
+                                        <td className="py-2"><ExerciseLink name="Squat with Arm Rainbows" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">5</td>
                                         <td className="py-2"><ExerciseLink name="DB Sumo Deadlifts" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Legs</td>
-                                        <td className="py-2 text-amber-600">Sumo Squat Bodyweight</td>
+                                        <td className="py-2"><ExerciseLink name="Sumo Squat Bodyweight" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">6</td>
                                         <td className="py-2"><ExerciseLink name="Seated Lateral Raises" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Shoulders</td>
-                                        <td className="py-2 text-amber-600">Seated Lateral Raises</td>
+                                        <td className="py-2"><ExerciseLink name="Seated Lateral Raises" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">7</td>
                                         <td className="py-2"><ExerciseLink name="Marching with Band Wrist Pull Aparts" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Upper + Core</td>
-                                        <td className="py-2 text-amber-600">Kneeling Band Pull Aparts</td>
+                                        <td className="py-2"><ExerciseLink name="Kneeling Band Pull Aparts" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-orange-600 font-medium">8</td>
                                         <td className="py-2"><ExerciseLink name="Mini Band Elbow Side Plank Clamshells" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">Glutes</td>
-                                        <td className="py-2 text-amber-600">Mini Band Lying Clamshells - Pulses</td>
+                                        <td className="py-2"><ExerciseLink name="Mini Band Lying Clamshells - Pulses" exercises={exercises} /></td>
                                       </tr>
                                     </tbody>
                                   </table>
