@@ -162,33 +162,43 @@ export default function AdminWorkoutVideos() {
           name: "Program 1: Feeling Fierce (5 Days)",
           days: [
             { day: 1, title: "Day 1: Full Body Strength + Core Activation", duration: "30-35 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-db-squat-thruster', 'prenatal-db-deadlifts', 'prenatal-db-same-leg-lunge-front-raise', 
               'prenatal-supported-glute-bridge-marches', 'prenatal-side-plank-hip-lifts', 'prenatal-supine-core-compressions',
               'prenatal-childs-pose-travel', 'prenatal-child-pose-inner-thigh-stretch', 'prenatal-bodyweight-squats',
-              'prenatal-band-deadlifts', 'prenatal-wall-support-lunges', 'prenatal-pillow-glute-bridges', 'prenatal-side-lying-leg-lifts'
+              'prenatal-band-deadlifts', 'prenatal-wall-support-lunges', 'prenatal-pillow-glute-bridges', 'prenatal-side-lying-leg-lifts',
+              'prenatal-cooldown'
             ]},
             { day: 2, title: "Day 2: Glutes + Upper Body Burn", duration: "30-35 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-db-supported-chest-press', 'prenatal-db-bicep-curl-arnold-press', 'prenatal-db-sumo-squat-upright-row',
               'prenatal-mini-band-side-plank-clam', 'prenatal-standing-arm-rotations', 'prenatal-seated-90-90-glute-lift',
               'prenatal-thread-the-needle', 'prenatal-wall-supported-pushups', 'prenatal-band-kneeling-shoulder-press',
-              'prenatal-sumo-squat-bodyweight', 'prenatal-mini-band-lying-clamshells'
+              'prenatal-sumo-squat-bodyweight', 'prenatal-mini-band-lying-clamshells',
+              'prenatal-cooldown'
             ]},
             { day: 3, title: "Day 3: Functional Conditioning Circuit", duration: "30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-band-squat-front-raise', 'prenatal-band-squat-wide-row', 'prenatal-mini-band-modified-jacks',
               'prenatal-mini-band-traveling-squat', 'prenatal-mini-band-bridge-pull-aparts', 'prenatal-sumo-squat-hold-twists',
               'prenatal-bird-dog-bodyweight', 'prenatal-core-compressions-wall-sits', 'prenatal-band-seated-narrow-rows',
-              'prenatal-band-standing-side-abductors', 'prenatal-pillow-ball-squeeze-bridges'
+              'prenatal-band-standing-side-abductors', 'prenatal-pillow-ball-squeeze-bridges',
+              'prenatal-cooldown'
             ]},
             { day: 4, title: "Day 4: Core + Shoulder Stability", duration: "25-30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-db-bird-dog-rows', 'prenatal-db-seated-shoulder-press', 'prenatal-db-seated-lateral-raises',
               'prenatal-marching-band-wrist-pull', 'prenatal-side-plank-knee-leg-lifts', 'prenatal-all-fours-shoulder-taps',
-              'prenatal-seated-figure-8-arm-lifts', 'prenatal-knee-side-plank-leg-lift-hold'
+              'prenatal-seated-figure-8-arm-lifts', 'prenatal-knee-side-plank-leg-lift-hold',
+              'prenatal-cooldown'
             ]},
             { day: 5, title: "Day 5: Strength + Mobility Reset", duration: "25-30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-db-reverse-lunges', 'prenatal-db-stiff-deadlifts', 'prenatal-db-side-lunge-double-row',
               'prenatal-knee-pushups', 'prenatal-bear-crawl-plank', 'prenatal-single-leg-stretch-reach',
               'prenatal-pigeon-stretch', 'prenatal-seated-kneeling-core-compressions', 'prenatal-bodyweight-reverse-lunges',
-              'prenatal-band-stiff-deadlifts', 'prenatal-side-lunges', 'prenatal-bear-crawls-knee-lifts'
+              'prenatal-band-stiff-deadlifts', 'prenatal-side-lunges', 'prenatal-bear-crawls-knee-lifts',
+              'prenatal-cooldown'
             ]},
           ]
         },
@@ -197,35 +207,43 @@ export default function AdminWorkoutVideos() {
           name: "Program 2: Steady & Strong (4 Days)",
           days: [
             { day: 1, title: "Day 1: Full Body Burn + Core", duration: "30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p2-db-deadlift-bentover-row', 'prenatal-p2-single-leg-reverse-lunge-knee-lift', 
               'prenatal-p2-squat-overhead-arm-reach', 'prenatal-p2-glute-bridge-cross-reach', 
               'prenatal-p2-seated-90-90-glute-stretch-rotation', 'prenatal-p2-modified-knee-elbow-opp',
               'prenatal-p2-supine-core-compressions', 'prenatal-p2-all-fours-ball-pelvic-tilts',
-              'prenatal-p2-light-db-band-deadlift', 'prenatal-p2-squat-seated-chair'
+              'prenatal-p2-light-db-band-deadlift', 'prenatal-p2-squat-seated-chair',
+              'prenatal-cooldown'
             ]},
             { day: 2, title: "Day 2: Glutes + Posture", duration: "30-35 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p2-glute-bridge-marches', 'prenatal-p2-kneeling-band-pull-aparts-block',
               'prenatal-p2-dbs-alternating-lunges', 'prenatal-p2-band-seated-wide-row',
               'prenatal-p2-band-glute-kickbacks-all-fours', 'prenatal-p2-wall-angels',
               'prenatal-p2-childs-pose-open-palms-travel', 'prenatal-p2-seated-figure-8-rotations',
               'prenatal-p2-glute-bridge-lifts', 'prenatal-p2-lunges-wall-support',
-              'prenatal-p2-band-seated-narrow-rows', 'prenatal-p2-wall-single-leg-glute-kickbacks'
+              'prenatal-p2-band-seated-narrow-rows', 'prenatal-p2-wall-single-leg-glute-kickbacks',
+              'prenatal-cooldown'
             ]},
             { day: 3, title: "Day 3: Active Recovery Flow", duration: "25-30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p2-bear-crawl-pelvic-tilts-thread-needle', 'prenatal-p2-kneeling-ball-squeeze-band-pull',
               'prenatal-p2-bird-dog-bodyweight', 'prenatal-p2-pillow-glute-bridges',
               'prenatal-p2-side-plank-hip-lifts', 'prenatal-p2-cross-legged-twists',
               'prenatal-p2-cross-legged-cross-hands-release', 'prenatal-p2-supine-core-compressions-belly-ribs',
               'prenatal-p2-bear-crawl-pelvic-tilts-only', 'prenatal-p2-kneeling-ball-squeeze-lean-back',
-              'prenatal-p2-supine-bodyweight-bridges', 'prenatal-p2-side-lying-marches'
+              'prenatal-p2-supine-bodyweight-bridges', 'prenatal-p2-side-lying-marches',
+              'prenatal-cooldown'
             ]},
             { day: 4, title: "Day 4: Functional Strength + Core", duration: "25-30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p2-db-same-leg-lunge-lateral-raise', 'prenatal-p2-supported-single-leg-glute-bridge-knee-chest',
               'prenatal-p2-band-squat-narrow-row', 'prenatal-p2-db-sumo-squat-upright-row',
               'prenatal-p2-bird-dog-bodyweight-d4', 'prenatal-p2-sumo-squat-alternate-arm-lifts',
               'prenatal-p2-bear-crawl-downward-dog-holds', 'prenatal-p2-all-fours-shoulder-taps',
               'prenatal-p2-band-lunge-lateral-raise', 'prenatal-p2-glute-bridges-bed-chair',
-              'prenatal-p2-band-standing-wide-narrow-row'
+              'prenatal-p2-band-standing-wide-narrow-row',
+              'prenatal-cooldown'
             ]},
           ]
         },
@@ -234,28 +252,34 @@ export default function AdminWorkoutVideos() {
           name: "Program 3: Balanced & Easy (3 Days)",
           days: [
             { day: 1, title: "Day 1: Light Full Body Strength", duration: "25-30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p3-squat-overhead-arm-reach', 'prenatal-p3-db-standing-bent-over-narrow',
               'prenatal-p3-band-standing-side-leg-abductors', 'prenatal-p3-mini-band-supine-leg-marches',
               'prenatal-p3-db-bicep-curl-arnold-press', 'prenatal-p3-standing-arm-rotations',
               'prenatal-p3-cross-legged-twists', 'prenatal-p3-supine-core-compressions',
               'prenatal-p3-squat-seated-chair', 'prenatal-p3-band-seated-narrow-rows',
-              'prenatal-p3-side-lying-straight-leg-lifts', 'prenatal-p3-glute-bridges', 'prenatal-p3-seated-arnold-press'
+              'prenatal-p3-side-lying-straight-leg-lifts', 'prenatal-p3-glute-bridges', 'prenatal-p3-seated-arnold-press',
+              'prenatal-cooldown'
             ]},
             { day: 2, title: "Day 2: Core + Glutes Connection", duration: "25 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p3-wall-sit-with-ball', 'prenatal-p3-swiss-ball-seated-marches',
               'prenatal-p3-banded-kneeling-fire-hydrants', 'prenatal-p3-side-plank-knee-rested-leg-lifts',
               'prenatal-p3-mini-band-elbow-side-plank-clams', 'prenatal-p3-seated-crossed-leg-glute-stretch',
               'prenatal-p3-core-seated-chair-compressions', 'prenatal-p3-child-pose-single-leg-inner-thigh',
               'prenatal-p3-ball-squeeze-glute-bridges', 'prenatal-p3-seated-bent-knee-leg-lifts',
-              'prenatal-p3-kneeling-fire-hydrants', 'prenatal-p3-mini-band-side-lying-clams-hold'
+              'prenatal-p3-kneeling-fire-hydrants', 'prenatal-p3-mini-band-side-lying-clams-hold',
+              'prenatal-cooldown'
             ]},
             { day: 3, title: "Day 3: Mobility Flow & Recovery", duration: "20-25 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p3-bear-crawl-pelvic-tilts-thread', 'prenatal-p3-kneeling-ball-squeeze-lean-back',
               'prenatal-p3-child-pose-hips-lifted', 'prenatal-p3-seated-crossed-glute-stretch-d3',
               'prenatal-p3-butterfly-elbow-rotations', 'prenatal-p3-supine-core-compressions-d3',
               'prenatal-p3-cross-legged-cross-hands-release', 'prenatal-p3-chest-stretch-opener',
               'prenatal-p3-bear-crawl-pelvic-tilts-only', 'prenatal-p3-seated-lean-back-core-hold',
-              'prenatal-p3-hands-on-thighs-butterfly'
+              'prenatal-p3-hands-on-thighs-butterfly',
+              'prenatal-cooldown'
             ]},
           ]
         },
@@ -264,18 +288,22 @@ export default function AdminWorkoutVideos() {
           name: "Program 4: Gentle Flow (2 Days)",
           days: [
             { day: 1, title: "Day 1: Soft Strength + Core Support", duration: "20-25 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p4-band-seated-narrow-rows', 'prenatal-p4-glute-bridges-mini-band',
               'prenatal-p4-side-lying-leg-lifts-top-bent', 'prenatal-p4-seated-shoulder-db-press',
               'prenatal-p4-supine-pelvic-tilts', 'prenatal-p4-seated-90-90-glute-lift-reach',
               'prenatal-p4-supine-core-compressions', 'prenatal-p4-child-pose-hips-lifted',
               'prenatal-p4-band-standing-rows', 'prenatal-p4-pillow-glute-bridges',
-              'prenatal-p4-side-lying-pillow-squeeze', 'prenatal-p4-band-kneeling-shoulder-press'
+              'prenatal-p4-side-lying-pillow-squeeze', 'prenatal-p4-band-kneeling-shoulder-press',
+              'prenatal-cooldown'
             ]},
             { day: 2, title: "Day 2: Stretch + Breath Recovery Flow", duration: "20-25 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p4-seated-same-side-leg-stretch-reach', 'prenatal-p4-kneeling-ball-squeeze-lean-back',
               'prenatal-p4-kneeling-lunge-hip-flexor-reaches', 'prenatal-p4-squat-arm-rainbows',
               'prenatal-p4-cross-legged-lat-stretch', 'prenatal-p4-supine-core-compressions-d2',
-              'prenatal-p4-chest-stretch-opener', 'prenatal-p4-supine-head-lifts-belly-pump'
+              'prenatal-p4-chest-stretch-opener', 'prenatal-p4-supine-head-lifts-belly-pump',
+              'prenatal-cooldown'
             ]},
           ]
         },
@@ -284,6 +312,7 @@ export default function AdminWorkoutVideos() {
           name: "Program 5: Pick & Play (3 Days)",
           days: [
             { day: 1, title: "Day 1: Build Your Own - Strength Focus", duration: "25-30 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p5-db-squat-thruster', 'prenatal-p5-single-arm-single-leg-row',
               'prenatal-p5-db-supported-chest-press', 'prenatal-p5-db-alt-leg-lunge-rainbows',
               'prenatal-p5-db-sumo-deadlifts', 'prenatal-p5-seated-lateral-raises',
@@ -291,18 +320,23 @@ export default function AdminWorkoutVideos() {
               'prenatal-p5-band-squat-front-raise', 'prenatal-p5-db-bird-dog-rows',
               'prenatal-p5-knee-pushups', 'prenatal-p5-squat-arm-rainbows', 'prenatal-p5-sumo-squat-bodyweight',
               'prenatal-p5-kneeling-band-pull-aparts', 'prenatal-p5-mini-band-lying-clams-pulses',
-              'prenatal-p5-standing-arm-rotations', 'prenatal-p5-seated-same-side-leg-stretch-reach', 'prenatal-p5-supine-core-compressions'
+              'prenatal-p5-standing-arm-rotations', 'prenatal-p5-seated-same-side-leg-stretch-reach', 'prenatal-p5-supine-core-compressions',
+              'prenatal-cooldown'
             ]},
             { day: 2, title: "Day 2: Core + Conditioning Mix", duration: "20-25 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p5-core-compressions-wall-sits', 'prenatal-p5-mini-band-glute-bridges',
               'prenatal-p5-db-sumo-squat-rows', 'prenatal-p5-supine-core-compressions-d2',
               'prenatal-p5-bird-dog', 'prenatal-p5-all-fours-ball-pelvic-tilts',
-              'prenatal-p5-cat-camel', 'prenatal-p5-same-side-leg-stretch-reach', 'prenatal-p5-child-pose-hips-lifted'
+              'prenatal-p5-cat-camel', 'prenatal-p5-same-side-leg-stretch-reach', 'prenatal-p5-child-pose-hips-lifted',
+              'prenatal-cooldown'
             ]},
             { day: 3, title: "Day 3: Mix & Match Flow", duration: "20-25 mins", exerciseIds: [
+              'prenatal-warmup',
               'prenatal-p5-cat-camel-thread-needle', 'prenatal-p5-seated-90-90-neck-rotations',
               'prenatal-p5-side-lying-squeeze-shoulder-taps', 'prenatal-p5-supine-head-lifts-glute-bridge-reach',
-              'prenatal-p5-bird-dog-child-pose', 'prenatal-p5-supine-compressions-wall-sit-ball'
+              'prenatal-p5-bird-dog-child-pose', 'prenatal-p5-supine-compressions-wall-sit-ball',
+              'prenatal-cooldown'
             ]},
           ]
         },
