@@ -40,7 +40,7 @@ import NutritionSection from "@/components/program-sections/NutritionSection";
 type ExerciseData = {
   id: string;
   name: string;
-  video_url: string | null;
+  videoUrl: string | null;
 };
 
 // Context for exercise data
@@ -80,10 +80,10 @@ function ExerciseLink({ name, exercises }: { name: string; exercises: ExerciseDa
     name.toLowerCase().includes(ex.name.toLowerCase())
   );
   
-  if (exercise?.video_url) {
+  if (exercise?.videoUrl) {
     return (
       <a 
-        href={exercise.video_url}
+        href={exercise.videoUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
