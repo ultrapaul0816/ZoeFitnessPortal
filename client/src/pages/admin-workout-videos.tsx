@@ -402,13 +402,15 @@ export default function AdminWorkoutVideos() {
                 <Badge className="bg-green-100 text-green-700 text-xs">
                   <Check className="w-3 h-3 mr-1" /> Video Added
                 </Badge>
-                <button
-                  onClick={() => window.open(exercise.video_url!, '_blank')}
+                <a
+                  href={exercise.video_url!}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline ml-1"
-                  data-testid={`button-play-${exercise.id}`}
+                  data-testid={`link-play-${exercise.id}`}
                 >
-                  <Play className="w-3 h-3" /> Play
-                </button>
+                  <Play className="w-3 h-3" /> PLAY
+                </a>
               </>
             ) : (
               <Badge className="bg-amber-100 text-amber-700 text-xs">
@@ -613,21 +615,16 @@ export default function AdminWorkoutVideos() {
                               {dayVideos}/{dayExercises.length} videos
                             </Badge>
                             {dayVideos > 0 && (
-                              <button 
+                              <a 
+                                href={dayExercises.find(ex => ex.video_url)?.video_url || '#'}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="ml-2 inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const videoUrls = dayExercises
-                                    .filter(ex => ex.video_url)
-                                    .map(ex => ex.video_url);
-                                  if (videoUrls.length > 0 && videoUrls[0]) {
-                                    window.open(videoUrls[0], '_blank');
-                                  }
-                                }}
-                                data-testid="button-admin-play-all"
+                                onClick={(e) => e.stopPropagation()}
+                                data-testid="link-admin-play-all"
                               >
-                                <Play className="w-3 h-3" /> Play All
-                              </button>
+                                <Play className="w-3 h-3" /> PLAY ALL
+                              </a>
                             )}
                           </div>
                         </AccordionTrigger>
