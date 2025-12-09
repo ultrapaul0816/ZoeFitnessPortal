@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Video, 
   Dumbbell, 
@@ -21,8 +22,10 @@ import {
   Play,
   Loader2,
   Save,
-  ChevronRight,
-  AlertCircle
+  AlertCircle,
+  Heart,
+  Baby,
+  Sparkles
 } from "lucide-react";
 
 type Exercise = {
@@ -37,26 +40,43 @@ type Exercise = {
   order_index: number;
 };
 
-type ModuleSection = {
-  id: string;
-  title: string;
-  description: string | null;
+type WorkoutModule = {
+  module_id: string;
+  module_name: string;
+  module_type: string;
+  course_id: string;
+  course_name: string;
   order_index: number;
 };
 
-type CourseModule = {
+type CourseConfig = {
   id: string;
   name: string;
-  slug: string;
-  module_type: string;
-  order_index: number;
+  icon: React.ReactNode;
+  color: string;
+  exercisePrefix: string;
+  programs: ProgramConfig[];
+};
+
+type ProgramConfig = {
+  id: string;
+  name: string;
+  days: DayConfig[];
+};
+
+type DayConfig = {
+  day: number;
+  title: string;
+  duration: string;
+  exerciseIds: string[];
 };
 
 export default function AdminWorkoutVideos() {
   const [, setLocation] = useLocation();
   const { user, loading: sessionLoading } = useSession();
   const { toast } = useToast();
-  const [activeProgram, setActiveProgram] = useState("program1");
+  const [activeCourse, setActiveCourse] = useState("prenatal");
+  const [activeProgram, setActiveProgram] = useState("");
   const [editingExercise, setEditingExercise] = useState<string | null>(null);
   const [videoUrls, setVideoUrls] = useState<Record<string, string>>({});
   const [savingExercise, setSavingExercise] = useState<string | null>(null);
@@ -69,21 +89,21 @@ export default function AdminWorkoutVideos() {
 
   const handleNavigate = (path: string) => setLocation(path);
 
-  // Fetch prenatal exercises grouped by category
-  const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
-    queryKey: ['/api/admin/prenatal-exercises'],
+  // Fetch all exercises
+  const { data: allExercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
+    queryKey: ['/api/admin/all-exercises'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/exercises?prefix=prenatal');
+      const res = await fetch('/api/admin/exercises');
       const data = await res.json();
       return Array.isArray(data) ? data : [];
     },
   });
 
-  // Fetch module sections for Program 1
-  const { data: program1Sections = [], isLoading: sectionsLoading } = useQuery<ModuleSection[]>({
-    queryKey: ['/api/admin/modules/prenatal-t1-program1/sections'],
+  // Fetch workout modules for course/program structure
+  const { data: workoutModules = [] } = useQuery<WorkoutModule[]>({
+    queryKey: ['/api/admin/workout-modules'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/modules/prenatal-t1-program1/sections');
+      const res = await fetch('/api/admin/workout-modules');
       const data = await res.json();
       return Array.isArray(data) ? data : [];
     },
@@ -93,8 +113,8 @@ export default function AdminWorkoutVideos() {
     mutationFn: async ({ exerciseId, videoUrl }: { exerciseId: string; videoUrl: string }) => {
       return apiRequest("PATCH", `/api/admin/exercises/${exerciseId}`, { videoUrl });
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/prenatal-exercises'] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/all-exercises'] });
       setEditingExercise(null);
       setSavingExercise(null);
       toast({ title: "Video URL updated successfully" });
@@ -125,34 +145,102 @@ export default function AdminWorkoutVideos() {
     setEditingExercise(null);
   };
 
-  // Group exercises by day based on their IDs and order
-  const getExercisesForDay = (dayNumber: number) => {
-    // Map day numbers to exercise ID prefixes or order ranges
-    const dayExerciseRanges: Record<number, string[]> = {
-      1: ['prenatal-db-squat-thruster', 'prenatal-db-deadlifts', 'prenatal-db-same-leg-lunge-front-raise', 
-          'prenatal-supported-glute-bridge-marches', 'prenatal-side-plank-hip-lifts', 'prenatal-supine-core-compressions',
-          'prenatal-childs-pose-travel', 'prenatal-child-pose-inner-thigh-stretch', 'prenatal-bodyweight-squats',
-          'prenatal-band-deadlifts', 'prenatal-wall-support-lunges', 'prenatal-pillow-glute-bridges', 'prenatal-side-lying-leg-lifts'],
-      2: ['prenatal-db-supported-chest-press', 'prenatal-db-bicep-curl-arnold-press', 'prenatal-db-sumo-squat-upright-row',
-          'prenatal-mini-band-side-plank-clam', 'prenatal-standing-arm-rotations', 'prenatal-seated-90-90-glute-lift',
-          'prenatal-thread-the-needle', 'prenatal-wall-supported-pushups', 'prenatal-band-kneeling-shoulder-press',
-          'prenatal-sumo-squat-bodyweight', 'prenatal-mini-band-lying-clamshells'],
-      3: ['prenatal-band-squat-front-raise', 'prenatal-band-squat-wide-row', 'prenatal-mini-band-modified-jacks',
-          'prenatal-mini-band-traveling-squat', 'prenatal-mini-band-bridge-pull-aparts', 'prenatal-sumo-squat-hold-twists',
-          'prenatal-bird-dog-bodyweight', 'prenatal-core-compressions-wall-sits', 'prenatal-band-seated-narrow-rows',
-          'prenatal-band-standing-side-abductors', 'prenatal-pillow-ball-squeeze-bridges'],
-      4: ['prenatal-db-bird-dog-rows', 'prenatal-db-seated-shoulder-press', 'prenatal-db-seated-lateral-raises',
-          'prenatal-marching-band-wrist-pull', 'prenatal-side-plank-knee-leg-lifts', 'prenatal-all-fours-shoulder-taps',
-          'prenatal-seated-figure-8-arm-lifts', 'prenatal-knee-side-plank-leg-lift-hold'],
-      5: ['prenatal-db-reverse-lunges', 'prenatal-db-stiff-deadlifts', 'prenatal-db-side-lunge-double-row',
-          'prenatal-knee-pushups', 'prenatal-bear-crawl-plank', 'prenatal-single-leg-stretch-reach',
-          'prenatal-pigeon-stretch', 'prenatal-seated-kneeling-core-compressions', 'prenatal-bodyweight-reverse-lunges',
-          'prenatal-band-stiff-deadlifts', 'prenatal-side-lunges', 'prenatal-bear-crawls-knee-lifts',
-          'prenatal-warmup', 'prenatal-cooldown']
-    };
-    
-    const dayExerciseIds = dayExerciseRanges[dayNumber] || [];
-    return exercises.filter(ex => dayExerciseIds.includes(ex.id));
+  // Course configurations with exercise mappings
+  const courseConfigs: CourseConfig[] = [
+    {
+      id: "prenatal",
+      name: "Prenatal Strength",
+      icon: <Baby className="w-4 h-4" />,
+      color: "from-purple-500 to-pink-500",
+      exercisePrefix: "prenatal",
+      programs: [
+        {
+          id: "program1",
+          name: "Program 1: Feeling Fierce (5 Days)",
+          days: [
+            { day: 1, title: "Day 1: Full Body Strength + Core Activation", duration: "30-35 mins", exerciseIds: [
+              'prenatal-db-squat-thruster', 'prenatal-db-deadlifts', 'prenatal-db-same-leg-lunge-front-raise', 
+              'prenatal-supported-glute-bridge-marches', 'prenatal-side-plank-hip-lifts', 'prenatal-supine-core-compressions',
+              'prenatal-childs-pose-travel', 'prenatal-child-pose-inner-thigh-stretch', 'prenatal-bodyweight-squats',
+              'prenatal-band-deadlifts', 'prenatal-wall-support-lunges', 'prenatal-pillow-glute-bridges', 'prenatal-side-lying-leg-lifts'
+            ]},
+            { day: 2, title: "Day 2: Glutes + Upper Body Burn", duration: "30-35 mins", exerciseIds: [
+              'prenatal-db-supported-chest-press', 'prenatal-db-bicep-curl-arnold-press', 'prenatal-db-sumo-squat-upright-row',
+              'prenatal-mini-band-side-plank-clam', 'prenatal-standing-arm-rotations', 'prenatal-seated-90-90-glute-lift',
+              'prenatal-thread-the-needle', 'prenatal-wall-supported-pushups', 'prenatal-band-kneeling-shoulder-press',
+              'prenatal-sumo-squat-bodyweight', 'prenatal-mini-band-lying-clamshells'
+            ]},
+            { day: 3, title: "Day 3: Functional Conditioning Circuit", duration: "30 mins", exerciseIds: [
+              'prenatal-band-squat-front-raise', 'prenatal-band-squat-wide-row', 'prenatal-mini-band-modified-jacks',
+              'prenatal-mini-band-traveling-squat', 'prenatal-mini-band-bridge-pull-aparts', 'prenatal-sumo-squat-hold-twists',
+              'prenatal-bird-dog-bodyweight', 'prenatal-core-compressions-wall-sits', 'prenatal-band-seated-narrow-rows',
+              'prenatal-band-standing-side-abductors', 'prenatal-pillow-ball-squeeze-bridges'
+            ]},
+            { day: 4, title: "Day 4: Core + Shoulder Stability", duration: "25-30 mins", exerciseIds: [
+              'prenatal-db-bird-dog-rows', 'prenatal-db-seated-shoulder-press', 'prenatal-db-seated-lateral-raises',
+              'prenatal-marching-band-wrist-pull', 'prenatal-side-plank-knee-leg-lifts', 'prenatal-all-fours-shoulder-taps',
+              'prenatal-seated-figure-8-arm-lifts', 'prenatal-knee-side-plank-leg-lift-hold'
+            ]},
+            { day: 5, title: "Day 5: Strength + Mobility Reset", duration: "25-30 mins", exerciseIds: [
+              'prenatal-db-reverse-lunges', 'prenatal-db-stiff-deadlifts', 'prenatal-db-side-lunge-double-row',
+              'prenatal-knee-pushups', 'prenatal-bear-crawl-plank', 'prenatal-single-leg-stretch-reach',
+              'prenatal-pigeon-stretch', 'prenatal-seated-kneeling-core-compressions', 'prenatal-bodyweight-reverse-lunges',
+              'prenatal-band-stiff-deadlifts', 'prenatal-side-lunges', 'prenatal-bear-crawls-knee-lifts'
+            ]},
+          ]
+        },
+        {
+          id: "program2",
+          name: "Program 2: Steady & Strong (4 Days)",
+          days: [] // Coming soon
+        },
+        {
+          id: "program3", 
+          name: "Program 3: Balanced & Easy (3 Days)",
+          days: [] // Coming soon
+        },
+      ]
+    },
+    {
+      id: "heal",
+      name: "Heal Your Core",
+      icon: <Heart className="w-4 h-4" />,
+      color: "from-pink-500 to-rose-500",
+      exercisePrefix: "heal",
+      programs: [
+        { id: "week1", name: "Week 1: Reconnect & Reset", days: [] },
+        { id: "week2", name: "Week 2: Stability & Breathwork", days: [] },
+        { id: "week3", name: "Week 3: Control & Awareness", days: [] },
+        { id: "week4", name: "Week 4: Align & Activate", days: [] },
+        { id: "week5", name: "Week 5: Functional Core Flow", days: [] },
+        { id: "week6", name: "Week 6: Foundational Strength", days: [] },
+      ]
+    },
+    {
+      id: "reset",
+      name: "2-Week Core Reset",
+      icon: <Sparkles className="w-4 h-4" />,
+      color: "from-cyan-500 to-blue-500",
+      exercisePrefix: "reset",
+      programs: [
+        { id: "week1", name: "Week 1: Finding Your Breath", days: [] },
+        { id: "week2", name: "Week 2: Building Confidence", days: [] },
+      ]
+    }
+  ];
+
+  const currentCourse = courseConfigs.find(c => c.id === activeCourse);
+  const currentProgram = currentCourse?.programs.find(p => p.id === activeProgram) || currentCourse?.programs[0];
+
+  // Set default program when course changes
+  useEffect(() => {
+    if (currentCourse && currentCourse.programs.length > 0) {
+      setActiveProgram(currentCourse.programs[0].id);
+    }
+  }, [activeCourse]);
+
+  const getExercisesForDay = (exerciseIds: string[]) => {
+    return allExercises.filter(ex => exerciseIds.includes(ex.id));
   };
 
   const getCategoryBadge = (category: string) => {
@@ -200,7 +288,7 @@ export default function AdminWorkoutVideos() {
         </div>
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="font-medium text-gray-900">{exercise.name}</span>
             <Badge className={`text-xs ${getCategoryBadge(exercise.category)}`}>
               {exercise.category}
@@ -251,17 +339,17 @@ export default function AdminWorkoutVideos() {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
               {exercise.video_url ? (
                 <a 
                   href={exercise.video_url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline flex items-center gap-1 max-w-md truncate"
+                  className="text-sm text-blue-600 hover:underline flex items-center gap-1 max-w-xs truncate"
                 >
-                  <Play className="w-3 h-3" />
-                  {exercise.video_url}
-                  <ExternalLink className="w-3 h-3" />
+                  <Play className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate">{exercise.video_url}</span>
+                  <ExternalLink className="w-3 h-3 flex-shrink-0" />
                 </a>
               ) : (
                 <span className="text-sm text-gray-400 italic">No video URL set</span>
@@ -283,21 +371,14 @@ export default function AdminWorkoutVideos() {
     );
   };
 
-  const workoutDays = [
-    { day: 1, title: "Day 1: Full Body Strength + Core Activation", duration: "30-35 mins" },
-    { day: 2, title: "Day 2: Glutes + Upper Body Burn", duration: "30-35 mins" },
-    { day: 3, title: "Day 3: Functional Conditioning Circuit", duration: "30 mins" },
-    { day: 4, title: "Day 4: Core + Shoulder Stability", duration: "25-30 mins" },
-    { day: 5, title: "Day 5: Strength + Mobility Reset", duration: "25-30 mins" },
-  ];
-
-  const getVideoStats = () => {
-    const total = exercises.length;
-    const withVideo = exercises.filter(ex => !!ex.video_url).length;
+  const getVideoStats = (prefix: string) => {
+    const courseExercises = allExercises.filter(ex => ex.id.startsWith(prefix));
+    const total = courseExercises.length;
+    const withVideo = courseExercises.filter(ex => !!ex.video_url).length;
     return { total, withVideo, percentage: total > 0 ? Math.round((withVideo / total) * 100) : 0 };
   };
 
-  const stats = getVideoStats();
+  const stats = currentCourse ? getVideoStats(currentCourse.exercisePrefix) : { total: 0, withVideo: 0, percentage: 0 };
 
   return (
     <AdminLayout
@@ -312,24 +393,42 @@ export default function AdminWorkoutVideos() {
             Workout Video Manager
           </h1>
           <p className="text-gray-500 mt-1">
-            Add and update exercise video URLs organized by program and day
+            Add and update exercise video URLs organized by course, program, and day
           </p>
         </div>
 
+        {/* Course Selector */}
+        <div className="mb-6">
+          <Tabs value={activeCourse} onValueChange={setActiveCourse}>
+            <TabsList className="bg-pink-100 h-auto flex-wrap">
+              {courseConfigs.map(course => (
+                <TabsTrigger 
+                  key={course.id} 
+                  value={course.id}
+                  className="data-[state=active]:bg-white flex items-center gap-2"
+                >
+                  {course.icon}
+                  {course.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+
         {/* Progress Stats */}
-        <Card className="mb-6 bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200">
+        <Card className={`mb-6 bg-gradient-to-r ${currentCourse?.color || 'from-pink-50 to-purple-50'} bg-opacity-10 border-pink-200`}>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Video Coverage</p>
+                <p className="text-sm text-gray-600">Video Coverage - {currentCourse?.name}</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {stats.withVideo} / {stats.total} exercises
                 </p>
               </div>
               <div className="w-32">
-                <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="w-full bg-white/50 rounded-full h-3">
                   <div 
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+                    className={`bg-gradient-to-r ${currentCourse?.color || 'from-pink-500 to-purple-600'} h-3 rounded-full transition-all duration-500`}
                     style={{ width: `${stats.percentage}%` }}
                   />
                 </div>
@@ -339,92 +438,94 @@ export default function AdminWorkoutVideos() {
           </CardContent>
         </Card>
 
-        {/* Course Selector */}
-        <Tabs defaultValue="prenatal" className="mb-6">
-          <TabsList className="bg-pink-100">
-            <TabsTrigger value="prenatal" className="data-[state=active]:bg-white">
-              <Dumbbell className="w-4 h-4 mr-2" />
-              Prenatal Strength
-            </TabsTrigger>
-          </TabsList>
+        {/* Program Selector */}
+        {currentCourse && currentCourse.programs.length > 0 && (
+          <div className="mb-4">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Select Program/Week</label>
+            <Select value={activeProgram} onValueChange={setActiveProgram}>
+              <SelectTrigger className="w-full md:w-96">
+                <SelectValue placeholder="Select a program" />
+              </SelectTrigger>
+              <SelectContent>
+                {currentCourse.programs.map(program => (
+                  <SelectItem key={program.id} value={program.id}>
+                    {program.name}
+                    {program.days.length === 0 && " (Coming Soon)"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-          <TabsContent value="prenatal">
-            {/* Program Tabs */}
-            <Tabs value={activeProgram} onValueChange={setActiveProgram}>
-              <TabsList className="mb-4 bg-purple-100">
-                <TabsTrigger value="program1" className="data-[state=active]:bg-white">
-                  Program 1: Feeling Fierce
-                </TabsTrigger>
-                <TabsTrigger value="program2" className="data-[state=active]:bg-white" disabled>
-                  Program 2 (Coming Soon)
-                </TabsTrigger>
-                <TabsTrigger value="program3" className="data-[state=active]:bg-white" disabled>
-                  Program 3 (Coming Soon)
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="program1">
-                <Card>
-                  <CardHeader className="bg-gradient-to-r from-cyan-500 to-pink-500 text-white rounded-t-lg">
-                    <CardTitle className="flex items-center gap-2">
-                      <Dumbbell className="w-5 h-5" />
-                      Program 1: Feeling Fierce
-                    </CardTitle>
-                    <CardDescription className="text-white/80">
-                      5-Day Week • High energy, full-body, strong
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    {exercisesLoading ? (
-                      <div className="p-6 space-y-4">
-                        {[1, 2, 3].map(i => (
-                          <Skeleton key={i} className="h-20 w-full" />
-                        ))}
-                      </div>
-                    ) : (
-                      <Accordion type="multiple" className="divide-y">
-                        {workoutDays.map(({ day, title, duration }) => {
-                          const dayExercises = getExercisesForDay(day);
-                          const dayVideos = dayExercises.filter(ex => !!ex.video_url).length;
-                          
-                          return (
-                            <AccordionItem key={day} value={`day-${day}`} className="border-0">
-                              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50">
-                                <div className="flex items-center gap-4 w-full">
-                                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                                    {day}
-                                  </div>
-                                  <div className="flex-1 text-left">
-                                    <p className="font-medium text-gray-900">{title}</p>
-                                    <p className="text-sm text-gray-500">{duration} • {dayExercises.length} exercises</p>
-                                  </div>
-                                  <Badge className={dayVideos === dayExercises.length ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
-                                    {dayVideos}/{dayExercises.length} videos
-                                  </Badge>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="px-0 pb-0">
-                                <div className="bg-gray-50">
-                                  {dayExercises.length > 0 ? (
-                                    dayExercises.map((exercise, index) => renderExerciseRow(exercise, index))
-                                  ) : (
-                                    <div className="p-6 text-center text-gray-500">
-                                      No exercises found for this day
-                                    </div>
-                                  )}
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          );
-                        })}
-                      </Accordion>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </TabsContent>
-        </Tabs>
+        {/* Workout Days */}
+        {currentProgram && (
+          <Card>
+            <CardHeader className={`bg-gradient-to-r ${currentCourse?.color || 'from-pink-500 to-purple-500'} text-white rounded-t-lg`}>
+              <CardTitle className="flex items-center gap-2">
+                <Dumbbell className="w-5 h-5" />
+                {currentProgram.name}
+              </CardTitle>
+              <CardDescription className="text-white/80">
+                {currentProgram.days.length > 0 
+                  ? `${currentProgram.days.length} workout days` 
+                  : "Exercise mappings coming soon - add them to enable editing"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              {exercisesLoading ? (
+                <div className="p-6 space-y-4">
+                  {[1, 2, 3].map(i => (
+                    <Skeleton key={i} className="h-20 w-full" />
+                  ))}
+                </div>
+              ) : currentProgram.days.length > 0 ? (
+                <Accordion type="multiple" className="divide-y">
+                  {currentProgram.days.map(({ day, title, duration, exerciseIds }) => {
+                    const dayExercises = getExercisesForDay(exerciseIds);
+                    const dayVideos = dayExercises.filter(ex => !!ex.video_url).length;
+                    
+                    return (
+                      <AccordionItem key={day} value={`day-${day}`} className="border-0">
+                        <AccordionTrigger className="px-6 py-4 hover:bg-gray-50">
+                          <div className="flex items-center gap-4 w-full">
+                            <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${currentCourse?.color || 'from-pink-500 to-purple-500'} flex items-center justify-center text-white font-bold`}>
+                              {day}
+                            </div>
+                            <div className="flex-1 text-left">
+                              <p className="font-medium text-gray-900">{title}</p>
+                              <p className="text-sm text-gray-500">{duration} • {dayExercises.length} exercises</p>
+                            </div>
+                            <Badge className={dayVideos === dayExercises.length && dayExercises.length > 0 ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
+                              {dayVideos}/{dayExercises.length} videos
+                            </Badge>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-0 pb-0">
+                          <div className="bg-gray-50">
+                            {dayExercises.length > 0 ? (
+                              dayExercises.map((exercise, index) => renderExerciseRow(exercise, index))
+                            ) : (
+                              <div className="p-6 text-center text-gray-500">
+                                No exercises mapped to this day yet
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              ) : (
+                <div className="p-8 text-center text-gray-500">
+                  <Dumbbell className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p className="font-medium">Exercise mappings not configured yet</p>
+                  <p className="text-sm mt-1">Add day configurations to enable video editing for this program</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AdminLayout>
   );
