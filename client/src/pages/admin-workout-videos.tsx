@@ -192,7 +192,39 @@ export default function AdminWorkoutVideos() {
         {
           id: "program2",
           name: "Program 2: Steady & Strong (4 Days)",
-          days: [] // Coming soon
+          days: [
+            { day: 1, title: "Day 1: Full Body Burn + Core", duration: "30 mins", exerciseIds: [
+              'prenatal-p2-db-deadlift-bentover-row', 'prenatal-p2-single-leg-reverse-lunge-knee-lift', 
+              'prenatal-p2-squat-overhead-arm-reach', 'prenatal-p2-glute-bridge-cross-reach', 
+              'prenatal-p2-seated-90-90-glute-stretch-rotation', 'prenatal-p2-modified-knee-elbow-opp',
+              'prenatal-p2-supine-core-compressions', 'prenatal-p2-all-fours-ball-pelvic-tilts',
+              'prenatal-p2-light-db-band-deadlift', 'prenatal-p2-squat-seated-chair'
+            ]},
+            { day: 2, title: "Day 2: Glutes + Posture", duration: "30-35 mins", exerciseIds: [
+              'prenatal-p2-glute-bridge-marches', 'prenatal-p2-kneeling-band-pull-aparts-block',
+              'prenatal-p2-dbs-alternating-lunges', 'prenatal-p2-band-seated-wide-row',
+              'prenatal-p2-band-glute-kickbacks-all-fours', 'prenatal-p2-wall-angels',
+              'prenatal-p2-childs-pose-open-palms-travel', 'prenatal-p2-seated-figure-8-rotations',
+              'prenatal-p2-glute-bridge-lifts', 'prenatal-p2-lunges-wall-support',
+              'prenatal-p2-band-seated-narrow-rows', 'prenatal-p2-wall-single-leg-glute-kickbacks'
+            ]},
+            { day: 3, title: "Day 3: Active Recovery Flow", duration: "25-30 mins", exerciseIds: [
+              'prenatal-p2-bear-crawl-pelvic-tilts-thread-needle', 'prenatal-p2-kneeling-ball-squeeze-band-pull',
+              'prenatal-p2-bird-dog-bodyweight', 'prenatal-p2-pillow-glute-bridges',
+              'prenatal-p2-side-plank-hip-lifts', 'prenatal-p2-cross-legged-twists',
+              'prenatal-p2-cross-legged-cross-hands-release', 'prenatal-p2-supine-core-compressions-belly-ribs',
+              'prenatal-p2-bear-crawl-pelvic-tilts-only', 'prenatal-p2-kneeling-ball-squeeze-lean-back',
+              'prenatal-p2-supine-bodyweight-bridges', 'prenatal-p2-side-lying-marches'
+            ]},
+            { day: 4, title: "Day 4: Functional Strength + Core", duration: "25-30 mins", exerciseIds: [
+              'prenatal-p2-db-same-leg-lunge-lateral-raise', 'prenatal-p2-supported-single-leg-glute-bridge-knee-chest',
+              'prenatal-p2-band-squat-narrow-row', 'prenatal-p2-db-sumo-squat-upright-row',
+              'prenatal-p2-bird-dog-bodyweight-d4', 'prenatal-p2-sumo-squat-alternate-arm-lifts',
+              'prenatal-p2-bear-crawl-downward-dog-holds', 'prenatal-p2-all-fours-shoulder-taps',
+              'prenatal-p2-band-lunge-lateral-raise', 'prenatal-p2-glute-bridges-bed-chair',
+              'prenatal-p2-band-standing-wide-narrow-row'
+            ]},
+          ]
         },
         {
           id: "program3", 
