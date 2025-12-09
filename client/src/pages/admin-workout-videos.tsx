@@ -170,8 +170,8 @@ export default function AdminWorkoutVideos() {
           days: [
             { day: 1, title: "Day 1: Full Body Strength + Core Activation", duration: "30-35 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
-              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-db-squat-thruster', 'prenatal-db-deadlifts', 'prenatal-db-same-leg-lunge-front-raise'] },
-              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-supported-glute-bridge-marches', 'prenatal-side-plank-hip-lifts', 'prenatal-supine-core-compressions', 'prenatal-childs-pose-travel', 'prenatal-child-pose-inner-thigh-stretch'] },
+              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-db-squat-thruster', 'prenatal-db-deadlifts', 'prenatal-db-same-leg-lunge-front-raise', 'prenatal-supported-glute-bridge-marches', 'prenatal-side-plank-hip-lifts'] },
+              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-supine-core-compressions', 'prenatal-childs-pose-travel', 'prenatal-child-pose-inner-thigh-stretch'] },
               { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-bodyweight-squats', 'prenatal-band-deadlifts', 'prenatal-wall-support-lunges', 'prenatal-pillow-glute-bridges', 'prenatal-side-lying-leg-lifts'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
