@@ -276,6 +276,33 @@ export default function AdminWorkoutVideos() {
             ]},
           ]
         },
+        {
+          id: "program5", 
+          name: "Program 5: Pick & Play (3 Days)",
+          days: [
+            { day: 1, title: "Day 1: Build Your Own - Strength Focus", duration: "25-30 mins", exerciseIds: [
+              'prenatal-p5-db-squat-thruster', 'prenatal-p5-single-arm-single-leg-row',
+              'prenatal-p5-db-supported-chest-press', 'prenatal-p5-db-alt-leg-lunge-rainbows',
+              'prenatal-p5-db-sumo-deadlifts', 'prenatal-p5-seated-lateral-raises',
+              'prenatal-p5-marching-band-wrist-pull-aparts', 'prenatal-p5-mini-band-elbow-side-plank-clams',
+              'prenatal-p5-band-squat-front-raise', 'prenatal-p5-db-bird-dog-rows',
+              'prenatal-p5-knee-pushups', 'prenatal-p5-squat-arm-rainbows', 'prenatal-p5-sumo-squat-bodyweight',
+              'prenatal-p5-kneeling-band-pull-aparts', 'prenatal-p5-mini-band-lying-clams-pulses',
+              'prenatal-p5-standing-arm-rotations', 'prenatal-p5-seated-same-side-leg-stretch-reach', 'prenatal-p5-supine-core-compressions'
+            ]},
+            { day: 2, title: "Day 2: Core + Conditioning Mix", duration: "20-25 mins", exerciseIds: [
+              'prenatal-p5-core-compressions-wall-sits', 'prenatal-p5-mini-band-glute-bridges',
+              'prenatal-p5-db-sumo-squat-rows', 'prenatal-p5-supine-core-compressions-d2',
+              'prenatal-p5-bird-dog', 'prenatal-p5-all-fours-ball-pelvic-tilts',
+              'prenatal-p5-cat-camel', 'prenatal-p5-same-side-leg-stretch-reach', 'prenatal-p5-child-pose-hips-lifted'
+            ]},
+            { day: 3, title: "Day 3: Mix & Match Flow", duration: "20-25 mins", exerciseIds: [
+              'prenatal-p5-cat-camel-thread-needle', 'prenatal-p5-seated-90-90-neck-rotations',
+              'prenatal-p5-side-lying-squeeze-shoulder-taps', 'prenatal-p5-supine-head-lifts-glute-bridge-reach',
+              'prenatal-p5-bird-dog-child-pose', 'prenatal-p5-supine-compressions-wall-sit-ball'
+            ]},
+          ]
+        },
       ]
     },
     {
