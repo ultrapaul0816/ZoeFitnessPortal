@@ -72,6 +72,124 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
   );
 }
 
+// Mobile-friendly exercise card component
+function MobileExerciseCard({ 
+  num, 
+  exercise, 
+  reps, 
+  beginnerOption, 
+  exercises,
+  colorScheme = "purple"
+}: { 
+  num: number; 
+  exercise: string; 
+  reps?: string; 
+  beginnerOption?: string; 
+  exercises: ExerciseData[];
+  colorScheme?: "purple" | "blue" | "teal" | "green" | "amber";
+}) {
+  const colors = {
+    purple: { bg: "bg-purple-50", border: "border-purple-200", num: "bg-purple-500", text: "text-purple-700" },
+    blue: { bg: "bg-blue-50", border: "border-blue-200", num: "bg-blue-500", text: "text-blue-700" },
+    teal: { bg: "bg-teal-50", border: "border-teal-200", num: "bg-teal-500", text: "text-teal-700" },
+    green: { bg: "bg-green-50", border: "border-green-200", num: "bg-green-500", text: "text-green-700" },
+    amber: { bg: "bg-amber-50", border: "border-amber-200", num: "bg-amber-500", text: "text-amber-700" },
+  };
+  const c = colors[colorScheme];
+  
+  return (
+    <div className={`${c.bg} ${c.border} border rounded-xl p-4 space-y-3`}>
+      <div className="flex items-start gap-3">
+        <span className={`${c.num} text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0`}>
+          {num}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-gray-800 text-base leading-tight">
+            <ExerciseLink name={exercise} exercises={exercises} />
+          </div>
+          {reps && (
+            <p className="text-sm text-gray-600 mt-1">{reps}</p>
+          )}
+        </div>
+      </div>
+      {beginnerOption && beginnerOption !== "—" && (
+        <div className="bg-white/60 rounded-lg p-3 ml-10">
+          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Beginner Option</p>
+          <div className="text-sm font-medium">
+            <ExerciseLink name={beginnerOption} exercises={exercises} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Mobile-friendly finisher/flow card
+function MobileFlowCard({ 
+  num, 
+  movement, 
+  time, 
+  notes, 
+  exercises,
+  colorScheme = "teal"
+}: { 
+  num: number; 
+  movement: string; 
+  time: string; 
+  notes?: string; 
+  exercises: ExerciseData[];
+  colorScheme?: "teal" | "blue" | "purple";
+}) {
+  const colors = {
+    teal: { bg: "bg-teal-50", border: "border-teal-200", num: "bg-teal-500" },
+    blue: { bg: "bg-blue-50", border: "border-blue-200", num: "bg-blue-500" },
+    purple: { bg: "bg-purple-50", border: "border-purple-200", num: "bg-purple-500" },
+  };
+  const c = colors[colorScheme];
+  
+  return (
+    <div className={`${c.bg} ${c.border} border rounded-xl p-4`}>
+      <div className="flex items-start gap-3">
+        <span className={`${c.num} text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0`}>
+          {num}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-gray-800 text-base leading-tight">
+            <ExerciseLink name={movement} exercises={exercises} />
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <Clock className="w-3.5 h-3.5 text-gray-400" />
+            <span className="text-sm text-gray-600">{time}</span>
+          </div>
+          {notes && (
+            <p className="text-sm text-gray-500 italic mt-2">{notes}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Responsive wrapper - shows table on desktop, cards on mobile
+function ResponsiveWorkoutSection({ 
+  children, 
+  mobileCards 
+}: { 
+  children: React.ReactNode; 
+  mobileCards: React.ReactNode;
+}) {
+  return (
+    <>
+      <div className="hidden md:block overflow-x-auto">
+        {children}
+      </div>
+      <div className="md:hidden space-y-3">
+        {mobileCards}
+      </div>
+    </>
+  );
+}
+
 // Component to render exercise name as clickable link if video URL exists
 function ExerciseLink({ name, exercises }: { name: string; exercises: ExerciseData[] }) {
   const searchName = name.toLowerCase();
