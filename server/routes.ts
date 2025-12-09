@@ -4992,7 +4992,6 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       if (updates.coachNotes !== undefined) setClauses.push(`coach_notes = '${updates.coachNotes}'`);
       if (updates.isActive !== undefined) setClauses.push(`is_active = ${updates.isActive}`);
       if (updates.orderIndex !== undefined) setClauses.push(`order_index = ${updates.orderIndex}`);
-      setClauses.push(`updated_at = NOW()`);
       
       if (setClauses.length > 0) {
         await storage.db.execute(sql.raw(`UPDATE exercises SET ${setClauses.join(', ')} WHERE id = '${id}'`));
