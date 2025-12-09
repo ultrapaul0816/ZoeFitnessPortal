@@ -310,9 +310,9 @@ export default function AdminWorkoutVideos() {
             ]},
             { day: 3, title: "Day 3: Mobility Flow & Recovery", duration: "20-25 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
-              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-p3-bear-crawl-pelvic-tilts-thread', 'prenatal-p3-kneeling-ball-squeeze-lean-back', 'prenatal-p3-child-pose-hips-lifted', 'prenatal-p3-seated-crossed-glute-stretch', 'prenatal-p3-butterfly-elbow-rotations'] },
-              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-p3-bear-crawl-pelvic-tilts-only', 'prenatal-p3-seated-lean-back-core-hold', 'prenatal-p3-hands-on-thighs-butterfly'] },
-              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p3-supine-core-compressions', 'prenatal-p3-cross-legged-cross-hands-release', 'prenatal-p3-chest-stretch-opener'] },
+              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-p3-bear-crawl-pelvic-tilts-thread', 'prenatal-p3-kneeling-ball-squeeze-lean-back', 'prenatal-p3-child-pose-hips-lifted', 'prenatal-p3-seated-crossed-glute-stretch-d3', 'prenatal-p3-butterfly-elbow-rotations'] },
+              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-p3-bear-crawl-pelvic-tilts-only', 'prenatal-p3-seated-lean-back-core-hold', 'prenatal-p3-child-pose-hips-lifted', 'prenatal-p3-seated-crossed-glute-stretch-d3', 'prenatal-p3-hands-on-thighs-butterfly'] },
+              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p3-supine-core-compressions-d3', 'prenatal-p3-cross-legged-cross-hands-release', 'prenatal-p3-chest-stretch-opener'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
           ]
