@@ -256,6 +256,26 @@ export default function AdminWorkoutVideos() {
             ]},
           ]
         },
+        {
+          id: "program4", 
+          name: "Program 4: Gentle Flow (2 Days)",
+          days: [
+            { day: 1, title: "Day 1: Soft Strength + Core Support", duration: "20-25 mins", exerciseIds: [
+              'prenatal-p4-band-seated-narrow-rows', 'prenatal-p4-glute-bridges-mini-band',
+              'prenatal-p4-side-lying-leg-lifts-top-bent', 'prenatal-p4-seated-shoulder-db-press',
+              'prenatal-p4-supine-pelvic-tilts', 'prenatal-p4-seated-90-90-glute-lift-reach',
+              'prenatal-p4-supine-core-compressions', 'prenatal-p4-child-pose-hips-lifted',
+              'prenatal-p4-band-standing-rows', 'prenatal-p4-pillow-glute-bridges',
+              'prenatal-p4-side-lying-pillow-squeeze', 'prenatal-p4-band-kneeling-shoulder-press'
+            ]},
+            { day: 2, title: "Day 2: Stretch + Breath Recovery Flow", duration: "20-25 mins", exerciseIds: [
+              'prenatal-p4-seated-same-side-leg-stretch-reach', 'prenatal-p4-kneeling-ball-squeeze-lean-back',
+              'prenatal-p4-kneeling-lunge-hip-flexor-reaches', 'prenatal-p4-squat-arm-rainbows',
+              'prenatal-p4-cross-legged-lat-stretch', 'prenatal-p4-supine-core-compressions-d2',
+              'prenatal-p4-chest-stretch-opener', 'prenatal-p4-supine-head-lifts-belly-pump'
+            ]},
+          ]
+        },
       ]
     },
     {
