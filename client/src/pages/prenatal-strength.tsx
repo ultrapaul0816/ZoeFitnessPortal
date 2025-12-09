@@ -55,21 +55,23 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white text-[9px] font-semibold px-1.5 py-0.5 rounded shadow-sm hover:shadow transition-all whitespace-nowrap ${className}`}
+        className={`inline-flex items-center gap-0.5 bg-blue-600 text-white text-[8px] leading-none font-bold px-1 py-0.5 rounded ${className}`}
+        style={{ fontSize: '8px' }}
         data-testid="button-play-all"
       >
-        <Play className="w-2 h-2 fill-current" />
-        <span>Play All</span>
+        <Play className="w-2 h-2 fill-current flex-shrink-0" />
+        <span className="whitespace-nowrap">All</span>
       </a>
     );
   }
   return (
     <span 
-      className={`inline-flex items-center gap-1 bg-gray-200 text-gray-500 text-[9px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap ${className}`}
+      className={`inline-flex items-center gap-0.5 bg-gray-300 text-gray-500 text-[8px] leading-none font-bold px-1 py-0.5 rounded ${className}`}
+      style={{ fontSize: '8px' }}
       data-testid="button-play-all"
     >
-      <Play className="w-2 h-2" />
-      <span>Play All</span>
+      <Play className="w-2 h-2 flex-shrink-0" />
+      <span className="whitespace-nowrap">All</span>
     </span>
   );
 }
@@ -1017,19 +1019,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">
-                                      <div className="flex items-center gap-2 flex-wrap">
-                                        <span>Exercise</span>
-                                        <PlayAllButton url={getPlayAllUrl('program1-day1-main-workout')} />
-                                      </div>
-                                    </th>
+                                    <th className="text-left py-2 text-purple-700 whitespace-nowrap">Exercise <PlayAllButton url={getPlayAllUrl('program1-day1-main-workout')} /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">
-                                      <div className="flex items-center gap-2 flex-wrap">
-                                        <span>Beginner</span>
-                                        <PlayAllButton url={getPlayAllUrl('program1-day1-beginner-option')} />
-                                      </div>
-                                    </th>
+                                    <th className="text-left py-2 text-purple-700 whitespace-nowrap">Beginner <PlayAllButton url={getPlayAllUrl('program1-day1-beginner-option')} /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
