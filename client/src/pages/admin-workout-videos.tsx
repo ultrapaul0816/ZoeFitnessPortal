@@ -720,11 +720,83 @@ export default function AdminWorkoutVideos() {
                                 sections.map((section, sectionIndex) => {
                                   const sectionExercises = getExercisesForDay(section.exerciseIds);
                                   let exerciseCounter = sections.slice(0, sectionIndex).reduce((acc, s) => acc + s.exerciseIds.length, 0);
+                                  const sectionKey = `${activeProgram}-day${day}-${section.name.toLowerCase().replace(/\s+/g, '-')}`;
+                                  const sectionVideos = sectionExercises.filter(ex => !!ex.video_url).length;
                                   return (
                                     <div key={section.name}>
-                                      <div className={`px-4 py-2 ${section.color} border-l-4 font-semibold text-sm flex items-center gap-2`}>
-                                        <span>{section.name}</span>
-                                        <span className="text-xs opacity-70">({sectionExercises.length} exercises)</span>
+                                      <div className={`px-4 py-3 ${section.color} border-l-4 font-semibold text-sm`}>
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-2">
+                                            <span>{section.name}</span>
+                                            <span className="text-xs opacity-70">({sectionExercises.length} exercises)</span>
+                                            <Badge className="text-xs bg-white/50">{sectionVideos}/{sectionExercises.length} videos</Badge>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            {editingPlayAll === sectionKey ? (
+                                              <div className="flex items-center gap-2">
+                                                <Input
+                                                  placeholder="Playlist URL..."
+                                                  value={playAllUrls[sectionKey] || ''}
+                                                  onChange={(e) => setPlayAllUrls(prev => ({
+                                                    ...prev,
+                                                    [sectionKey]: e.target.value
+                                                  }))}
+                                                  className="w-64 h-7 text-xs"
+                                                  data-testid={`input-section-play-all-${sectionKey}`}
+                                                />
+                                                <Button
+                                                  size="sm"
+                                                  onClick={() => {
+                                                    toast({ title: "Section Play All URL saved" });
+                                                    setEditingPlayAll(null);
+                                                  }}
+                                                  className="h-7 px-2 bg-green-600 hover:bg-green-700"
+                                                >
+                                                  <Save className="w-3 h-3" />
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  variant="outline"
+                                                  onClick={() => setEditingPlayAll(null)}
+                                                  className="h-7 px-2"
+                                                >
+                                                  <X className="w-3 h-3" />
+                                                </Button>
+                                              </div>
+                                            ) : playAllUrls[sectionKey] ? (
+                                              <div className="flex items-center gap-2">
+                                                <a 
+                                                  href={playAllUrls[sectionKey]}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center gap-1 text-blue-700 hover:text-blue-800 text-xs font-medium hover:underline"
+                                                  data-testid={`link-section-play-all-${sectionKey}`}
+                                                >
+                                                  <Play className="w-3 h-3" /> Play All
+                                                </a>
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  onClick={() => setEditingPlayAll(sectionKey)}
+                                                  className="h-6 px-2 text-xs"
+                                                >
+                                                  Edit
+                                                </Button>
+                                              </div>
+                                            ) : (
+                                              <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                onClick={() => setEditingPlayAll(sectionKey)}
+                                                className="h-6 px-2 text-xs flex items-center gap-1"
+                                                data-testid={`button-add-section-play-all-${sectionKey}`}
+                                              >
+                                                <Video className="w-3 h-3" />
+                                                Add Play All
+                                              </Button>
+                                            )}
+                                          </div>
+                                        </div>
                                       </div>
                                       {sectionExercises.map((exercise, index) => renderExerciseRow(exercise, exerciseCounter + index))}
                                     </div>
