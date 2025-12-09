@@ -26,6 +26,7 @@ import {
   FileText,
   Zap,
   Eye,
+  Video,
 } from "lucide-react";
 
 interface NavItem {
@@ -52,6 +53,7 @@ const navItems: NavItem[] = [
   { id: "courses", label: "Courses", icon: GraduationCap, section: "Content", path: "/admin/courses" },
   { id: "modules", label: "Module Library", icon: Layers, section: "Content", path: "/admin/modules" },
   { id: "exercises", label: "Exercise Library", icon: Dumbbell, section: "Content", path: "/admin/exercises" },
+  { id: "workout-videos", label: "Workout Videos", icon: Video, section: "Content", path: "/admin/workout-videos" },
   { id: "workouts", label: "Workout Builder", icon: BookOpen, section: "Content", path: "/admin/workouts" },
   { id: "programs", label: "Programs (Legacy)", icon: FolderOpen, section: "Content" },
   { id: "assets", label: "Assets", icon: Image, section: "Content" },

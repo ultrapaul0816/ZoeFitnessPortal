@@ -4896,7 +4896,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
   // Get all exercises
   app.get("/api/admin/exercises", requireAdmin, async (req, res) => {
     try {
-      const { category, search } = req.query;
+      const { category, search, prefix } = req.query;
       let query = `SELECT * FROM exercises WHERE 1=1`;
       
       if (category && category !== 'all') {
@@ -4904,6 +4904,9 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       }
       if (search) {
         query += ` AND (LOWER(name) LIKE LOWER('%${search}%') OR LOWER(description) LIKE LOWER('%${search}%'))`;
+      }
+      if (prefix) {
+        query += ` AND id LIKE '${prefix}%'`;
       }
       query += ` ORDER BY order_index ASC, name ASC`;
       
