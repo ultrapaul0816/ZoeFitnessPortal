@@ -4494,22 +4494,21 @@ RESPONSE GUIDELINES:
   app.patch("/api/admin/modules/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const updates = req.body;
+      const { name, slug, description, moduleType, iconName, colorTheme, isReusable, isVisible } = req.body;
       
-      const setClauses: string[] = [];
-      
-      if (updates.name !== undefined) setClauses.push(`name = '${updates.name}'`);
-      if (updates.slug !== undefined) setClauses.push(`slug = '${updates.slug}'`);
-      if (updates.description !== undefined) setClauses.push(`description = '${updates.description}'`);
-      if (updates.moduleType !== undefined) setClauses.push(`module_type = '${updates.moduleType}'`);
-      if (updates.iconName !== undefined) setClauses.push(`icon_name = '${updates.iconName}'`);
-      if (updates.colorTheme !== undefined) setClauses.push(`color_theme = '${updates.colorTheme}'`);
-      if (updates.isReusable !== undefined) setClauses.push(`is_reusable = ${updates.isReusable}`);
-      setClauses.push(`updated_at = NOW()`);
-      
-      if (setClauses.length > 0) {
-        await storage.db.execute(sql.raw(`UPDATE course_modules SET ${setClauses.join(', ')} WHERE id = '${id}'`));
-      }
+      await storage.db.execute(sql`
+        UPDATE course_modules SET 
+          name = COALESCE(${name}, name),
+          slug = COALESCE(${slug}, slug),
+          description = COALESCE(${description}, description),
+          module_type = COALESCE(${moduleType}, module_type),
+          icon_name = COALESCE(${iconName}, icon_name),
+          color_theme = COALESCE(${colorTheme}, color_theme),
+          is_reusable = COALESCE(${isReusable}, is_reusable),
+          is_visible = COALESCE(${isVisible}, is_visible),
+          updated_at = NOW()
+        WHERE id = ${id}
+      `);
       
       const result = await storage.db.execute(sql`SELECT * FROM course_modules WHERE id = ${id}`);
       res.json(result.rows[0]);
