@@ -277,14 +277,14 @@ export default function AdminWorkoutVideos() {
             { day: 3, title: "Day 3: Active Recovery Flow", duration: "25-30 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
               { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-p2-bear-crawl-pelvic-tilts-thread-needle', 'prenatal-p2-kneeling-ball-squeeze-band-pull', 'prenatal-p2-bird-dog-bodyweight', 'prenatal-p2-pillow-glute-bridges', 'prenatal-p2-side-plank-hip-lifts'] },
-              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-p2-bear-crawl-pelvic-tilts-only', 'prenatal-p2-kneeling-ball-squeeze-lean-back', 'prenatal-p2-supine-bodyweight-bridges', 'prenatal-p2-side-lying-marches'] },
-              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p2-cross-legged-twists', 'prenatal-p2-cross-legged-cross-hands-release', 'prenatal-p2-supine-core-compressions'] },
+              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-p2-bear-crawl-pelvic-tilts-only', 'prenatal-p2-kneeling-ball-squeeze-lean-back', 'prenatal-p2-bird-dog-bodyweight', 'prenatal-p2-supine-bodyweight-bridges', 'prenatal-p2-side-lying-marches'] },
+              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p2-cross-legged-twists', 'prenatal-p2-cross-legged-cross-hands-release', 'prenatal-p2-supine-core-compressions-belly-ribs'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
             { day: 4, title: "Day 4: Functional Strength + Core", duration: "25-30 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
-              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-p2-db-same-leg-lunge-lateral-raise', 'prenatal-p2-supported-single-leg-glute-bridge-knee-chest', 'prenatal-p2-band-squat-narrow-row', 'prenatal-p2-db-sumo-squat-upright-row', 'prenatal-p2-bird-dog-bodyweight'] },
-              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-p2-band-lunge-lateral-raise', 'prenatal-p2-glute-bridges-bed-chair', 'prenatal-p2-band-standing-wide-narrow-row', 'prenatal-p2-keep-range-short', 'prenatal-p2-bird-dog-bodyweight'] },
+              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-p2-db-same-leg-lunge-lateral-raise', 'prenatal-p2-supported-single-leg-glute-bridge-knee-chest', 'prenatal-p2-band-squat-narrow-row', 'prenatal-p2-db-sumo-squat-upright-row', 'prenatal-p2-bird-dog-bodyweight-d4'] },
+              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-p2-band-lunge-lateral-raise', 'prenatal-p2-glute-bridges-bed-chair', 'prenatal-p2-band-standing-wide-narrow-row', 'prenatal-p2-bird-dog-bodyweight-d4'] },
               { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p2-sumo-squat-alternate-arm-lifts', 'prenatal-p2-bear-crawl-downward-dog-holds', 'prenatal-p2-all-fours-shoulder-taps'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
