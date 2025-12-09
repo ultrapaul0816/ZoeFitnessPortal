@@ -3564,7 +3564,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-purple-200">
                                         <th className="text-left py-2 text-purple-700">#</th>
-                                        <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton url={getPlayAllUrl('program5-day2-option-a')} /></th>
+                                        <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton url={getPlayAllUrl('program5-day2-option-a-strength-core-flow')} /></th>
                                         <th className="text-left py-2 text-purple-700">Time/Reps</th>
                                         <th className="text-left py-2 text-purple-700">Notes</th>
                                       </tr>
@@ -3604,7 +3604,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-pink-200">
                                         <th className="text-left py-2 text-pink-700">#</th>
-                                        <th className="text-left py-2 text-pink-700">Exercise <PlayAllButton url={getPlayAllUrl('program5-day2-option-b')} /></th>
+                                        <th className="text-left py-2 text-pink-700">Exercise <PlayAllButton url={getPlayAllUrl('program5-day2-option-b-core-reset')} /></th>
                                         <th className="text-left py-2 text-pink-700">Time/Reps</th>
                                         <th className="text-left py-2 text-pink-700">Notes</th>
                                       </tr>
@@ -3644,7 +3644,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-teal-200">
                                         <th className="text-left py-2 text-teal-700">#</th>
-                                        <th className="text-left py-2 text-teal-700">Exercise <PlayAllButton url={getPlayAllUrl('program5-day2-option-c')} /></th>
+                                        <th className="text-left py-2 text-teal-700">Exercise <PlayAllButton url={getPlayAllUrl('program5-day2-option-c-stretch-release')} /></th>
                                         <th className="text-left py-2 text-teal-700">Time/Reps</th>
                                         <th className="text-left py-2 text-teal-700">Notes</th>
                                       </tr>

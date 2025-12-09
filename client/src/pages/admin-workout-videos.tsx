@@ -684,7 +684,7 @@ export default function AdminWorkoutVideos() {
                                 sections.map((section, sectionIndex) => {
                                   const sectionExercises = getExercisesForDay(section.exerciseIds);
                                   let exerciseCounter = sections.slice(0, sectionIndex).reduce((acc, s) => acc + s.exerciseIds.length, 0);
-                                  const sectionKey = `${activeProgram}-day${day}-${section.name.toLowerCase().replace(/\s+/g, '-')}`;
+                                  const sectionKey = `${activeProgram}-day${day}-${section.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '').replace(/^-+/, '')}`;
                                   const sectionVideos = sectionExercises.filter(ex => !!ex.video_url).length;
                                   return (
                                     <div key={section.name}>
