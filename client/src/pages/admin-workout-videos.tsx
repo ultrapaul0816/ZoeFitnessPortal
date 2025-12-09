@@ -357,7 +357,7 @@ export default function AdminWorkoutVideos() {
             { day: 3, title: "Day 3: Mix & Match Flow", duration: "20-25 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
               { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-p5-cat-camel-thread-needle', 'prenatal-p5-seated-90-90-neck-rotations', 'prenatal-p5-side-lying-squeeze-shoulder-taps', 'prenatal-p5-supine-head-lifts-glute-bridge-reach', 'prenatal-p5-bird-dog-child-pose'] },
-              { name: "Finish With", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p5-supine-core-compressions', 'prenatal-p5-wall-sit-ball'] },
+              { name: "Finish With", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-p5-supine-compressions-wall-sit-ball'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
           ]
