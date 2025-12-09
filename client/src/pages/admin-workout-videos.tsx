@@ -80,6 +80,9 @@ export default function AdminWorkoutVideos() {
   const [editingExercise, setEditingExercise] = useState<string | null>(null);
   const [videoUrls, setVideoUrls] = useState<Record<string, string>>({});
   const [savingExercise, setSavingExercise] = useState<string | null>(null);
+  const [playAllUrls, setPlayAllUrls] = useState<Record<string, string>>({});
+  const [editingPlayAll, setEditingPlayAll] = useState<string | null>(null);
+  const [savingPlayAll, setSavingPlayAll] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionLoading && (!user || !user.isAdmin)) {
@@ -614,9 +617,9 @@ export default function AdminWorkoutVideos() {
                             <Badge className={dayVideos === dayExercises.length && dayExercises.length > 0 ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
                               {dayVideos}/{dayExercises.length} videos
                             </Badge>
-                            {dayVideos > 0 && (
+                            {(playAllUrls[`${activeProgram}-day${day}`] || dayVideos > 0) && (
                               <a 
-                                href={dayExercises.find(ex => ex.video_url)?.video_url || '#'}
+                                href={playAllUrls[`${activeProgram}-day${day}`] || dayExercises.find(ex => ex.video_url)?.video_url || '#'}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="ml-2 inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline"
@@ -630,6 +633,95 @@ export default function AdminWorkoutVideos() {
                         </AccordionTrigger>
                         <AccordionContent className="px-0 pb-0">
                           <div className="bg-gray-50">
+                            {/* Play All URL Row */}
+                            <div className="flex items-center gap-4 p-4 border-b bg-blue-50">
+                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
+                                <Play className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-medium text-blue-900">PLAY ALL</span>
+                                  <Badge className="text-xs bg-blue-100 text-blue-700">Playlist URL</Badge>
+                                </div>
+                                {editingPlayAll === `${activeProgram}-day${day}` ? (
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <Input
+                                      placeholder="https://www.youtube.com/playlist?list=..."
+                                      value={playAllUrls[`${activeProgram}-day${day}`] || ''}
+                                      onChange={(e) => setPlayAllUrls(prev => ({
+                                        ...prev,
+                                        [`${activeProgram}-day${day}`]: e.target.value
+                                      }))}
+                                      className="flex-1"
+                                      data-testid={`input-play-all-url-day${day}`}
+                                    />
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        setSavingPlayAll(`${activeProgram}-day${day}`);
+                                        toast({ title: "Play All URL saved (stored locally)" });
+                                        setEditingPlayAll(null);
+                                        setSavingPlayAll(null);
+                                      }}
+                                      disabled={savingPlayAll === `${activeProgram}-day${day}`}
+                                      className="bg-green-600 hover:bg-green-700"
+                                      data-testid={`button-save-play-all-day${day}`}
+                                    >
+                                      {savingPlayAll === `${activeProgram}-day${day}` ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                      ) : (
+                                        <Save className="w-4 h-4" />
+                                      )}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setEditingPlayAll(null)}
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-2">
+                                    {playAllUrls[`${activeProgram}-day${day}`] ? (
+                                      <>
+                                        <a 
+                                          href={playAllUrls[`${activeProgram}-day${day}`]}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-sm text-blue-600 hover:underline truncate max-w-md"
+                                        >
+                                          {playAllUrls[`${activeProgram}-day${day}`]}
+                                        </a>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => setEditingPlayAll(`${activeProgram}-day${day}`)}
+                                          className="ml-auto"
+                                        >
+                                          Edit
+                                        </Button>
+                                      </>
+                                    ) : (
+                                      <span className="text-sm text-gray-400">No Play All URL set</span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              {!editingPlayAll && !playAllUrls[`${activeProgram}-day${day}`] && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setEditingPlayAll(`${activeProgram}-day${day}`)}
+                                  className="flex items-center gap-1"
+                                  data-testid={`button-add-play-all-day${day}`}
+                                >
+                                  <Video className="w-4 h-4" />
+                                  Add Play All
+                                </Button>
+                              )}
+                            </div>
+                            
                             {dayExercises.length > 0 ? (
                               dayExercises.map((exercise, index) => renderExerciseRow(exercise, index))
                             ) : (
