@@ -667,7 +667,7 @@
 /* Mobile accordion improvements */
 @media (max-width: 767px) {
   [data-radix-accordion-trigger] {
-    padding: 1rem !important;
+    padding: 0.875rem !important;
   }
   
   [data-radix-accordion-content] {
@@ -676,10 +676,35 @@
   }
 }
 
-/* Mobile grid improvements */
+/* Compact program cards on mobile */
+@media (max-width: 640px) {
+  .bg-gradient-to-br.rounded-2xl.p-6 {
+    padding: 1rem !important;
+  }
+  
+  .bg-gradient-to-br.rounded-2xl .w-20.h-20 {
+    width: 3rem !important;
+    height: 3rem !important;
+  }
+  
+  .bg-gradient-to-br.rounded-2xl .text-4xl {
+    font-size: 1.5rem !important;
+  }
+  
+  .bg-gradient-to-br.rounded-2xl .text-3xl {
+    font-size: 1.25rem !important;
+  }
+  
+  .bg-gradient-to-br.rounded-2xl .text-sm {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Mobile grid improvements - only for equipment/time boxes */
 @media (max-width: 480px) {
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
+  .bg-cyan-50.border-cyan-200 + .bg-pink-50.border-pink-200,
+  .bg-teal-50.border-teal-200 + .bg-emerald-50.border-emerald-200 {
+    margin-top: 0.5rem;
   }
 }
 
