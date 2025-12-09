@@ -228,9 +228,9 @@ export default function AdminWorkoutVideos() {
             ]},
             { day: 2, title: "Day 2: Glutes + Upper Body Burn", duration: "30-35 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
-              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-db-supported-chest-press', 'prenatal-db-bicep-curl-arnold-press', 'prenatal-db-sumo-squat-upright-row', 'prenatal-mini-band-side-plank-clam', 'prenatal-standing-arm-rotations'] },
-              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-seated-90-90-glute-lift', 'prenatal-thread-the-needle'] },
-              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-wall-supported-pushups', 'prenatal-band-kneeling-shoulder-press', 'prenatal-sumo-squat-bodyweight', 'prenatal-mini-band-lying-clamshells'] },
+              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-db-supported-chest-press', 'prenatal-db-bicep-curl-arnold-press', 'prenatal-db-sumo-squat-upright-row', 'prenatal-supported-glute-bridge-marches', 'prenatal-mini-band-side-plank-clam'] },
+              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-standing-arm-rotations', 'prenatal-seated-90-90-glute-lift', 'prenatal-thread-the-needle'] },
+              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-wall-supported-pushups', 'prenatal-band-kneeling-shoulder-press', 'prenatal-sumo-squat-bodyweight', 'prenatal-pillow-glute-bridges', 'prenatal-mini-band-lying-clamshells'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
             { day: 3, title: "Day 3: Functional Conditioning Circuit", duration: "30 mins", exerciseIds: [], sections: [
