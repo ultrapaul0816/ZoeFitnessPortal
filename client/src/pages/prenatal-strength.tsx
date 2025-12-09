@@ -55,17 +55,17 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center justify-center gap-1 bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-semibold px-2 py-1 rounded-full shadow-sm hover:shadow transition-all whitespace-nowrap ${className}`}
+        className={`inline-flex items-center gap-0.5 text-blue-600 hover:text-blue-700 text-[10px] font-medium hover:underline whitespace-nowrap ${className}`}
         data-testid="button-play-all"
       >
-        <Play className="w-2.5 h-2.5 fill-current" />
+        <Play className="w-2.5 h-2.5" />
         <span>Play All</span>
       </a>
     );
   }
   return (
     <span 
-      className={`inline-flex items-center justify-center gap-1 bg-gray-300 text-gray-500 text-[10px] font-semibold px-2 py-1 rounded-full whitespace-nowrap ${className}`}
+      className={`inline-flex items-center gap-0.5 text-gray-400 text-[10px] font-medium whitespace-nowrap ${className}`}
       data-testid="button-play-all"
     >
       <Play className="w-2.5 h-2.5" />
@@ -1017,9 +1017,19 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton url={getPlayAllUrl('program1-day1-main-workout')} /></th>
+                                    <th className="text-left py-2 text-purple-700">
+                                      <div className="flex flex-col">
+                                        <span>Exercise</span>
+                                        <PlayAllButton url={getPlayAllUrl('program1-day1-main-workout')} />
+                                      </div>
+                                    </th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton url={getPlayAllUrl('program1-day1-beginner-option')} /></th>
+                                    <th className="text-left py-2 text-purple-700">
+                                      <div className="flex flex-col">
+                                        <span>Beginner Option</span>
+                                        <PlayAllButton url={getPlayAllUrl('program1-day1-beginner-option')} />
+                                      </div>
+                                    </th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
