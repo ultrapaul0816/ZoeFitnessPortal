@@ -49,29 +49,39 @@ const ExerciseContext = ({ children, exercises }: { children: React.ReactNode; e
 };
 
 function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: string; className?: string; url?: string }) {
+  const buttonStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '2px',
+    backgroundColor: url ? '#2563eb' : '#d1d5db',
+    color: url ? 'white' : '#6b7280',
+    fontSize: '9px',
+    fontWeight: 600,
+    padding: '2px 6px',
+    borderRadius: '4px',
+    whiteSpace: 'nowrap' as const,
+    verticalAlign: 'middle',
+    lineHeight: 1,
+  };
+
   if (url) {
     return (
       <a 
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center gap-0.5 bg-blue-600 text-white text-[8px] leading-none font-bold px-1 py-0.5 rounded ${className}`}
-        style={{ fontSize: '8px' }}
+        style={buttonStyle}
         data-testid="button-play-all"
       >
-        <Play className="w-2 h-2 fill-current flex-shrink-0" />
-        <span className="whitespace-nowrap">All</span>
+        <Play style={{ width: 10, height: 10, fill: 'currentColor' }} />
+        <span>Play All</span>
       </a>
     );
   }
   return (
-    <span 
-      className={`inline-flex items-center gap-0.5 bg-gray-300 text-gray-500 text-[8px] leading-none font-bold px-1 py-0.5 rounded ${className}`}
-      style={{ fontSize: '8px' }}
-      data-testid="button-play-all"
-    >
-      <Play className="w-2 h-2 flex-shrink-0" />
-      <span className="whitespace-nowrap">All</span>
+    <span style={buttonStyle} data-testid="button-play-all">
+      <Play style={{ width: 10, height: 10 }} />
+      <span>Play All</span>
     </span>
   );
 }
