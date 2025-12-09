@@ -235,9 +235,9 @@ export default function AdminWorkoutVideos() {
             ]},
             { day: 3, title: "Day 3: Functional Conditioning Circuit", duration: "30 mins", exerciseIds: [], sections: [
               { name: "Warmup", color: "bg-amber-100 text-amber-800 border-amber-300", exerciseIds: ['prenatal-warmup'] },
-              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-band-squat-front-raise', 'prenatal-band-squat-wide-row', 'prenatal-mini-band-modified-jacks', 'prenatal-mini-band-traveling-squat', 'prenatal-mini-band-bridge-pull-aparts', 'prenatal-sumo-squat-hold-twists', 'prenatal-bird-dog-bodyweight'] },
-              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-core-compressions-wall-sits'] },
-              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-band-seated-narrow-rows', 'prenatal-band-standing-side-abductors', 'prenatal-pillow-ball-squeeze-bridges'] },
+              { name: "Main Workout", color: "bg-purple-100 text-purple-800 border-purple-300", exerciseIds: ['prenatal-band-squat-front-raise', 'prenatal-band-squat-wide-row', 'prenatal-mini-band-modified-jacks', 'prenatal-mini-band-traveling-squat', 'prenatal-mini-band-bridge-pull-aparts'] },
+              { name: "Finisher Flow", color: "bg-pink-100 text-pink-800 border-pink-300", exerciseIds: ['prenatal-sumo-squat-hold-twists', 'prenatal-bird-dog-bodyweight', 'prenatal-core-compressions-wall-sits'] },
+              { name: "Beginner Option", color: "bg-green-100 text-green-800 border-green-300", exerciseIds: ['prenatal-bodyweight-squats', 'prenatal-band-seated-narrow-rows', 'prenatal-mini-band-modified-jacks-beginner', 'prenatal-band-standing-side-abductors', 'prenatal-pillow-ball-squeeze-bridges'] },
               { name: "Cooldown", color: "bg-cyan-100 text-cyan-800 border-cyan-300", exerciseIds: ['prenatal-cooldown'] }
             ]},
             { day: 4, title: "Day 4: Core + Shoulder Stability", duration: "25-30 mins", exerciseIds: [], sections: [

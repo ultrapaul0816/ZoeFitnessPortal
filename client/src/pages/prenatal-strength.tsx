@@ -1261,27 +1261,27 @@ export default function PrenatalStrengthPage() {
                                     <td className="py-2 text-purple-600 font-medium">1</td>
                                     <td className="py-2"><ExerciseLink name="Band Squat to Front Raise" exercises={exercises} /></td>
                                     <td className="py-2 text-gray-600" rowSpan={5}>40 sec work / 40 sec rest per exercise</td>
-                                    <td className="py-2 text-cyan-600">Bodyweight Squats</td>
+                                    <td className="py-2"><ExerciseLink name="Bodyweight Squats" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">2</td>
                                     <td className="py-2"><ExerciseLink name="Band Squat to Wide Row" exercises={exercises} /></td>
-                                    <td className="py-2 text-cyan-600">Band Seated Narrow Rows</td>
+                                    <td className="py-2"><ExerciseLink name="Band Seated Narrow Rows" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">3</td>
                                     <td className="py-2"><ExerciseLink name="Mini Band Modified Jumping Jacks" exercises={exercises} /></td>
-                                    <td className="py-2 text-cyan-600">Mini Band Modified Jumping Jacks</td>
+                                    <td className="py-2"><ExerciseLink name="Mini Band Modified Jumping Jacks" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">4</td>
                                     <td className="py-2"><ExerciseLink name="Mini Band Traveling Squat" exercises={exercises} /></td>
-                                    <td className="py-2 text-cyan-600">Band Standing Side Leg Abductors</td>
+                                    <td className="py-2"><ExerciseLink name="Band Standing Side Leg Abductors" exercises={exercises} /></td>
                                   </tr>
                                   <tr>
                                     <td className="py-2 text-purple-600 font-medium">5</td>
                                     <td className="py-2"><ExerciseLink name="Mini Band Glute Bridge Pull Aparts" exercises={exercises} /></td>
-                                    <td className="py-2 text-cyan-600">Pillow Ball Squeeze Glute Bridges</td>
+                                    <td className="py-2"><ExerciseLink name="Pillow Ball Squeeze Glute Bridges" exercises={exercises} /></td>
                                   </tr>
                                 </tbody>
                               </table>
