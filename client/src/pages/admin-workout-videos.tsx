@@ -119,6 +119,32 @@ export default function AdminWorkoutVideos() {
     },
   });
 
+  // Fetch section settings (Play All URLs) from database
+  const { data: sectionSettings = {} } = useQuery<Record<string, string>>({
+    queryKey: ['/api/admin/section-settings'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/section-settings');
+      const data = await res.json();
+      // Convert array to map
+      const settings: Record<string, string> = {};
+      if (Array.isArray(data)) {
+        for (const row of data) {
+          if (row.play_all_url) {
+            settings[row.section_key] = row.play_all_url;
+          }
+        }
+      }
+      return settings;
+    },
+  });
+
+  // Initialize playAllUrls from database when sectionSettings loads
+  useEffect(() => {
+    if (sectionSettings && Object.keys(sectionSettings).length > 0) {
+      setPlayAllUrls(prev => ({ ...sectionSettings, ...prev }));
+    }
+  }, [sectionSettings]);
+
   const updateVideoMutation = useMutation({
     mutationFn: async ({ exerciseId, videoUrl }: { exerciseId: string; videoUrl: string }) => {
       return apiRequest("PATCH", `/api/admin/exercises/${exerciseId}`, { videoUrl });
@@ -153,6 +179,31 @@ export default function AdminWorkoutVideos() {
 
   const handleCancelEdit = () => {
     setEditingExercise(null);
+  };
+
+  // Mutation for saving Play All URLs
+  const updatePlayAllMutation = useMutation({
+    mutationFn: async ({ sectionKey, playAllUrl }: { sectionKey: string; playAllUrl: string }) => {
+      return apiRequest("PUT", `/api/admin/section-settings/${encodeURIComponent(sectionKey)}`, { playAllUrl });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/section-settings'] });
+      setEditingPlayAll(null);
+      setSavingPlayAll(null);
+      toast({ title: "Play All URL saved successfully" });
+    },
+    onError: (error: any) => {
+      setSavingPlayAll(null);
+      toast({ title: "Failed to save Play All URL", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleSavePlayAll = (sectionKey: string) => {
+    setSavingPlayAll(sectionKey);
+    updatePlayAllMutation.mutate({
+      sectionKey,
+      playAllUrl: playAllUrls[sectionKey] || ''
+    });
   };
 
   // Course configurations with exercise mappings
@@ -663,13 +714,15 @@ export default function AdminWorkoutVideos() {
                                                   />
                                                   <Button
                                                     size="sm"
-                                                    onClick={() => {
-                                                      toast({ title: "Section Play All URL saved" });
-                                                      setEditingPlayAll(null);
-                                                    }}
+                                                    onClick={() => handleSavePlayAll(sectionKey)}
+                                                    disabled={savingPlayAll === sectionKey}
                                                     className="h-7 px-2 bg-green-600 hover:bg-green-700"
                                                   >
-                                                    <Save className="w-3 h-3" />
+                                                    {savingPlayAll === sectionKey ? (
+                                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                      <Save className="w-3 h-3" />
+                                                    )}
                                                   </Button>
                                                   <Button
                                                     size="sm"

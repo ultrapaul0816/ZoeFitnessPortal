@@ -195,6 +195,15 @@ export const exercises = pgTable("exercises", {
   orderIndex: integer("order_index").default(0),
 });
 
+// Workout section settings (for Play All URLs, etc.)
+export const workoutSectionSettings = pgTable("workout_section_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sectionKey: text("section_key").notNull().unique(), // e.g., "prenatal-program1-day1-main-workout"
+  playAllUrl: text("play_all_url"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 // Weekly workout plans
 export const weeklyWorkouts = pgTable("weekly_workouts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

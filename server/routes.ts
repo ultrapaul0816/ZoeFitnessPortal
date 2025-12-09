@@ -5017,6 +5017,83 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // ================== WORKOUT SECTION SETTINGS API ==================
+  
+  // Get all section settings (for Play All URLs)
+  app.get("/api/admin/section-settings", requireAdmin, async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`SELECT * FROM workout_section_settings`);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching section settings:", error);
+      res.status(500).json({ message: "Failed to fetch section settings" });
+    }
+  });
+
+  // Get section setting by key
+  app.get("/api/admin/section-settings/:sectionKey", requireAdmin, async (req, res) => {
+    try {
+      const { sectionKey } = req.params;
+      const result = await storage.db.execute(sql`
+        SELECT * FROM workout_section_settings WHERE section_key = ${sectionKey}
+      `);
+      res.json(result.rows[0] || null);
+    } catch (error) {
+      console.error("Error fetching section setting:", error);
+      res.status(500).json({ message: "Failed to fetch section setting" });
+    }
+  });
+
+  // Upsert section setting (create or update)
+  app.put("/api/admin/section-settings/:sectionKey", requireAdmin, async (req, res) => {
+    try {
+      const { sectionKey } = req.params;
+      const { playAllUrl } = req.body;
+      
+      // Try to update first
+      const updateResult = await storage.db.execute(sql`
+        UPDATE workout_section_settings 
+        SET play_all_url = ${playAllUrl || null}, updated_at = NOW()
+        WHERE section_key = ${sectionKey}
+        RETURNING *
+      `);
+      
+      if (updateResult.rows.length > 0) {
+        return res.json(updateResult.rows[0]);
+      }
+      
+      // If not found, insert
+      const insertResult = await storage.db.execute(sql`
+        INSERT INTO workout_section_settings (section_key, play_all_url)
+        VALUES (${sectionKey}, ${playAllUrl || null})
+        RETURNING *
+      `);
+      
+      res.json(insertResult.rows[0]);
+    } catch (error) {
+      console.error("Error saving section setting:", error);
+      res.status(500).json({ message: "Failed to save section setting" });
+    }
+  });
+
+  // Public endpoint for user app to get section settings
+  app.get("/api/section-settings", async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`SELECT section_key, play_all_url FROM workout_section_settings`);
+      // Convert to a map for easy lookup
+      const settingsMap: Record<string, string> = {};
+      for (const row of result.rows) {
+        if (row.play_all_url) {
+          settingsMap[row.section_key as string] = row.play_all_url as string;
+        }
+      }
+      res.json(settingsMap);
+    } catch (error) {
+      console.error("Error fetching section settings:", error);
+      res.status(500).json({ message: "Failed to fetch section settings" });
+    }
+  });
+
   // ================== STRUCTURED WORKOUTS API ==================
   
   // Get all structured workouts
