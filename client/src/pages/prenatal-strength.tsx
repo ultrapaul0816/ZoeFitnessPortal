@@ -74,24 +74,35 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
 
 // Component to render exercise name as clickable link if video URL exists
 function ExerciseLink({ name, exercises }: { name: string; exercises: ExerciseData[] }) {
-  // Find exercise by name (case-insensitive exact or partial match)
-  const exercise = exercises.find(ex => {
+  const searchName = name.toLowerCase();
+  
+  // Helper to get video URL from exercise (handles both field naming formats)
+  const getVideoUrl = (ex: ExerciseData) => ex?.videoUrl || (ex as any)?.video_url || '';
+  
+  // Helper to check if names match
+  const namesMatch = (exName: string) => {
+    const normalizedExName = exName.toLowerCase();
+    return normalizedExName === searchName || 
+           normalizedExName.includes(searchName) || 
+           searchName.includes(normalizedExName);
+  };
+  
+  // First, try to find an exercise with matching name AND a video URL
+  const exerciseWithVideo = exercises.find(ex => {
     const exName = ex.name?.toLowerCase() || '';
-    const searchName = name.toLowerCase();
-    return exName === searchName || exName.includes(searchName) || searchName.includes(exName);
+    const videoUrl = getVideoUrl(ex);
+    return namesMatch(exName) && videoUrl && videoUrl.trim() !== '';
   });
   
-  // Handle both camelCase (from Drizzle) and snake_case (from raw SQL)
-  const videoUrl = exercise?.videoUrl || (exercise as any)?.video_url;
-  
-  if (videoUrl && videoUrl.trim() !== '') {
+  if (exerciseWithVideo) {
+    const videoUrl = getVideoUrl(exerciseWithVideo);
     return (
       <a 
         href={videoUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
-        data-testid={`link-exercise-${exercise?.id}`}
+        data-testid={`link-exercise-${exerciseWithVideo?.id}`}
       >
         {name}
       </a>
