@@ -697,7 +697,7 @@ export default function AdminWorkoutVideos() {
                                             <Badge className="text-xs bg-white/50">{sectionVideos}/{sectionExercises.length} videos</Badge>
                                           </div>
                                           <div className="flex items-center gap-2">
-                                            {['Main Workout', 'Finisher Flow', 'Beginner Option'].includes(section.name) && (
+                                            {['Main Workout', 'Finisher Flow', 'Beginner Option', 'Option A: Strength & Core Flow', 'Option B: Core Reset', 'Option C: Stretch & Release', 'Finish With'].includes(section.name) && (
                                               editingPlayAll === sectionKey ? (
                                                 <div className="flex items-center gap-2">
                                                   <Input
