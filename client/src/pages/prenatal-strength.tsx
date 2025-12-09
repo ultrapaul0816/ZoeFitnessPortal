@@ -55,7 +55,7 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-sm hover:shadow transition-all whitespace-nowrap ${className}`}
+        className={`inline-flex items-center justify-center gap-1 bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-semibold px-2 py-1 rounded-full shadow-sm hover:shadow transition-all whitespace-nowrap ${className}`}
         data-testid="button-play-all"
       >
         <Play className="w-2.5 h-2.5 fill-current" />
@@ -65,7 +65,7 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
   }
   return (
     <span 
-      className={`inline-flex items-center gap-1.5 bg-gray-200 text-gray-400 text-[10px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${className}`}
+      className={`inline-flex items-center justify-center gap-1 bg-gray-300 text-gray-500 text-[10px] font-semibold px-2 py-1 rounded-full whitespace-nowrap ${className}`}
       data-testid="button-play-all"
     >
       <Play className="w-2.5 h-2.5" />
