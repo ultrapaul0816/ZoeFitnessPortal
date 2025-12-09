@@ -3365,19 +3365,19 @@ export default function PrenatalStrengthPage() {
                                     <tbody className="divide-y divide-teal-100">
                                       <tr>
                                         <td className="py-2 text-teal-600 font-medium">1</td>
-                                        <td className="py-2 text-emerald-600 font-medium">Supine Core Compressions</td>
+                                        <td className="py-2"><ExerciseLink name="Supine Core Compressions" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">5-6 breaths</td>
                                         <td className="py-2 text-gray-500 italic text-xs">Hands on belly and ribs</td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-teal-600 font-medium">2</td>
-                                        <td className="py-2 text-emerald-600 font-medium">Chest Stretch Opener</td>
+                                        <td className="py-2"><ExerciseLink name="Chest Stretch Opener" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">1 min</td>
                                         <td className="py-2 text-gray-500 italic text-xs">Slow breaths</td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-teal-600 font-medium">3</td>
-                                        <td className="py-2 text-emerald-600 font-medium">Supine Head Lifts with Belly Pump Breathing</td>
+                                        <td className="py-2"><ExerciseLink name="Supine Head Lifts with Belly Pump Breathing" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">2 mins</td>
                                         <td className="py-2 text-gray-500 italic text-xs">Lie with pillow between knees + under belly</td>
                                       </tr>
