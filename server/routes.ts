@@ -4494,18 +4494,36 @@ RESPONSE GUIDELINES:
   app.patch("/api/admin/modules/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, slug, description, moduleType, iconName, colorTheme, isReusable, isVisible } = req.body;
+      const updates = req.body;
+      
+      // Get current module first
+      const current = await storage.db.execute(sql`SELECT * FROM course_modules WHERE id = ${id}`);
+      if (!current.rows[0]) {
+        return res.status(404).json({ message: "Module not found" });
+      }
+      
+      const currentModule = current.rows[0] as any;
+      
+      // Merge updates with current values
+      const name = updates.name ?? currentModule.name;
+      const slug = updates.slug ?? currentModule.slug;
+      const description = updates.description ?? currentModule.description;
+      const moduleType = updates.moduleType ?? currentModule.module_type;
+      const iconName = updates.iconName ?? currentModule.icon_name;
+      const colorTheme = updates.colorTheme ?? currentModule.color_theme;
+      const isReusable = updates.isReusable ?? currentModule.is_reusable;
+      const isVisible = updates.isVisible ?? currentModule.is_visible;
       
       await storage.db.execute(sql`
         UPDATE course_modules SET 
-          name = COALESCE(${name}, name),
-          slug = COALESCE(${slug}, slug),
-          description = COALESCE(${description}, description),
-          module_type = COALESCE(${moduleType}, module_type),
-          icon_name = COALESCE(${iconName}, icon_name),
-          color_theme = COALESCE(${colorTheme}, color_theme),
-          is_reusable = COALESCE(${isReusable}, is_reusable),
-          is_visible = COALESCE(${isVisible}, is_visible),
+          name = ${name},
+          slug = ${slug},
+          description = ${description},
+          module_type = ${moduleType},
+          icon_name = ${iconName},
+          color_theme = ${colorTheme},
+          is_reusable = ${isReusable},
+          is_visible = ${isVisible},
           updated_at = NOW()
         WHERE id = ${id}
       `);
