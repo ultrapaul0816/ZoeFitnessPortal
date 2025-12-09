@@ -19,6 +19,7 @@ import {
   HelpCircle,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   AlertTriangle,
   BookOpen,
   Calendar,
@@ -719,21 +720,25 @@ export default function PrenatalStrengthPage() {
                 </div>
 
                 {/* PROGRAM 1: FEELING FIERCE */}
-                <div className="mb-8">
-                  <div className="bg-gradient-to-br from-cyan-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl mb-6">
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
-                      <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                        <span className="text-4xl font-bold">1</span>
+                <Accordion type="single" collapsible defaultValue="program1" className="mb-8">
+                  <AccordionItem value="program1" className="border-0">
+                    <AccordionTrigger className="p-0 hover:no-underline [&>svg]:hidden" data-testid="accordion-program1">
+                      <div className="bg-gradient-to-br from-cyan-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl w-full">
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                            <span className="text-4xl font-bold">1</span>
+                          </div>
+                          <div className="text-center sm:text-left flex-1">
+                            <p className="text-sm opacity-90 uppercase tracking-wide">Program 1 (5-Day Week)</p>
+                            <h3 className="text-3xl font-bold">FEELING FIERCE</h3>
+                            <p className="text-sm opacity-90 mt-2 italic">For days you're full of energy and ready to move. Expect compound, functional strength work & active mobility.</p>
+                          </div>
+                          <ChevronDown className="w-6 h-6 text-white/80 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                        </div>
                       </div>
-                      <div className="text-center sm:text-left">
-                        <p className="text-sm opacity-90 uppercase tracking-wide">Program 1 (5-Day Week)</p>
-                        <h3 className="text-3xl font-bold">FEELING FIERCE</h3>
-                        <p className="text-sm opacity-90 mt-2 italic">For days you're full of energy and ready to move. Expect compound, functional strength work & active mobility.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Accordion type="single" collapsible className="space-y-4">
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-6 pb-0">
+                      <Accordion type="single" collapsible className="space-y-4">
                     {/* DAY 1 */}
                     <AccordionItem value="program1-day1" className="border border-purple-200 rounded-xl overflow-hidden bg-white shadow-md">
                       <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-purple-50 [&[data-state=open]]:bg-gradient-to-r [&[data-state=open]]:from-purple-100 [&[data-state=open]]:to-pink-100" data-testid="accordion-program1-day1">
@@ -1612,25 +1617,31 @@ export default function PrenatalStrengthPage() {
                         </div>
                       </AccordionContent>
                     </AccordionItem>
-                  </Accordion>
-                </div>
+                      </Accordion>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
 
                 {/* PROGRAM 2: STEADY & STRONG */}
-                <div className="mb-8 mt-10">
-                  <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-xl mb-6">
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
-                      <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                        <span className="text-4xl font-bold">2</span>
+                <Accordion type="single" collapsible className="mb-8 mt-10">
+                  <AccordionItem value="program2" className="border-0">
+                    <AccordionTrigger className="p-0 hover:no-underline [&>svg]:hidden" data-testid="accordion-program2">
+                      <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-xl w-full">
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                            <span className="text-4xl font-bold">2</span>
+                          </div>
+                          <div className="text-center sm:text-left flex-1">
+                            <p className="text-sm opacity-90 uppercase tracking-wide">Program 2 (4-Day Week)</p>
+                            <h3 className="text-3xl font-bold">STEADY & STRONG</h3>
+                            <p className="text-sm opacity-90 mt-2 italic">Moderate energy. You want structure, but with breathing room.</p>
+                          </div>
+                          <ChevronDown className="w-6 h-6 text-white/80 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                        </div>
                       </div>
-                      <div className="text-center sm:text-left">
-                        <p className="text-sm opacity-90 uppercase tracking-wide">Program 2 (4-Day Week)</p>
-                        <h3 className="text-3xl font-bold">STEADY & STRONG</h3>
-                        <p className="text-sm opacity-90 mt-2 italic">Moderate energy. You want structure, but with breathing room.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Accordion type="single" collapsible className="space-y-4">
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-6 pb-0">
+                      <Accordion type="single" collapsible className="space-y-4">
                     {/* P2 DAY 1 */}
                     <AccordionItem value="program2-day1" className="border border-purple-200 rounded-xl overflow-hidden bg-white shadow-md">
                       <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-purple-50 [&[data-state=open]]:bg-gradient-to-r [&[data-state=open]]:from-purple-100 [&[data-state=open]]:to-indigo-100" data-testid="accordion-program2-day1">
@@ -2303,8 +2314,10 @@ export default function PrenatalStrengthPage() {
                         </div>
                       </AccordionContent>
                     </AccordionItem>
-                  </Accordion>
-                </div>
+                      </Accordion>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
 
                 {/* Program 3 Coming Soon */}
                 <div className="mt-8 bg-purple-100 border border-purple-300 rounded-xl p-6 text-center">
