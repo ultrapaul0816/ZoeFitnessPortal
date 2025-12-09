@@ -2503,31 +2503,31 @@ export default function PrenatalStrengthPage() {
                                         <td className="py-2 text-blue-600 font-medium">1</td>
                                         <td className="py-2"><ExerciseLink name="Squat with Overhead Arm Reach" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">10-12</td>
-                                        <td className="py-2 text-cyan-600">Squat Seated on Chair</td>
+                                        <td className="py-2"><ExerciseLink name="Squat Seated on Chair" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">2</td>
                                         <td className="py-2"><ExerciseLink name="DB Standing to Bent Over Narrow" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">12</td>
-                                        <td className="py-2 text-cyan-600">Band Seated Narrow Rows</td>
+                                        <td className="py-2"><ExerciseLink name="Band Seated Narrow Rows" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">3</td>
                                         <td className="py-2"><ExerciseLink name="Band Standing Side Leg Abductors" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">10/side</td>
-                                        <td className="py-2 text-cyan-600">Side Lying Straight Leg Lifts</td>
+                                        <td className="py-2"><ExerciseLink name="Side Lying Straight Leg Lifts" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">4</td>
                                         <td className="py-2"><ExerciseLink name="Mini Band Supine Alternating Leg Marches" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">10/side</td>
-                                        <td className="py-2 text-cyan-600">Glute Bridges</td>
+                                        <td className="py-2"><ExerciseLink name="Glute Bridges" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">5</td>
                                         <td className="py-2"><ExerciseLink name="DB Standing Bicep Curl to Arnold Press" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">10</td>
-                                        <td className="py-2 text-cyan-600">Seated Arnold Press</td>
+                                        <td className="py-2"><ExerciseLink name="Seated Arnold Press" exercises={exercises} /></td>
                                       </tr>
                                     </tbody>
                                   </table>
@@ -2671,31 +2671,31 @@ export default function PrenatalStrengthPage() {
                                         <td className="py-2 text-blue-600 font-medium">1</td>
                                         <td className="py-2"><ExerciseLink name="Wall Sit with Ball" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">10</td>
-                                        <td className="py-2 text-cyan-600">Ball Squeeze Glute Bridges</td>
+                                        <td className="py-2"><ExerciseLink name="Ball Squeeze Glute Bridges" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">2</td>
                                         <td className="py-2"><ExerciseLink name="Swiss Ball Seated Marches" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">10</td>
-                                        <td className="py-2 text-cyan-600">Seated Bent Knee Leg Lifts</td>
+                                        <td className="py-2"><ExerciseLink name="Seated Bent Knee Leg Lifts" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">3</td>
                                         <td className="py-2"><ExerciseLink name="Banded Kneeling Fire Hydrants" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">10/side</td>
-                                        <td className="py-2 text-cyan-600">Kneeling Fire Hydrants</td>
+                                        <td className="py-2"><ExerciseLink name="Kneeling Fire Hydrants" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">4</td>
                                         <td className="py-2"><ExerciseLink name="Side Plank with Knee Rested Leg Lifts" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">8/side</td>
-                                        <td className="py-2 text-cyan-600">Side Lying Straight Leg Lifts</td>
+                                        <td className="py-2"><ExerciseLink name="Side Lying Straight Leg Lifts" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">5</td>
                                         <td className="py-2"><ExerciseLink name="Mini Band Elbow Side Plank Clamshells" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">12/side</td>
-                                        <td className="py-2 text-cyan-600">Mini Band Side Lying Clamshells</td>
+                                        <td className="py-2"><ExerciseLink name="Mini Band Side Lying Clamshells" exercises={exercises} /></td>
                                       </tr>
                                     </tbody>
                                   </table>
@@ -2838,31 +2838,31 @@ export default function PrenatalStrengthPage() {
                                         <td className="py-2 text-blue-600 font-medium">1</td>
                                         <td className="py-2"><ExerciseLink name="Bear Crawl Pelvic Tilts + Thread the Needle" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">5 each</td>
-                                        <td className="py-2 text-cyan-600">Bear Crawl Pelvic Tilts</td>
+                                        <td className="py-2"><ExerciseLink name="Bear Crawl Pelvic Tilts" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">2</td>
                                         <td className="py-2"><ExerciseLink name="Kneeling Ball Squeeze with Core Lean Back" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">8 reps / 20 sec</td>
-                                        <td className="py-2 text-cyan-600">Seated Lean Back with Core Hold</td>
+                                        <td className="py-2"><ExerciseLink name="Seated Lean Back with Core Hold" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">3</td>
                                         <td className="py-2"><ExerciseLink name="Child Pose with Hips Lifted" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">30 sec/side</td>
-                                        <td className="py-2 text-cyan-600">Child Pose with Hips Lifted</td>
+                                        <td className="py-2"><ExerciseLink name="Child Pose with Hips Lifted" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">4</td>
                                         <td className="py-2"><ExerciseLink name="Seated Single Crossed Legged Glute Stretch" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">30 sec/side</td>
-                                        <td className="py-2 text-cyan-600">Same Exercise</td>
+                                        <td className="py-2"><ExerciseLink name="Same Exercise" exercises={exercises} /></td>
                                       </tr>
                                       <tr>
                                         <td className="py-2 text-blue-600 font-medium">5</td>
                                         <td className="py-2"><ExerciseLink name="Butterfly with Elbow Rotations" exercises={exercises} /></td>
                                         <td className="py-2 text-gray-600">5 slow</td>
-                                        <td className="py-2 text-cyan-600">Hands on Thighs for Support</td>
+                                        <td className="py-2"><ExerciseLink name="Hands on Thighs for Support" exercises={exercises} /></td>
                                       </tr>
                                     </tbody>
                                   </table>
