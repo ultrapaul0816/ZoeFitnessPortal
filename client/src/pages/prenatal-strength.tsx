@@ -74,20 +74,24 @@ function PlayAllButton({ label = "PLAY ALL", className = "", url }: { label?: st
 
 // Component to render exercise name as clickable link if video URL exists
 function ExerciseLink({ name, exercises }: { name: string; exercises: ExerciseData[] }) {
-  // Find exercise by name (case-insensitive partial match)
-  const exercise = exercises.find(ex => 
-    ex.name.toLowerCase().includes(name.toLowerCase()) || 
-    name.toLowerCase().includes(ex.name.toLowerCase())
-  );
+  // Find exercise by name (case-insensitive exact or partial match)
+  const exercise = exercises.find(ex => {
+    const exName = ex.name?.toLowerCase() || '';
+    const searchName = name.toLowerCase();
+    return exName === searchName || exName.includes(searchName) || searchName.includes(exName);
+  });
   
-  if (exercise?.videoUrl) {
+  // Handle both camelCase (from Drizzle) and snake_case (from raw SQL)
+  const videoUrl = exercise?.videoUrl || (exercise as any)?.video_url;
+  
+  if (videoUrl && videoUrl.trim() !== '') {
     return (
       <a 
-        href={exercise.videoUrl}
+        href={videoUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
-        data-testid={`link-exercise-${exercise.id}`}
+        data-testid={`link-exercise-${exercise?.id}`}
       >
         {name}
       </a>
@@ -882,9 +886,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton url={getPlayAllUrl('program1-day1-main-workout')} /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton url={getPlayAllUrl('program1-day1-beginner-option')} /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -934,7 +938,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton url={getPlayAllUrl('program1-day1-finisher-flow')} /></th>
                                     <th className="text-left py-2 text-teal-700">Time/Reps</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
