@@ -456,7 +456,8 @@ export default function PrenatalStrengthPage() {
                       <h4 className="font-bold text-purple-800 mb-2">How to Choose the Right Program</h4>
                       <p className="text-sm text-purple-700 mb-3">Because the first trimester is unpredictable, this system is built to adapt with you. Here's how to decide:</p>
                       <ul className="space-y-2 text-sm text-purple-700">
-                        <li className="flex items-center gap-2"><Zap className="w-4 h-4 text-pink-500" /> Feeling energetic and strong? → Go for <strong>Program 1</strong></li>
+                        <li className="flex items-center gap-2"><Zap className="w-4 h-4 text-pink-500" /> Feeling energetic and strong? → Go for <strong>Program 1 (5 Days)</strong></li>
+                      <li className="flex items-center gap-2"><Heart className="w-4 h-4 text-purple-500" /> Want structure with breathing room? → Go for <strong>Program 2 (4 Days)</strong></li>
                         <li className="flex items-center gap-2"><Target className="w-4 h-4 text-purple-500" /> Steady, moderate days? → Pick <strong>Program 2</strong></li>
                         <li className="flex items-center gap-2"><Heart className="w-4 h-4 text-blue-500" /> Low to mid-energy? → Choose <strong>Program 3</strong></li>
                         <li className="flex items-center gap-2"><Star className="w-4 h-4 text-teal-500" /> Exhausted or sore? → Try <strong>Program 4</strong></li>
@@ -725,7 +726,7 @@ export default function PrenatalStrengthPage() {
                         <span className="text-4xl font-bold">1</span>
                       </div>
                       <div className="text-center sm:text-left">
-                        <p className="text-sm opacity-90 uppercase tracking-wide">Program 1 (3-Day Week)</p>
+                        <p className="text-sm opacity-90 uppercase tracking-wide">Program 1 (5-Day Week)</p>
                         <h3 className="text-3xl font-bold">FEELING FIERCE</h3>
                         <p className="text-sm opacity-90 mt-2 italic">For days you're full of energy and ready to move. Expect compound, functional strength work & active mobility.</p>
                       </div>
@@ -1614,11 +1615,702 @@ export default function PrenatalStrengthPage() {
                   </Accordion>
                 </div>
 
-                {/* Programs 2 & 3 Coming Soon */}
+                {/* PROGRAM 2: STEADY & STRONG */}
+                <div className="mb-8 mt-10">
+                  <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-xl mb-6">
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                        <span className="text-4xl font-bold">2</span>
+                      </div>
+                      <div className="text-center sm:text-left">
+                        <p className="text-sm opacity-90 uppercase tracking-wide">Program 2 (4-Day Week)</p>
+                        <h3 className="text-3xl font-bold">STEADY & STRONG</h3>
+                        <p className="text-sm opacity-90 mt-2 italic">Moderate energy. You want structure, but with breathing room.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Accordion type="single" collapsible className="space-y-4">
+                    {/* P2 DAY 1 */}
+                    <AccordionItem value="program2-day1" className="border border-purple-200 rounded-xl overflow-hidden bg-white shadow-md">
+                      <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-purple-50 [&[data-state=open]]:bg-gradient-to-r [&[data-state=open]]:from-purple-100 [&[data-state=open]]:to-indigo-100" data-testid="accordion-program2-day1">
+                        <div className="flex items-center gap-4 w-full">
+                          <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                            D1
+                          </div>
+                          <div className="text-left flex-1">
+                            <h4 className="font-bold text-purple-800">FULL BODY BURN + CORE</h4>
+                            <p className="text-sm text-gray-600">30 mins • Lower body strength with mobility and balance</p>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-6">
+                        <div className="space-y-6">
+                          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                            <p className="text-sm text-gray-700 italic">
+                              <strong className="text-purple-600">Coach's Note:</strong> We're building strength from the ground up. This session focuses on stability through your hips, glutes, and legs — the foundation of support during pregnancy.
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-indigo-700 text-sm mb-2">Equipment Needed</h5>
+                              <ul className="text-xs text-indigo-600 space-y-1">
+                                <li>• Dumbbells (various)</li>
+                                <li>• Long resistance band</li>
+                                <li>• Mat</li>
+                              </ul>
+                            </div>
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-purple-700 text-sm mb-2">Time & Focus</h5>
+                              <p className="text-xs text-purple-600">30 Mins</p>
+                              <p className="text-xs text-purple-600 mt-1">Lower body strength with mobility</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                              WARM-UP (5-7 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL WARMUP</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h5 className="font-bold text-purple-700 mb-3 flex items-center gap-2">
+                              <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                              MAIN WORKOUT (3 ROUNDS) <span className="font-normal text-xs ml-2">45 secs-1 min rest between exercises</span>
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-purple-200">
+                                    <th className="text-left py-2 text-purple-700">#</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Reps</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-purple-100">
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">DB Deadlift + 1 DB Bentover Row</td>
+                                    <td className="py-2 text-gray-600">10-12</td>
+                                    <td className="py-2 text-indigo-600">Light DBs or Band</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Single Leg Reverse Lunge to Knee Lift</td>
+                                    <td className="py-2 text-gray-600">8-10/side</td>
+                                    <td className="py-2 text-indigo-600">No Weights</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Squat with Overhead Arm Reach</td>
+                                    <td className="py-2 text-gray-600">10</td>
+                                    <td className="py-2 text-indigo-600">Squat Seated on Chair</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">4</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Glute Bridge with Cross Reach</td>
+                                    <td className="py-2 text-gray-600">16</td>
+                                    <td className="py-2 text-indigo-600">No Band</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">5</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Seated 90 90 Glute Stretch with Rotation</td>
+                                    <td className="py-2 text-gray-600">1 min</td>
+                                    <td className="py-2 text-indigo-600">Same Exercise</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                            <h5 className="font-bold text-teal-700 mb-3 flex items-center gap-2">
+                              <span className="bg-teal-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                              FINISHER FLOW (5-7 mins)
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-teal-200">
+                                    <th className="text-left py-2 text-teal-700">#</th>
+                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Time</th>
+                                    <th className="text-left py-2 text-teal-700">Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-teal-100">
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Modified Knee to Elbow Opp</td>
+                                    <td className="py-2 text-gray-600">1 min</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Gentle rotation</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Supine Core Compressions</td>
+                                    <td className="py-2 text-gray-600">5 breaths</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Ribs expand, exhale slowly</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">All Fours with Ball Pelvic Tilts</td>
+                                    <td className="py-2 text-gray-600">1 min</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Open hips + lats</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                              <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">4</span>
+                              COOL DOWN (3-5 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL COOLDOWN</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-pink-50 border border-pink-300 rounded-lg p-4">
+                            <h5 className="font-bold text-pink-700 mb-2">Things to Remember</h5>
+                            <p className="text-sm text-pink-600">
+                              Push through your heels and feel the glutes activate. | Keep your stance steady and use a wall if needed. | Exhale as you rise or press. | Soft knees, slow reps. | Mobility matters just as much as strength.
+                            </p>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4" /> Precautions
+                            </h5>
+                            <p className="text-xs text-amber-600">
+                              Use Support: Wall or chair if balance feels off. | Avoid Deep Bends: Work in a comfortable range. | Check Core: Engage lightly — no strain or bulge. | Hydrate Throughout: Sip water regularly. | Slow Down: Quality reps over rushed sets. | Stop if Anything Feels Off.
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* P2 DAY 2 */}
+                    <AccordionItem value="program2-day2" className="border border-purple-200 rounded-xl overflow-hidden bg-white shadow-md">
+                      <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-purple-50 [&[data-state=open]]:bg-gradient-to-r [&[data-state=open]]:from-purple-100 [&[data-state=open]]:to-indigo-100" data-testid="accordion-program2-day2">
+                        <div className="flex items-center gap-4 w-full">
+                          <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                            D2
+                          </div>
+                          <div className="text-left flex-1">
+                            <h4 className="font-bold text-purple-800">GLUTES + POSTURE</h4>
+                            <p className="text-sm text-gray-600">30-35 mins • Upper body strength and postural awareness</p>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-6">
+                        <div className="space-y-6">
+                          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                            <p className="text-sm text-gray-700 italic">
+                              <strong className="text-purple-600">Coach's Note:</strong> Strong arms, open shoulders, supported posture — this is your upper body support system. Take your time. Exhale through every effort and stay tall throughout.
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-indigo-700 text-sm mb-2">Equipment Needed</h5>
+                              <ul className="text-xs text-indigo-600 space-y-1">
+                                <li>• Dumbbells (various)</li>
+                                <li>• Long resistance band</li>
+                                <li>• Mat & Yoga block</li>
+                              </ul>
+                            </div>
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-purple-700 text-sm mb-2">Time & Focus</h5>
+                              <p className="text-xs text-purple-600">30-35 Mins</p>
+                              <p className="text-xs text-purple-600 mt-1">Upper body strength & postural awareness</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                              WARM-UP (5-7 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL WARMUP</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h5 className="font-bold text-purple-700 mb-3 flex items-center gap-2">
+                              <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                              MAIN WORKOUT (3 ROUNDS)
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-purple-200">
+                                    <th className="text-left py-2 text-purple-700">#</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Reps</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-purple-100">
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Glute Bridge Marches</td>
+                                    <td className="py-2 text-gray-600">8-10</td>
+                                    <td className="py-2 text-indigo-600">Glute Bridge Lifts</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Kneeling Band Pull Aparts on Yoga Block</td>
+                                    <td className="py-2 text-gray-600">12</td>
+                                    <td className="py-2 text-indigo-600">—</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">DBs Alternating Lunges</td>
+                                    <td className="py-2 text-gray-600">8-10/side</td>
+                                    <td className="py-2 text-indigo-600">Lunges with Wall Support</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">4</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Band - Seated Wide Row</td>
+                                    <td className="py-2 text-gray-600">10-12</td>
+                                    <td className="py-2 text-indigo-600">Band Seated Narrow Rows</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">5</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Band Glute Kickbacks on All Fours</td>
+                                    <td className="py-2 text-gray-600">10-12/side</td>
+                                    <td className="py-2 text-indigo-600">Wall Supported Single Leg Kickbacks</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                            <h5 className="font-bold text-teal-700 mb-3 flex items-center gap-2">
+                              <span className="bg-teal-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                              FINISHER FLOW (5-7 mins)
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-teal-200">
+                                    <th className="text-left py-2 text-teal-700">#</th>
+                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Time</th>
+                                    <th className="text-left py-2 text-teal-700">Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-teal-100">
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Wall Angels (Seated or Standing)</td>
+                                    <td className="py-2 text-gray-600">8-10</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Focus on slow shoulder opening</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Childs Pose with Open Palms & Travel</td>
+                                    <td className="py-2 text-gray-600">5 breaths/side</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Inhale back, exhale reach</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Seated Arms in Figure 8 Rotations</td>
+                                    <td className="py-2 text-gray-600">30 sec/side</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Breathe into glutes + hips</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                              <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">4</span>
+                              COOL DOWN (3-5 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL COOLDOWN</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-pink-50 border border-pink-300 rounded-lg p-4">
+                            <h5 className="font-bold text-pink-700 mb-2">Things to Remember</h5>
+                            <p className="text-sm text-pink-600">
+                              Keep shoulders soft — drop them away from ears. | Stand tall — ribs stacked over hips. | Use light weights with tempo. | Pause between sets to reset. | Breath leads movement.
+                            </p>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4" /> Precautions
+                            </h5>
+                            <p className="text-xs text-amber-600">
+                              No Overhead Overload: Use light weights if reaching above head. | Modify Standing: Use seated versions if tired. | Avoid Tension: Loosen up between sets. | Take Rests Freely: Especially if breath shortens. | Skip or Change Moves as Needed.
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* P2 DAY 3 */}
+                    <AccordionItem value="program2-day3" className="border border-purple-200 rounded-xl overflow-hidden bg-white shadow-md">
+                      <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-purple-50 [&[data-state=open]]:bg-gradient-to-r [&[data-state=open]]:from-purple-100 [&[data-state=open]]:to-indigo-100" data-testid="accordion-program2-day3">
+                        <div className="flex items-center gap-4 w-full">
+                          <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                            D3
+                          </div>
+                          <div className="text-left flex-1">
+                            <h4 className="font-bold text-purple-800">ACTIVE RECOVERY FLOW</h4>
+                            <p className="text-sm text-gray-600">25-30 mins • Core and glute coordination</p>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-6">
+                        <div className="space-y-6">
+                          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                            <p className="text-sm text-gray-700 italic">
+                              <strong className="text-purple-600">Coach's Note:</strong> Today's about connection — glutes and core working together with breath and control. These muscles are subtle, deep, and powerful. Feel into every rep.
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-indigo-700 text-sm mb-2">Equipment Needed</h5>
+                              <ul className="text-xs text-indigo-600 space-y-1">
+                                <li>• Resistance Band</li>
+                                <li>• Mat</li>
+                                <li>• Cushion or Block</li>
+                              </ul>
+                            </div>
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-purple-700 text-sm mb-2">Time & Focus</h5>
+                              <p className="text-xs text-purple-600">25-30 Mins</p>
+                              <p className="text-xs text-purple-600 mt-1">Core and glute coordination</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                              WARM-UP (5-7 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL WARMUP</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h5 className="font-bold text-purple-700 mb-3 flex items-center gap-2">
+                              <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                              MAIN WORKOUT (2-3 ROUNDS)
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-purple-200">
+                                    <th className="text-left py-2 text-purple-700">#</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Reps</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-purple-100">
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Bear Crawl Pelvic Tilts + Thread the Needle</td>
+                                    <td className="py-2 text-gray-600">5 each</td>
+                                    <td className="py-2 text-indigo-600">Bear Crawl Pelvic Tilts</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Kneeling Ball Squeeze Band Pull</td>
+                                    <td className="py-2 text-gray-600">8/side</td>
+                                    <td className="py-2 text-indigo-600">Kneeling Ball Squeeze / Core Lean Back</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Bird Dog Bodyweight</td>
+                                    <td className="py-2 text-gray-600">10/side</td>
+                                    <td className="py-2 text-indigo-600">Bird Dog Bodyweight</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">4</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Pillow Glute Bridges</td>
+                                    <td className="py-2 text-gray-600">10</td>
+                                    <td className="py-2 text-indigo-600">Supine Bodyweight Bridges</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">5</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Side Plank Hip Lifts</td>
+                                    <td className="py-2 text-gray-600">10/side</td>
+                                    <td className="py-2 text-indigo-600">Side Lying Marches</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                            <h5 className="font-bold text-teal-700 mb-3 flex items-center gap-2">
+                              <span className="bg-teal-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                              FINISHER FLOW (5-7 mins)
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-teal-200">
+                                    <th className="text-left py-2 text-teal-700">#</th>
+                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Time</th>
+                                    <th className="text-left py-2 text-teal-700">Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-teal-100">
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Cross Legged Twists</td>
+                                    <td className="py-2 text-gray-600">30 sec/side</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Slow + supported</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Cross Legged Cross Hands Release</td>
+                                    <td className="py-2 text-gray-600">10 reps each</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Relax into it</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Supine Core Compressions</td>
+                                    <td className="py-2 text-gray-600">5-6 breaths</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Hands on belly and ribs</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                              <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">4</span>
+                              COOL DOWN (3-5 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL COOLDOWN</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-pink-50 border border-pink-300 rounded-lg p-4">
+                            <h5 className="font-bold text-pink-700 mb-2">Things to Remember</h5>
+                            <p className="text-sm text-pink-600">
+                              Breathe intentionally — exhale on the effort. | Keep movements small and smooth. | Use props for cushion and comfort. | Go by feel, not by reps. | Reset between rounds with rest or breathwork.
+                            </p>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4" /> Precautions
+                            </h5>
+                            <p className="text-xs text-amber-600">
+                              Avoid Pressure: No bulging or straining in the core. | Reduce Load: Go bodyweight if needed. | Use Wall or Mat for Support. | Modify or Skip Anything That Feels Wrong. | Hydrate Before and After.
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* P2 DAY 4 */}
+                    <AccordionItem value="program2-day4" className="border border-purple-200 rounded-xl overflow-hidden bg-white shadow-md">
+                      <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-purple-50 [&[data-state=open]]:bg-gradient-to-r [&[data-state=open]]:from-purple-100 [&[data-state=open]]:to-indigo-100" data-testid="accordion-program2-day4">
+                        <div className="flex items-center gap-4 w-full">
+                          <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                            D4
+                          </div>
+                          <div className="text-left flex-1">
+                            <h4 className="font-bold text-purple-800">FUNCTIONAL STRENGTH + CORE</h4>
+                            <p className="text-sm text-gray-600">25-30 mins • Gentle full-body strength with mobility flow</p>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-6">
+                        <div className="space-y-6">
+                          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                            <p className="text-sm text-gray-700 italic">
+                              <strong className="text-purple-600">Coach's Note:</strong> This is your grounding day — simple movement that brings strength, stability, and softness together. Move mindfully and allow yourself to flow with breath.
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-indigo-700 text-sm mb-2">Equipment Needed</h5>
+                              <ul className="text-xs text-indigo-600 space-y-1">
+                                <li>• Dumbbells (various)</li>
+                                <li>• Long resistance band</li>
+                                <li>• Mat</li>
+                                <li>• Bed/sofa/chair</li>
+                              </ul>
+                            </div>
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                              <h5 className="font-semibold text-purple-700 text-sm mb-2">Time & Focus</h5>
+                              <p className="text-xs text-purple-600">25-30 Mins</p>
+                              <p className="text-xs text-purple-600 mt-1">Gentle full-body strength + mobility flow</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                              WARM-UP (5-7 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL WARMUP</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h5 className="font-bold text-purple-700 mb-3 flex items-center gap-2">
+                              <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                              MAIN WORKOUT (2-3 ROUNDS)
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-purple-200">
+                                    <th className="text-left py-2 text-purple-700">#</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Reps</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-purple-100">
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">DB Same Leg Lunge Lateral Raise</td>
+                                    <td className="py-2 text-gray-600">8-10/side</td>
+                                    <td className="py-2 text-indigo-600">Band Lunge Lateral Raise</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Supported Single Leg Glute Bridge Knee to Chest</td>
+                                    <td className="py-2 text-gray-600">8-10/side</td>
+                                    <td className="py-2 text-indigo-600">Glute Bridges on Bed or Chair</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Band - Squat to Narrow Row</td>
+                                    <td className="py-2 text-gray-600">10</td>
+                                    <td className="py-2 text-indigo-600">Band Standing Wide to Narrow Row</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">4</td>
+                                    <td className="py-2 text-indigo-600 font-medium">DB Sumo Squat to Upright Row</td>
+                                    <td className="py-2 text-gray-600">8/side</td>
+                                    <td className="py-2 text-indigo-600">Keep Range Short</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-purple-600 font-medium">5</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Bird Dog Bodyweight</td>
+                                    <td className="py-2 text-gray-600">10/side</td>
+                                    <td className="py-2 text-indigo-600">Bird Dog Bodyweight</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                            <h5 className="font-bold text-teal-700 mb-3 flex items-center gap-2">
+                              <span className="bg-teal-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                              FINISHER FLOW (5-7 mins)
+                            </h5>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-teal-200">
+                                    <th className="text-left py-2 text-teal-700">#</th>
+                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Time</th>
+                                    <th className="text-left py-2 text-teal-700">Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-teal-100">
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">1</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Sumo Squat Alternate Arm Lifts</td>
+                                    <td className="py-2 text-gray-600">1 min</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Stretch + breath</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">2</td>
+                                    <td className="py-2 text-indigo-600 font-medium">Bear Crawl to Downward Dog Holds</td>
+                                    <td className="py-2 text-gray-600">30 sec/side</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Exhale as you lift</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-2 text-teal-600 font-medium">3</td>
+                                    <td className="py-2 text-indigo-600 font-medium">All Fours Shoulder Taps</td>
+                                    <td className="py-2 text-gray-600">5 breaths</td>
+                                    <td className="py-2 text-gray-500 italic text-xs">Let ribs expand, full exhale out mouth</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                              <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">4</span>
+                              COOL DOWN (3-5 mins)
+                            </h5>
+                            <div className="bg-white rounded-lg p-3">
+                              <p className="font-medium text-gray-800">PRENATAL COOLDOWN</p>
+                              <p className="text-sm text-gray-600">8 reps of each</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-pink-50 border border-pink-300 rounded-lg p-4">
+                            <h5 className="font-bold text-pink-700 mb-2">Things to Remember</h5>
+                            <p className="text-sm text-pink-600">
+                              Focus on breath and range, not intensity. | Anchor through your feet and move with purpose. | Slow movement is smart movement. | Use support where needed — wall, block, or chair. | Recovery matters — go gentle.
+                            </p>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4">
+                            <h5 className="font-bold text-amber-700 mb-2 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4" /> Precautions
+                            </h5>
+                            <p className="text-xs text-amber-600">
+                              Avoid Holding Breath: Always exhale through the work. | No Fast Shifts: Take your time moving between positions. | Props Are Your Friend: Use for stability and ease. | Take Breaks Often: Especially if breathless or light-headed. | Listen Closely to Your Body.
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                {/* Program 3 Coming Soon */}
                 <div className="mt-8 bg-purple-100 border border-purple-300 rounded-xl p-6 text-center">
                   <Clock className="w-8 h-8 text-purple-600 mx-auto mb-3" />
-                  <h4 className="font-bold text-purple-800 mb-2">Programs 2 & 3 Coming Soon</h4>
-                  <p className="text-sm text-purple-700">More workout programs for different energy levels will be added here. Check back soon!</p>
+                  <h4 className="font-bold text-purple-800 mb-2">Program 3: Balanced & Easy Coming Soon</h4>
+                  <p className="text-sm text-purple-700">A gentler 3-day program for lower energy days will be added here. Check back soon!</p>
                 </div>
               </CardContent>
             </Card>
