@@ -398,9 +398,18 @@ export default function AdminWorkoutVideos() {
               {exercise.category}
             </Badge>
             {hasVideo ? (
-              <Badge className="bg-green-100 text-green-700 text-xs">
-                <Check className="w-3 h-3 mr-1" /> Video Added
-              </Badge>
+              <>
+                <Badge className="bg-green-100 text-green-700 text-xs">
+                  <Check className="w-3 h-3 mr-1" /> Video Added
+                </Badge>
+                <button
+                  onClick={() => window.open(exercise.video_url!, '_blank')}
+                  className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline ml-1"
+                  data-testid={`button-play-${exercise.id}`}
+                >
+                  <Play className="w-3 h-3" /> Play
+                </button>
+              </>
             ) : (
               <Badge className="bg-amber-100 text-amber-700 text-xs">
                 <AlertCircle className="w-3 h-3 mr-1" /> No Video
