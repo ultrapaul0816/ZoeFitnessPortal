@@ -37,6 +37,20 @@ import {
 import type { User } from "@shared/schema";
 import NutritionSection from "@/components/program-sections/NutritionSection";
 
+function PlayAllButton({ label = "PLAY ALL", className = "" }: { label?: string; className?: string }) {
+  return (
+    <button 
+      className={`inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-xs font-medium hover:underline ${className}`}
+      onClick={() => {
+        // TODO: Connect to video playlist when URLs are added via admin
+      }}
+      data-testid="button-play-all"
+    >
+      <Play className="w-3 h-3" /> {label}
+    </button>
+  );
+}
+
 export default function PrenatalStrengthPage() {
   const [, navigate] = useLocation();
   const [user, setUser] = useState<User | null>(null);
@@ -800,9 +814,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -852,7 +866,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time/Reps</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -976,9 +990,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -1028,7 +1042,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -1154,9 +1168,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Time</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Options</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Options <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -1202,7 +1216,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -1327,9 +1341,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -1379,7 +1393,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -1503,9 +1517,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -1555,7 +1569,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time/Reps</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -1699,9 +1713,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -1750,7 +1764,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -1867,9 +1881,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -1918,7 +1932,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -2035,9 +2049,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -2086,7 +2100,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -2204,9 +2218,9 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-purple-200">
                                     <th className="text-left py-2 text-purple-700">#</th>
-                                    <th className="text-left py-2 text-purple-700">Exercise</th>
+                                    <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                     <th className="text-left py-2 text-purple-700">Reps</th>
-                                    <th className="text-left py-2 text-purple-700">Beginner Option</th>
+                                    <th className="text-left py-2 text-purple-700">Beginner Option <PlayAllButton /></th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-purple-100">
@@ -2255,7 +2269,7 @@ export default function PrenatalStrengthPage() {
                                 <thead>
                                   <tr className="border-b border-teal-200">
                                     <th className="text-left py-2 text-teal-700">#</th>
-                                    <th className="text-left py-2 text-teal-700">Movement</th>
+                                    <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                     <th className="text-left py-2 text-teal-700">Time</th>
                                     <th className="text-left py-2 text-teal-700">Notes</th>
                                   </tr>
@@ -2396,9 +2410,9 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-blue-200">
                                         <th className="text-left py-2 text-blue-700">#</th>
-                                        <th className="text-left py-2 text-blue-700">Exercise</th>
+                                        <th className="text-left py-2 text-blue-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-blue-700">Reps</th>
-                                        <th className="text-left py-2 text-blue-700">Beginner Option</th>
+                                        <th className="text-left py-2 text-blue-700">Beginner Option <PlayAllButton /></th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-blue-100">
@@ -2447,7 +2461,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-teal-200">
                                         <th className="text-left py-2 text-teal-700">#</th>
-                                        <th className="text-left py-2 text-teal-700">Movement</th>
+                                        <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                         <th className="text-left py-2 text-teal-700">Time</th>
                                         <th className="text-left py-2 text-teal-700">Notes</th>
                                       </tr>
@@ -2564,9 +2578,9 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-blue-200">
                                         <th className="text-left py-2 text-blue-700">#</th>
-                                        <th className="text-left py-2 text-blue-700">Exercise</th>
+                                        <th className="text-left py-2 text-blue-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-blue-700">Reps</th>
-                                        <th className="text-left py-2 text-blue-700">Beginner Option</th>
+                                        <th className="text-left py-2 text-blue-700">Beginner Option <PlayAllButton /></th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-blue-100">
@@ -2615,7 +2629,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-teal-200">
                                         <th className="text-left py-2 text-teal-700">#</th>
-                                        <th className="text-left py-2 text-teal-700">Movement</th>
+                                        <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                         <th className="text-left py-2 text-teal-700">Time</th>
                                         <th className="text-left py-2 text-teal-700">Notes</th>
                                       </tr>
@@ -2731,9 +2745,9 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-blue-200">
                                         <th className="text-left py-2 text-blue-700">#</th>
-                                        <th className="text-left py-2 text-blue-700">Exercise</th>
+                                        <th className="text-left py-2 text-blue-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-blue-700">Reps</th>
-                                        <th className="text-left py-2 text-blue-700">Beginner Option</th>
+                                        <th className="text-left py-2 text-blue-700">Beginner Option <PlayAllButton /></th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-blue-100">
@@ -2782,7 +2796,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-teal-200">
                                         <th className="text-left py-2 text-teal-700">#</th>
-                                        <th className="text-left py-2 text-teal-700">Movement</th>
+                                        <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                         <th className="text-left py-2 text-teal-700">Time</th>
                                         <th className="text-left py-2 text-teal-700">Notes</th>
                                       </tr>
@@ -2923,9 +2937,9 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-emerald-200">
                                         <th className="text-left py-2 text-emerald-700">#</th>
-                                        <th className="text-left py-2 text-emerald-700">Exercise</th>
+                                        <th className="text-left py-2 text-emerald-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-emerald-700">Reps</th>
-                                        <th className="text-left py-2 text-emerald-700">Beginner Option</th>
+                                        <th className="text-left py-2 text-emerald-700">Beginner Option <PlayAllButton /></th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-emerald-100">
@@ -2974,7 +2988,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-teal-200">
                                         <th className="text-left py-2 text-teal-700">#</th>
-                                        <th className="text-left py-2 text-teal-700">Movement</th>
+                                        <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                         <th className="text-left py-2 text-teal-700">Time</th>
                                         <th className="text-left py-2 text-teal-700">Notes</th>
                                       </tr>
@@ -3091,7 +3105,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-emerald-200">
                                         <th className="text-left py-2 text-emerald-700">#</th>
-                                        <th className="text-left py-2 text-emerald-700">Exercise</th>
+                                        <th className="text-left py-2 text-emerald-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-emerald-700">Reps</th>
                                         <th className="text-left py-2 text-emerald-700">Notes</th>
                                       </tr>
@@ -3142,7 +3156,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-teal-200">
                                         <th className="text-left py-2 text-teal-700">#</th>
-                                        <th className="text-left py-2 text-teal-700">Movement</th>
+                                        <th className="text-left py-2 text-teal-700">Movement <PlayAllButton /></th>
                                         <th className="text-left py-2 text-teal-700">Time</th>
                                         <th className="text-left py-2 text-teal-700">Notes</th>
                                       </tr>
@@ -3284,9 +3298,9 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-orange-200">
                                         <th className="text-left py-2 text-orange-700">#</th>
-                                        <th className="text-left py-2 text-orange-700">Exercise</th>
+                                        <th className="text-left py-2 text-orange-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-orange-700">Focus</th>
-                                        <th className="text-left py-2 text-orange-700">Beginner Option</th>
+                                        <th className="text-left py-2 text-orange-700">Beginner Option <PlayAllButton /></th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-orange-100">
@@ -3353,7 +3367,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-amber-200">
                                         <th className="text-left py-2 text-amber-700">#</th>
-                                        <th className="text-left py-2 text-amber-700">Movement</th>
+                                        <th className="text-left py-2 text-amber-700">Movement <PlayAllButton /></th>
                                         <th className="text-left py-2 text-amber-700">Time</th>
                                         <th className="text-left py-2 text-amber-700">Notes</th>
                                       </tr>
@@ -3467,7 +3481,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-purple-200">
                                         <th className="text-left py-2 text-purple-700">#</th>
-                                        <th className="text-left py-2 text-purple-700">Exercise</th>
+                                        <th className="text-left py-2 text-purple-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-purple-700">Time/Reps</th>
                                         <th className="text-left py-2 text-purple-700">Notes</th>
                                       </tr>
@@ -3507,7 +3521,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-pink-200">
                                         <th className="text-left py-2 text-pink-700">#</th>
-                                        <th className="text-left py-2 text-pink-700">Exercise</th>
+                                        <th className="text-left py-2 text-pink-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-pink-700">Time/Reps</th>
                                         <th className="text-left py-2 text-pink-700">Notes</th>
                                       </tr>
@@ -3547,7 +3561,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-teal-200">
                                         <th className="text-left py-2 text-teal-700">#</th>
-                                        <th className="text-left py-2 text-teal-700">Exercise</th>
+                                        <th className="text-left py-2 text-teal-700">Exercise <PlayAllButton /></th>
                                         <th className="text-left py-2 text-teal-700">Time/Reps</th>
                                         <th className="text-left py-2 text-teal-700">Notes</th>
                                       </tr>
@@ -3649,7 +3663,7 @@ export default function PrenatalStrengthPage() {
                                     <thead>
                                       <tr className="border-b border-orange-200">
                                         <th className="text-left py-2 text-orange-700">#</th>
-                                        <th className="text-left py-2 text-orange-700">Flows</th>
+                                        <th className="text-left py-2 text-orange-700">Flows <PlayAllButton /></th>
                                         <th className="text-left py-2 text-orange-700">Reps/Time</th>
                                         <th className="text-left py-2 text-orange-700">Notes</th>
                                       </tr>
