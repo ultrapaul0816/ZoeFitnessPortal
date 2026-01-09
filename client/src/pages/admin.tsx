@@ -108,8 +108,11 @@ export default function Admin() {
     id: string;
     name: string;
     email: string;
-    validUntil: string;
+    programExpiryDate: string | null;
+    whatsAppExpiryDate: string | null;
     hasWhatsAppSupport: boolean;
+    programExpired: boolean;
+    whatsAppExpired: boolean;
   }>>({
     queryKey: ["/api/admin/whatsapp/expired-members"],
     enabled: isAdmin,
@@ -138,11 +141,8 @@ export default function Admin() {
   // Mutation for sending reminder email
   const sendReminderMutation = useMutation({
     mutationFn: async (data: { userId: string; subject?: string; message?: string }) => {
-      return apiRequest("/api/admin/whatsapp/send-reminder", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await apiRequest("POST", "/api/admin/whatsapp/send-reminder", data);
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -832,47 +832,60 @@ export default function Admin() {
                   <p className="text-xs">No expired members</p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {expiredMembers.slice(0, 8).map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-2 bg-white rounded-lg border border-red-100">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{member.name || 'Unknown'}</p>
-                        <p className="text-xs text-muted-foreground truncate">{member.email}</p>
-                        <p className="text-xs text-red-600">
-                          Expired: {new Date(member.validUntil).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex gap-1 ml-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 px-2 text-xs"
-                          onClick={() => {
-                            const user = allUsers.find(u => u.id === member.id);
-                            if (user) {
-                              setSelectedMember(user);
-                              setMemberViewMode('edit');
-                            }
-                          }}
-                        >
-                          Extend
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="h-7 px-2 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
-                          disabled={sendReminderMutation.isPending && sendingReminderTo === member.id}
-                          onClick={() => {
-                            setSendingReminderTo(member.id);
-                            sendReminderMutation.mutate({ userId: member.id });
-                          }}
-                        >
-                          {sendReminderMutation.isPending && sendingReminderTo === member.id ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            <Mail className="w-3 h-3" />
-                          )}
-                        </Button>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {expiredMembers.map((member) => (
+                    <div key={member.id} className="p-2 bg-white rounded-lg border border-red-100">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{member.name || 'Unknown'}</p>
+                          <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {member.whatsAppExpired && member.whatsAppExpiryDate && (
+                              <span className="inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">
+                                <MessageSquare className="w-3 h-3" />
+                                WhatsApp: {new Date(member.whatsAppExpiryDate).toLocaleDateString()}
+                              </span>
+                            )}
+                            {member.programExpired && member.programExpiryDate && (
+                              <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
+                                <Dumbbell className="w-3 h-3" />
+                                Heal Your Core: {new Date(member.programExpiryDate).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-1 ml-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-xs"
+                            onClick={() => {
+                              const user = allUsers.find(u => u.id === member.id);
+                              if (user) {
+                                setSelectedMember(user);
+                                setMemberViewMode('edit');
+                              }
+                            }}
+                          >
+                            Extend
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            className="h-7 px-2 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
+                            disabled={sendReminderMutation.isPending && sendingReminderTo === member.id}
+                            onClick={() => {
+                              setSendingReminderTo(member.id);
+                              sendReminderMutation.mutate({ userId: member.id });
+                            }}
+                          >
+                            {sendReminderMutation.isPending && sendingReminderTo === member.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Mail className="w-3 h-3" />
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}

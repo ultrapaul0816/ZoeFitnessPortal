@@ -3839,17 +3839,25 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Get expired WhatsApp members (members whose validUntil has passed)
+  // Get expired members (WhatsApp support OR program access expired)
   app.get("/api/admin/whatsapp/expired-members", async (req, res) => {
     try {
       const now = new Date();
+      // Get members with expired WhatsApp support OR expired program access
       const result = await storage.db.execute(sql`
-        SELECT id, name, email, valid_until as "validUntil", has_whatsapp_support as "hasWhatsAppSupport"
+        SELECT 
+          id, 
+          COALESCE(NULLIF(TRIM(COALESCE(first_name, '') || ' ' || COALESCE(last_name, '')), ''), email) as "name", 
+          email, 
+          valid_until as "programExpiryDate",
+          whatsapp_support_expiry_date as "whatsAppExpiryDate",
+          has_whatsapp_support as "hasWhatsAppSupport",
+          CASE WHEN valid_until IS NOT NULL AND valid_until < ${now} THEN true ELSE false END as "programExpired",
+          CASE WHEN whatsapp_support_expiry_date IS NOT NULL AND whatsapp_support_expiry_date < ${now} THEN true ELSE false END as "whatsAppExpired"
         FROM users 
-        WHERE valid_until IS NOT NULL 
-          AND valid_until < ${now}
-          AND has_whatsapp_support = true
-        ORDER BY valid_until DESC
+        WHERE (valid_until IS NOT NULL AND valid_until < ${now})
+           OR (whatsapp_support_expiry_date IS NOT NULL AND whatsapp_support_expiry_date < ${now})
+        ORDER BY GREATEST(COALESCE(valid_until, '1970-01-01'), COALESCE(whatsapp_support_expiry_date, '1970-01-01')) DESC
         LIMIT 50
       `);
       res.json(result.rows);
