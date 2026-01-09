@@ -3805,7 +3805,7 @@ RESPONSE GUIDELINES:
   app.post("/api/admin/users/:id/extend-validity", async (req, res) => {
     try {
       const { id } = req.params;
-      const { months } = req.body;
+      const { months, notes, performedBy } = req.body;
 
       if (!months || typeof months !== 'number') {
         return res.status(400).json({ message: "Months must be a number" });
@@ -3816,11 +3816,18 @@ RESPONSE GUIDELINES:
         return res.status(404).json({ message: "User not found" });
       }
 
+      const previousExpiryDate = user.validUntil ? new Date(user.validUntil) : null;
       const currentValidUntil = user.validUntil ? new Date(user.validUntil) : new Date();
       const newValidUntil = new Date(currentValidUntil);
       newValidUntil.setMonth(newValidUntil.getMonth() + months);
 
       const updatedUser = await storage.updateUser(id, { validUntil: newValidUntil });
+
+      // Log the extension action
+      await storage.db.execute(sql`
+        INSERT INTO whatsapp_membership_logs (id, user_id, user_name, user_email, action_type, previous_expiry_date, new_expiry_date, extension_months, notes, performed_by)
+        VALUES (gen_random_uuid(), ${id}, ${user.name || 'Unknown'}, ${user.email}, 'extended', ${previousExpiryDate}, ${newValidUntil}, ${months}, ${notes || null}, ${performedBy || null})
+      `);
 
       res.json({ 
         message: "Validity extended successfully",
@@ -3829,6 +3836,83 @@ RESPONSE GUIDELINES:
     } catch (error) {
       console.error("Extend validity error:", error);
       res.status(500).json({ message: "Failed to extend validity" });
+    }
+  });
+
+  // Get expired WhatsApp members (members whose validUntil has passed)
+  app.get("/api/admin/whatsapp/expired-members", async (req, res) => {
+    try {
+      const now = new Date();
+      const result = await storage.db.execute(sql`
+        SELECT id, name, email, valid_until as "validUntil", has_whatsapp_support as "hasWhatsAppSupport"
+        FROM users 
+        WHERE valid_until IS NOT NULL 
+          AND valid_until < ${now}
+          AND has_whatsapp_support = true
+        ORDER BY valid_until DESC
+        LIMIT 50
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Get expired members error:", error);
+      res.status(500).json({ message: "Failed to get expired members" });
+    }
+  });
+
+  // Get recent WhatsApp membership extension logs
+  app.get("/api/admin/whatsapp/extension-logs", async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`
+        SELECT * FROM whatsapp_membership_logs 
+        WHERE action_type = 'extended'
+        ORDER BY created_at DESC
+        LIMIT 50
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Get extension logs error:", error);
+      res.status(500).json({ message: "Failed to get extension logs" });
+    }
+  });
+
+  // Send reminder email to expired member
+  app.post("/api/admin/whatsapp/send-reminder", async (req, res) => {
+    try {
+      const { userId, subject, message } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Send reminder email
+      const emailResult = await emailService.send({
+        to: user.email,
+        subject: subject || "Your Membership Has Expired - Renew Today!",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #ec4899;">Hi ${user.name || 'there'}!</h2>
+            <p>${message || `We noticed your membership has expired. We'd love to have you back in our community!`}</p>
+            <p>If you'd like to continue your postpartum fitness journey with us, please renew your membership to regain access to all our programs and WhatsApp support.</p>
+            <p style="margin-top: 20px;">With love,<br/>Coach Zoe</p>
+          </div>
+        `,
+      });
+
+      // Log the reminder action
+      await storage.db.execute(sql`
+        INSERT INTO whatsapp_membership_logs (id, user_id, user_name, user_email, action_type, notes)
+        VALUES (gen_random_uuid(), ${userId}, ${user.name || 'Unknown'}, ${user.email}, 'reminder_sent', ${subject || 'Membership expired reminder'})
+      `);
+
+      res.json({ message: "Reminder email sent successfully", emailResult });
+    } catch (error) {
+      console.error("Send reminder error:", error);
+      res.status(500).json({ message: "Failed to send reminder email" });
     }
   });
 

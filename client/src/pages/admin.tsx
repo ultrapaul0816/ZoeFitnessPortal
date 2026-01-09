@@ -103,6 +103,63 @@ export default function Admin() {
     enabled: isAdmin,
   });
 
+  // WhatsApp membership tracking queries
+  const { data: expiredMembers = [], refetch: refetchExpiredMembers } = useQuery<Array<{
+    id: string;
+    name: string;
+    email: string;
+    validUntil: string;
+    hasWhatsAppSupport: boolean;
+  }>>({
+    queryKey: ["/api/admin/whatsapp/expired-members"],
+    enabled: isAdmin,
+  });
+
+  const { data: extensionLogs = [], refetch: refetchExtensionLogs } = useQuery<Array<{
+    id: string;
+    user_id: string;
+    user_name: string;
+    user_email: string;
+    action_type: string;
+    previous_expiry_date: string | null;
+    new_expiry_date: string | null;
+    extension_months: number | null;
+    notes: string | null;
+    performed_by: string | null;
+    created_at: string;
+  }>>({
+    queryKey: ["/api/admin/whatsapp/extension-logs"],
+    enabled: isAdmin,
+  });
+
+  // State for sending reminder emails
+  const [sendingReminderTo, setSendingReminderTo] = useState<string | null>(null);
+
+  // Mutation for sending reminder email
+  const sendReminderMutation = useMutation({
+    mutationFn: async (data: { userId: string; subject?: string; message?: string }) => {
+      return apiRequest("/api/admin/whatsapp/send-reminder", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Reminder email sent successfully!",
+      });
+      setSendingReminderTo(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send reminder email",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Fetch recent activity logs for activity feed
   const { data: activityLogs = [], isLoading: activityLoading } = useQuery<Array<{
     id: number;
@@ -747,6 +804,141 @@ export default function Admin() {
             </CardContent>
           </Card>
         )}
+
+        {/* WhatsApp Membership Tracking Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          {/* Expired Members Card */}
+          <Card className="border-red-200 bg-red-50/30">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-red-100">
+                    <UserMinus className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-medium text-red-900">Expired Members</CardTitle>
+                    <CardDescription className="text-xs text-red-700">Members needing renewal</CardDescription>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-xs bg-red-100 text-red-700">
+                  {expiredMembers.length}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {expiredMembers.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  <UserCheck className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-xs">No expired members</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {expiredMembers.slice(0, 8).map((member) => (
+                    <div key={member.id} className="flex items-center justify-between p-2 bg-white rounded-lg border border-red-100">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{member.name || 'Unknown'}</p>
+                        <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                        <p className="text-xs text-red-600">
+                          Expired: {new Date(member.validUntil).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-1 ml-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2 text-xs"
+                          onClick={() => {
+                            const user = allUsers.find(u => u.id === member.id);
+                            if (user) {
+                              setSelectedMember(user);
+                              setMemberViewMode('edit');
+                            }
+                          }}
+                        >
+                          Extend
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="h-7 px-2 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
+                          disabled={sendReminderMutation.isPending && sendingReminderTo === member.id}
+                          onClick={() => {
+                            setSendingReminderTo(member.id);
+                            sendReminderMutation.mutate({ userId: member.id });
+                          }}
+                        >
+                          {sendReminderMutation.isPending && sendingReminderTo === member.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <Mail className="w-3 h-3" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent Extensions Card */}
+          <Card className="border-green-200 bg-green-50/30">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-green-100">
+                    <RefreshCw className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-medium text-green-900">Recent Extensions</CardTitle>
+                    <CardDescription className="text-xs text-green-700">Membership renewals log</CardDescription>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                  {extensionLogs.length}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {extensionLogs.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  <RefreshCw className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-xs">No extensions recorded yet</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {extensionLogs.slice(0, 8).map((log) => (
+                    <div key={log.id} className="p-2 bg-white rounded-lg border border-green-100">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{log.user_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            +{log.extension_months} month{log.extension_months !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <p className="text-xs text-green-600 whitespace-nowrap ml-2">
+                          {new Date(log.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        {log.previous_expiry_date && (
+                          <span className="inline-block mr-2">
+                            From: {new Date(log.previous_expiry_date).toLocaleDateString()}
+                          </span>
+                        )}
+                        {log.new_expiry_date && (
+                          <span className="inline-block text-green-600">
+                            → To: {new Date(log.new_expiry_date).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Activity Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
