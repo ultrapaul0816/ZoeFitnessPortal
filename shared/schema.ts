@@ -865,6 +865,26 @@ export const activityLogs = pgTable("activity_logs", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+// WhatsApp membership tracking logs
+export const whatsappMembershipLogs = pgTable("whatsapp_membership_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  userName: text("user_name").notNull(),
+  userEmail: text("user_email").notNull(),
+  actionType: text("action_type").notNull(), // 'extended', 'expired', 'activated'
+  previousExpiryDate: timestamp("previous_expiry_date"),
+  newExpiryDate: timestamp("new_expiry_date"),
+  extensionMonths: integer("extension_months"),
+  notes: text("notes"),
+  performedBy: varchar("performed_by"), // admin who performed the action
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const insertWhatsappMembershipLogSchema = createInsertSchema(whatsappMembershipLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertEducationalTopicSchema = createInsertSchema(educationalTopics).omit({
   id: true,
   createdAt: true,
@@ -1069,6 +1089,8 @@ export type StructuredWorkout = typeof structuredWorkouts.$inferSelect;
 export type InsertStructuredWorkout = z.infer<typeof insertStructuredWorkoutSchema>;
 export type WorkoutExerciseLink = typeof workoutExerciseLinks.$inferSelect;
 export type InsertWorkoutExerciseLink = z.infer<typeof insertWorkoutExerciseLinkSchema>;
+export type WhatsappMembershipLog = typeof whatsappMembershipLogs.$inferSelect;
+export type InsertWhatsappMembershipLog = z.infer<typeof insertWhatsappMembershipLogSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
