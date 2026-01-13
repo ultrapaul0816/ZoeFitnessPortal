@@ -159,32 +159,18 @@ export default function Admin() {
     return userLogs[0].sent_at; // Already sorted by sent_at DESC
   };
 
-  // State for email log dialog
-  const [emailLogData, setEmailLogData] = useState<{
-    userId: string;
-    userName: string;
-    emailType: 'expiring' | 'expired';
-  } | null>(null);
-  const [emailLogDate, setEmailLogDate] = useState<string>('');
-  const [emailLogTime, setEmailLogTime] = useState<string>('');
-  const [emailLogNotes, setEmailLogNotes] = useState<string>('');
-
   // Log email sent mutation
   const logEmailMutation = useMutation({
-    mutationFn: async (data: { userId: string; emailType: 'expiring' | 'expired'; sentAt?: string; notes?: string }) => {
+    mutationFn: async (data: { userId: string; emailType: 'expiring' | 'expired' }) => {
       const response = await apiRequest("POST", "/api/admin/renewal-email-logs", data);
       return response.json();
     },
     onSuccess: () => {
       toast({
         title: "Email Logged",
-        description: "Email sent date has been recorded",
+        description: "Email sent date and time recorded",
       });
       refetchRenewalEmailLogs();
-      setEmailLogData(null);
-      setEmailLogDate('');
-      setEmailLogTime('');
-      setEmailLogNotes('');
     },
     onError: (error: Error) => {
       toast({
@@ -194,6 +180,11 @@ export default function Admin() {
       });
     },
   });
+
+  // Check if user has email log
+  const hasEmailLog = (userId: string): boolean => {
+    return renewalEmailLogs.some(log => log.user_id === userId);
+  };
 
   // State for reminder email template modal
   const [reminderEmailData, setReminderEmailData] = useState<{
@@ -977,7 +968,7 @@ Stronger With Zoe Support`;
                               {lastEmailDate && (
                                 <div className="flex items-center gap-1 text-xs text-green-600">
                                   <MailOpen className="w-3 h-3" />
-                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(lastEmailDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                               )}
                             </div>
@@ -1020,21 +1011,17 @@ Stronger With Zoe Support`;
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
-                                onClick={() => {
-                                  setEmailLogData({
-                                    userId: user.userId,
-                                    userName: user.userName,
-                                    emailType: 'expiring',
-                                  });
-                                  // Pre-fill with current date/time
-                                  const now = new Date();
-                                  setEmailLogDate(now.toISOString().split('T')[0]);
-                                  setEmailLogTime(now.toTimeString().slice(0, 5));
-                                }}
-                                title="Log that email was sent"
+                                className={cn(
+                                  "h-9 w-9 p-0 rounded-full border-2 transition-all",
+                                  hasEmailLog(user.userId)
+                                    ? "border-green-500 bg-green-50 text-green-600 hover:bg-green-100"
+                                    : "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
+                                )}
+                                onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
+                                disabled={logEmailMutation.isPending}
+                                title={hasEmailLog(user.userId) ? "Log another email sent" : "Log email sent"}
                               >
-                                <CheckCircle className="w-4 h-4" />
+                                <CheckCircle className="w-5 h-5" />
                               </Button>
                             </div>
                           </div>
@@ -1119,7 +1106,7 @@ Stronger With Zoe Support`;
                               {lastEmailDate && (
                                 <div className="flex items-center gap-1 text-xs text-green-600">
                                   <MailOpen className="w-3 h-3" />
-                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(lastEmailDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                               )}
                             </div>
@@ -1162,21 +1149,17 @@ Stronger With Zoe Support`;
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
-                                onClick={() => {
-                                  setEmailLogData({
-                                    userId: member.id,
-                                    userName: member.name || 'Unknown',
-                                    emailType: 'expired',
-                                  });
-                                  // Pre-fill with current date/time
-                                  const now = new Date();
-                                  setEmailLogDate(now.toISOString().split('T')[0]);
-                                  setEmailLogTime(now.toTimeString().slice(0, 5));
-                                }}
-                                title="Log that email was sent"
+                                className={cn(
+                                  "h-9 w-9 p-0 rounded-full border-2 transition-all",
+                                  hasEmailLog(member.id)
+                                    ? "border-green-500 bg-green-50 text-green-600 hover:bg-green-100"
+                                    : "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
+                                )}
+                                onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
+                                disabled={logEmailMutation.isPending}
+                                title={hasEmailLog(member.id) ? "Log another email sent" : "Log email sent"}
                               >
-                                <CheckCircle className="w-4 h-4" />
+                                <CheckCircle className="w-5 h-5" />
                               </Button>
                             </div>
                           </div>
