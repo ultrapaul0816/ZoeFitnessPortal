@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, AlertTriangle, Clock, ExternalLink } from "lucide-react";
+import { X, Clock, Sparkles, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { User } from "@shared/schema";
 
@@ -22,18 +22,15 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
   const [expiryInfos, setExpiryInfos] = useState<ExpiryInfo[]>([]);
 
   useEffect(() => {
-    // Check for dismissed notifications in sessionStorage (resets on new session/login)
     const dismissed = sessionStorage.getItem('dismissedExpiryNotifications');
     if (dismissed) {
       setDismissedNotifications(JSON.parse(dismissed));
     }
 
-    // Calculate expiry info
     const now = new Date();
     const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     const infos: ExpiryInfo[] = [];
 
-    // Check WhatsApp expiry
     if (user.whatsAppSupportExpiryDate) {
       const whatsAppExpiry = new Date(user.whatsAppSupportExpiryDate);
       const daysRemaining = Math.ceil((whatsAppExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -45,7 +42,6 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
       }
     }
 
-    // Check Program expiry
     if (user.validUntil) {
       const programExpiry = new Date(user.validUntil);
       const daysRemaining = Math.ceil((programExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -78,46 +74,41 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
         return {
           title: 'WhatsApp Support Expiring Soon',
           icon: <Clock className="w-5 h-5" />,
-          gradient: 'from-amber-500 to-orange-500',
-          bgGradient: 'from-amber-50 to-orange-50',
-          borderColor: 'border-amber-200',
-          message: `Hey ${firstName}! Your WhatsApp Community Support expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left). Renew to keep access to Coach Zoe and our community.`,
+          isExpired: false,
+          message: `Hey ${firstName}! Your WhatsApp Community Support expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left).`,
+          subMessage: `Your access will be revoked on ${formatDate(info.expiryDate)}. Renew now to keep access to Coach Zoe and our supportive community.`,
           buttonText: 'Renew Now',
         };
       case 'whatsapp_expired':
         return {
           title: 'WhatsApp Support Expired',
-          icon: <AlertTriangle className="w-5 h-5" />,
-          gradient: 'from-red-500 to-rose-500',
-          bgGradient: 'from-red-50 to-rose-50',
-          borderColor: 'border-red-200',
-          message: `Hey ${firstName}, your WhatsApp Community Support expired on ${formatDate(info.expiryDate)}. Your program access is still active. Renew to rejoin the WhatsApp group!`,
+          icon: <Sparkles className="w-5 h-5" />,
+          isExpired: true,
+          message: `Hey ${firstName}, your WhatsApp Community Support expired on ${formatDate(info.expiryDate)}.`,
+          subMessage: `Your program access is still active. Renew to rejoin the WhatsApp group and get Coach Zoe's support again!`,
           buttonText: 'Renew Access',
         };
       case 'program_expiring':
         return {
           title: 'Program Access Expiring Soon',
           icon: <Clock className="w-5 h-5" />,
-          gradient: 'from-amber-500 to-orange-500',
-          bgGradient: 'from-amber-50 to-orange-50',
-          borderColor: 'border-amber-200',
-          message: `Hey ${firstName}! Your Heal Your Core program expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left). Renew to keep your workouts going.`,
+          isExpired: false,
+          message: `Hey ${firstName}! Your Heal Your Core program expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left).`,
+          subMessage: `Your workout access will be revoked on ${formatDate(info.expiryDate)}. Renew to continue your recovery journey.`,
           buttonText: 'Renew Now',
         };
       case 'program_expired':
         return {
           title: 'Program Access Expired',
-          icon: <AlertTriangle className="w-5 h-5" />,
-          gradient: 'from-red-500 to-rose-500',
-          bgGradient: 'from-red-50 to-rose-50',
-          borderColor: 'border-red-200',
-          message: `Hey ${firstName}, your Heal Your Core program expired on ${formatDate(info.expiryDate)}. Renew to get back your workout access!`,
+          icon: <Sparkles className="w-5 h-5" />,
+          isExpired: true,
+          message: `Hey ${firstName}, your Heal Your Core program expired on ${formatDate(info.expiryDate)}.`,
+          subMessage: `Renew to get back your workout access and continue your postpartum recovery!`,
           buttonText: 'Renew Access',
         };
     }
   };
 
-  // Filter out dismissed notifications
   const activeNotifications = expiryInfos.filter(info => !dismissedNotifications.includes(info.type));
 
   if (activeNotifications.length === 0) {
@@ -125,53 +116,66 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="w-full max-w-md space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="w-full max-w-md space-y-4 animate-in fade-in zoom-in-95 duration-300">
         {activeNotifications.map((info) => {
           const content = getNotificationContent(info);
           return (
             <div
               key={info.type}
-              className={`relative overflow-hidden rounded-2xl border ${content.borderColor} bg-gradient-to-br ${content.bgGradient} shadow-xl`}
+              className="relative overflow-hidden rounded-3xl bg-white shadow-2xl"
+              style={{ boxShadow: '0 25px 50px -12px rgba(236, 72, 153, 0.25)' }}
             >
-              {/* Header with gradient */}
-              <div className={`bg-gradient-to-r ${content.gradient} px-5 py-3 flex items-center justify-between`}>
-                <div className="flex items-center gap-2 text-white">
-                  {content.icon}
-                  <span className="font-semibold text-sm">{content.title}</span>
+              {/* Decorative top gradient bar */}
+              <div className="h-1.5 bg-gradient-to-r from-pink-400 via-rose-500 to-pink-600" />
+              
+              {/* Header */}
+              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3 text-white">
+                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                    {content.icon}
+                  </div>
+                  <span className="font-bold text-base tracking-wide">{content.title}</span>
                 </div>
                 <button
                   onClick={() => dismissNotification(info.type)}
-                  className="text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/20"
+                  className="text-white/70 hover:text-white hover:bg-white/20 transition-all duration-200 p-2 rounded-full"
                   aria-label="Dismiss notification"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Content */}
-              <div className="p-5">
-                <p className="text-gray-700 text-sm leading-relaxed mb-4">
+              <div className="p-6">
+                <p className="text-gray-800 text-base leading-relaxed font-medium">
                   {content.message}
                 </p>
+                <p className="text-gray-600 text-sm leading-relaxed mt-2">
+                  {content.subMessage}
+                </p>
 
-                <div className="flex gap-3">
+                {/* Buttons */}
+                <div className="flex gap-3 mt-6">
                   <Button
-                    className={`flex-1 bg-gradient-to-r ${content.gradient} text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]`}
+                    className="flex-1 h-12 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-lg shadow-pink-500/30 hover:shadow-pink-500/40 transition-all duration-200 hover:scale-[1.02] rounded-xl"
                     onClick={() => window.open(PAYMENT_LINK, '_blank')}
                   >
                     {content.buttonText}
                     <ExternalLink className="w-4 h-4 ml-2" />
                   </Button>
                   <Button
-                    variant="ghost"
-                    className="text-gray-500 hover:text-gray-700"
+                    variant="outline"
+                    className="h-12 px-6 border-2 border-pink-200 text-pink-600 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-700 font-medium transition-all duration-200 rounded-xl"
                     onClick={() => dismissNotification(info.type)}
                   >
                     Maybe Later
                   </Button>
                 </div>
               </div>
+
+              {/* Decorative bottom element */}
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-200 via-rose-200 to-pink-200 opacity-50" />
             </div>
           );
         })}
