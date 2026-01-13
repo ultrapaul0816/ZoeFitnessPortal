@@ -22,6 +22,7 @@ import DailyCheckinModal from "@/components/daily-checkin-modal";
 import DailyMoodPopup from "@/components/daily-mood-popup";
 import MoodInsightsCard from "@/components/mood-insights-card";
 import ZoeEncouragement from "@/components/zoe-encouragement";
+import ExpiryNotification from "@/components/expiry-notification";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
@@ -1018,6 +1019,9 @@ export default function Dashboard() {
         userId={String(user.id)}
         userName={user.firstName}
       />
+
+      {/* Expiry Notification Popup */}
+      <ExpiryNotification user={user} />
 
       {/* Daily Check-in Modal (Progress tracking) */}
       <DailyCheckinModal
