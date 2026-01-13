@@ -141,7 +141,7 @@ export default function DailyMoodPopup({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-sm p-0 overflow-hidden border-0 shadow-2xl rounded-3xl mx-4">
+      <DialogContent className="max-w-sm p-0 overflow-hidden border-0 shadow-2xl rounded-3xl [&>button]:hidden">
         {step === 1 ? (
           <div className="relative">
             {/* Header - matching expiry notification style */}
@@ -175,7 +175,7 @@ export default function DailyMoodPopup({
             </div>
             
             {/* Content - more compact */}
-            <div className="p-4 bg-white max-h-[50vh] overflow-y-auto">
+            <div className="p-4 bg-white max-h-[50vh] overflow-y-auto rounded-b-3xl">
               <div className="grid grid-cols-1 gap-2">
                 {moodOptions.map((option) => (
                   <button
@@ -242,7 +242,7 @@ export default function DailyMoodPopup({
             </div>
             
             {/* Content - more compact */}
-            <div className="p-4 bg-white max-h-[50vh] overflow-y-auto">
+            <div className="p-4 bg-white max-h-[50vh] overflow-y-auto rounded-b-3xl">
               <div className="grid grid-cols-1 gap-2">
                 {energyOptions.map((option) => (
                   <button
