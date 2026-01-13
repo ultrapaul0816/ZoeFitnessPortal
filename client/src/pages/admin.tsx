@@ -190,7 +190,7 @@ export default function Admin() {
       });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast({
         title: "Success",
         description: `Membership extended by ${extensionMonths} months!`,
@@ -198,11 +198,15 @@ export default function Admin() {
       setExtensionDialogOpen(false);
       setExtensionMember(null);
       setExtensionMonths(3);
-      refetchExpiredMembers();
-      refetchExtensionLogs();
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       setSelectedMember(null);
+      
+      // Force immediate refetch of all related data
+      await Promise.all([
+        refetchExpiredMembers(),
+        refetchExtensionLogs(),
+        queryClient.refetchQueries({ queryKey: ["/api/admin/stats"] }),
+        queryClient.refetchQueries({ queryKey: ["/api/admin/users"] }),
+      ]);
     },
     onError: (error: Error) => {
       toast({
