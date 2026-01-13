@@ -181,7 +181,7 @@ export default function Admin() {
 
     if (isExpiring) {
       // EXPIRING SOON EMAIL - WhatsApp Community Support
-      const subject = `Heal Your Core - WhatsApp Support Expires ${whatsAppDateFormatted}`;
+      const subject = `Heal Your Core - WhatsApp Community Support Expires ${whatsAppDateFormatted}`;
 
       const body = `Hi ${firstName},
 
@@ -200,7 +200,7 @@ Stronger With Zoe Support`;
       return { subject, body };
     } else {
       // ALREADY EXPIRED EMAIL - WhatsApp Community Support (Reminder before removal)
-      const subject = `Heal Your Core - WhatsApp Support Expired - Action Required`;
+      const subject = `Heal Your Core - WhatsApp Community Support Expired - Action Required`;
 
       const body = `Hi ${firstName},
 
