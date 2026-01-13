@@ -139,8 +139,14 @@ export default function Admin() {
     enabled: isAdmin,
   });
 
-  // State for sending reminder emails
-  const [sendingReminderTo, setSendingReminderTo] = useState<string | null>(null);
+  // State for reminder email template modal
+  const [reminderEmailData, setReminderEmailData] = useState<{
+    userName: string;
+    userEmail: string;
+    type: 'expiring' | 'expired';
+    programExpiryDate?: string | null;
+    whatsAppExpiryDate?: string | null;
+  } | null>(null);
   
   // State for extension dialog
   const [extensionDialogOpen, setExtensionDialogOpen] = useState(false);
@@ -154,32 +160,54 @@ export default function Admin() {
   } | null>(null);
   const [extensionMonths, setExtensionMonths] = useState<number>(3);
 
-  // Mutation for sending reminder email
-  const sendReminderMutation = useMutation({
-    mutationFn: async (data: { 
-      userId: string; 
-      type: 'expiring' | 'expired';
-      programExpiryDate?: string | null;
-      whatsAppExpiryDate?: string | null;
-    }) => {
-      const response = await apiRequest("POST", "/api/admin/whatsapp/send-reminder", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Reminder email sent successfully!",
-      });
-      setSendingReminderTo(null);
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to send reminder email",
-        variant: "destructive",
-      });
-    },
-  });
+  // Helper function to generate reminder email content
+  const generateReminderEmail = (data: {
+    userName: string;
+    type: 'expiring' | 'expired';
+    programExpiryDate?: string | null;
+    whatsAppExpiryDate?: string | null;
+  }) => {
+    const formatDate = (dateStr: string | null | undefined) => {
+      if (!dateStr) return null;
+      return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    };
+
+    const isExpiring = data.type === 'expiring';
+    const programDateFormatted = formatDate(data.programExpiryDate);
+    const whatsAppDateFormatted = formatDate(data.whatsAppExpiryDate);
+
+    let expiryDetails = '';
+    if (programDateFormatted) {
+      expiryDetails += `- Heal Your Core Program: ${isExpiring ? 'expires' : 'expired'} on ${programDateFormatted}\n`;
+    }
+    if (whatsAppDateFormatted) {
+      expiryDetails += `- WhatsApp Support: ${isExpiring ? 'expires' : 'expired'} on ${whatsAppDateFormatted}\n`;
+    }
+
+    const subject = isExpiring 
+      ? 'Your Membership is Expiring Soon - Renew to Continue Your Journey!'
+      : 'Your Membership Has Expired - We Miss You!';
+
+    const body = `Dear ${data.userName || 'there'},
+
+${isExpiring 
+  ? 'We wanted to reach out because your membership access is expiring soon.'
+  : 'We noticed your membership access has expired and we\'d love to have you back!'}
+
+${expiryDetails ? `${isExpiring ? 'Expiring Soon:' : 'Expired Access:'}\n${expiryDetails}` : ''}
+${isExpiring
+  ? 'Don\'t let your progress stop! Renew now to continue your postpartum recovery journey with full access to the program and our supportive community.'
+  : 'We\'d love to welcome you back to continue your postpartum fitness journey. Renew your membership to regain access to all programs and WhatsApp support.'}
+
+To renew, please reply to this email or contact us via WhatsApp.
+
+With love and support,
+Coach Zoe
+Your Postpartum Strength Recovery Program`;
+
+    return { subject, body };
+  };
+
   
   // Mutation for extending membership
   const extendMembershipMutation = useMutation({
@@ -899,25 +927,18 @@ export default function Admin() {
                                 size="sm"
                                 variant="secondary"
                                 className="h-8 px-3 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
-                                disabled={sendReminderMutation.isPending && sendingReminderTo === user.userId}
                                 onClick={() => {
-                                  setSendingReminderTo(user.userId);
-                                  sendReminderMutation.mutate({ 
-                                    userId: user.userId,
+                                  setReminderEmailData({
+                                    userName: user.userName,
+                                    userEmail: memberData?.email || '',
                                     type: 'expiring',
                                     programExpiryDate: user.programExpiryDate ? String(user.programExpiryDate) : null,
                                     whatsAppExpiryDate: user.whatsAppExpiryDate ? String(user.whatsAppExpiryDate) : null,
                                   });
                                 }}
                               >
-                                {sendReminderMutation.isPending && sendingReminderTo === user.userId ? (
-                                  <Loader2 className="w-3 h-3 animate-spin" />
-                                ) : (
-                                  <>
-                                    <Mail className="w-3 h-3 mr-1" />
-                                    Remind
-                                  </>
-                                )}
+                                <Mail className="w-3 h-3 mr-1" />
+                                Remind
                               </Button>
                             </div>
                           </div>
@@ -1021,25 +1042,18 @@ export default function Admin() {
                               size="sm"
                               variant="secondary"
                               className="h-8 px-3 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
-                              disabled={sendReminderMutation.isPending && sendingReminderTo === member.id}
                               onClick={() => {
-                                setSendingReminderTo(member.id);
-                                sendReminderMutation.mutate({ 
-                                  userId: member.id,
+                                setReminderEmailData({
+                                  userName: member.name || 'there',
+                                  userEmail: member.email,
                                   type: 'expired',
                                   programExpiryDate: member.programExpiryDate,
                                   whatsAppExpiryDate: member.whatsAppExpiryDate,
                                 });
                               }}
                             >
-                              {sendReminderMutation.isPending && sendingReminderTo === member.id ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                              ) : (
-                                <>
-                                  <Mail className="w-3 h-3 mr-1" />
-                                  Remind
-                                </>
-                              )}
+                              <Mail className="w-3 h-3 mr-1" />
+                              Remind
                             </Button>
                           </div>
                         </div>
@@ -3875,6 +3889,85 @@ export default function Admin() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Reminder Email Template Modal */}
+      <Dialog open={!!reminderEmailData} onOpenChange={(open) => !open && setReminderEmailData(null)}>
+        <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white via-pink-50/30 to-rose-50/20">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center shadow-md">
+                <Mail className="w-5 h-5 text-white" />
+              </div>
+              <span className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent font-semibold">
+                {reminderEmailData?.type === 'expiring' ? 'Expiring Soon Reminder' : 'Expired Membership Reminder'}
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {reminderEmailData && (() => {
+            const { subject, body } = generateReminderEmail(reminderEmailData);
+            const fullEmail = `To: ${reminderEmailData.userEmail}\nSubject: ${subject}\n\n${body}`;
+            
+            return (
+              <div className="space-y-4">
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium">{reminderEmailData.userName}</p>
+                  <p className="text-xs text-muted-foreground">{reminderEmailData.userEmail}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Subject</Label>
+                  <Input 
+                    value={subject} 
+                    readOnly 
+                    className="bg-white"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Email Body</Label>
+                  <textarea
+                    className="w-full h-48 p-3 text-sm border rounded-lg resize-none bg-white"
+                    readOnly
+                    value={body}
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+                    onClick={() => {
+                      navigator.clipboard.writeText(fullEmail);
+                      toast({
+                        title: "Copied!",
+                        description: "Email template copied to clipboard. Paste it in Gmail to send.",
+                      });
+                    }}
+                  >
+                    Copy Full Email
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      // Open Gmail compose with pre-filled data
+                      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(reminderEmailData.userEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      window.open(gmailUrl, '_blank');
+                    }}
+                  >
+                    Open in Gmail
+                  </Button>
+                </div>
+
+                <div className="flex justify-end pt-2 border-t">
+                  <Button variant="outline" onClick={() => setReminderEmailData(null)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </AdminLayout>
