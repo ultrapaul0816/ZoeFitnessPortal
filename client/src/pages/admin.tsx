@@ -173,39 +173,100 @@ export default function Admin() {
     };
 
     const isExpiring = data.type === 'expiring';
-    const programDateFormatted = formatDate(data.programExpiryDate);
     const whatsAppDateFormatted = formatDate(data.whatsAppExpiryDate);
+    const firstName = data.userName?.split(' ')[0] || 'there';
 
-    let expiryDetails = '';
-    if (programDateFormatted) {
-      expiryDetails += `- Heal Your Core Program: ${isExpiring ? 'expires' : 'expired'} on ${programDateFormatted}\n`;
-    }
-    if (whatsAppDateFormatted) {
-      expiryDetails += `- WhatsApp Support: ${isExpiring ? 'expires' : 'expired'} on ${whatsAppDateFormatted}\n`;
-    }
+    // Payment link placeholder - admin will replace with actual link
+    const paymentLink = '[PAYMENT_LINK]';
 
-    const subject = isExpiring 
-      ? 'Your Membership is Expiring Soon - Renew to Continue Your Journey!'
-      : 'Your Membership Has Expired - We Miss You!';
+    if (isExpiring) {
+      // EXPIRING SOON EMAIL
+      const subject = `Action Required: Your Stronger With Zoe Membership Expires on ${whatsAppDateFormatted}`;
 
-    const body = `Dear ${data.userName || 'there'},
+      const body = `Hi ${firstName},
 
-${isExpiring 
-  ? 'We wanted to reach out because your membership access is expiring soon.'
-  : 'We noticed your membership access has expired and we\'d love to have you back!'}
+I hope you've been enjoying your postpartum recovery journey with us! I wanted to personally reach out because your membership is expiring soon.
 
-${expiryDetails ? `${isExpiring ? 'Expiring Soon:' : 'Expired Access:'}\n${expiryDetails}` : ''}
-${isExpiring
-  ? 'Don\'t let your progress stop! Renew now to continue your postpartum recovery journey with full access to the program and our supportive community.'
-  : 'We\'d love to welcome you back to continue your postpartum fitness journey. Renew your membership to regain access to all programs and WhatsApp support.'}
+YOUR CURRENT ACCESS EXPIRING ON ${whatsAppDateFormatted}:
 
-To renew, please reply to this email or contact us via WhatsApp.
+What you'll lose access to:
+- Heal Your Core Program - All 6 weeks of guided workouts designed specifically for postpartum recovery
+- WhatsApp Community Support - Direct access to me and our supportive mama community
+- Personalized Guidance - Weekly check-ins and form corrections
+- New Content & Updates - Any new workouts or resources we add
 
-With love and support,
+I've loved watching your progress, and I'd hate to see you stop now! Your body is still healing and strengthening, and consistency is key to long-term results.
+
+READY TO CONTINUE?
+
+If you'd like to renew your membership, simply click the link below to complete your payment:
+${paymentLink}
+
+Renewal Options:
+- 3 months: Rs. 1,000
+- 6 months: Rs. 2,000
+- 9 months: Rs. 3,000
+- 12 months: Rs. 4,000
+
+NOT SURE? JUST LET ME KNOW
+
+If you're not planning to continue, no worries at all! Just reply to this email and let me know so I can update your account. Your access will automatically end on ${whatsAppDateFormatted}.
+
+If I don't hear from you, I'll assume you're taking a break and your access will be revoked after the expiry date.
+
+Thank you for being part of our community, ${firstName}. Whatever you decide, I'm cheering you on!
+
+With love and strength,
 Coach Zoe
-Your Postpartum Strength Recovery Program`;
 
-    return { subject, body };
+P.S. If you have any questions or need a different payment option, just reply to this email - I'm here to help!`;
+
+      return { subject, body };
+    } else {
+      // ALREADY EXPIRED EMAIL
+      const subject = `We Miss You, ${firstName}! Your Stronger With Zoe Access Has Expired`;
+
+      const body = `Hi ${firstName},
+
+I noticed your membership expired on ${whatsAppDateFormatted}, and I just wanted to check in with you.
+
+WHAT YOU'VE LOST ACCESS TO:
+
+- Heal Your Core Program - All 6 weeks of guided postpartum workouts
+- WhatsApp Community Support - Our supportive mama community and direct access to me
+- Personalized Guidance - Weekly check-ins and form corrections
+- New Content & Updates - Any new workouts or resources
+
+I remember how hard you've been working on your recovery, and I'd love to have you back! Your body deserves continued care and attention.
+
+WANT TO REJOIN US?
+
+If you'd like to renew your membership and pick up where you left off, click the link below:
+${paymentLink}
+
+Renewal Options:
+- 3 months: Rs. 1,000
+- 6 months: Rs. 2,000
+- 9 months: Rs. 3,000
+- 12 months: Rs. 4,000
+
+Once you renew, you'll instantly regain access to everything - all your progress is saved and waiting for you!
+
+NOT READY TO CONTINUE?
+
+That's completely okay! If you're taking a break or have decided this isn't the right time, just reply and let me know. I'd love to hear how you're doing either way.
+
+Whatever you decide, ${firstName}, I'm so proud of the work you've already put in. Postpartum recovery is a journey, and you've taken important steps.
+
+Hoping to see you back soon!
+
+With love and strength,
+Coach Zoe
+
+P.S. If there's anything I can do to help or if you have questions about renewing, just reply to this email. I'm always here for you!`;
+
+      return { subject, body };
+    }
   };
 
   
