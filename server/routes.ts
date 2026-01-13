@@ -3801,7 +3801,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Extend user validity
+  // Extend user validity (both program and WhatsApp)
   app.post("/api/admin/users/:id/extend-validity", async (req, res) => {
     try {
       const { id } = req.params;
@@ -3816,22 +3816,44 @@ RESPONSE GUIDELINES:
         return res.status(404).json({ message: "User not found" });
       }
 
-      const previousExpiryDate = user.validUntil ? new Date(user.validUntil) : null;
+      // Get user's display name
+      const userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+
+      // Calculate new program validity date
+      const previousProgramDate = user.validUntil ? new Date(user.validUntil) : null;
       const currentValidUntil = user.validUntil ? new Date(user.validUntil) : new Date();
       const newValidUntil = new Date(currentValidUntil);
       newValidUntil.setMonth(newValidUntil.getMonth() + months);
 
-      const updatedUser = await storage.updateUser(id, { validUntil: newValidUntil });
+      // Calculate new WhatsApp validity date (if user has WhatsApp support)
+      const previousWhatsAppDate = user.whatsAppSupportExpiryDate ? new Date(user.whatsAppSupportExpiryDate) : null;
+      let newWhatsAppDate: Date | null = null;
+      
+      if (user.hasWhatsAppSupport || previousWhatsAppDate) {
+        const currentWhatsAppUntil = previousWhatsAppDate || new Date();
+        newWhatsAppDate = new Date(currentWhatsAppUntil);
+        newWhatsAppDate.setMonth(newWhatsAppDate.getMonth() + months);
+      }
 
-      // Log the extension action
+      // Build update object
+      const updateData: any = { validUntil: newValidUntil };
+      if (newWhatsAppDate) {
+        updateData.whatsAppSupportExpiryDate = newWhatsAppDate;
+        updateData.hasWhatsAppSupport = true;
+      }
+
+      const updatedUser = await storage.updateUser(id, updateData);
+
+      // Log the extension action with proper user name
       await storage.db.execute(sql`
         INSERT INTO whatsapp_membership_logs (id, user_id, user_name, user_email, action_type, previous_expiry_date, new_expiry_date, extension_months, notes, performed_by)
-        VALUES (gen_random_uuid(), ${id}, ${user.name || 'Unknown'}, ${user.email}, 'extended', ${previousExpiryDate}, ${newValidUntil}, ${months}, ${notes || null}, ${performedBy || null})
+        VALUES (gen_random_uuid(), ${id}, ${userName}, ${user.email}, 'extended', ${previousWhatsAppDate || previousProgramDate}, ${newWhatsAppDate || newValidUntil}, ${months}, ${notes || null}, ${performedBy || null})
       `);
 
       res.json({ 
         message: "Validity extended successfully",
-        validUntil: updatedUser?.validUntil
+        validUntil: updatedUser?.validUntil,
+        whatsAppSupportExpiryDate: updatedUser?.whatsAppSupportExpiryDate
       });
     } catch (error) {
       console.error("Extend validity error:", error);
