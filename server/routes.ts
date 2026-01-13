@@ -3918,8 +3918,12 @@ RESPONSE GUIDELINES:
         return res.status(404).json({ message: "User not found" });
       }
 
+      if (!user.email) {
+        return res.status(400).json({ message: "User does not have an email address" });
+      }
+
       const isExpiring = type === 'expiring';
-      const userName = user.name || 'there';
+      const userName = user.firstName || 'there';
       
       // Format dates for display
       const formatDate = (dateStr: string | null) => {
@@ -4002,20 +4006,28 @@ RESPONSE GUIDELINES:
       `;
 
       // Send reminder email
+      const userFullNameForEmail = [user.firstName, user.lastName].filter(Boolean).join(' ');
       const emailResult = await emailService.send({
-        to: user.email,
+        to: { email: user.email, name: userFullNameForEmail || undefined },
         subject,
         html: emailHtml,
       });
+
+      // Check if email was sent successfully
+      if (!emailResult.success) {
+        console.error("Reminder email failed:", emailResult.error);
+        return res.status(500).json({ message: `Failed to send email: ${emailResult.error}` });
+      }
 
       // Log the reminder action
       const notes = isExpiring 
         ? `Expiring soon reminder sent (Program: ${programDateFormatted || 'N/A'}, WhatsApp: ${whatsAppDateFormatted || 'N/A'})`
         : `Expired membership reminder sent (Program: ${programDateFormatted || 'N/A'}, WhatsApp: ${whatsAppDateFormatted || 'N/A'})`;
         
+      const userFullName = userFullNameForEmail || 'Unknown';
       await storage.db.execute(sql`
         INSERT INTO whatsapp_membership_logs (id, user_id, user_name, user_email, action_type, notes)
-        VALUES (gen_random_uuid(), ${userId}, ${user.name || 'Unknown'}, ${user.email}, 'reminder_sent', ${notes})
+        VALUES (gen_random_uuid(), ${userId}, ${userFullName}, ${user.email}, 'reminder_sent', ${notes})
       `);
 
       res.json({ message: "Reminder email sent successfully", emailResult });
