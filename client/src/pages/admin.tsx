@@ -152,11 +152,18 @@ export default function Admin() {
     enabled: isAdmin,
   });
 
-  // Get last email date for a user
-  const getLastEmailDate = (userId: string): string | null => {
+  // Get all email logs for a user (sorted by date DESC)
+  const getUserEmailLogs = (userId: string): Array<{ sent_at: string; isFollowUp: boolean }> => {
     const userLogs = renewalEmailLogs.filter(log => log.user_id === userId);
-    if (userLogs.length === 0) return null;
-    return userLogs[0].sent_at; // Already sorted by sent_at DESC
+    return userLogs.map((log, index) => ({
+      sent_at: log.sent_at,
+      isFollowUp: index < userLogs.length - 1, // All except the oldest are follow-ups
+    }));
+  };
+
+  // Get email log count for a user
+  const getEmailLogCount = (userId: string): number => {
+    return renewalEmailLogs.filter(log => log.user_id === userId).length;
   };
 
   // Log email sent mutation
@@ -180,11 +187,6 @@ export default function Admin() {
       });
     },
   });
-
-  // Check if user has email log
-  const hasEmailLog = (userId: string): boolean => {
-    return renewalEmailLogs.some(log => log.user_id === userId);
-  };
 
   // State for reminder email template modal
   const [reminderEmailData, setReminderEmailData] = useState<{
@@ -931,7 +933,8 @@ Stronger With Zoe Support`;
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {adminStats.expiringUsers.map((user) => {
                       const memberData = allUsers.find(u => u.id === user.userId);
-                      const lastEmailDate = getLastEmailDate(user.userId);
+                      const emailLogs = getUserEmailLogs(user.userId);
+                      const logCount = emailLogs.length;
                       return (
                         <div key={user.userId} className="p-3 bg-white rounded-lg border border-amber-100">
                           <div className="flex items-center justify-between gap-4">
@@ -965,14 +968,34 @@ Stronger With Zoe Support`;
                                   </div>
                                 )}
                               </div>
-                              {lastEmailDate && (
-                                <div className="flex items-center gap-1 text-xs text-green-600">
-                                  <MailOpen className="w-3 h-3" />
-                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(lastEmailDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                              {emailLogs.length > 0 && (
+                                <div className="flex flex-col gap-1 mt-2">
+                                  {emailLogs.slice(0, 3).map((log, idx) => (
+                                    <div 
+                                      key={idx}
+                                      className={cn(
+                                        "inline-flex items-center gap-2 text-xs px-2.5 py-1 rounded-full w-fit shadow-sm",
+                                        idx === 0 && logCount > 1
+                                          ? "bg-gradient-to-r from-amber-400 to-yellow-500 text-white"
+                                          : "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
+                                      )}
+                                    >
+                                      <MailOpen className="w-3 h-3" />
+                                      <span className="font-medium">
+                                        {idx === 0 && logCount > 1 ? "Follow-up" : "Email sent"}
+                                      </span>
+                                      <span className="opacity-90">
+                                        {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} • {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                      </span>
+                                    </div>
+                                  ))}
+                                  {emailLogs.length > 3 && (
+                                    <span className="text-xs text-gray-500 ml-2">+{emailLogs.length - 3} more</span>
+                                  )}
                                 </div>
                               )}
                             </div>
-                            <div className="flex gap-2 shrink-0">
+                            <div className="flex gap-2 shrink-0 items-center">
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -1008,21 +1031,21 @@ Stronger With Zoe Support`;
                                 <Mail className="w-3 h-3 mr-1" />
                                 Remind
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
+                              <button
                                 className={cn(
-                                  "h-9 w-9 p-0 rounded-full border-2 transition-all",
-                                  hasEmailLog(user.userId)
-                                    ? "border-green-500 bg-green-50 text-green-600 hover:bg-green-100"
-                                    : "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
+                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105",
+                                  logCount === 0
+                                    ? "bg-gradient-to-br from-gray-200 to-gray-300 text-gray-500 hover:from-gray-300 hover:to-gray-400"
+                                    : logCount === 1
+                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
+                                    : "bg-gradient-to-br from-amber-400 to-yellow-500 text-white hover:from-amber-500 hover:to-yellow-600"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
                                 disabled={logEmailMutation.isPending}
-                                title={hasEmailLog(user.userId) ? "Log another email sent" : "Log email sent"}
+                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : `${logCount} emails logged`}
                               >
                                 <CheckCircle className="w-5 h-5" />
-                              </Button>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1069,7 +1092,8 @@ Stronger With Zoe Support`;
                 ) : (
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {expiredMembers.map((member) => {
-                      const lastEmailDate = getLastEmailDate(member.id);
+                      const emailLogs = getUserEmailLogs(member.id);
+                      const logCount = emailLogs.length;
                       return (
                         <div key={member.id} className="p-3 bg-white rounded-lg border border-red-100">
                           <div className="flex items-center justify-between gap-4">
@@ -1103,14 +1127,34 @@ Stronger With Zoe Support`;
                                   </div>
                                 )}
                               </div>
-                              {lastEmailDate && (
-                                <div className="flex items-center gap-1 text-xs text-green-600">
-                                  <MailOpen className="w-3 h-3" />
-                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(lastEmailDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                              {emailLogs.length > 0 && (
+                                <div className="flex flex-col gap-1 mt-2">
+                                  {emailLogs.slice(0, 3).map((log, idx) => (
+                                    <div 
+                                      key={idx}
+                                      className={cn(
+                                        "inline-flex items-center gap-2 text-xs px-2.5 py-1 rounded-full w-fit shadow-sm",
+                                        idx === 0 && logCount > 1
+                                          ? "bg-gradient-to-r from-amber-400 to-yellow-500 text-white"
+                                          : "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
+                                      )}
+                                    >
+                                      <MailOpen className="w-3 h-3" />
+                                      <span className="font-medium">
+                                        {idx === 0 && logCount > 1 ? "Follow-up" : "Email sent"}
+                                      </span>
+                                      <span className="opacity-90">
+                                        {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} • {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                      </span>
+                                    </div>
+                                  ))}
+                                  {emailLogs.length > 3 && (
+                                    <span className="text-xs text-gray-500 ml-2">+{emailLogs.length - 3} more</span>
+                                  )}
                                 </div>
                               )}
                             </div>
-                            <div className="flex gap-2 shrink-0">
+                            <div className="flex gap-2 shrink-0 items-center">
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -1146,21 +1190,21 @@ Stronger With Zoe Support`;
                                 <Mail className="w-3 h-3 mr-1" />
                                 Remind
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
+                              <button
                                 className={cn(
-                                  "h-9 w-9 p-0 rounded-full border-2 transition-all",
-                                  hasEmailLog(member.id)
-                                    ? "border-green-500 bg-green-50 text-green-600 hover:bg-green-100"
-                                    : "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
+                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105",
+                                  logCount === 0
+                                    ? "bg-gradient-to-br from-gray-200 to-gray-300 text-gray-500 hover:from-gray-300 hover:to-gray-400"
+                                    : logCount === 1
+                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
+                                    : "bg-gradient-to-br from-amber-400 to-yellow-500 text-white hover:from-amber-500 hover:to-yellow-600"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
                                 disabled={logEmailMutation.isPending}
-                                title={hasEmailLog(member.id) ? "Log another email sent" : "Log email sent"}
+                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : `${logCount} emails logged`}
                               >
                                 <CheckCircle className="w-5 h-5" />
-                              </Button>
+                              </button>
                             </div>
                           </div>
                         </div>
