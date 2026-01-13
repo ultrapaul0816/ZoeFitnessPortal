@@ -973,16 +973,24 @@ Stronger With Zoe Support`;
                                   {emailLogs.slice(0, 2).map((log, idx) => (
                                     <div 
                                       key={idx}
-                                      className="flex items-center gap-2 text-xs text-gray-600"
+                                      className={cn(
+                                        "inline-flex items-center gap-2 text-xs px-2 py-1 rounded-md w-fit",
+                                        idx === 0 && logCount > 1 ? "bg-amber-50 border border-amber-100" : "bg-emerald-50 border border-emerald-100"
+                                      )}
                                     >
                                       <span className={cn(
                                         "w-1.5 h-1.5 rounded-full",
                                         idx === 0 && logCount > 1 ? "bg-amber-500" : "bg-emerald-500"
                                       )} />
-                                      <span className="font-medium text-gray-700">
+                                      <span className={cn(
+                                        "font-medium",
+                                        idx === 0 && logCount > 1 ? "text-amber-700" : "text-emerald-700"
+                                      )}>
                                         {idx === 0 && logCount > 1 ? "Follow-up sent" : "Email sent"}
                                       </span>
-                                      <span className="text-gray-500">
+                                      <span className={cn(
+                                        idx === 0 && logCount > 1 ? "text-amber-600" : "text-emerald-600"
+                                      )}>
                                         {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                                       </span>
                                     </div>
@@ -1028,18 +1036,18 @@ Stronger With Zoe Support`;
                               </Button>
                               <button
                                 className={cn(
-                                  "h-9 w-9 rounded-full flex items-center justify-center transition-all duration-200 border-2",
+                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg",
                                   logCount === 0
-                                    ? "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
+                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400 hover:from-gray-200 hover:to-gray-300 hover:text-gray-500"
                                     : logCount === 1
-                                    ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                                    : "border-amber-500 bg-amber-50 text-amber-600 cursor-not-allowed opacity-60"
+                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600 hover:scale-105"
+                                    : "bg-gradient-to-br from-amber-400 to-orange-500 text-white cursor-not-allowed opacity-70"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
                                 disabled={logEmailMutation.isPending || logCount >= 2}
                                 title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
                               >
-                                <CheckCircle className="w-4 h-4" />
+                                <CheckCircle className="w-5 h-5" />
                               </button>
                             </div>
                           </div>
@@ -1127,16 +1135,24 @@ Stronger With Zoe Support`;
                                   {emailLogs.slice(0, 2).map((log, idx) => (
                                     <div 
                                       key={idx}
-                                      className="flex items-center gap-2 text-xs text-gray-600"
+                                      className={cn(
+                                        "inline-flex items-center gap-2 text-xs px-2 py-1 rounded-md w-fit",
+                                        idx === 0 && logCount > 1 ? "bg-amber-50 border border-amber-100" : "bg-emerald-50 border border-emerald-100"
+                                      )}
                                     >
                                       <span className={cn(
                                         "w-1.5 h-1.5 rounded-full",
                                         idx === 0 && logCount > 1 ? "bg-amber-500" : "bg-emerald-500"
                                       )} />
-                                      <span className="font-medium text-gray-700">
+                                      <span className={cn(
+                                        "font-medium",
+                                        idx === 0 && logCount > 1 ? "text-amber-700" : "text-emerald-700"
+                                      )}>
                                         {idx === 0 && logCount > 1 ? "Follow-up sent" : "Email sent"}
                                       </span>
-                                      <span className="text-gray-500">
+                                      <span className={cn(
+                                        idx === 0 && logCount > 1 ? "text-amber-600" : "text-emerald-600"
+                                      )}>
                                         {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                                       </span>
                                     </div>
@@ -1182,18 +1198,18 @@ Stronger With Zoe Support`;
                               </Button>
                               <button
                                 className={cn(
-                                  "h-9 w-9 rounded-full flex items-center justify-center transition-all duration-200 border-2",
+                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg",
                                   logCount === 0
-                                    ? "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
+                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400 hover:from-gray-200 hover:to-gray-300 hover:text-gray-500"
                                     : logCount === 1
-                                    ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                                    : "border-amber-500 bg-amber-50 text-amber-600 cursor-not-allowed opacity-60"
+                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600 hover:scale-105"
+                                    : "bg-gradient-to-br from-amber-400 to-orange-500 text-white cursor-not-allowed opacity-70"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
                                 disabled={logEmailMutation.isPending || logCount >= 2}
                                 title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
                               >
-                                <CheckCircle className="w-4 h-4" />
+                                <CheckCircle className="w-5 h-5" />
                               </button>
                             </div>
                           </div>
