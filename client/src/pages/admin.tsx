@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText, Copy } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Check, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText, Copy } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import CheckinAnalyticsCard from "@/components/admin/CheckinAnalyticsCard";
@@ -1036,18 +1036,18 @@ Stronger With Zoe Support`;
                               </Button>
                               <button
                                 className={cn(
-                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg",
+                                  "h-8 px-3 rounded-md flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md text-xs font-medium",
                                   logCount === 0
-                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400 hover:from-gray-200 hover:to-gray-300 hover:text-gray-500"
+                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-500 hover:from-gray-200 hover:to-gray-300 hover:text-gray-600"
                                     : logCount === 1
-                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600 hover:scale-105"
+                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
                                     : "bg-gradient-to-br from-amber-400 to-orange-500 text-white cursor-not-allowed opacity-70"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
                                 disabled={logEmailMutation.isPending || logCount >= 2}
                                 title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
                               >
-                                <CheckCircle className="w-5 h-5" />
+                                <Check className="w-4 h-4" />
                               </button>
                             </div>
                           </div>
@@ -1198,18 +1198,18 @@ Stronger With Zoe Support`;
                               </Button>
                               <button
                                 className={cn(
-                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg",
+                                  "h-8 px-3 rounded-md flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md text-xs font-medium",
                                   logCount === 0
-                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400 hover:from-gray-200 hover:to-gray-300 hover:text-gray-500"
+                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-500 hover:from-gray-200 hover:to-gray-300 hover:text-gray-600"
                                     : logCount === 1
-                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600 hover:scale-105"
+                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
                                     : "bg-gradient-to-br from-amber-400 to-orange-500 text-white cursor-not-allowed opacity-70"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
                                 disabled={logEmailMutation.isPending || logCount >= 2}
                                 title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
                               >
-                                <CheckCircle className="w-5 h-5" />
+                                <Check className="w-4 h-4" />
                               </button>
                             </div>
                           </div>
