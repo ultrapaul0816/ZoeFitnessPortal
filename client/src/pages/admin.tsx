@@ -2778,6 +2778,73 @@ Stronger With Zoe Support`;
                             Remove Access
                           </Button>
                         </div>
+
+                        {/* Custom Duration Adjustment (for testing) */}
+                        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <p className="text-xs font-medium text-blue-700 mb-2">Custom Duration Adjustment (Testing)</p>
+                          <div className="flex gap-2 items-end">
+                            <div className="flex-1">
+                              <Label className="text-xs text-blue-600">Amount</Label>
+                              <Input
+                                type="number"
+                                placeholder="e.g. 7 or -3"
+                                className="h-8 text-sm"
+                                id="whatsapp-custom-amount"
+                              />
+                            </div>
+                            <div className="w-24">
+                              <Label className="text-xs text-blue-600">Unit</Label>
+                              <Select defaultValue="days">
+                                <SelectTrigger className="h-8 text-sm" id="whatsapp-custom-unit">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="days">Days</SelectItem>
+                                  <SelectItem value="months">Months</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-8 bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-300"
+                              onClick={() => {
+                                const amountInput = document.getElementById('whatsapp-custom-amount') as HTMLInputElement;
+                                const unitSelect = document.querySelector('[id="whatsapp-custom-unit"]')?.closest('button');
+                                const amount = parseInt(amountInput?.value || '0');
+                                const unit = unitSelect?.textContent?.toLowerCase().includes('month') ? 'months' : 'days';
+                                
+                                if (!amount || isNaN(amount)) {
+                                  toast({ title: "Error", description: "Please enter a valid number", variant: "destructive" });
+                                  return;
+                                }
+
+                                const currentExpiry = new Date(selectedMember.whatsAppSupportExpiryDate!);
+                                const newExpiry = new Date(currentExpiry);
+                                
+                                if (unit === 'months') {
+                                  newExpiry.setMonth(newExpiry.getMonth() + amount);
+                                } else {
+                                  newExpiry.setDate(newExpiry.getDate() + amount);
+                                }
+
+                                setSelectedMember({
+                                  ...selectedMember,
+                                  whatsAppSupportExpiryDate: newExpiry
+                                });
+
+                                amountInput.value = '';
+                                toast({ 
+                                  title: "Updated", 
+                                  description: `${amount > 0 ? 'Added' : 'Reduced'} ${Math.abs(amount)} ${unit} ${amount > 0 ? 'to' : 'from'} expiry` 
+                                });
+                              }}
+                            >
+                              Apply
+                            </Button>
+                          </div>
+                          <p className="text-xs text-blue-500 mt-1">Use negative numbers to reduce (e.g. -5 days)</p>
+                        </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
