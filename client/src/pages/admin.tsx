@@ -201,6 +201,8 @@ export default function Admin() {
       refetchExpiredMembers();
       refetchExtensionLogs();
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setSelectedMember(null);
     },
     onError: (error: Error) => {
       toast({
