@@ -759,7 +759,87 @@ export default function Admin() {
           </Card>
         </div>
 
-        {/* Expired Members - Full Width Collapsible */}
+        {/* 1. Members Expiring Soon - Full Width Collapsible */}
+        {adminStats?.expiringUsers && adminStats.expiringUsers.length > 0 && (
+          <Collapsible open={expiringSoonOpen} onOpenChange={setExpiringSoonOpen} className="mb-4">
+            <Card className="border-amber-200 bg-amber-50/30">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-amber-50/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-amber-100">
+                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-sm font-medium text-amber-900">Members Expiring Soon</CardTitle>
+                        <CardDescription className="text-xs text-amber-700">Next 7 days</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700">
+                        {adminStats.expiringUsers.length}
+                      </Badge>
+                      <ChevronDown className={cn("w-4 h-4 text-amber-600 transition-transform", expiringSoonOpen && "rotate-180")} />
+                    </div>
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {adminStats.expiringUsers.map((user) => (
+                      <div key={user.userId} className="flex items-center justify-between p-3 bg-white rounded-lg border border-amber-100">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800">{user.userName}</p>
+                          <div className="flex flex-wrap gap-3 mt-1">
+                            {user.programExpiring && (
+                              <div className="flex items-center gap-2 text-xs">
+                                <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
+                                  <Dumbbell className="w-3 h-3" />
+                                  Heal Your Core
+                                </span>
+                                <span className="text-gray-600">
+                                  Expires {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                                </span>
+                              </div>
+                            )}
+                            {user.whatsAppExpiring && (
+                              <div className="flex items-center gap-2 text-xs">
+                                <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
+                                  <MessageSquare className="w-3 h-3" />
+                                  WhatsApp
+                                </span>
+                                <span className="text-gray-600">
+                                  Expires {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-3 text-xs shrink-0"
+                          onClick={() => {
+                            const member = allUsers.find(u => u.id === user.userId);
+                            if (member) {
+                              setSelectedMember(member);
+                              setMemberViewMode('edit');
+                            }
+                          }}
+                        >
+                          Extend
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+        )}
+
+        {/* 2. Expired Members - Full Width Collapsible */}
         <Collapsible open={expiredMembersOpen} onOpenChange={setExpiredMembersOpen} className="mb-4">
           <Card className="border-red-200 bg-red-50/30">
             <CollapsibleTrigger asChild>
@@ -871,7 +951,7 @@ export default function Admin() {
           </Card>
         </Collapsible>
 
-        {/* Recent Extensions - Full Width Collapsible */}
+        {/* 3. Recent Extensions - Full Width Collapsible */}
         <Collapsible open={recentExtensionsOpen} onOpenChange={setRecentExtensionsOpen} className="mb-4">
           <Card className="border-green-200 bg-green-50/30">
             <CollapsibleTrigger asChild>
@@ -941,76 +1021,6 @@ export default function Admin() {
             </CollapsibleContent>
           </Card>
         </Collapsible>
-
-        {/* Expiring Users Details - Collapsible */}
-        {adminStats?.expiringUsers && adminStats.expiringUsers.length > 0 && (
-          <Collapsible open={expiringSoonOpen} onOpenChange={setExpiringSoonOpen} className="mb-4">
-            <Card className="border-amber-200 bg-amber-50/30">
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-amber-50/50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-amber-100">
-                        <AlertTriangle className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-sm font-medium text-amber-900">Members Expiring Soon</CardTitle>
-                        <CardDescription className="text-xs text-amber-700">Next 7 days</CardDescription>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700">
-                        {adminStats.expiringUsers.length}
-                      </Badge>
-                      <ChevronDown className={cn("w-4 h-4 text-amber-600 transition-transform", expiringSoonOpen && "rotate-180")} />
-                    </div>
-                  </div>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="pt-0">
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {adminStats.expiringUsers.map((user) => (
-                      <div key={user.userId} className="flex items-center justify-between p-2 bg-white rounded-lg border border-amber-100">
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">{user.userName}</p>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {user.programExpiring && (
-                              <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
-                                <Dumbbell className="w-3 h-3" />
-                                Heal Your Core: {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString() : 'N/A'}
-                              </span>
-                            )}
-                            {user.whatsAppExpiring && (
-                              <span className="inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">
-                                <MessageSquare className="w-3 h-3" />
-                                WhatsApp: {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString() : 'N/A'}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 px-2 text-xs"
-                          onClick={() => {
-                            const member = allUsers.find(u => u.id === user.userId);
-                            if (member) {
-                              setSelectedMember(member);
-                              setMemberViewMode('edit');
-                            }
-                          }}
-                        >
-                          Extend
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        )}
 
         {/* Activity Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
