@@ -215,7 +215,7 @@ Once renewed, your access will be reactivated immediately.
 
 If we don't hear back, your WhatsApp access will be revoked after 24 hours without further notice.
 
-Let us know either way!
+If you're okay without it, just drop us a quick reply so we know. No pressure either way!
 
 Take care,
 Stronger With Zoe Support`;
