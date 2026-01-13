@@ -3883,10 +3883,10 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Send reminder email to expired member
+  // Send reminder email to expiring or expired member
   app.post("/api/admin/whatsapp/send-reminder", async (req, res) => {
     try {
-      const { userId, subject, message } = req.body;
+      const { userId, type, programExpiryDate, whatsAppExpiryDate } = req.body;
 
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
@@ -3897,24 +3897,104 @@ RESPONSE GUIDELINES:
         return res.status(404).json({ message: "User not found" });
       }
 
+      const isExpiring = type === 'expiring';
+      const userName = user.name || 'there';
+      
+      // Format dates for display
+      const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return null;
+        return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      };
+      
+      const programDateFormatted = formatDate(programExpiryDate);
+      const whatsAppDateFormatted = formatDate(whatsAppExpiryDate);
+      
+      // Build context-aware email content
+      let subject: string;
+      let expiryDetails = '';
+      let actionMessage: string;
+      
+      if (isExpiring) {
+        subject = `Your Membership is Expiring Soon - Renew to Continue Your Journey!`;
+        actionMessage = `We wanted to reach out because your membership access is expiring soon.`;
+        
+        if (programDateFormatted) {
+          expiryDetails += `<li><strong>Heal Your Core Program:</strong> expires on ${programDateFormatted}</li>`;
+        }
+        if (whatsAppDateFormatted) {
+          expiryDetails += `<li><strong>WhatsApp Support:</strong> expires on ${whatsAppDateFormatted}</li>`;
+        }
+      } else {
+        subject = `Your Membership Has Expired - We Miss You!`;
+        actionMessage = `We noticed your membership access has expired and we'd love to have you back!`;
+        
+        if (programDateFormatted) {
+          expiryDetails += `<li><strong>Heal Your Core Program:</strong> expired on ${programDateFormatted}</li>`;
+        }
+        if (whatsAppDateFormatted) {
+          expiryDetails += `<li><strong>WhatsApp Support:</strong> expired on ${whatsAppDateFormatted}</li>`;
+        }
+      }
+
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #fdf2f8 0%, #fff 100%);">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #ec4899; margin: 0;">Your Postpartum Strength</h1>
+            <p style="color: #9ca3af; margin: 5px 0;">Recovery Program</p>
+          </div>
+          
+          <h2 style="color: #1f2937;">Hi ${userName}!</h2>
+          
+          <p style="color: #4b5563; line-height: 1.6;">${actionMessage}</p>
+          
+          ${expiryDetails ? `
+          <div style="background: ${isExpiring ? '#fef3c7' : '#fee2e2'}; border-left: 4px solid ${isExpiring ? '#f59e0b' : '#ef4444'}; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0 0 10px 0; font-weight: 600; color: ${isExpiring ? '#92400e' : '#991b1b'};">
+              ${isExpiring ? 'Expiring Soon:' : 'Expired Access:'}
+            </p>
+            <ul style="margin: 0; padding-left: 20px; color: ${isExpiring ? '#92400e' : '#991b1b'};">
+              ${expiryDetails}
+            </ul>
+          </div>
+          ` : ''}
+          
+          <p style="color: #4b5563; line-height: 1.6;">
+            ${isExpiring 
+              ? `Don't let your progress stop! Renew now to continue your postpartum recovery journey with full access to the program and our supportive community.`
+              : `We'd love to welcome you back to continue your postpartum fitness journey. Renew your membership to regain access to all programs and WhatsApp support.`
+            }
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="color: #6b7280; font-size: 14px;">To renew, please reply to this email or contact us via WhatsApp.</p>
+          </div>
+          
+          <p style="color: #4b5563; margin-top: 30px;">
+            With love and support,<br/>
+            <strong style="color: #ec4899;">Coach Zoe</strong>
+          </p>
+          
+          <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px; text-align: center;">
+            <p style="color: #9ca3af; font-size: 12px;">Your Postpartum Strength Recovery Program</p>
+          </div>
+        </div>
+      `;
+
       // Send reminder email
       const emailResult = await emailService.send({
         to: user.email,
-        subject: subject || "Your Membership Has Expired - Renew Today!",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #ec4899;">Hi ${user.name || 'there'}!</h2>
-            <p>${message || `We noticed your membership has expired. We'd love to have you back in our community!`}</p>
-            <p>If you'd like to continue your postpartum fitness journey with us, please renew your membership to regain access to all our programs and WhatsApp support.</p>
-            <p style="margin-top: 20px;">With love,<br/>Coach Zoe</p>
-          </div>
-        `,
+        subject,
+        html: emailHtml,
       });
 
       // Log the reminder action
+      const notes = isExpiring 
+        ? `Expiring soon reminder sent (Program: ${programDateFormatted || 'N/A'}, WhatsApp: ${whatsAppDateFormatted || 'N/A'})`
+        : `Expired membership reminder sent (Program: ${programDateFormatted || 'N/A'}, WhatsApp: ${whatsAppDateFormatted || 'N/A'})`;
+        
       await storage.db.execute(sql`
         INSERT INTO whatsapp_membership_logs (id, user_id, user_name, user_email, action_type, notes)
-        VALUES (gen_random_uuid(), ${userId}, ${user.name || 'Unknown'}, ${user.email}, 'reminder_sent', ${subject || 'Membership expired reminder'})
+        VALUES (gen_random_uuid(), ${userId}, ${user.name || 'Unknown'}, ${user.email}, 'reminder_sent', ${notes})
       `);
 
       res.json({ message: "Reminder email sent successfully", emailResult });
