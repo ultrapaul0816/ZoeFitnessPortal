@@ -174,68 +174,47 @@ export default function Admin() {
 
     const isExpiring = data.type === 'expiring';
     const whatsAppDateFormatted = formatDate(data.whatsAppExpiryDate);
-    const programDateFormatted = formatDate(data.programExpiryDate);
     const firstName = data.userName?.split(' ')[0] || 'there';
-
-    // Determine what's expiring/expired
-    const hasWhatsApp = !!data.whatsAppExpiryDate;
-    const hasProgram = !!data.programExpiryDate;
 
     // Payment link placeholder
     const paymentLink = '[PAYMENT_LINK]';
 
     if (isExpiring) {
-      // EXPIRING SOON EMAIL
-      const subject = hasWhatsApp 
-        ? `Your WhatsApp Community Access Expires on ${whatsAppDateFormatted}`
-        : `Your Program Access Expires on ${programDateFormatted}`;
+      // EXPIRING SOON EMAIL - WhatsApp Community Support
+      const subject = `Quick check-in: Your WhatsApp support expires on ${whatsAppDateFormatted}`;
 
       const body = `Hi ${firstName},
 
-Your ${hasWhatsApp ? 'WhatsApp Community Support' : 'Heal Your Core Program'} access expires on ${hasWhatsApp ? whatsAppDateFormatted : programDateFormatted}.
+Just a heads up - your WhatsApp Community Support access is ending on ${whatsAppDateFormatted}.
 
-After this date, you will lose:
-${hasWhatsApp ? '- WhatsApp Community access and direct support from Coach Zoe' : ''}
-${hasProgram ? '- Heal Your Core Program (all 6 weeks of workouts)' : ''}
-- Access to new content and updates
+After this, you won't be able to message Coach Zoe directly or be part of the group anymore. Your program access stays active separately, so you can still do the workouts.
 
-Would you like to continue?
-
-To renew: Pay Rs. 1,000 for 3 months via this link:
+If you'd like to keep the WhatsApp support going, you can renew here for Rs. 1,000 (3 months):
 ${paymentLink}
 
-If you don't wish to continue, please reply to this email to confirm. Otherwise, your access will be revoked on ${hasWhatsApp ? whatsAppDateFormatted : programDateFormatted}.
+If you're okay without it, just drop us a quick reply so we know. No pressure either way!
 
-Thanks,
-Stronger With Zoe Support Team`;
+Take care,
+Stronger With Zoe Support`;
 
       return { subject, body };
     } else {
-      // ALREADY EXPIRED EMAIL
-      const subject = hasWhatsApp 
-        ? `Your WhatsApp Community Access Has Expired`
-        : `Your Program Access Has Expired`;
+      // ALREADY EXPIRED EMAIL - WhatsApp Community Support
+      const subject = `Your WhatsApp support access ended - checking in`;
 
       const body = `Hi ${firstName},
 
-Your ${hasWhatsApp ? 'WhatsApp Community Support' : 'Heal Your Core Program'} access expired on ${hasWhatsApp ? whatsAppDateFormatted : programDateFormatted}.
+Your WhatsApp Community Support expired on ${whatsAppDateFormatted}, so you've been removed from the group.
 
-You no longer have access to:
-${hasWhatsApp ? '- WhatsApp Community and direct support from Coach Zoe' : ''}
-${hasProgram ? '- Heal Your Core Program (all 6 weeks of workouts)' : ''}
-- New content and updates
+Your program access is still active, so you can continue with the workouts on the app.
 
-Want to rejoin?
-
-Renew for Rs. 1,000 (3 months) via this link:
+If you'd like to rejoin the WhatsApp group and get Coach Zoe's support again, here's the renewal link (Rs. 1,000 for 3 months):
 ${paymentLink}
 
-Your progress is saved - you can pick up right where you left off.
+Let us know if you'd like to continue or if you're happy with just the program for now.
 
-If you don't wish to continue, just reply to let us know.
-
-Thanks,
-Stronger With Zoe Support Team`;
+Take care,
+Stronger With Zoe Support`;
 
       return { subject, body };
     }
