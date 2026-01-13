@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText } from "lucide-react";
@@ -54,6 +55,9 @@ export default function Admin() {
   const [resetManualPassword, setResetManualPassword] = useState('');
   const [resetPasswordMember, setResetPasswordMember] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<string>('overview');
+  const [expiredMembersOpen, setExpiredMembersOpen] = useState(true);
+  const [recentExtensionsOpen, setRecentExtensionsOpen] = useState(true);
+  const [expiringSoonOpen, setExpiringSoonOpen] = useState(true);
   const { toast } = useToast();
 
   const addUserForm = useForm<AdminCreateUser>({
@@ -757,200 +761,238 @@ export default function Admin() {
 
         {/* WhatsApp Membership Tracking Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          {/* Expired Members Card */}
-          <Card className="border-red-200 bg-red-50/30">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-red-100">
-                    <UserMinus className="w-4 h-4 text-red-600" />
+          {/* Expired Members Collapsible */}
+          <Collapsible open={expiredMembersOpen} onOpenChange={setExpiredMembersOpen}>
+            <Card className="border-red-200 bg-red-50/30">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="pb-2 cursor-pointer hover:bg-red-50/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-red-100">
+                        <UserMinus className="w-4 h-4 text-red-600" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-sm font-medium text-red-900">Expired Members</CardTitle>
+                        <CardDescription className="text-xs text-red-700">Members needing renewal</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-red-100 text-red-700">
+                        {expiredMembers.length}
+                      </Badge>
+                      <ChevronDown className={cn("w-4 h-4 text-red-600 transition-transform", expiredMembersOpen && "rotate-180")} />
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-sm font-medium text-red-900">Expired Members</CardTitle>
-                    <CardDescription className="text-xs text-red-700">Members needing renewal</CardDescription>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  {expiredMembers.length === 0 ? (
+                    <div className="text-center py-4 text-gray-500">
+                      <UserCheck className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-xs">No expired members</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {expiredMembers.map((member) => (
+                        <div key={member.id} className="p-2 bg-white rounded-lg border border-red-100">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{member.name || 'Unknown'}</p>
+                              <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                              <div className="flex flex-wrap gap-2 mt-1">
+                                {member.whatsAppExpired && member.whatsAppExpiryDate && (
+                                  <span className="inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">
+                                    <MessageSquare className="w-3 h-3" />
+                                    WhatsApp: {new Date(member.whatsAppExpiryDate).toLocaleDateString()}
+                                  </span>
+                                )}
+                                {member.programExpired && member.programExpiryDate && (
+                                  <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
+                                    <Dumbbell className="w-3 h-3" />
+                                    Heal Your Core: {new Date(member.programExpiryDate).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex gap-1 ml-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => {
+                                  const user = allUsers.find(u => u.id === member.id);
+                                  if (user) {
+                                    setSelectedMember(user);
+                                    setMemberViewMode('edit');
+                                  }
+                                }}
+                              >
+                                Extend
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                className="h-7 px-2 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
+                                disabled={sendReminderMutation.isPending && sendingReminderTo === member.id}
+                                onClick={() => {
+                                  setSendingReminderTo(member.id);
+                                  sendReminderMutation.mutate({ userId: member.id });
+                                }}
+                              >
+                                {sendReminderMutation.isPending && sendingReminderTo === member.id ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <Mail className="w-3 h-3" />
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+
+          {/* Recent Extensions Collapsible */}
+          <Collapsible open={recentExtensionsOpen} onOpenChange={setRecentExtensionsOpen}>
+            <Card className="border-green-200 bg-green-50/30">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="pb-2 cursor-pointer hover:bg-green-50/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-green-100">
+                        <RefreshCw className="w-4 h-4 text-green-600" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-sm font-medium text-green-900">Recent Extensions</CardTitle>
+                        <CardDescription className="text-xs text-green-700">Membership renewals log</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                        {extensionLogs.length}
+                      </Badge>
+                      <ChevronDown className={cn("w-4 h-4 text-green-600 transition-transform", recentExtensionsOpen && "rotate-180")} />
+                    </div>
                   </div>
-                </div>
-                <Badge variant="secondary" className="text-xs bg-red-100 text-red-700">
-                  {expiredMembers.length}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {expiredMembers.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
-                  <UserCheck className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p className="text-xs">No expired members</p>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {expiredMembers.map((member) => (
-                    <div key={member.id} className="p-2 bg-white rounded-lg border border-red-100">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{member.name || 'Unknown'}</p>
-                          <p className="text-xs text-muted-foreground truncate">{member.email}</p>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {member.whatsAppExpired && member.whatsAppExpiryDate && (
-                              <span className="inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">
-                                <MessageSquare className="w-3 h-3" />
-                                WhatsApp: {new Date(member.whatsAppExpiryDate).toLocaleDateString()}
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  {extensionLogs.length === 0 ? (
+                    <div className="text-center py-4 text-gray-500">
+                      <RefreshCw className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-xs">No extensions recorded yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {extensionLogs.slice(0, 8).map((log) => (
+                        <div key={log.id} className="p-2 bg-white rounded-lg border border-green-100">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{log.user_name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                +{log.extension_months} month{log.extension_months !== 1 ? 's' : ''}
+                              </p>
+                            </div>
+                            <p className="text-xs text-green-600 whitespace-nowrap ml-2">
+                              {new Date(log.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="mt-1 text-xs text-gray-500">
+                            {log.previous_expiry_date && (
+                              <span className="inline-block mr-2">
+                                From: {new Date(log.previous_expiry_date).toLocaleDateString()}
                               </span>
                             )}
-                            {member.programExpired && member.programExpiryDate && (
-                              <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
-                                <Dumbbell className="w-3 h-3" />
-                                Heal Your Core: {new Date(member.programExpiryDate).toLocaleDateString()}
+                            {log.new_expiry_date && (
+                              <span className="inline-block text-green-600">
+                                → To: {new Date(log.new_expiry_date).toLocaleDateString()}
                               </span>
                             )}
                           </div>
                         </div>
-                        <div className="flex gap-1 ml-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 px-2 text-xs"
-                            onClick={() => {
-                              const user = allUsers.find(u => u.id === member.id);
-                              if (user) {
-                                setSelectedMember(user);
-                                setMemberViewMode('edit');
-                              }
-                            }}
-                          >
-                            Extend
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            className="h-7 px-2 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
-                            disabled={sendReminderMutation.isPending && sendingReminderTo === member.id}
-                            onClick={() => {
-                              setSendingReminderTo(member.id);
-                              sendReminderMutation.mutate({ userId: member.id });
-                            }}
-                          >
-                            {sendReminderMutation.isPending && sendingReminderTo === member.id ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                              <Mail className="w-3 h-3" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Recent Extensions Card */}
-          <Card className="border-green-200 bg-green-50/30">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-green-100">
-                    <RefreshCw className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-sm font-medium text-green-900">Recent Extensions</CardTitle>
-                    <CardDescription className="text-xs text-green-700">Membership renewals log</CardDescription>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
-                  {extensionLogs.length}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {extensionLogs.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
-                  <RefreshCw className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p className="text-xs">No extensions recorded yet</p>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {extensionLogs.slice(0, 8).map((log) => (
-                    <div key={log.id} className="p-2 bg-white rounded-lg border border-green-100">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{log.user_name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            +{log.extension_months} month{log.extension_months !== 1 ? 's' : ''}
-                          </p>
-                        </div>
-                        <p className="text-xs text-green-600 whitespace-nowrap ml-2">
-                          {new Date(log.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="mt-1 text-xs text-gray-500">
-                        {log.previous_expiry_date && (
-                          <span className="inline-block mr-2">
-                            From: {new Date(log.previous_expiry_date).toLocaleDateString()}
-                          </span>
-                        )}
-                        {log.new_expiry_date && (
-                          <span className="inline-block text-green-600">
-                            → To: {new Date(log.new_expiry_date).toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  )}
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         </div>
 
-        {/* Expiring Users Details */}
+        {/* Expiring Users Details - Collapsible */}
         {adminStats?.expiringUsers && adminStats.expiringUsers.length > 0 && (
-          <Card className="mb-4">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
-                Members Expiring Soon
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {adminStats.expiringUsers.map((user) => (
-                  <div key={user.userId} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
-                    <div>
-                      <p className="font-semibold text-gray-800">{user.userName}</p>
-                      <div className="flex gap-3 mt-1">
-                        {user.programExpiring && (
-                          <span className="text-xs text-amber-700 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            Program expires: {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString() : 'N/A'}
-                          </span>
-                        )}
-                        {user.whatsAppExpiring && (
-                          <span className="text-xs text-amber-700 flex items-center gap-1">
-                            <MessageSquare className="w-3 h-3" />
-                            WhatsApp expires: {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString() : 'N/A'}
-                          </span>
-                        )}
+          <Collapsible open={expiringSoonOpen} onOpenChange={setExpiringSoonOpen} className="mb-4">
+            <Card className="border-amber-200 bg-amber-50/30">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-amber-50/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-amber-100">
+                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-sm font-medium text-amber-900">Members Expiring Soon</CardTitle>
+                        <CardDescription className="text-xs text-amber-700">Next 7 days</CardDescription>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const member = allUsers.find(u => u.id === user.userId);
-                        if (member) {
-                          setSelectedMember(member);
-                          setMemberViewMode('edit');
-                        }
-                      }}
-                    >
-                      Extend
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700">
+                        {adminStats.expiringUsers.length}
+                      </Badge>
+                      <ChevronDown className={cn("w-4 h-4 text-amber-600 transition-transform", expiringSoonOpen && "rotate-180")} />
+                    </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {adminStats.expiringUsers.map((user) => (
+                      <div key={user.userId} className="flex items-center justify-between p-2 bg-white rounded-lg border border-amber-100">
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">{user.userName}</p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {user.programExpiring && (
+                              <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
+                                <Dumbbell className="w-3 h-3" />
+                                Heal Your Core: {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString() : 'N/A'}
+                              </span>
+                            )}
+                            {user.whatsAppExpiring && (
+                              <span className="inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">
+                                <MessageSquare className="w-3 h-3" />
+                                WhatsApp: {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString() : 'N/A'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 px-2 text-xs"
+                          onClick={() => {
+                            const member = allUsers.find(u => u.id === user.userId);
+                            if (member) {
+                              setSelectedMember(member);
+                              setMemberViewMode('edit');
+                            }
+                          }}
+                        >
+                          Extend
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         )}
 
         {/* Activity Section */}
