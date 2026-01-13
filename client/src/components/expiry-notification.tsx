@@ -130,20 +130,30 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
               <div className="h-1.5 bg-gradient-to-r from-pink-400 via-rose-500 to-pink-600" />
               
               {/* Header */}
-              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-3 text-white">
-                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    {content.icon}
-                  </div>
-                  <span className="font-bold text-base tracking-wide">{content.title}</span>
-                </div>
+              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-6 py-5 relative overflow-hidden">
+                {/* Decorative circles */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full" />
+                <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/5 rounded-full" />
+                
                 <button
                   onClick={() => dismissNotification(info.type)}
-                  className="text-white/70 hover:text-white hover:bg-white/20 transition-all duration-200 p-2 rounded-full"
+                  className="absolute top-3 right-3 text-white/70 hover:text-white hover:bg-white/20 transition-all duration-200 p-2 rounded-full z-10"
                   aria-label="Dismiss notification"
                 >
                   <X className="w-5 h-5" />
                 </button>
+
+                <div className="relative z-10 text-center">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-2xl backdrop-blur-sm mb-3 shadow-lg">
+                    {content.icon}
+                  </div>
+                  <h2 className="text-white text-xl font-bold tracking-tight">
+                    {content.isExpired ? '⚠️ Access Expired!' : '⏰ Expiring Soon!'}
+                  </h2>
+                  <p className="text-white/90 text-sm font-medium mt-1">
+                    {content.title}
+                  </p>
+                </div>
               </div>
 
               {/* Content */}
