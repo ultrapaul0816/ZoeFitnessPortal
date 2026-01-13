@@ -991,7 +991,7 @@ Stronger With Zoe Support`;
                                       <span className={cn(
                                         idx === 0 && logCount > 1 ? "text-amber-600" : "text-emerald-600"
                                       )}>
-                                        {new Date(log.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} at {new Date(log.sent_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}
+                                        {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} at {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}
                                       </span>
                                     </div>
                                   ))}
@@ -1153,7 +1153,7 @@ Stronger With Zoe Support`;
                                       <span className={cn(
                                         idx === 0 && logCount > 1 ? "text-amber-600" : "text-emerald-600"
                                       )}>
-                                        {new Date(log.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} at {new Date(log.sent_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}
+                                        {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} at {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}
                                       </span>
                                     </div>
                                   ))}
