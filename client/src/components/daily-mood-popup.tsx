@@ -141,7 +141,7 @@ export default function DailyMoodPopup({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-sm p-0 overflow-hidden border-0 shadow-2xl rounded-3xl [&>button]:hidden">
+      <DialogContent hideCloseButton className="max-w-sm p-0 overflow-hidden border-0 shadow-2xl !rounded-3xl sm:!rounded-3xl">
         {step === 1 ? (
           <div className="relative">
             {/* Header - matching expiry notification style */}
