@@ -969,29 +969,24 @@ Stronger With Zoe Support`;
                                 )}
                               </div>
                               {emailLogs.length > 0 && (
-                                <div className="flex flex-col gap-1 mt-2">
-                                  {emailLogs.slice(0, 3).map((log, idx) => (
+                                <div className="flex flex-col gap-1.5 mt-2">
+                                  {emailLogs.slice(0, 2).map((log, idx) => (
                                     <div 
                                       key={idx}
-                                      className={cn(
-                                        "inline-flex items-center gap-2 text-xs px-2.5 py-1 rounded-full w-fit shadow-sm",
-                                        idx === 0 && logCount > 1
-                                          ? "bg-gradient-to-r from-amber-400 to-yellow-500 text-white"
-                                          : "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
-                                      )}
+                                      className="flex items-center gap-2 text-xs text-gray-600"
                                     >
-                                      <MailOpen className="w-3 h-3" />
-                                      <span className="font-medium">
-                                        {idx === 0 && logCount > 1 ? "Follow-up" : "Email sent"}
+                                      <span className={cn(
+                                        "w-1.5 h-1.5 rounded-full",
+                                        idx === 0 && logCount > 1 ? "bg-amber-500" : "bg-emerald-500"
+                                      )} />
+                                      <span className="font-medium text-gray-700">
+                                        {idx === 0 && logCount > 1 ? "Follow-up sent" : "Email sent"}
                                       </span>
-                                      <span className="opacity-90">
-                                        {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} • {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                      <span className="text-gray-500">
+                                        {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                                       </span>
                                     </div>
                                   ))}
-                                  {emailLogs.length > 3 && (
-                                    <span className="text-xs text-gray-500 ml-2">+{emailLogs.length - 3} more</span>
-                                  )}
                                 </div>
                               )}
                             </div>
@@ -1033,18 +1028,18 @@ Stronger With Zoe Support`;
                               </Button>
                               <button
                                 className={cn(
-                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105",
+                                  "h-9 w-9 rounded-full flex items-center justify-center transition-all duration-200 border-2",
                                   logCount === 0
-                                    ? "bg-gradient-to-br from-gray-200 to-gray-300 text-gray-500 hover:from-gray-300 hover:to-gray-400"
+                                    ? "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
                                     : logCount === 1
-                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
-                                    : "bg-gradient-to-br from-amber-400 to-yellow-500 text-white hover:from-amber-500 hover:to-yellow-600"
+                                    ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+                                    : "border-amber-500 bg-amber-50 text-amber-600 cursor-not-allowed opacity-60"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
-                                disabled={logEmailMutation.isPending}
-                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : `${logCount} emails logged`}
+                                disabled={logEmailMutation.isPending || logCount >= 2}
+                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
                               >
-                                <CheckCircle className="w-5 h-5" />
+                                <CheckCircle className="w-4 h-4" />
                               </button>
                             </div>
                           </div>
@@ -1128,29 +1123,24 @@ Stronger With Zoe Support`;
                                 )}
                               </div>
                               {emailLogs.length > 0 && (
-                                <div className="flex flex-col gap-1 mt-2">
-                                  {emailLogs.slice(0, 3).map((log, idx) => (
+                                <div className="flex flex-col gap-1.5 mt-2">
+                                  {emailLogs.slice(0, 2).map((log, idx) => (
                                     <div 
                                       key={idx}
-                                      className={cn(
-                                        "inline-flex items-center gap-2 text-xs px-2.5 py-1 rounded-full w-fit shadow-sm",
-                                        idx === 0 && logCount > 1
-                                          ? "bg-gradient-to-r from-amber-400 to-yellow-500 text-white"
-                                          : "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
-                                      )}
+                                      className="flex items-center gap-2 text-xs text-gray-600"
                                     >
-                                      <MailOpen className="w-3 h-3" />
-                                      <span className="font-medium">
-                                        {idx === 0 && logCount > 1 ? "Follow-up" : "Email sent"}
+                                      <span className={cn(
+                                        "w-1.5 h-1.5 rounded-full",
+                                        idx === 0 && logCount > 1 ? "bg-amber-500" : "bg-emerald-500"
+                                      )} />
+                                      <span className="font-medium text-gray-700">
+                                        {idx === 0 && logCount > 1 ? "Follow-up sent" : "Email sent"}
                                       </span>
-                                      <span className="opacity-90">
-                                        {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} • {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                      <span className="text-gray-500">
+                                        {new Date(log.sent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(log.sent_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                                       </span>
                                     </div>
                                   ))}
-                                  {emailLogs.length > 3 && (
-                                    <span className="text-xs text-gray-500 ml-2">+{emailLogs.length - 3} more</span>
-                                  )}
                                 </div>
                               )}
                             </div>
@@ -1192,18 +1182,18 @@ Stronger With Zoe Support`;
                               </Button>
                               <button
                                 className={cn(
-                                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105",
+                                  "h-9 w-9 rounded-full flex items-center justify-center transition-all duration-200 border-2",
                                   logCount === 0
-                                    ? "bg-gradient-to-br from-gray-200 to-gray-300 text-gray-500 hover:from-gray-300 hover:to-gray-400"
+                                    ? "border-gray-300 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:border-gray-400"
                                     : logCount === 1
-                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
-                                    : "bg-gradient-to-br from-amber-400 to-yellow-500 text-white hover:from-amber-500 hover:to-yellow-600"
+                                    ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+                                    : "border-amber-500 bg-amber-50 text-amber-600 cursor-not-allowed opacity-60"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
-                                disabled={logEmailMutation.isPending}
-                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : `${logCount} emails logged`}
+                                disabled={logEmailMutation.isPending || logCount >= 2}
+                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
                               >
-                                <CheckCircle className="w-5 h-5" />
+                                <CheckCircle className="w-4 h-4" />
                               </button>
                             </div>
                           </div>
