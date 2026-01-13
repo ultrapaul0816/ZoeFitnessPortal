@@ -885,6 +885,21 @@ export const insertWhatsappMembershipLogSchema = createInsertSchema(whatsappMemb
   createdAt: true,
 });
 
+// Renewal email logs - tracks when renewal reminder emails are sent
+export const renewalEmailLogs = pgTable("renewal_email_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  emailType: text("email_type").notNull(), // 'expiring' or 'expired'
+  sentAt: timestamp("sent_at").default(sql`now()`),
+  sentBy: varchar("sent_by"), // admin who sent the email
+  notes: text("notes"),
+});
+
+export const insertRenewalEmailLogSchema = createInsertSchema(renewalEmailLogs).omit({
+  id: true,
+  sentAt: true,
+});
+
 export const insertEducationalTopicSchema = createInsertSchema(educationalTopics).omit({
   id: true,
   createdAt: true,
@@ -1091,6 +1106,8 @@ export type WorkoutExerciseLink = typeof workoutExerciseLinks.$inferSelect;
 export type InsertWorkoutExerciseLink = z.infer<typeof insertWorkoutExerciseLinkSchema>;
 export type WhatsappMembershipLog = typeof whatsappMembershipLogs.$inferSelect;
 export type InsertWhatsappMembershipLog = z.infer<typeof insertWhatsappMembershipLogSchema>;
+export type RenewalEmailLog = typeof renewalEmailLogs.$inferSelect;
+export type InsertRenewalEmailLog = z.infer<typeof insertRenewalEmailLogSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
