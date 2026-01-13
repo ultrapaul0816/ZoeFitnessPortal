@@ -176,8 +176,8 @@ export default function Admin() {
     const whatsAppDateFormatted = formatDate(data.whatsAppExpiryDate);
     const firstName = data.userName?.split(' ')[0] || 'there';
 
-    // Payment link placeholder
-    const paymentLink = '[PAYMENT_LINK]';
+    // Payment link
+    const paymentLink = 'https://rzp.io/rzp/sFzniAWK';
 
     if (isExpiring) {
       // EXPIRING SOON EMAIL - WhatsApp Community Support
@@ -199,19 +199,23 @@ Stronger With Zoe Support`;
 
       return { subject, body };
     } else {
-      // ALREADY EXPIRED EMAIL - WhatsApp Community Support
-      const subject = `Your WhatsApp support access ended - checking in`;
+      // ALREADY EXPIRED EMAIL - WhatsApp Community Support (Reminder before removal)
+      const subject = `Reminder: Your WhatsApp support has expired`;
 
       const body = `Hi ${firstName},
 
-Your WhatsApp Community Support expired on ${whatsAppDateFormatted}, so you've been removed from the group.
+This is a reminder that your WhatsApp Community Support expired on ${whatsAppDateFormatted}.
 
 Your program access is still active, so you can continue with the workouts on the app.
 
-If you'd like to rejoin the WhatsApp group and get Coach Zoe's support again, here's the renewal link (Rs. 1,000 for 3 months):
+If you'd like to continue with the WhatsApp group and Coach Zoe's support, please renew using this link (Rs. 1,000 for 3 months):
 ${paymentLink}
 
-Let us know if you'd like to continue or if you're happy with just the program for now.
+Once renewed, your access will be reactivated immediately.
+
+If we don't hear back, your WhatsApp access will be revoked after 24 hours without further notice.
+
+Let us know either way!
 
 Take care,
 Stronger With Zoe Support`;
