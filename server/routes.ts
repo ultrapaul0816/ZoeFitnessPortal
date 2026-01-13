@@ -3962,16 +3962,19 @@ RESPONSE GUIDELINES:
   // Log renewal email sent
   app.post("/api/admin/renewal-email-logs", async (req, res) => {
     try {
-      const { userId, emailType, notes } = req.body;
+      const { userId, emailType, notes, sentAt } = req.body;
       const adminId = req.session?.userId;
 
       if (!userId || !emailType) {
         return res.status(400).json({ message: "User ID and email type are required" });
       }
 
+      // Use custom sentAt date if provided, otherwise use current time
+      const sentAtDate = sentAt ? new Date(sentAt) : new Date();
+
       await storage.db.execute(sql`
-        INSERT INTO renewal_email_logs (id, user_id, email_type, sent_by, notes)
-        VALUES (gen_random_uuid(), ${userId}, ${emailType}, ${adminId || null}, ${notes || null})
+        INSERT INTO renewal_email_logs (id, user_id, email_type, sent_at, sent_by, notes)
+        VALUES (gen_random_uuid(), ${userId}, ${emailType}, ${sentAtDate}, ${adminId || null}, ${notes || null})
       `);
 
       res.json({ message: "Email log created successfully" });

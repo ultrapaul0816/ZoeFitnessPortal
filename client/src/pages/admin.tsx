@@ -159,9 +159,19 @@ export default function Admin() {
     return userLogs[0].sent_at; // Already sorted by sent_at DESC
   };
 
+  // State for email log dialog
+  const [emailLogData, setEmailLogData] = useState<{
+    userId: string;
+    userName: string;
+    emailType: 'expiring' | 'expired';
+  } | null>(null);
+  const [emailLogDate, setEmailLogDate] = useState<string>('');
+  const [emailLogTime, setEmailLogTime] = useState<string>('');
+  const [emailLogNotes, setEmailLogNotes] = useState<string>('');
+
   // Log email sent mutation
   const logEmailMutation = useMutation({
-    mutationFn: async (data: { userId: string; emailType: 'expiring' | 'expired' }) => {
+    mutationFn: async (data: { userId: string; emailType: 'expiring' | 'expired'; sentAt?: string; notes?: string }) => {
       const response = await apiRequest("POST", "/api/admin/renewal-email-logs", data);
       return response.json();
     },
@@ -171,6 +181,10 @@ export default function Admin() {
         description: "Email sent date has been recorded",
       });
       refetchRenewalEmailLogs();
+      setEmailLogData(null);
+      setEmailLogDate('');
+      setEmailLogTime('');
+      setEmailLogNotes('');
     },
     onError: (error: Error) => {
       toast({
@@ -1007,8 +1021,17 @@ Stronger With Zoe Support`;
                                 size="sm"
                                 variant="ghost"
                                 className="h-8 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
-                                onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
-                                disabled={logEmailMutation.isPending}
+                                onClick={() => {
+                                  setEmailLogData({
+                                    userId: user.userId,
+                                    userName: user.userName,
+                                    emailType: 'expiring',
+                                  });
+                                  // Pre-fill with current date/time
+                                  const now = new Date();
+                                  setEmailLogDate(now.toISOString().split('T')[0]);
+                                  setEmailLogTime(now.toTimeString().slice(0, 5));
+                                }}
                                 title="Log that email was sent"
                               >
                                 <CheckCircle className="w-4 h-4" />
@@ -1140,8 +1163,17 @@ Stronger With Zoe Support`;
                                 size="sm"
                                 variant="ghost"
                                 className="h-8 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
-                                onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
-                                disabled={logEmailMutation.isPending}
+                                onClick={() => {
+                                  setEmailLogData({
+                                    userId: member.id,
+                                    userName: member.name || 'Unknown',
+                                    emailType: 'expired',
+                                  });
+                                  // Pre-fill with current date/time
+                                  const now = new Date();
+                                  setEmailLogDate(now.toISOString().split('T')[0]);
+                                  setEmailLogTime(now.toTimeString().slice(0, 5));
+                                }}
                                 title="Log that email was sent"
                               >
                                 <CheckCircle className="w-4 h-4" />
