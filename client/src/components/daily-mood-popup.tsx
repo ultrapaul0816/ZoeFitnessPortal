@@ -3,18 +3,10 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
   Sparkles,
-  Heart,
   Sun,
-  Cloud,
-  CloudRain,
   Zap,
-  Battery,
-  BatteryLow,
-  BatteryMedium,
-  BatteryFull,
   ChevronRight,
   X,
 } from "lucide-react";
@@ -149,52 +141,62 @@ export default function DailyMoodPopup({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md p-0 overflow-hidden border-0 shadow-2xl">
+      <DialogContent className="max-w-sm p-0 overflow-hidden border-0 shadow-2xl rounded-3xl mx-4">
         {step === 1 ? (
           <div className="relative">
-            <div className="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600 p-6 text-white">
+            {/* Header - matching expiry notification style */}
+            <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-5 py-5 text-white relative overflow-hidden rounded-t-3xl">
+              {/* Decorative circles */}
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/10 rounded-full" />
+              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/5 rounded-full" />
+              
+              {/* Close button - matching expiry notification style */}
               <button 
                 onClick={handleSkip}
-                className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+                className="absolute top-3 right-3 z-20 w-8 h-8 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
                 data-testid="button-skip-mood"
+                aria-label="Skip"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
               
-              <div className="flex items-center gap-2 mb-2">
-                <Sun className="w-6 h-6" />
-                <span className="text-sm font-medium opacity-90">{getGreeting()}</span>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sun className="w-5 h-5" />
+                  <span className="text-sm font-medium opacity-90">{getGreeting()}</span>
+                </div>
+                <h2 className="text-xl font-bold">
+                  Hey {userName}! 💗
+                </h2>
+                <p className="text-white/90 text-sm mt-1">
+                  How are you feeling today?
+                </p>
               </div>
-              <h2 className="text-2xl font-bold mb-1">
-                Hey {userName}! 💗
-              </h2>
-              <p className="text-white/90 text-sm">
-                How are you feeling today?
-              </p>
             </div>
             
-            <div className="p-6 bg-white">
-              <div className="grid grid-cols-1 gap-3">
+            {/* Content - more compact */}
+            <div className="p-4 bg-white max-h-[50vh] overflow-y-auto">
+              <div className="grid grid-cols-1 gap-2">
                 {moodOptions.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => handleMoodSelect(option.value)}
-                    className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 ${
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 ${
                       selectedMood === option.value
                         ? `bg-gradient-to-r ${option.color} text-white border-transparent shadow-lg scale-[1.02]`
                         : `${option.bgColor} border-gray-100`
                     }`}
                     data-testid={`button-mood-${option.value}`}
                   >
-                    <span className="text-3xl">{option.emoji}</span>
-                    <span className={`font-semibold text-lg ${
+                    <span className="text-2xl">{option.emoji}</span>
+                    <span className={`font-semibold text-base ${
                       selectedMood === option.value ? 'text-white' : 'text-gray-700'
                     }`}>
                       {option.label}
                     </span>
                     {selectedMood === option.value && countdown !== null && (
-                      <div className="ml-auto flex items-center gap-2 text-white/90">
-                        <span className="text-sm">Next in {countdown}s</span>
+                      <div className="ml-auto flex items-center gap-1 text-white/90">
+                        <span className="text-xs">Next</span>
                         <ChevronRight className="w-4 h-4 animate-pulse" />
                       </div>
                     )}
@@ -202,63 +204,73 @@ export default function DailyMoodPopup({
                 ))}
               </div>
               
-              <p className="text-center text-xs text-gray-400 mt-4">
-                This helps us understand how you're doing and personalize your experience
+              <p className="text-center text-xs text-gray-400 mt-3">
+                This helps personalize your experience
               </p>
             </div>
           </div>
         ) : (
           <div className="relative">
-            <div className="bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-600 p-6 text-white">
+            {/* Header - step 2 */}
+            <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-600 px-5 py-5 text-white relative overflow-hidden rounded-t-3xl">
+              {/* Decorative circles */}
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/10 rounded-full" />
+              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/5 rounded-full" />
+              
+              {/* Close button */}
               <button 
                 onClick={handleSkip}
-                className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+                className="absolute top-3 right-3 z-20 w-8 h-8 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
                 data-testid="button-skip-energy"
+                aria-label="Skip"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
               
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-6 h-6" />
-                <span className="text-sm font-medium opacity-90">Step 2 of 2</span>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-1">
+                  <Zap className="w-5 h-5" />
+                  <span className="text-sm font-medium opacity-90">Step 2 of 2</span>
+                </div>
+                <h2 className="text-xl font-bold">
+                  Energy Check ⚡
+                </h2>
+                <p className="text-white/90 text-sm mt-1">
+                  How's your energy level?
+                </p>
               </div>
-              <h2 className="text-2xl font-bold mb-1">
-                Energy Check ⚡
-              </h2>
-              <p className="text-white/90 text-sm">
-                How's your energy level right now?
-              </p>
             </div>
             
-            <div className="p-6 bg-white">
-              <div className="grid grid-cols-1 gap-3">
+            {/* Content - more compact */}
+            <div className="p-4 bg-white max-h-[50vh] overflow-y-auto">
+              <div className="grid grid-cols-1 gap-2">
                 {energyOptions.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => handleEnergySelect(option.value)}
-                    className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 ${
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 ${
                       selectedEnergy === option.value
                         ? `bg-gradient-to-r ${option.color} text-white border-transparent shadow-lg scale-[1.02]`
                         : `${option.bgColor} border-gray-100`
                     }`}
                     data-testid={`button-energy-${option.value}`}
                   >
-                    <span className="text-3xl">{option.emoji}</span>
+                    <span className="text-2xl">{option.emoji}</span>
                     <div className="text-left">
-                      <span className={`font-semibold text-base block ${
+                      <span className={`font-semibold text-sm block ${
                         selectedEnergy === option.value ? 'text-white' : 'text-gray-700'
                       }`}>
                         {option.label}
                       </span>
-                      <span className={`text-sm ${
+                      <span className={`text-xs ${
                         selectedEnergy === option.value ? 'text-white/80' : 'text-gray-500'
                       }`}>
                         {option.description}
                       </span>
                     </div>
                     {selectedEnergy === option.value && countdown !== null && (
-                      <div className="ml-auto flex items-center gap-2 text-white/90">
-                        <span className="text-sm">Saving...</span>
+                      <div className="ml-auto flex items-center gap-1 text-white/90">
+                        <span className="text-xs">Saving</span>
                         <Sparkles className="w-4 h-4 animate-pulse" />
                       </div>
                     )}
@@ -266,7 +278,7 @@ export default function DailyMoodPopup({
                 ))}
               </div>
               
-              <div className="flex items-center justify-center gap-2 mt-4">
+              <div className="flex items-center justify-center gap-2 mt-3">
                 <div className="w-2 h-2 rounded-full bg-pink-500"></div>
                 <div className="w-2 h-2 rounded-full bg-violet-500"></div>
               </div>
