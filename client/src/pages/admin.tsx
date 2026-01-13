@@ -755,56 +755,6 @@ export default function Admin() {
           </Card>
         </div>
 
-        {/* Expiring Users Details */}
-        {adminStats?.expiringUsers && adminStats.expiringUsers.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
-                Members Expiring Soon
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {adminStats.expiringUsers.map((user) => (
-                  <div key={user.userId} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
-                    <div>
-                      <p className="font-semibold text-gray-800">{user.userName}</p>
-                      <div className="flex gap-3 mt-1">
-                        {user.programExpiring && (
-                          <span className="text-xs text-amber-700 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            Program expires: {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString() : 'N/A'}
-                          </span>
-                        )}
-                        {user.whatsAppExpiring && (
-                          <span className="text-xs text-amber-700 flex items-center gap-1">
-                            <MessageSquare className="w-3 h-3" />
-                            WhatsApp expires: {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString() : 'N/A'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const member = allUsers.find(u => u.id === user.userId);
-                        if (member) {
-                          setSelectedMember(member);
-                          setMemberViewMode('edit');
-                        }
-                      }}
-                    >
-                      Extend
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* WhatsApp Membership Tracking Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           {/* Expired Members Card */}
@@ -952,6 +902,56 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Expiring Users Details */}
+        {adminStats?.expiringUsers && adminStats.expiringUsers.length > 0 && (
+          <Card className="mb-4">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                Members Expiring Soon
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {adminStats.expiringUsers.map((user) => (
+                  <div key={user.userId} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <div>
+                      <p className="font-semibold text-gray-800">{user.userName}</p>
+                      <div className="flex gap-3 mt-1">
+                        {user.programExpiring && (
+                          <span className="text-xs text-amber-700 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Program expires: {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString() : 'N/A'}
+                          </span>
+                        )}
+                        {user.whatsAppExpiring && (
+                          <span className="text-xs text-amber-700 flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3" />
+                            WhatsApp expires: {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString() : 'N/A'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const member = allUsers.find(u => u.id === user.userId);
+                        if (member) {
+                          setSelectedMember(member);
+                          setMemberViewMode('edit');
+                        }
+                      }}
+                    >
+                      Extend
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Activity Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
