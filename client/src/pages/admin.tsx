@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText, Copy } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import CheckinAnalyticsCard from "@/components/admin/CheckinAnalyticsCard";
@@ -3993,22 +3993,63 @@ Stronger With Zoe Support`;
             
             return (
               <div className="space-y-4">
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium">{reminderEmailData.userName}</p>
-                  <p className="text-xs text-muted-foreground">{reminderEmailData.userEmail}</p>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">To</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      value={reminderEmailData.userEmail} 
+                      readOnly 
+                      className="bg-white flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(reminderEmailData.userEmail);
+                        toast({ title: "Email copied!" });
+                      }}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Subject</Label>
-                  <Input 
-                    value={subject} 
-                    readOnly 
-                    className="bg-white"
-                  />
+                  <div className="flex gap-2">
+                    <Input 
+                      value={subject} 
+                      readOnly 
+                      className="bg-white flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(subject);
+                        toast({ title: "Subject copied!" });
+                      }}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Email Body</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Email Body</Label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(body);
+                        toast({ title: "Email body copied!" });
+                      }}
+                    >
+                      <Copy className="w-4 h-4 mr-1" />
+                      Copy Body
+                    </Button>
+                  </div>
                   <textarea
                     className="w-full h-48 p-3 text-sm border rounded-lg resize-none bg-white"
                     readOnly
@@ -4016,32 +4057,16 @@ Stronger With Zoe Support`;
                   />
                 </div>
 
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-2 pt-2 border-t">
                   <Button
                     className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white"
                     onClick={() => {
-                      navigator.clipboard.writeText(fullEmail);
-                      toast({
-                        title: "Copied!",
-                        description: "Email template copied to clipboard. Paste it in Gmail to send.",
-                      });
-                    }}
-                  >
-                    Copy Full Email
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      // Open Gmail compose with pre-filled data
                       const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(reminderEmailData.userEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                       window.open(gmailUrl, '_blank');
                     }}
                   >
                     Open in Gmail
                   </Button>
-                </div>
-
-                <div className="flex justify-end pt-2 border-t">
                   <Button variant="outline" onClick={() => setReminderEmailData(null)}>
                     Close
                   </Button>
