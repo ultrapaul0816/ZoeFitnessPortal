@@ -3879,8 +3879,7 @@ RESPONSE GUIDELINES:
         FROM users 
         WHERE (valid_until IS NOT NULL AND valid_until < ${now})
            OR (whatsapp_support_expiry_date IS NOT NULL AND whatsapp_support_expiry_date < ${now})
-        ORDER BY GREATEST(COALESCE(valid_until, '1970-01-01'), COALESCE(whatsapp_support_expiry_date, '1970-01-01')) DESC
-        LIMIT 50
+        ORDER BY whatsapp_support_expiry_date DESC NULLS LAST, valid_until DESC NULLS LAST
       `);
       res.json(result.rows);
     } catch (error) {
