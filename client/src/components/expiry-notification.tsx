@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Clock, Sparkles, ExternalLink } from "lucide-react";
+import { X, MessageCircle, Dumbbell, ExternalLink, AlertTriangle, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { User } from "@shared/schema";
 
@@ -72,8 +72,10 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
     switch (info.type) {
       case 'whatsapp_expiring':
         return {
-          title: 'WhatsApp Support Expiring Soon',
-          icon: <Clock className="w-5 h-5" />,
+          title: 'WhatsApp Community Support',
+          headline: 'Expiring Soon!',
+          headlineIcon: <Timer className="w-6 h-6 text-white" />,
+          icon: <MessageCircle className="w-8 h-8 text-white" />,
           isExpired: false,
           message: `Hey ${firstName}! Your WhatsApp Community Support expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left).`,
           subMessage: `Your access will be revoked on ${formatDate(info.expiryDate)}. Renew now to keep access to Coach Zoe and our supportive community.`,
@@ -81,8 +83,10 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
         };
       case 'whatsapp_expired':
         return {
-          title: 'WhatsApp Support Expired',
-          icon: <Sparkles className="w-5 h-5" />,
+          title: 'WhatsApp Community Support',
+          headline: 'Access Expired!',
+          headlineIcon: <AlertTriangle className="w-6 h-6 text-white" />,
+          icon: <MessageCircle className="w-8 h-8 text-white" />,
           isExpired: true,
           message: `Hey ${firstName}, your WhatsApp Community Support expired on ${formatDate(info.expiryDate)}.`,
           subMessage: `Your program access is still active. Renew to rejoin the WhatsApp group and get Coach Zoe's support again!`,
@@ -90,8 +94,10 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
         };
       case 'program_expiring':
         return {
-          title: 'Program Access Expiring Soon',
-          icon: <Clock className="w-5 h-5" />,
+          title: 'Heal Your Core Program',
+          headline: 'Expiring Soon!',
+          headlineIcon: <Timer className="w-6 h-6 text-white" />,
+          icon: <Dumbbell className="w-8 h-8 text-white" />,
           isExpired: false,
           message: `Hey ${firstName}! Your Heal Your Core program expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left).`,
           subMessage: `Your workout access will be revoked on ${formatDate(info.expiryDate)}. Renew to continue your recovery journey.`,
@@ -99,8 +105,10 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
         };
       case 'program_expired':
         return {
-          title: 'Program Access Expired',
-          icon: <Sparkles className="w-5 h-5" />,
+          title: 'Heal Your Core Program',
+          headline: 'Access Expired!',
+          headlineIcon: <AlertTriangle className="w-6 h-6 text-white" />,
+          icon: <Dumbbell className="w-8 h-8 text-white" />,
           isExpired: true,
           message: `Hey ${firstName}, your Heal Your Core program expired on ${formatDate(info.expiryDate)}.`,
           subMessage: `Renew to get back your workout access and continue your postpartum recovery!`,
@@ -126,31 +134,38 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
               className="relative overflow-hidden rounded-3xl bg-white shadow-2xl"
               style={{ boxShadow: '0 25px 50px -12px rgba(236, 72, 153, 0.25)' }}
             >
-              {/* Decorative top gradient bar */}
-              <div className="h-1.5 bg-gradient-to-r from-pink-400 via-rose-500 to-pink-600" />
-              
+              {/* Close button - positioned outside the card */}
+              <button
+                onClick={() => dismissNotification(info.type)}
+                className="absolute -top-2 -right-2 z-20 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                aria-label="Dismiss notification"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
               {/* Header */}
-              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-6 py-5 relative overflow-hidden">
+              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-6 py-8 relative overflow-hidden">
                 {/* Decorative circles */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full" />
-                <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/5 rounded-full" />
-                
-                <button
-                  onClick={() => dismissNotification(info.type)}
-                  className="absolute top-3 right-3 text-white/70 hover:text-white hover:bg-white/20 transition-all duration-200 p-2 rounded-full z-10"
-                  aria-label="Dismiss notification"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full" />
+                <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/5 rounded-full" />
 
                 <div className="relative z-10 text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-2xl backdrop-blur-sm mb-3 shadow-lg">
+                  {/* Main icon */}
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl backdrop-blur-sm mb-4 shadow-lg border border-white/30">
                     {content.icon}
                   </div>
-                  <h2 className="text-white text-xl font-bold tracking-tight">
-                    {content.isExpired ? '⚠️ Access Expired!' : '⏰ Expiring Soon!'}
-                  </h2>
-                  <p className="text-white/90 text-sm font-medium mt-1">
+                  
+                  {/* Big headline */}
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    {content.headlineIcon}
+                    <h2 className="text-white text-3xl font-extrabold tracking-tight drop-shadow-md">
+                      {content.headline}
+                    </h2>
+                  </div>
+                  
+                  {/* Subtitle */}
+                  <p className="text-white/90 text-base font-semibold">
                     {content.title}
                   </p>
                 </div>
@@ -183,9 +198,6 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
                   </Button>
                 </div>
               </div>
-
-              {/* Decorative bottom element */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-200 via-rose-200 to-pink-200 opacity-50" />
             </div>
           );
         })}
