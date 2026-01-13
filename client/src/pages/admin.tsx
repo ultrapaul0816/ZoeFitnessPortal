@@ -139,6 +139,48 @@ export default function Admin() {
     enabled: isAdmin,
   });
 
+  // Renewal email logs query
+  const { data: renewalEmailLogs = [], refetch: refetchRenewalEmailLogs } = useQuery<Array<{
+    id: string;
+    user_id: string;
+    email_type: string;
+    sent_at: string;
+    sent_by: string | null;
+    notes: string | null;
+  }>>({
+    queryKey: ["/api/admin/renewal-email-logs"],
+    enabled: isAdmin,
+  });
+
+  // Get last email date for a user
+  const getLastEmailDate = (userId: string): string | null => {
+    const userLogs = renewalEmailLogs.filter(log => log.user_id === userId);
+    if (userLogs.length === 0) return null;
+    return userLogs[0].sent_at; // Already sorted by sent_at DESC
+  };
+
+  // Log email sent mutation
+  const logEmailMutation = useMutation({
+    mutationFn: async (data: { userId: string; emailType: 'expiring' | 'expired' }) => {
+      const response = await apiRequest("POST", "/api/admin/renewal-email-logs", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Email Logged",
+        description: "Email sent date has been recorded",
+      });
+      refetchRenewalEmailLogs();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to log email",
+        variant: "destructive",
+      });
+    },
+  });
+
   // State for reminder email template modal
   const [reminderEmailData, setReminderEmailData] = useState<{
     userName: string;
@@ -884,6 +926,7 @@ Stronger With Zoe Support`;
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {adminStats.expiringUsers.map((user) => {
                       const memberData = allUsers.find(u => u.id === user.userId);
+                      const lastEmailDate = getLastEmailDate(user.userId);
                       return (
                         <div key={user.userId} className="p-3 bg-white rounded-lg border border-amber-100">
                           <div className="flex items-center justify-between gap-4">
@@ -893,7 +936,7 @@ Stronger With Zoe Support`;
                                 <span className="text-xs text-muted-foreground">•</span>
                                 <p className="text-xs text-muted-foreground truncate">{memberData?.email || ''}</p>
                               </div>
-                              <div className="flex flex-wrap gap-3">
+                              <div className="flex flex-wrap gap-3 mb-1">
                                 {user.programExpiring && (
                                   <div className="flex items-center gap-2 text-xs">
                                     <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
@@ -917,6 +960,12 @@ Stronger With Zoe Support`;
                                   </div>
                                 )}
                               </div>
+                              {lastEmailDate && (
+                                <div className="flex items-center gap-1 text-xs text-green-600">
+                                  <MailOpen className="w-3 h-3" />
+                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                                </div>
+                              )}
                             </div>
                             <div className="flex gap-2 shrink-0">
                               <Button
@@ -953,6 +1002,16 @@ Stronger With Zoe Support`;
                               >
                                 <Mail className="w-3 h-3 mr-1" />
                                 Remind
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
+                                onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
+                                disabled={logEmailMutation.isPending}
+                                title="Log that email was sent"
+                              >
+                                <CheckCircle className="w-4 h-4" />
                               </Button>
                             </div>
                           </div>
@@ -999,80 +1058,99 @@ Stronger With Zoe Support`;
                   </div>
                 ) : (
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {expiredMembers.map((member) => (
-                      <div key={member.id} className="p-3 bg-white rounded-lg border border-red-100">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="text-sm font-semibold truncate">{member.name || 'Unknown'}</p>
-                              <span className="text-xs text-muted-foreground">•</span>
-                              <p className="text-xs text-muted-foreground truncate">{member.email}</p>
-                            </div>
-                            <div className="flex flex-wrap gap-3">
-                              {member.whatsAppExpired && member.whatsAppExpiryDate && (
-                                <div className="flex items-center gap-2 text-xs">
-                                  <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
-                                    <MessageSquare className="w-3 h-3" />
-                                    WhatsApp
-                                  </span>
-                                  <span className="text-gray-600">
-                                    Expired {new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                  </span>
+                    {expiredMembers.map((member) => {
+                      const lastEmailDate = getLastEmailDate(member.id);
+                      return (
+                        <div key={member.id} className="p-3 bg-white rounded-lg border border-red-100">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-sm font-semibold truncate">{member.name || 'Unknown'}</p>
+                                <span className="text-xs text-muted-foreground">•</span>
+                                <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                              </div>
+                              <div className="flex flex-wrap gap-3 mb-1">
+                                {member.whatsAppExpired && member.whatsAppExpiryDate && (
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
+                                      <MessageSquare className="w-3 h-3" />
+                                      WhatsApp
+                                    </span>
+                                    <span className="text-gray-600">
+                                      Expired {new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </span>
+                                  </div>
+                                )}
+                                {member.programExpired && member.programExpiryDate && (
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
+                                      <Dumbbell className="w-3 h-3" />
+                                      Heal Your Core
+                                    </span>
+                                    <span className="text-gray-600">
+                                      Expired {new Date(member.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              {lastEmailDate && (
+                                <div className="flex items-center gap-1 text-xs text-green-600">
+                                  <MailOpen className="w-3 h-3" />
+                                  <span>Last email: {new Date(lastEmailDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
                                 </div>
                               )}
-                              {member.programExpired && member.programExpiryDate && (
-                                <div className="flex items-center gap-2 text-xs">
-                                  <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
-                                    <Dumbbell className="w-3 h-3" />
-                                    Heal Your Core
-                                  </span>
-                                  <span className="text-gray-600">
-                                    Expired {new Date(member.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                  </span>
-                                </div>
-                              )}
                             </div>
-                          </div>
-                          <div className="flex gap-2 shrink-0">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-8 px-3 text-xs"
-                              onClick={() => {
-                                setExtensionMember({
-                                  id: member.id,
-                                  name: member.name || 'Unknown',
-                                  email: member.email,
-                                  programExpiryDate: member.programExpiryDate,
-                                  whatsAppExpiryDate: member.whatsAppExpiryDate,
-                                  isExpiringSoon: false,
-                                });
-                                setExtensionDialogOpen(true);
-                              }}
-                            >
-                              Extend
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="h-8 px-3 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
-                              onClick={() => {
-                                setReminderEmailData({
-                                  userName: member.name || 'there',
-                                  userEmail: member.email,
-                                  type: 'expired',
-                                  programExpiryDate: member.programExpiryDate,
-                                  whatsAppExpiryDate: member.whatsAppExpiryDate,
-                                });
-                              }}
-                            >
-                              <Mail className="w-3 h-3 mr-1" />
-                              Remind
-                            </Button>
+                            <div className="flex gap-2 shrink-0">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 px-3 text-xs"
+                                onClick={() => {
+                                  setExtensionMember({
+                                    id: member.id,
+                                    name: member.name || 'Unknown',
+                                    email: member.email,
+                                    programExpiryDate: member.programExpiryDate,
+                                    whatsAppExpiryDate: member.whatsAppExpiryDate,
+                                    isExpiringSoon: false,
+                                  });
+                                  setExtensionDialogOpen(true);
+                                }}
+                              >
+                                Extend
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                className="h-8 px-3 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
+                                onClick={() => {
+                                  setReminderEmailData({
+                                    userName: member.name || 'there',
+                                    userEmail: member.email,
+                                    type: 'expired',
+                                    programExpiryDate: member.programExpiryDate,
+                                    whatsAppExpiryDate: member.whatsAppExpiryDate,
+                                  });
+                                }}
+                              >
+                                <Mail className="w-3 h-3 mr-1" />
+                                Remind
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
+                                onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
+                                disabled={logEmailMutation.isPending}
+                                title="Log that email was sent"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
