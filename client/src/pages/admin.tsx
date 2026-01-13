@@ -787,51 +787,80 @@ export default function Admin() {
               <CollapsibleContent>
                 <CardContent className="pt-0">
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {adminStats.expiringUsers.map((user) => (
-                      <div key={user.userId} className="flex items-center justify-between p-3 bg-white rounded-lg border border-amber-100">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-800">{user.userName}</p>
-                          <div className="flex flex-wrap gap-3 mt-1">
-                            {user.programExpiring && (
-                              <div className="flex items-center gap-2 text-xs">
-                                <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
-                                  <Dumbbell className="w-3 h-3" />
-                                  Heal Your Core
-                                </span>
-                                <span className="text-gray-600">
-                                  Expires {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
-                                </span>
+                    {adminStats.expiringUsers.map((user) => {
+                      const memberData = allUsers.find(u => u.id === user.userId);
+                      return (
+                        <div key={user.userId} className="p-3 bg-white rounded-lg border border-amber-100">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-sm font-semibold truncate">{user.userName}</p>
+                                <span className="text-xs text-muted-foreground">•</span>
+                                <p className="text-xs text-muted-foreground truncate">{memberData?.email || ''}</p>
                               </div>
-                            )}
-                            {user.whatsAppExpiring && (
-                              <div className="flex items-center gap-2 text-xs">
-                                <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
-                                  <MessageSquare className="w-3 h-3" />
-                                  WhatsApp
-                                </span>
-                                <span className="text-gray-600">
-                                  Expires {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
-                                </span>
+                              <div className="flex flex-wrap gap-3">
+                                {user.programExpiring && (
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
+                                      <Dumbbell className="w-3 h-3" />
+                                      Heal Your Core
+                                    </span>
+                                    <span className="text-gray-600">
+                                      Expires {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                                    </span>
+                                  </div>
+                                )}
+                                {user.whatsAppExpiring && (
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
+                                      <MessageSquare className="w-3 h-3" />
+                                      WhatsApp
+                                    </span>
+                                    <span className="text-gray-600">
+                                      Expires {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            </div>
+                            <div className="flex gap-2 shrink-0">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 px-3 text-xs"
+                                onClick={() => {
+                                  if (memberData) {
+                                    setSelectedMember(memberData);
+                                    setMemberViewMode('edit');
+                                  }
+                                }}
+                              >
+                                Extend
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                className="h-8 px-3 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
+                                disabled={sendReminderMutation.isPending && sendingReminderTo === user.userId}
+                                onClick={() => {
+                                  setSendingReminderTo(user.userId);
+                                  sendReminderMutation.mutate({ userId: user.userId });
+                                }}
+                              >
+                                {sendReminderMutation.isPending && sendingReminderTo === user.userId ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Mail className="w-3 h-3 mr-1" />
+                                    Remind
+                                  </>
+                                )}
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 px-3 text-xs shrink-0"
-                          onClick={() => {
-                            const member = allUsers.find(u => u.id === user.userId);
-                            if (member) {
-                              setSelectedMember(member);
-                              setMemberViewMode('edit');
-                            }
-                          }}
-                        >
-                          Extend
-                        </Button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </CardContent>
               </CollapsibleContent>
