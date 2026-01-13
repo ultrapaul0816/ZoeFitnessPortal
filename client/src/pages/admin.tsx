@@ -181,18 +181,18 @@ export default function Admin() {
 
     if (isExpiring) {
       // EXPIRING SOON EMAIL - WhatsApp Community Support
-      const subject = `Quick check-in: Your WhatsApp support expires on ${whatsAppDateFormatted}`;
+      const subject = `Heal Your Core - WhatsApp Support Expires ${whatsAppDateFormatted}`;
 
       const body = `Hi ${firstName},
 
-Just a heads up - your WhatsApp Community Support access is ending on ${whatsAppDateFormatted}.
+Just a heads up - your Heal Your Core WhatsApp Community Support is ending on ${whatsAppDateFormatted}.
 
-After this, you won't be able to message Coach Zoe directly or be part of the group anymore. Your program access stays active separately, so you can still do the workouts.
+After this date, you won't be able to message Coach Zoe directly or be part of the group anymore. Your Heal Your Core program access stays active separately, so you can still do the workouts.
 
-If you'd like to keep the WhatsApp support going, you can renew here for Rs. 1,000 (3 months):
+To continue with WhatsApp support, renew here for Rs. 1,000 (3 months):
 ${paymentLink}
 
-If you're okay without it, just drop us a quick reply so we know. No pressure either way!
+Let us know if you have any questions!
 
 Take care,
 Stronger With Zoe Support`;
@@ -200,22 +200,20 @@ Stronger With Zoe Support`;
       return { subject, body };
     } else {
       // ALREADY EXPIRED EMAIL - WhatsApp Community Support (Reminder before removal)
-      const subject = `Reminder: Your WhatsApp support has expired`;
+      const subject = `Heal Your Core - WhatsApp Support Expired - Action Required`;
 
       const body = `Hi ${firstName},
 
-This is a reminder that your WhatsApp Community Support expired on ${whatsAppDateFormatted}.
+Your Heal Your Core WhatsApp Community Support expired on ${whatsAppDateFormatted}.
 
 Your program access is still active, so you can continue with the workouts on the app.
 
-If you'd like to continue with the WhatsApp group and Coach Zoe's support, please renew using this link (Rs. 1,000 for 3 months):
+To rejoin the WhatsApp group and get Coach Zoe's support, renew here for Rs. 1,000 (3 months):
 ${paymentLink}
 
 Once renewed, your access will be reactivated immediately.
 
-If we don't hear back, your WhatsApp access will be revoked after 24 hours without further notice.
-
-If you're okay without it, just drop us a quick reply so we know. No pressure either way!
+If we don't hear back, your WhatsApp access will be revoked within 24 hours.
 
 Take care,
 Stronger With Zoe Support`;
