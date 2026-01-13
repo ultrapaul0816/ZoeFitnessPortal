@@ -141,10 +141,27 @@ export default function Admin() {
 
   // State for sending reminder emails
   const [sendingReminderTo, setSendingReminderTo] = useState<string | null>(null);
+  
+  // State for extension dialog
+  const [extensionDialogOpen, setExtensionDialogOpen] = useState(false);
+  const [extensionMember, setExtensionMember] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    programExpiryDate?: string | null;
+    whatsAppExpiryDate?: string | null;
+    isExpiringSoon?: boolean;
+  } | null>(null);
+  const [extensionMonths, setExtensionMonths] = useState<number>(3);
 
   // Mutation for sending reminder email
   const sendReminderMutation = useMutation({
-    mutationFn: async (data: { userId: string; subject?: string; message?: string }) => {
+    mutationFn: async (data: { 
+      userId: string; 
+      type: 'expiring' | 'expired';
+      programExpiryDate?: string | null;
+      whatsAppExpiryDate?: string | null;
+    }) => {
       const response = await apiRequest("POST", "/api/admin/whatsapp/send-reminder", data);
       return response.json();
     },
@@ -159,6 +176,36 @@ export default function Admin() {
       toast({
         title: "Error",
         description: error.message || "Failed to send reminder email",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation for extending membership
+  const extendMembershipMutation = useMutation({
+    mutationFn: async (data: { userId: string; months: number; notes?: string }) => {
+      const response = await apiRequest("POST", `/api/admin/users/${data.userId}/extend-validity`, {
+        months: data.months,
+        notes: data.notes,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: `Membership extended by ${extensionMonths} months!`,
+      });
+      setExtensionDialogOpen(false);
+      setExtensionMember(null);
+      setExtensionMonths(3);
+      refetchExpiredMembers();
+      refetchExtensionLogs();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to extend membership",
         variant: "destructive",
       });
     },
@@ -829,10 +876,15 @@ export default function Admin() {
                                 variant="outline"
                                 className="h-8 px-3 text-xs"
                                 onClick={() => {
-                                  if (memberData) {
-                                    setSelectedMember(memberData);
-                                    setMemberViewMode('edit');
-                                  }
+                                  setExtensionMember({
+                                    id: user.userId,
+                                    name: user.userName,
+                                    email: memberData?.email || '',
+                                    programExpiryDate: user.programExpiryDate ? String(user.programExpiryDate) : null,
+                                    whatsAppExpiryDate: user.whatsAppExpiryDate ? String(user.whatsAppExpiryDate) : null,
+                                    isExpiringSoon: true,
+                                  });
+                                  setExtensionDialogOpen(true);
                                 }}
                               >
                                 Extend
@@ -844,7 +896,12 @@ export default function Admin() {
                                 disabled={sendReminderMutation.isPending && sendingReminderTo === user.userId}
                                 onClick={() => {
                                   setSendingReminderTo(user.userId);
-                                  sendReminderMutation.mutate({ userId: user.userId });
+                                  sendReminderMutation.mutate({ 
+                                    userId: user.userId,
+                                    type: 'expiring',
+                                    programExpiryDate: user.programExpiryDate ? String(user.programExpiryDate) : null,
+                                    whatsAppExpiryDate: user.whatsAppExpiryDate ? String(user.whatsAppExpiryDate) : null,
+                                  });
                                 }}
                               >
                                 {sendReminderMutation.isPending && sendingReminderTo === user.userId ? (
@@ -941,11 +998,15 @@ export default function Admin() {
                               variant="outline"
                               className="h-8 px-3 text-xs"
                               onClick={() => {
-                                const user = allUsers.find(u => u.id === member.id);
-                                if (user) {
-                                  setSelectedMember(user);
-                                  setMemberViewMode('edit');
-                                }
+                                setExtensionMember({
+                                  id: member.id,
+                                  name: member.name || 'Unknown',
+                                  email: member.email,
+                                  programExpiryDate: member.programExpiryDate,
+                                  whatsAppExpiryDate: member.whatsAppExpiryDate,
+                                  isExpiringSoon: false,
+                                });
+                                setExtensionDialogOpen(true);
                               }}
                             >
                               Extend
@@ -957,7 +1018,12 @@ export default function Admin() {
                               disabled={sendReminderMutation.isPending && sendingReminderTo === member.id}
                               onClick={() => {
                                 setSendingReminderTo(member.id);
-                                sendReminderMutation.mutate({ userId: member.id });
+                                sendReminderMutation.mutate({ 
+                                  userId: member.id,
+                                  type: 'expired',
+                                  programExpiryDate: member.programExpiryDate,
+                                  whatsAppExpiryDate: member.whatsAppExpiryDate,
+                                });
                               }}
                             >
                               {sendReminderMutation.isPending && sendingReminderTo === member.id ? (
@@ -3711,6 +3777,98 @@ export default function Admin() {
               Close
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Extension Dialog */}
+      <Dialog open={extensionDialogOpen} onOpenChange={setExtensionDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <RefreshCw className="w-4 h-4 text-white" />
+              </div>
+              Extend Membership
+            </DialogTitle>
+            <DialogDescription>
+              Extend membership for {extensionMember?.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {extensionMember && (
+            <div className="space-y-4">
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium">{extensionMember.name}</p>
+                <p className="text-xs text-muted-foreground">{extensionMember.email}</p>
+                {extensionMember.programExpiryDate && (
+                  <p className="text-xs text-amber-600 mt-1">
+                    Program {extensionMember.isExpiringSoon ? 'expires' : 'expired'}: {new Date(extensionMember.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                )}
+                {extensionMember.whatsAppExpiryDate && (
+                  <p className="text-xs text-red-600 mt-1">
+                    WhatsApp {extensionMember.isExpiringSoon ? 'expires' : 'expired'}: {new Date(extensionMember.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Select Extension Period (Based on Payment)</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { months: 3, amount: 1000 },
+                    { months: 6, amount: 2000 },
+                    { months: 9, amount: 3000 },
+                    { months: 12, amount: 4000 },
+                  ].map((option) => (
+                    <Button
+                      key={option.months}
+                      type="button"
+                      variant={extensionMonths === option.months ? "default" : "outline"}
+                      className={cn(
+                        "h-auto py-3 flex flex-col items-center gap-1",
+                        extensionMonths === option.months && "bg-gradient-to-r from-green-500 to-emerald-600 text-white"
+                      )}
+                      onClick={() => setExtensionMonths(option.months)}
+                    >
+                      <span className="font-semibold">{option.months} months</span>
+                      <span className="text-xs opacity-80">₹{option.amount.toLocaleString()}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setExtensionDialogOpen(false);
+                    setExtensionMember(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 text-white"
+                  disabled={extendMembershipMutation.isPending}
+                  onClick={() => {
+                    if (extensionMember) {
+                      extendMembershipMutation.mutate({
+                        userId: extensionMember.id,
+                        months: extensionMonths,
+                        notes: `Extended ${extensionMonths} months (₹${(extensionMonths / 3) * 1000} payment)`,
+                      });
+                    }
+                  }}
+                >
+                  {extendMembershipMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : null}
+                  Extend by {extensionMonths} Months
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </AdminLayout>
