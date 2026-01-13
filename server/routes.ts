@@ -3959,6 +3959,61 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Log renewal email sent
+  app.post("/api/admin/renewal-email-logs", async (req, res) => {
+    try {
+      const { userId, emailType, notes } = req.body;
+      const adminId = req.session?.userId;
+
+      if (!userId || !emailType) {
+        return res.status(400).json({ message: "User ID and email type are required" });
+      }
+
+      await storage.db.execute(sql`
+        INSERT INTO renewal_email_logs (id, user_id, email_type, sent_by, notes)
+        VALUES (gen_random_uuid(), ${userId}, ${emailType}, ${adminId || null}, ${notes || null})
+      `);
+
+      res.json({ message: "Email log created successfully" });
+    } catch (error) {
+      console.error("Create renewal email log error:", error);
+      res.status(500).json({ message: "Failed to log email" });
+    }
+  });
+
+  // Get renewal email logs for all users (for admin dashboard)
+  app.get("/api/admin/renewal-email-logs", async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`
+        SELECT rel.*, u.first_name, u.last_name, u.email as user_email
+        FROM renewal_email_logs rel
+        LEFT JOIN users u ON rel.user_id = u.id
+        ORDER BY rel.sent_at DESC
+        LIMIT 100
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Get renewal email logs error:", error);
+      res.status(500).json({ message: "Failed to get email logs" });
+    }
+  });
+
+  // Get renewal email logs for a specific user
+  app.get("/api/admin/renewal-email-logs/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const result = await storage.db.execute(sql`
+        SELECT * FROM renewal_email_logs
+        WHERE user_id = ${userId}
+        ORDER BY sent_at DESC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Get user renewal email logs error:", error);
+      res.status(500).json({ message: "Failed to get email logs" });
+    }
+  });
+
   // Send reminder email to expiring or expired member
   app.post("/api/admin/whatsapp/send-reminder", async (req, res) => {
     try {
