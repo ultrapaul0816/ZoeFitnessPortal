@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { X, MessageCircle, Dumbbell, ExternalLink, AlertTriangle, Timer } from "lucide-react";
+import { X, Dumbbell, ExternalLink } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import type { User } from "@shared/schema";
 
@@ -72,10 +73,8 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
     switch (info.type) {
       case 'whatsapp_expiring':
         return {
-          title: 'WhatsApp Community Support',
-          headline: 'Expiring Soon!',
-          headlineIcon: <Timer className="w-6 h-6 text-white" />,
-          icon: <MessageCircle className="w-8 h-8 text-white" />,
+          title: 'WhatsApp Community Support Expiring Soon',
+          icon: <SiWhatsapp className="w-8 h-8 text-white" />,
           isExpired: false,
           message: `Hey ${firstName}! Your WhatsApp Community Support expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left).`,
           subMessage: `Your access will be revoked on ${formatDate(info.expiryDate)}. Renew now to keep access to Coach Zoe and our supportive community.`,
@@ -83,10 +82,8 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
         };
       case 'whatsapp_expired':
         return {
-          title: 'WhatsApp Community Support',
-          headline: 'Access Expired!',
-          headlineIcon: <AlertTriangle className="w-6 h-6 text-white" />,
-          icon: <MessageCircle className="w-8 h-8 text-white" />,
+          title: 'WhatsApp Community Support Expired',
+          icon: <SiWhatsapp className="w-8 h-8 text-white" />,
           isExpired: true,
           message: `Hey ${firstName}, your WhatsApp Community Support expired on ${formatDate(info.expiryDate)}.`,
           subMessage: `Your program access is still active. Renew to rejoin the WhatsApp group and get Coach Zoe's support again!`,
@@ -94,9 +91,7 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
         };
       case 'program_expiring':
         return {
-          title: 'Heal Your Core Program',
-          headline: 'Expiring Soon!',
-          headlineIcon: <Timer className="w-6 h-6 text-white" />,
+          title: 'Program Access Expiring Soon',
           icon: <Dumbbell className="w-8 h-8 text-white" />,
           isExpired: false,
           message: `Hey ${firstName}! Your Heal Your Core program expires on ${formatDate(info.expiryDate)} (${info.daysRemaining} day${info.daysRemaining === 1 ? '' : 's'} left).`,
@@ -105,9 +100,7 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
         };
       case 'program_expired':
         return {
-          title: 'Heal Your Core Program',
-          headline: 'Access Expired!',
-          headlineIcon: <AlertTriangle className="w-6 h-6 text-white" />,
+          title: 'Program Access Expired',
           icon: <Dumbbell className="w-8 h-8 text-white" />,
           isExpired: true,
           message: `Hey ${firstName}, your Heal Your Core program expired on ${formatDate(info.expiryDate)}.`,
@@ -124,50 +117,42 @@ export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
       <div className="w-full max-w-md space-y-4 animate-in fade-in zoom-in-95 duration-300">
         {activeNotifications.map((info) => {
           const content = getNotificationContent(info);
           return (
             <div
               key={info.type}
-              className="relative overflow-hidden rounded-3xl bg-white shadow-2xl"
+              className="relative overflow-visible rounded-3xl bg-white shadow-2xl"
               style={{ boxShadow: '0 25px 50px -12px rgba(236, 72, 153, 0.25)' }}
             >
-              {/* Close button - positioned outside the card */}
+              {/* Close button - positioned at corner with proper spacing */}
               <button
                 onClick={() => dismissNotification(info.type)}
-                className="absolute -top-2 -right-2 z-20 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                className="absolute top-3 right-3 z-20 w-8 h-8 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
                 aria-label="Dismiss notification"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
 
               {/* Header */}
-              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-6 py-8 relative overflow-hidden">
+              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 px-6 py-8 relative overflow-hidden rounded-t-3xl">
                 {/* Decorative circles */}
                 <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full" />
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full" />
                 <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/5 rounded-full" />
 
-                <div className="relative z-10 text-center">
+                <div className="relative z-10 text-center pt-2">
                   {/* Main icon */}
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl backdrop-blur-sm mb-4 shadow-lg border border-white/30">
                     {content.icon}
                   </div>
                   
-                  {/* Big headline */}
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    {content.headlineIcon}
-                    <h2 className="text-white text-3xl font-extrabold tracking-tight drop-shadow-md">
-                      {content.headline}
-                    </h2>
-                  </div>
-                  
-                  {/* Subtitle */}
-                  <p className="text-white/90 text-base font-semibold">
+                  {/* Full title */}
+                  <h2 className="text-white text-2xl font-extrabold tracking-tight drop-shadow-md leading-tight px-4">
                     {content.title}
-                  </p>
+                  </h2>
                 </div>
               </div>
 
