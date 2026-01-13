@@ -677,6 +677,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Change password for logged-in users
+  app.post("/api/auth/change-password", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Please log in to change your password" });
+      }
+
+      const { currentPassword, newPassword } = req.body;
+
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+
+      // Validate new password strength
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "New password must be at least 8 characters" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Verify current password
+      const isBcryptHash = user.password.startsWith('$2b$') || user.password.startsWith('$2a$') || user.password.startsWith('$2y$');
+      let isPasswordValid = false;
+
+      if (isBcryptHash) {
+        isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      } else {
+        // Legacy plaintext password
+        isPasswordValid = currentPassword === user.password;
+      }
+
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Check if new password is same as current
+      if (currentPassword === newPassword) {
+        return res.status(400).json({ message: "New password must be different from current password" });
+      }
+
+      // Hash and update password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await storage.updateUser(user.id, { password: hashedPassword });
+
+      console.log(`[PASSWORD-CHANGE] Password changed successfully for user: ${user.email}`);
+      res.json({ success: true, message: "Password changed successfully" });
+    } catch (error: any) {
+      console.error(`[PASSWORD-CHANGE] Error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
   // User Check-ins
   app.post("/api/checkins", async (req, res) => {
     try {
