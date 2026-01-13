@@ -930,7 +930,7 @@ Stronger With Zoe Support`;
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <CardContent className="pt-0">
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                  <div className="space-y-2">
                     {adminStats.expiringUsers.map((user) => {
                       const memberData = allUsers.find(u => u.id === user.userId);
                       const emailLogs = getUserEmailLogs(user.userId);
@@ -1093,7 +1093,7 @@ Stronger With Zoe Support`;
                     <p className="text-xs">No expired members</p>
                   </div>
                 ) : (
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                  <div className="space-y-2">
                     {expiredMembers.map((member) => {
                       const emailLogs = getUserEmailLogs(member.id);
                       const logCount = emailLogs.length;
@@ -1255,7 +1255,7 @@ Stronger With Zoe Support`;
                     <p className="text-xs">No extensions recorded yet</p>
                   </div>
                 ) : (
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                  <div className="space-y-2">
                     {extensionLogs.slice(0, 10).map((log) => (
                       <div key={log.id} className="p-3 bg-white rounded-lg border border-green-100">
                         <div className="flex items-center justify-between gap-4">
