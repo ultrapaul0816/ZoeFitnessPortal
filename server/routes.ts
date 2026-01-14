@@ -1102,6 +1102,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Week must be between 1 and 6" });
       }
 
+      // Check if week is already skipped
+      const existingSkippedWeeks = await storage.getSkippedWeeks(req.session.userId);
+      const alreadySkipped = existingSkippedWeeks.some(sw => sw.week === week);
+      
+      if (alreadySkipped) {
+        // Week already skipped, just return current progress
+        const updatedProgress = await storage.getWorkoutSessionProgress(req.session.userId);
+        return res.json({ skippedWeek: null, progress: updatedProgress, alreadySkipped: true });
+      }
+
       // Get current progress for the week being skipped
       const progress = await storage.getWorkoutSessionProgress(req.session.userId);
       const weekProgress = progress.weeklyProgress.find(w => w.week === week);

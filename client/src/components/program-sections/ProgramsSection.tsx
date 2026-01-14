@@ -291,11 +291,15 @@ export default function ProgramsSection({
 
   const handleConfirmSkip = async () => {
     if (pendingSkipWeek !== null) {
-      const currentWeek = sessionProgress?.currentWeek || 1;
-      for (let w = currentWeek; w < pendingSkipWeek; w++) {
-        await skipWeekMutation.mutateAsync(w);
+      try {
+        const currentWeek = sessionProgress?.currentWeek || 1;
+        for (let w = currentWeek; w < pendingSkipWeek; w++) {
+          await skipWeekMutation.mutateAsync(w);
+        }
+        setExpandedWeeks(prev => ({ ...prev, [pendingSkipWeek]: true }));
+      } catch (error) {
+        console.error('Error skipping week:', error);
       }
-      setExpandedWeeks(prev => ({ ...prev, [pendingSkipWeek]: true }));
     }
     setSkipWarningOpen(false);
     setPendingSkipWeek(null);
