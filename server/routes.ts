@@ -1010,6 +1010,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // WORKOUT SESSIONS (Progressive Tracking)
   // ===========================================
 
+  // Skip a week (mark as skipped and advance) - MUST be before :userId routes
+  app.post("/api/workout-sessions/skip-week", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { week } = req.body;
+      if (!week || week < 1 || week > 6) {
+        return res.status(400).json({ message: "Week must be between 1 and 6" });
+      }
+
+      // Check if week is already skipped
+      const existingSkippedWeeks = await storage.getSkippedWeeks(req.session.userId);
+      const alreadySkipped = existingSkippedWeeks.some(sw => sw.week === week);
+      
+      if (alreadySkipped) {
+        // Week already skipped, just return current progress
+        const updatedProgress = await storage.getWorkoutSessionProgress(req.session.userId);
+        return res.json({ skippedWeek: null, progress: updatedProgress, alreadySkipped: true });
+      }
+
+      // Get current progress for the week being skipped
+      const progress = await storage.getWorkoutSessionProgress(req.session.userId);
+      const weekProgress = progress.weeklyProgress.find(w => w.week === week);
+      const workoutsCompleted = weekProgress?.workoutsCompleted || 0;
+
+      // Create skipped week record
+      const skippedWeek = await storage.createSkippedWeek(
+        req.session.userId,
+        week,
+        workoutsCompleted
+      );
+
+      // Return updated progress
+      const updatedProgress = await storage.getWorkoutSessionProgress(req.session.userId);
+      res.json({ skippedWeek, progress: updatedProgress });
+    } catch (error: any) {
+      console.error(`[WORKOUT-SESSIONS] Error skipping week:`, error?.message || error);
+      res.status(500).json({ message: "Failed to skip week" });
+    }
+  });
+
   // Get workout progress (current week, completions, all weeks progress)
   // Using userId in URL to avoid third-party cookie issues in iframes
   app.get("/api/workout-sessions/:userId/progress", async (req, res) => {
@@ -1087,49 +1130,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error(`[WORKOUT-SESSIONS] Error fetching week sessions:`, error?.message || error);
       res.status(500).json({ message: "Failed to fetch week sessions" });
-    }
-  });
-
-  // Skip a week (mark as skipped and advance)
-  app.post("/api/workout-sessions/skip-week", async (req, res) => {
-    try {
-      if (!req.session?.userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const { week } = req.body;
-      if (!week || week < 1 || week > 6) {
-        return res.status(400).json({ message: "Week must be between 1 and 6" });
-      }
-
-      // Check if week is already skipped
-      const existingSkippedWeeks = await storage.getSkippedWeeks(req.session.userId);
-      const alreadySkipped = existingSkippedWeeks.some(sw => sw.week === week);
-      
-      if (alreadySkipped) {
-        // Week already skipped, just return current progress
-        const updatedProgress = await storage.getWorkoutSessionProgress(req.session.userId);
-        return res.json({ skippedWeek: null, progress: updatedProgress, alreadySkipped: true });
-      }
-
-      // Get current progress for the week being skipped
-      const progress = await storage.getWorkoutSessionProgress(req.session.userId);
-      const weekProgress = progress.weeklyProgress.find(w => w.week === week);
-      const workoutsCompleted = weekProgress?.workoutsCompleted || 0;
-
-      // Create skipped week record
-      const skippedWeek = await storage.createSkippedWeek(
-        req.session.userId,
-        week,
-        workoutsCompleted
-      );
-
-      // Return updated progress
-      const updatedProgress = await storage.getWorkoutSessionProgress(req.session.userId);
-      res.json({ skippedWeek, progress: updatedProgress });
-    } catch (error: any) {
-      console.error(`[WORKOUT-SESSIONS] Error skipping week:`, error?.message || error);
-      res.status(500).json({ message: "Failed to skip week" });
     }
   });
 
