@@ -191,6 +191,7 @@ Coach Zoe`;
                       <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Program</th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Days Left</th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Emails Sent</th>
                       <th className="text-right px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
@@ -250,6 +251,21 @@ Coach Zoe`;
                                   <span className="font-medium text-gray-700">{new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                                 </div>
                               )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="flex flex-col gap-1.5">
+                              {emailLogs.slice(0, 2).map((log, idx) => (
+                                <div key={idx} className={cn(
+                                  "text-xs px-2.5 py-1 rounded-lg w-fit font-medium",
+                                  idx === 0 && logCount > 1 
+                                    ? "bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700" 
+                                    : "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700"
+                                )}>
+                                  {idx === 0 && logCount > 1 ? "Follow-up" : "Initial"}: {new Date(log.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}
+                                </div>
+                              ))}
+                              {logCount === 0 && <span className="text-xs text-gray-400 italic">No emails sent</span>}
                             </div>
                           </td>
                           <td className="px-6 py-5">
