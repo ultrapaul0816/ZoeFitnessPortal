@@ -492,6 +492,9 @@ Stronger With Zoe Support`;
 
   // Check-in analytics view toggle (today vs this week)
   const [checkinView, setCheckinView] = useState<'today' | 'week'>('today');
+  
+  // Wellness insights time filter
+  const [wellnessTimeFilter, setWellnessTimeFilter] = useState<'today' | 'week' | 'month'>('week');
 
   // Email preview state
   const [emailPreview, setEmailPreview] = useState<{
@@ -1254,9 +1257,37 @@ Stronger With Zoe Support`;
         </div>
 
         {/* Section Header - Wellness Insights */}
-        <div className="mb-4">
-          <h2 className="text-lg font-bold text-gray-900 mb-0.5">Wellness Insights</h2>
-          <p className="text-xs text-gray-500">Community mood, energy levels, and check-in data</p>
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 mb-0.5">Wellness Insights</h2>
+            <p className="text-xs text-gray-500">Community mood, energy levels, and check-in data</p>
+          </div>
+          <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+            <Button
+              variant={wellnessTimeFilter === 'today' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setWellnessTimeFilter('today')}
+              className={cn("h-7 px-3 text-xs", wellnessTimeFilter === 'today' && 'bg-pink-500 hover:bg-pink-600')}
+            >
+              Today
+            </Button>
+            <Button
+              variant={wellnessTimeFilter === 'week' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setWellnessTimeFilter('week')}
+              className={cn("h-7 px-3 text-xs", wellnessTimeFilter === 'week' && 'bg-pink-500 hover:bg-pink-600')}
+            >
+              This Week
+            </Button>
+            <Button
+              variant={wellnessTimeFilter === 'month' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setWellnessTimeFilter('month')}
+              className={cn("h-7 px-3 text-xs", wellnessTimeFilter === 'month' && 'bg-pink-500 hover:bg-pink-600')}
+            >
+              This Month
+            </Button>
+          </div>
         </div>
 
         {/* Wellness Row - Mood & Energy Summary */}
@@ -1270,39 +1301,52 @@ Stronger With Zoe Support`;
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold text-gray-900">Mood Overview</CardTitle>
-                  <CardDescription className="text-xs text-gray-500">This week's mood distribution</CardDescription>
+                  <CardDescription className="text-xs text-gray-500">
+                    {wellnessTimeFilter === 'today' ? "Today's" : wellnessTimeFilter === 'week' ? "This week's" : "This month's"} mood distribution
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              {checkinAnalytics?.thisWeek?.moodDistribution?.length > 0 ? (
-                <div className="space-y-2">
-                  {checkinAnalytics.thisWeek.moodDistribution.slice(0, 4).map((item) => {
-                    const moodEmoji = { 'great': '😊', 'good': '🙂', 'okay': '😐', 'tired': '😴', 'struggling': '😔' }[item.mood.toLowerCase()] || '😐';
-                    const total = checkinAnalytics.thisWeek.moodDistribution.reduce((sum, m) => sum + m.count, 0);
-                    const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
-                    return (
-                      <div key={item.mood} className="flex items-center gap-3">
-                        <span className="text-xl">{moodEmoji}</span>
-                        <div className="flex-1">
-                          <div className="flex justify-between text-xs mb-1">
-                            <span className="font-medium capitalize text-gray-700">{item.mood}</span>
-                            <span className="text-gray-500">{pct}%</span>
+              {(() => {
+                const moodData = wellnessTimeFilter === 'today' 
+                  ? checkinAnalytics?.today?.moodDistribution 
+                  : wellnessTimeFilter === 'week'
+                  ? checkinAnalytics?.thisWeek?.moodDistribution
+                  : checkinAnalytics?.overall?.checkinsByMood?.map(m => ({ mood: m.mood, count: m.count }));
+                
+                if (moodData && moodData.length > 0) {
+                  const total = moodData.reduce((sum, m) => sum + m.count, 0);
+                  return (
+                    <div className="space-y-2">
+                      {moodData.slice(0, 4).map((item) => {
+                        const moodEmoji = { 'great': '😊', 'good': '🙂', 'okay': '😐', 'tired': '😴', 'struggling': '😔' }[item.mood.toLowerCase()] || '😐';
+                        const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                        return (
+                          <div key={item.mood} className="flex items-center gap-3">
+                            <span className="text-xl">{moodEmoji}</span>
+                            <div className="flex-1">
+                              <div className="flex justify-between text-xs mb-1">
+                                <span className="font-medium capitalize text-gray-700">{item.mood}</span>
+                                <span className="text-gray-500">{item.count} ({pct}%)</span>
+                              </div>
+                              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full" style={{ width: `${pct}%` }} />
+                              </div>
+                            </div>
                           </div>
-                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full" style={{ width: `${pct}%` }} />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-4 text-gray-400">
-                  <Smile className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p className="text-sm">No mood data yet</p>
-                </div>
-              )}
+                        );
+                      })}
+                    </div>
+                  );
+                }
+                return (
+                  <div className="text-center py-4 text-gray-400">
+                    <Smile className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No mood data yet</p>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
 
@@ -1315,33 +1359,46 @@ Stronger With Zoe Support`;
                 </div>
                 <div>
                   <CardTitle className="text-base font-semibold text-gray-900">Energy Levels</CardTitle>
-                  <CardDescription className="text-xs text-gray-500">Average energy this week</CardDescription>
+                  <CardDescription className="text-xs text-gray-500">
+                    {wellnessTimeFilter === 'today' ? "Today's" : wellnessTimeFilter === 'week' ? "This week's" : "This month's"} energy
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              {checkinAnalytics?.thisWeek?.energyDistribution?.length > 0 ? (
-                <div className="flex items-end justify-between gap-2 h-24">
-                  {[1, 2, 3, 4, 5].map((level) => {
-                    const data = checkinAnalytics.thisWeek.energyDistribution.find(e => e.energyLevel === level);
-                    const count = data?.count || 0;
-                    const maxCount = Math.max(...checkinAnalytics.thisWeek.energyDistribution.map(e => e.count), 1);
-                    const height = count > 0 ? Math.max((count / maxCount) * 100, 15) : 15;
-                    return (
-                      <div key={level} className="flex-1 flex flex-col items-center gap-1">
-                        <div className="w-full rounded-t-lg bg-gradient-to-t from-orange-500 to-amber-400 transition-all duration-300" style={{ height: `${height}%` }} />
-                        <span className="text-xs font-bold text-gray-700">{level}</span>
-                        <span className="text-xs text-gray-500">{count}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-4 text-gray-400">
-                  <Zap className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p className="text-sm">No energy data yet</p>
-                </div>
-              )}
+              {(() => {
+                const energyData = wellnessTimeFilter === 'today' 
+                  ? checkinAnalytics?.today?.energyDistribution 
+                  : wellnessTimeFilter === 'week'
+                  ? checkinAnalytics?.thisWeek?.energyDistribution
+                  : checkinAnalytics?.overall?.checkinsByEnergy;
+                
+                if (energyData && energyData.length > 0) {
+                  const maxCount = Math.max(...energyData.map(e => e.count), 1);
+                  return (
+                    <div className="flex items-end justify-between gap-2 h-24">
+                      {[1, 2, 3, 4, 5].map((level) => {
+                        const data = energyData.find(e => e.energyLevel === level);
+                        const count = data?.count || 0;
+                        const height = count > 0 ? Math.max((count / maxCount) * 100, 15) : 15;
+                        return (
+                          <div key={level} className="flex-1 flex flex-col items-center gap-1">
+                            <div className="w-full rounded-t-lg bg-gradient-to-t from-orange-500 to-amber-400 transition-all duration-300" style={{ height: `${height}%` }} />
+                            <span className="text-xs font-bold text-gray-700">{level}</span>
+                            <span className="text-xs text-gray-500">{count}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+                return (
+                  <div className="text-center py-4 text-gray-400">
+                    <Zap className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No energy data yet</p>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
 
@@ -1355,32 +1412,46 @@ Stronger With Zoe Support`;
                   </div>
                   <div>
                     <CardTitle className="text-base font-semibold text-gray-900">Check-in Stats</CardTitle>
-                    <CardDescription className="text-xs text-gray-500">Today vs this week</CardDescription>
+                    <CardDescription className="text-xs text-gray-500">
+                      {wellnessTimeFilter === 'today' ? "Today's" : wellnessTimeFilter === 'week' ? "This week's" : "All time"} check-ins
+                    </CardDescription>
                   </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="text-center p-3 bg-white rounded-xl border border-pink-100">
-                  <p className="text-3xl font-bold text-pink-600">{checkinAnalytics?.today?.total || 0}</p>
-                  <p className="text-xs text-gray-500 mt-1">Today</p>
-                </div>
-                <div className="text-center p-3 bg-white rounded-xl border border-pink-100">
-                  <p className="text-3xl font-bold text-pink-600">{checkinAnalytics?.thisWeek?.total || 0}</p>
-                  <p className="text-xs text-gray-500 mt-1">This Week</p>
-                </div>
-              </div>
-              {checkinAnalytics?.thisWeek?.popularGoals?.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-xs font-medium text-gray-600 mb-1.5 flex items-center gap-1"><Target className="w-3 h-3" /> Top Goals</p>
-                  <div className="flex flex-wrap gap-1">
-                    {checkinAnalytics.thisWeek.popularGoals.slice(0, 3).map((g) => (
-                      <Badge key={g.goal} variant="secondary" className="text-xs bg-pink-100 text-pink-700">{g.goal}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {(() => {
+                const total = wellnessTimeFilter === 'today' 
+                  ? checkinAnalytics?.today?.total || 0
+                  : wellnessTimeFilter === 'week'
+                  ? checkinAnalytics?.thisWeek?.total || 0
+                  : checkinAnalytics?.overall?.totalCheckins || 0;
+                
+                const goals = wellnessTimeFilter === 'today' 
+                  ? checkinAnalytics?.today?.popularGoals
+                  : wellnessTimeFilter === 'week'
+                  ? checkinAnalytics?.thisWeek?.popularGoals
+                  : checkinAnalytics?.overall?.popularGoals;
+                
+                return (
+                  <>
+                    <div className="text-center p-4 bg-white rounded-xl border border-pink-100">
+                      <p className="text-4xl font-bold text-pink-600">{total}</p>
+                      <p className="text-xs text-gray-500 mt-1">Total Check-ins</p>
+                    </div>
+                    {goals && goals.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-xs font-medium text-gray-600 mb-1.5 flex items-center gap-1"><Target className="w-3 h-3" /> Top Goals</p>
+                        <div className="flex flex-wrap gap-1">
+                          {goals.slice(0, 3).map((g) => (
+                            <Badge key={g.goal} variant="secondary" className="text-xs bg-pink-100 text-pink-700">{g.goal}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
