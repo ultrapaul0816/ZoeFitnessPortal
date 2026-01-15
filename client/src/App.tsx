@@ -23,6 +23,9 @@ import AdminExpired from "@/pages/admin-expired";
 import AdminExpiring from "@/pages/admin-expiring";
 import AdminExtensions from "@/pages/admin-extensions";
 import AdminArchived from "@/pages/admin-archived";
+import AdminMembers from "@/pages/admin-members";
+import AdminActive from "@/pages/admin-active";
+import AdminWhatsApp from "@/pages/admin-whatsapp";
 import MyLibrary from "@/pages/my-library";
 import MyCourses from "@/pages/my-courses";
 import CourseViewer from "@/pages/course-viewer";
@@ -67,6 +70,9 @@ function Router() {
       <Route path="/admin/expiring" component={AdminExpiring} />
       <Route path="/admin/extensions" component={AdminExtensions} />
       <Route path="/admin/archived" component={AdminArchived} />
+      <Route path="/admin/members" component={AdminMembers} />
+      <Route path="/admin/active" component={AdminActive} />
+      <Route path="/admin/whatsapp" component={AdminWhatsApp} />
       <Route path="/heal-your-core" component={() => (
         <Suspense fallback={<PageLoader message="Loading your program..." />}>
           <HealYourCorePage />
