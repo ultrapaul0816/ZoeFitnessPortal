@@ -1134,116 +1134,75 @@ Stronger With Zoe Support`;
           </div>
         </div>
 
-        {/* Activity Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          {/* Compact Activity Feed */}
-          <Card className="border-pink-200 bg-pink-50/30">
-            <CardHeader className="pb-2">
+        {/* Section Header - Activity & Engagement */}
+        <div className="mb-4 mt-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-0.5">Activity & Engagement</h2>
+          <p className="text-xs text-gray-500">Monitor member activity and workout progress</p>
+        </div>
+
+        {/* Activity Row - Two Cards Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          {/* Live Activity Feed */}
+          <Card className="border border-blue-100 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 shadow-sm">
+            <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-pink-100">
-                    <Activity className="w-4 h-4 text-pink-600" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-md">
+                    <Activity className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-medium text-pink-900">Recent Activity</CardTitle>
-                    <CardDescription className="text-xs text-pink-700">Live member updates</CardDescription>
+                    <CardTitle className="text-base font-semibold text-gray-900">Live Activity</CardTitle>
+                    <CardDescription className="text-xs text-gray-500">Real-time member actions</CardDescription>
                   </div>
                 </div>
-                <Badge variant="secondary" className="text-xs bg-pink-100 text-pink-700">
-                  Live
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <span className="text-xs font-medium text-green-600">Live</span>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
               {activityLoading ? (
-                <div className="flex items-center justify-center py-4">
-                  <div className="w-5 h-5 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex items-center justify-center py-6">
+                  <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : activityLogs.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
-                  <Activity className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p className="text-xs">No recent activity</p>
+                <div className="text-center py-6 text-gray-400">
+                  <Activity className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No recent activity</p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {activityLogs.slice(0, 8).map((activity) => {
+                <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                  {activityLogs.slice(0, 6).map((activity) => {
                     const timeAgo = (dateString: string) => {
                       const date = new Date(dateString);
                       const now = new Date();
                       const diff = now.getTime() - date.getTime();
                       const minutes = Math.floor(diff / 60000);
                       const hours = Math.floor(diff / 3600000);
-                      const days = Math.floor(diff / 86400000);
-                      
                       if (minutes < 1) return 'Now';
                       if (minutes < 60) return `${minutes}m`;
                       if (hours < 24) return `${hours}h`;
-                      return `${days}d`;
+                      return `${Math.floor(diff / 86400000)}d`;
                     };
-
-                    const getActivityIcon = (type: string) => {
+                    const getActivityStyle = (type: string) => {
                       switch (type) {
-                        case 'login':
-                        case 'login_otp':
-                          return <LogIn className="w-3 h-3 text-blue-500" />;
-                        case 'workout_complete':
-                          return <CheckCircle className="w-3 h-3 text-green-500" />;
-                        case 'workout_start':
-                          return <Dumbbell className="w-3 h-3 text-pink-500" />;
-                        default:
-                          return <Activity className="w-3 h-3 text-gray-400" />;
+                        case 'login': case 'login_otp': return { icon: <LogIn className="w-3.5 h-3.5" />, bg: 'bg-blue-100', text: 'text-blue-600' };
+                        case 'workout_complete': return { icon: <CheckCircle className="w-3.5 h-3.5" />, bg: 'bg-green-100', text: 'text-green-600' };
+                        case 'workout_start': return { icon: <Dumbbell className="w-3.5 h-3.5" />, bg: 'bg-pink-100', text: 'text-pink-600' };
+                        default: return { icon: <Activity className="w-3.5 h-3.5" />, bg: 'bg-gray-100', text: 'text-gray-600' };
                       }
                     };
-
-                    const getActivityBg = (type: string) => {
-                      switch (type) {
-                        case 'login':
-                        case 'login_otp':
-                          return 'bg-blue-50';
-                        case 'workout_complete':
-                          return 'bg-green-50';
-                        case 'workout_start':
-                          return 'bg-pink-50';
-                        default:
-                          return 'bg-gray-50';
-                      }
-                    };
-
-                    const userName = activity.user 
-                      ? `${activity.user.firstName} ${activity.user.lastName?.charAt(0) || ''}.`
-                      : 'Unknown';
-
-                    const getShortDescription = (type: string) => {
-                      switch (type) {
-                        case 'login':
-                        case 'login_otp':
-                          return 'logged in';
-                        case 'workout_complete':
-                          return 'completed workout';
-                        case 'workout_start':
-                          return 'started workout';
-                        default:
-                          return type.replace(/_/g, ' ');
-                      }
-                    };
-
+                    const style = getActivityStyle(activity.activityType);
+                    const userName = activity.user ? `${activity.user.firstName} ${activity.user.lastName?.charAt(0) || ''}.` : 'Unknown';
+                    const desc = { 'login': 'logged in', 'login_otp': 'logged in', 'workout_complete': 'completed workout', 'workout_start': 'started workout' }[activity.activityType] || activity.activityType.replace(/_/g, ' ');
                     return (
-                      <div 
-                        key={activity.id} 
-                        className={`flex items-center gap-2 p-2 rounded-lg ${getActivityBg(activity.activityType)}`}
-                        data-testid={`compact-activity-${activity.id}`}
-                      >
-                        <div className="flex-shrink-0">
-                          {getActivityIcon(activity.activityType)}
-                        </div>
+                      <div key={activity.id} className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-gray-100 hover:border-blue-200 transition-colors">
+                        <div className={`w-8 h-8 rounded-lg ${style.bg} ${style.text} flex items-center justify-center`}>{style.icon}</div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-700 truncate">
-                            <span className="font-medium">{userName}</span> {getShortDescription(activity.activityType)}
-                          </p>
+                          <p className="text-sm text-gray-700"><span className="font-medium">{userName}</span> {desc}</p>
                         </div>
-                        <span className="flex-shrink-0 text-xs text-gray-400">
-                          {timeAgo(activity.createdAt)}
-                        </span>
+                        <span className="text-xs text-gray-400 font-medium">{timeAgo(activity.createdAt)}</span>
                       </div>
                     );
                   })}
@@ -1251,385 +1210,233 @@ Stronger With Zoe Support`;
               )}
             </CardContent>
           </Card>
-        </div>
 
-        {/* Additional Needs Attention Cards */}
-        {(membersWithoutPhotos.length > 0 || recentCompleters.length > 0) && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Members Without Photos Card */}
-            {membersWithoutPhotos.length > 0 && (
-              <Card className="border-purple-200 bg-purple-50/50">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-purple-100">
-                      <Camera className="w-4 h-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-sm font-medium text-purple-900">No Progress Photos</CardTitle>
-                      <CardDescription className="text-xs text-purple-700">
-                        {membersWithoutPhotos.length} active member{membersWithoutPhotos.length !== 1 ? 's' : ''} without photos
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {membersWithoutPhotos.slice(0, 5).map((member) => (
-                      <div 
-                        key={member.id} 
-                        className="flex items-center justify-between p-2 bg-white rounded-lg border border-purple-100"
-                        data-testid={`no-photo-member-${member.id}`}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-800 truncate">
-                            {member.firstName} {member.lastName}
-                          </p>
-                          <p className="text-xs text-purple-600">
-                            {member.completionPercentage ? `${member.completionPercentage}% complete` : 'In progress'}
-                          </p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-100"
-                          onClick={() => previewEmailMutation.mutate({ userId: member.id, emailType: 'photo-reminder' })}
-                          disabled={previewEmailMutation.isPending}
-                          data-testid={`send-photo-reminder-${member.id}`}
-                        >
-                          <Send className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  {membersWithoutPhotos.length > 5 && (
-                    <p className="text-xs text-purple-600 mt-2 text-center">
-                      +{membersWithoutPhotos.length - 5} more members
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Recent Workout Completers Card */}
-            {recentCompleters.length > 0 && (
-              <Card className="border-green-200 bg-green-50/50">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-green-100">
-                      <Trophy className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-sm font-medium text-green-900">Recent Completers</CardTitle>
-                      <CardDescription className="text-xs text-green-700">
-                        {recentCompleters.length} workout{recentCompleters.length !== 1 ? 's' : ''} in last 48 hours
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {recentCompleters.slice(0, 5).map((completer) => (
-                      <div 
-                        key={`${completer.id}-${completer.completedAt}`} 
-                        className="flex items-center justify-between p-2 bg-white rounded-lg border border-green-100"
-                        data-testid={`recent-completer-${completer.id}`}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-800 truncate">
-                            {completer.firstName} {completer.lastName}
-                          </p>
-                          <p className="text-xs text-green-600 truncate">
-                            {completer.workoutName}
-                          </p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-100"
-                          onClick={() => previewEmailMutation.mutate({ userId: completer.id, emailType: 'congratulations' })}
-                          disabled={previewEmailMutation.isPending}
-                          data-testid={`send-congrats-${completer.id}`}
-                        >
-                          <Sparkles className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  {recentCompleters.length > 5 && (
-                    <p className="text-xs text-green-600 mt-2 text-center">
-                      +{recentCompleters.length - 5} more completers
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Check-in Analytics Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Check-in Analytics Card */}
-          <Card className="border-none shadow-md">
+          {/* Workout Progress */}
+          <Card className="border border-green-100 bg-gradient-to-br from-green-50/50 to-emerald-50/30 shadow-sm">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-pink-500" />
-                  Daily Check-ins
-                </CardTitle>
-                <div className="flex gap-1">
-                  <Button
-                    variant={checkinView === 'today' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCheckinView('today')}
-                    className={checkinView === 'today' ? 'bg-pink-500 hover:bg-pink-600' : ''}
-                    data-testid="checkin-view-today"
-                  >
-                    Today
-                  </Button>
-                  <Button
-                    variant={checkinView === 'week' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCheckinView('week')}
-                    className={checkinView === 'week' ? 'bg-pink-500 hover:bg-pink-600' : ''}
-                    data-testid="checkin-view-week"
-                  >
-                    This Week
-                  </Button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-md">
+                  <Trophy className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold text-gray-900">Workout Progress</CardTitle>
+                  <CardDescription className="text-xs text-gray-500">Completions in last 48 hours</CardDescription>
                 </div>
               </div>
-              <CardDescription>
-                {checkinView === 'today' ? "Today's" : "This week's"} member wellness check-ins
-              </CardDescription>
             </CardHeader>
-            <CardContent>
-              {checkinAnalytics ? (
-                <div className="space-y-4">
-                  {/* Total Check-ins */}
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Total Check-ins</span>
-                    <Badge className="bg-pink-500 text-white text-lg px-3">
-                      {checkinView === 'today' ? checkinAnalytics.today.total : checkinAnalytics.thisWeek.total}
-                    </Badge>
-                  </div>
-
-                  {/* Mood Distribution */}
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                      <Smile className="w-4 h-4 text-yellow-500" /> Mood Distribution
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(checkinView === 'today' 
-                        ? checkinAnalytics.today.moodDistribution 
-                        : checkinAnalytics.thisWeek.moodDistribution
-                      ).length > 0 ? (
-                        (checkinView === 'today' 
-                          ? checkinAnalytics.today.moodDistribution 
-                          : checkinAnalytics.thisWeek.moodDistribution
-                        ).map((item) => {
-                          const moodEmoji = {
-                            'great': '😊',
-                            'good': '🙂',
-                            'okay': '😐',
-                            'tired': '😴',
-                            'struggling': '😔',
-                          }[item.mood.toLowerCase()] || '😐';
-                          return (
-                            <div 
-                              key={item.mood} 
-                              className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
-                            >
-                              <span className="text-sm capitalize flex items-center gap-1">
-                                <span>{moodEmoji}</span> {item.mood}
-                              </span>
-                              <Badge variant="secondary">{item.count}</Badge>
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <p className="text-sm text-gray-400 col-span-2 text-center py-2">No mood data</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Energy Distribution */}
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-orange-500" /> Energy Levels
-                    </h4>
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4, 5].map((level) => {
-                        const data = (checkinView === 'today' 
-                          ? checkinAnalytics.today.energyDistribution 
-                          : checkinAnalytics.thisWeek.energyDistribution
-                        ).find(e => e.energyLevel === level);
-                        const count = data?.count || 0;
-                        const maxCount = Math.max(
-                          ...(checkinView === 'today' 
-                            ? checkinAnalytics.today.energyDistribution 
-                            : checkinAnalytics.thisWeek.energyDistribution
-                          ).map(e => e.count),
-                          1
-                        );
-                        const height = count > 0 ? Math.max((count / maxCount) * 60, 10) : 10;
-                        return (
-                          <div key={level} className="flex-1 flex flex-col items-center gap-1">
-                            <div 
-                              className="w-full bg-gradient-to-t from-orange-400 to-yellow-300 rounded-t"
-                              style={{ height: `${height}px` }}
-                            />
-                            <span className="text-xs text-gray-500">{level}</span>
-                            <span className="text-xs font-medium">{count}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Popular Goals */}
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                      <Target className="w-4 h-4 text-green-500" /> Popular Goals
-                    </h4>
-                    <div className="flex flex-wrap gap-1">
-                      {(checkinView === 'today' 
-                        ? checkinAnalytics.today.popularGoals 
-                        : checkinAnalytics.thisWeek.popularGoals
-                      ).length > 0 ? (
-                        (checkinView === 'today' 
-                          ? checkinAnalytics.today.popularGoals 
-                          : checkinAnalytics.thisWeek.popularGoals
-                        ).slice(0, 5).map((item) => (
-                          <Badge 
-                            key={item.goal} 
-                            variant="outline" 
-                            className="text-xs bg-green-50 border-green-200"
-                          >
-                            {item.goal} ({item.count})
-                          </Badge>
-                        ))
-                      ) : (
-                        <p className="text-sm text-gray-400">No goals data</p>
-                      )}
-                    </div>
-                  </div>
+            <CardContent className="pt-0">
+              {recentCompleters.length === 0 ? (
+                <div className="text-center py-6 text-gray-400">
+                  <Trophy className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No recent completions</p>
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>Loading check-in analytics...</p>
+                <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                  {recentCompleters.slice(0, 5).map((completer) => (
+                    <div key={`${completer.id}-${completer.completedAt}`} className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-gray-100 hover:border-green-200 transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white text-xs font-semibold">
+                        {completer.firstName?.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">{completer.firstName} {completer.lastName}</p>
+                        <p className="text-xs text-green-600 truncate">{completer.workoutName}</p>
+                      </div>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-green-600 hover:bg-green-100" onClick={() => previewEmailMutation.mutate({ userId: completer.id, emailType: 'congratulations' })} disabled={previewEmailMutation.isPending}>
+                        <Sparkles className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {recentCompleters.length > 5 && <p className="text-xs text-green-600 mt-2 text-center font-medium">+{recentCompleters.length - 5} more</p>}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Section Header - Wellness Insights */}
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-gray-900 mb-0.5">Wellness Insights</h2>
+          <p className="text-xs text-gray-500">Community mood, energy levels, and check-in data</p>
+        </div>
+
+        {/* Wellness Row - Mood & Energy Summary */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          {/* Community Mood Summary */}
+          <Card className="border border-yellow-100 bg-gradient-to-br from-yellow-50/50 to-amber-50/30 shadow-sm">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-md">
+                  <Smile className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold text-gray-900">Mood Overview</CardTitle>
+                  <CardDescription className="text-xs text-gray-500">This week's mood distribution</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {checkinAnalytics?.thisWeek?.moodDistribution?.length > 0 ? (
+                <div className="space-y-2">
+                  {checkinAnalytics.thisWeek.moodDistribution.slice(0, 4).map((item) => {
+                    const moodEmoji = { 'great': '😊', 'good': '🙂', 'okay': '😐', 'tired': '😴', 'struggling': '😔' }[item.mood.toLowerCase()] || '😐';
+                    const total = checkinAnalytics.thisWeek.moodDistribution.reduce((sum, m) => sum + m.count, 0);
+                    const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                    return (
+                      <div key={item.mood} className="flex items-center gap-3">
+                        <span className="text-xl">{moodEmoji}</span>
+                        <div className="flex-1">
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className="font-medium capitalize text-gray-700">{item.mood}</span>
+                            <span className="text-gray-500">{pct}%</span>
+                          </div>
+                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full" style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-gray-400">
+                  <Smile className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No mood data yet</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Daily Check-in Analytics (Aggregated Mood & Energy) */}
+          {/* Energy Levels */}
+          <Card className="border border-orange-100 bg-gradient-to-br from-orange-50/50 to-red-50/30 shadow-sm">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-md">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold text-gray-900">Energy Levels</CardTitle>
+                  <CardDescription className="text-xs text-gray-500">Average energy this week</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {checkinAnalytics?.thisWeek?.energyDistribution?.length > 0 ? (
+                <div className="flex items-end justify-between gap-2 h-24">
+                  {[1, 2, 3, 4, 5].map((level) => {
+                    const data = checkinAnalytics.thisWeek.energyDistribution.find(e => e.energyLevel === level);
+                    const count = data?.count || 0;
+                    const maxCount = Math.max(...checkinAnalytics.thisWeek.energyDistribution.map(e => e.count), 1);
+                    const height = count > 0 ? Math.max((count / maxCount) * 100, 15) : 15;
+                    return (
+                      <div key={level} className="flex-1 flex flex-col items-center gap-1">
+                        <div className="w-full rounded-t-lg bg-gradient-to-t from-orange-500 to-amber-400 transition-all duration-300" style={{ height: `${height}%` }} />
+                        <span className="text-xs font-bold text-gray-700">{level}</span>
+                        <span className="text-xs text-gray-500">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-gray-400">
+                  <Zap className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No energy data yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Check-in Stats */}
+          <Card className="border border-pink-100 bg-gradient-to-br from-pink-50/50 to-rose-50/30 shadow-sm">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center shadow-md">
+                    <Heart className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base font-semibold text-gray-900">Check-in Stats</CardTitle>
+                    <CardDescription className="text-xs text-gray-500">Today vs this week</CardDescription>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center p-3 bg-white rounded-xl border border-pink-100">
+                  <p className="text-3xl font-bold text-pink-600">{checkinAnalytics?.today?.total || 0}</p>
+                  <p className="text-xs text-gray-500 mt-1">Today</p>
+                </div>
+                <div className="text-center p-3 bg-white rounded-xl border border-pink-100">
+                  <p className="text-3xl font-bold text-pink-600">{checkinAnalytics?.thisWeek?.total || 0}</p>
+                  <p className="text-xs text-gray-500 mt-1">This Week</p>
+                </div>
+              </div>
+              {checkinAnalytics?.thisWeek?.popularGoals?.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-gray-600 mb-1.5 flex items-center gap-1"><Target className="w-3 h-3" /> Top Goals</p>
+                  <div className="flex flex-wrap gap-1">
+                    {checkinAnalytics.thisWeek.popularGoals.slice(0, 3).map((g) => (
+                      <Badge key={g.goal} variant="secondary" className="text-xs bg-pink-100 text-pink-700">{g.goal}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Cards Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Community Mood & Energy Card */}
           <CheckinAnalyticsCard />
 
           {/* Recent Check-ins Card */}
-          <Card className="border-none shadow-md">
+          <Card className="border border-purple-100 bg-gradient-to-br from-purple-50/50 to-violet-50/30 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <ClipboardCheck className="w-5 h-5 text-blue-500" />
-                  Recent Check-ins
-                </CardTitle>
-                <Badge variant="secondary" className="text-xs">
-                  {recentCheckins.length} latest
-                </Badge>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center shadow-md">
+                    <ClipboardCheck className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base font-semibold text-gray-900">Recent Check-ins</CardTitle>
+                    <CardDescription className="text-xs text-gray-500">Latest wellness submissions</CardDescription>
+                  </div>
+                </div>
+                <Badge className="bg-purple-100 text-purple-700 text-xs">{recentCheckins.length} latest</Badge>
               </div>
-              <CardDescription>Latest member wellness submissions</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               {recentCheckins.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <ClipboardCheck className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>No check-ins yet</p>
-                  <p className="text-sm">Member check-ins will appear here</p>
+                <div className="text-center py-6 text-gray-400">
+                  <ClipboardCheck className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No check-ins yet</p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                  {recentCheckins.slice(0, 10).map((checkin) => {
-                    const moodEmoji = {
-                      'great': '😊',
-                      'good': '🙂',
-                      'okay': '😐',
-                      'tired': '😴',
-                      'struggling': '😔',
-                    }[checkin.mood?.toLowerCase() || ''] || '😐';
-                    
+                <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                  {recentCheckins.slice(0, 6).map((checkin) => {
+                    const moodEmoji = { 'great': '😊', 'good': '🙂', 'okay': '😐', 'tired': '😴', 'struggling': '😔' }[checkin.mood?.toLowerCase() || ''] || '😐';
                     const timeAgo = checkin.createdAt ? (() => {
                       const date = new Date(checkin.createdAt);
-                      const now = new Date();
-                      const diff = now.getTime() - date.getTime();
-                      const minutes = Math.floor(diff / 60000);
-                      const hours = Math.floor(diff / 3600000);
-                      const days = Math.floor(diff / 86400000);
-                      
-                      if (minutes < 1) return 'Just now';
-                      if (minutes < 60) return `${minutes}m ago`;
-                      if (hours < 24) return `${hours}h ago`;
-                      if (days < 7) return `${days}d ago`;
-                      return date.toLocaleDateString();
-                    })() : 'Unknown';
-
+                      const diff = Date.now() - date.getTime();
+                      const mins = Math.floor(diff / 60000);
+                      if (mins < 1) return 'Now';
+                      if (mins < 60) return `${mins}m`;
+                      const hrs = Math.floor(diff / 3600000);
+                      if (hrs < 24) return `${hrs}h`;
+                      return `${Math.floor(diff / 86400000)}d`;
+                    })() : '';
                     return (
-                      <div 
-                        key={checkin.id} 
-                        className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100 group hover:bg-blue-100 transition-colors"
-                        data-testid={`recent-checkin-${checkin.id}`}
-                      >
-                        <div className="text-2xl">{moodEmoji}</div>
+                      <div key={checkin.id} className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-gray-100 hover:border-purple-200 transition-colors">
+                        <span className="text-xl">{moodEmoji}</span>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium text-gray-800 truncate">
-                              {checkin.user.firstName} {checkin.user.lastName}
-                            </p>
-                            <span className="text-xs text-gray-400">{timeAgo}</span>
+                          <p className="text-sm font-medium text-gray-800 truncate">{checkin.user.firstName} {checkin.user.lastName}</p>
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <span className="capitalize">{checkin.mood}</span>
+                            {checkin.energyLevel && <span className="flex items-center gap-0.5"><Zap className="w-3 h-3 text-orange-400" />{checkin.energyLevel}/5</span>}
                           </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-gray-600 capitalize">
-                              Mood: {checkin.mood || 'N/A'}
-                            </span>
-                            {checkin.energyLevel && (
-                              <span className="text-xs text-gray-600 flex items-center gap-1">
-                                <Zap className="w-3 h-3 text-orange-400" />
-                                Energy: {checkin.energyLevel}/5
-                              </span>
-                            )}
-                          </div>
-                          {checkin.goals && checkin.goals.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {checkin.goals.slice(0, 3).map((goal, i) => (
-                                <Badge key={i} variant="outline" className="text-xs py-0">
-                                  {goal}
-                                </Badge>
-                              ))}
-                              {checkin.goals.length > 3 && (
-                                <span className="text-xs text-gray-400">+{checkin.goals.length - 3} more</span>
-                              )}
-                            </div>
-                          )}
-                          {checkin.notes && (
-                            <p className="text-xs text-gray-500 mt-1 truncate italic">
-                              "{checkin.notes}"
-                            </p>
-                          )}
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => {
-                            const member = allUsers.find(u => u.id === checkin.userId);
-                            if (member) {
-                              setSelectedMember(member);
-                              setMemberViewMode('view');
-                            }
-                          }}
-                          data-testid={`view-checkin-member-${checkin.id}`}
-                        >
-                          <Eye className="w-4 h-4 text-blue-500" />
-                        </Button>
+                        <span className="text-xs text-gray-400 font-medium">{timeAgo}</span>
                       </div>
                     );
                   })}
