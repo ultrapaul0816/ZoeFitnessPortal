@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Heart, Zap, TrendingUp, TrendingDown, Minus, Users, Sparkles } from "lucide-react";
+import { Heart, Zap } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface CheckinAnalytics {
@@ -18,10 +18,10 @@ export default function CheckinAnalyticsCard() {
 
   if (isLoading) {
     return (
-      <Card className="border-violet-200 bg-violet-50/30">
+      <Card className="border border-violet-100 bg-gradient-to-br from-violet-50/50 to-purple-50/30 shadow-sm">
         <CardContent className="p-6">
           <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         </CardContent>
       </Card>
@@ -33,32 +33,29 @@ export default function CheckinAnalyticsCard() {
   const hasMoodData = analytics.moodDistribution && analytics.moodDistribution.length > 0;
 
   return (
-    <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-violet-100">
-              <Heart className="w-4 h-4 text-violet-600" />
-            </div>
-            <div>
-              <CardTitle className="text-sm font-medium text-violet-900">Community Mood & Energy</CardTitle>
-              <CardDescription className="text-xs text-violet-700">
-                Last {analytics.days} days across {analytics.totalUsers} members
-              </CardDescription>
-            </div>
+    <Card className="border border-violet-100 bg-gradient-to-br from-violet-50/50 to-purple-50/30 shadow-sm">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-md">
+            <Heart className="w-5 h-5 text-white" />
           </div>
-          <Sparkles className="w-5 h-5 text-amber-400" />
+          <div>
+            <CardTitle className="text-base font-semibold text-gray-900">Community Mood & Energy</CardTitle>
+            <CardDescription className="text-xs text-gray-500">
+              Last {analytics.days} days across {analytics.totalUsers} members
+            </CardDescription>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-2 space-y-4">
+      <CardContent className="pt-0 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           {hasMoodData && analytics.moodDistribution[0] && (
-            <div className="bg-white/60 rounded-lg p-3 border border-violet-100">
-              <p className="text-xs text-gray-500 mb-1 font-medium">Most Common Mood</p>
+            <div className="bg-white rounded-xl p-3 border border-gray-100">
+              <p className="text-xs text-gray-500 mb-2 font-medium">Most Common Mood</p>
               <div className="flex items-center gap-2">
                 <span className="text-2xl">{analytics.moodDistribution[0].emoji}</span>
                 <div>
-                  <span className="font-bold text-gray-800 capitalize text-lg">
+                  <span className="font-bold text-gray-800 capitalize text-base">
                     {analytics.moodDistribution[0].mood}
                   </span>
                   <span className="text-xs text-gray-500 block">
@@ -69,23 +66,21 @@ export default function CheckinAnalyticsCard() {
             </div>
           )}
 
-          <div className="bg-white/60 rounded-lg p-3 border border-amber-100">
-            <p className="text-xs text-gray-500 mb-1 font-medium">Avg Energy Level</p>
+          <div className="bg-white rounded-xl p-3 border border-gray-100">
+            <p className="text-xs text-gray-500 mb-2 font-medium">Avg Energy Level</p>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center shadow-sm">
                 <Zap className="h-4 w-4 text-white" />
               </div>
-              <div>
-                <span className="font-bold text-gray-800 text-lg">
-                  {analytics.avgEnergyLevel > 0 ? analytics.avgEnergyLevel.toFixed(1) : 'N/A'}/5
-                </span>
-              </div>
+              <span className="font-bold text-gray-800 text-lg">
+                {analytics.avgEnergyLevel > 0 ? analytics.avgEnergyLevel.toFixed(1) : 'N/A'}/5
+              </span>
             </div>
           </div>
         </div>
 
         {hasMoodData && (
-          <div className="bg-white/60 rounded-lg p-3 border border-violet-100">
+          <div className="bg-white rounded-xl p-3 border border-gray-100">
             <p className="text-xs text-gray-500 mb-2 font-medium">Mood Distribution</p>
             <div className="flex items-center justify-between gap-1">
               {analytics.moodDistribution.slice(0, 5).map((m) => (
@@ -100,7 +95,7 @@ export default function CheckinAnalyticsCard() {
         )}
 
         {analytics.energyTrend && analytics.energyTrend.length > 2 && (
-          <div className="bg-white/60 rounded-lg p-3 border border-violet-100">
+          <div className="bg-white rounded-xl p-3 border border-gray-100">
             <p className="text-xs text-gray-500 mb-2 font-medium">Energy Trend (7 days)</p>
             <div className="h-20">
               <ResponsiveContainer width="100%" height="100%">
