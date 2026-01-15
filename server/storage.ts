@@ -207,6 +207,7 @@ export interface IStorage {
     expiringUsers: Array<{
       userId: string;
       userName: string;
+      userEmail: string;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -1356,6 +1357,7 @@ export class MemStorage implements IStorage {
     expiringUsers: Array<{
       userId: string;
       userName: string;
+      userEmail: string;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -1375,6 +1377,7 @@ export class MemStorage implements IStorage {
     const expiringUsers: Array<{
       userId: string;
       userName: string;
+      userEmail: string;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -1405,6 +1408,7 @@ export class MemStorage implements IStorage {
         expiringUsers.push({
           userId: user.id,
           userName: `${user.firstName} ${user.lastName}`,
+          userEmail: user.email,
           programExpiring: !!programExpiring,
           whatsAppExpiring: !!whatsAppExpiring,
           programExpiryDate: userProgram?.expiryDate,
@@ -2322,6 +2326,7 @@ class DatabaseStorage implements IStorage {
     expiringUsers: Array<{
       userId: string;
       userName: string;
+      userEmail: string;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -2341,6 +2346,7 @@ class DatabaseStorage implements IStorage {
     const expiringUsers: Array<{
       userId: string;
       userName: string;
+      userEmail: string;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -2372,6 +2378,7 @@ class DatabaseStorage implements IStorage {
         expiringUsers.push({
           userId: user.id,
           userName: `${user.firstName} ${user.lastName}`,
+          userEmail: user.email,
           programExpiring: !!programExpiring,
           whatsAppExpiring: !!whatsAppExpiring,
           programExpiryDate: userProgram?.expiryDate,

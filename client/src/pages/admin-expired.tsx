@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw, UserMinus, UserCheck, Copy, ExternalLink } from "lucide-react";
@@ -384,47 +386,97 @@ Coach Zoe`;
       </Dialog>
 
       <Dialog open={!!reminderEmailData} onOpenChange={(open) => !open && setReminderEmailData(null)}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
+        <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white via-pink-50/30 to-rose-50/20">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center shadow-md">
                 <Mail className="w-5 h-5 text-white" />
               </div>
-              Expired Membership Reminder
+              <span className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent font-semibold">
+                Expired Membership Reminder
+              </span>
             </DialogTitle>
           </DialogHeader>
           {reminderEmailData && (() => {
             const { subject, body } = generateReminderEmail(reminderEmailData);
-            const fullEmail = `To: ${reminderEmailData.userEmail}\nSubject: ${subject}\n\n${body}`;
             return (
-              <div className="space-y-4 pt-4">
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">To: {reminderEmailData.userEmail}</p>
-                  <p className="font-medium text-sm mb-2">Subject: {subject}</p>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">To</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      value={reminderEmailData.userEmail} 
+                      readOnly 
+                      className="bg-white flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(reminderEmailData.userEmail);
+                        toast({ title: "Email copied!" });
+                      }}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg max-h-48 overflow-y-auto">
-                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans">{body}</pre>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Subject</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      value={subject} 
+                      readOnly 
+                      className="bg-white flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(subject);
+                        toast({ title: "Subject copied!" });
+                      }}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex justify-end gap-2">
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Email Body</Label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(body);
+                        toast({ title: "Email body copied!" });
+                      }}
+                    >
+                      <Copy className="w-4 h-4 mr-1" />
+                      Copy Body
+                    </Button>
+                  </div>
+                  <textarea
+                    className="w-full h-48 p-3 text-sm border rounded-lg resize-none bg-white"
+                    readOnly
+                    value={body}
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2 border-t">
                   <Button
-                    variant="outline"
-                    onClick={() => {
-                      navigator.clipboard.writeText(fullEmail);
-                      toast({ title: "Copied", description: "Email content copied to clipboard" });
-                    }}
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy
-                  </Button>
-                  <Button
-                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white"
                     onClick={() => {
                       const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(reminderEmailData.userEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                       window.open(gmailUrl, '_blank');
                     }}
                   >
-                    <ExternalLink className="w-4 h-4 mr-2" />
                     Open in Gmail
+                  </Button>
+                  <Button variant="outline" onClick={() => setReminderEmailData(null)}>
+                    Close
                   </Button>
                 </div>
               </div>
