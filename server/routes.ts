@@ -3935,7 +3935,8 @@ RESPONSE GUIDELINES:
         SELECT 
           id, 
           COALESCE(NULLIF(TRIM(COALESCE(first_name, '') || ' ' || COALESCE(last_name, '')), ''), email) as "name", 
-          email, 
+          email,
+          phone,
           valid_until as "programExpiryDate",
           whatsapp_support_expiry_date as "whatsAppExpiryDate",
           has_whatsapp_support as "hasWhatsAppSupport",
@@ -3957,9 +3958,11 @@ RESPONSE GUIDELINES:
   app.get("/api/admin/whatsapp/extension-logs", async (req, res) => {
     try {
       const result = await storage.db.execute(sql`
-        SELECT * FROM whatsapp_membership_logs 
-        WHERE action_type = 'extended'
-        ORDER BY created_at DESC
+        SELECT l.*, u.phone as user_phone
+        FROM whatsapp_membership_logs l
+        LEFT JOIN users u ON l.user_id::text = u.id
+        WHERE l.action_type = 'extended'
+        ORDER BY l.created_at DESC
         LIMIT 50
       `);
       res.json(result.rows);

@@ -17,6 +17,7 @@ export default function AdminExtensions() {
     user_id: string;
     user_name: string;
     user_email: string;
+    user_phone: string | null;
     action_type: string;
     previous_expiry_date: string | null;
     new_expiry_date: string | null;
@@ -41,7 +42,7 @@ export default function AdminExtensions() {
   });
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF('landscape');
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
     
     doc.setFontSize(18);
@@ -51,33 +52,35 @@ export default function AdminExtensions() {
     doc.setTextColor(100);
     doc.text(`Generated: ${now} IST`, 14, 28);
     
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(0);
     let y = 40;
     
     doc.setFillColor(245, 245, 245);
-    doc.rect(14, y - 5, 180, 8, 'F');
+    doc.rect(14, y - 5, 268, 8, 'F');
     doc.setFont('helvetica', 'bold');
     doc.text('Name', 16, y);
-    doc.text('Email', 55, y);
-    doc.text('Extension', 105, y);
-    doc.text('Previous', 130, y);
-    doc.text('New', 155, y);
-    doc.text('Extended On', 175, y);
+    doc.text('Email', 50, y);
+    doc.text('Phone', 105, y);
+    doc.text('Extension', 150, y);
+    doc.text('Previous', 180, y);
+    doc.text('New', 210, y);
+    doc.text('Extended On', 240, y);
     y += 10;
     
     doc.setFont('helvetica', 'normal');
     extensionLogs.forEach((log) => {
-      if (y > 270) {
+      if (y > 190) {
         doc.addPage();
         y = 20;
       }
-      doc.text((log.user_name || '').substring(0, 18), 16, y);
-      doc.text((log.user_email || '').substring(0, 22), 55, y);
-      doc.text(`+${log.extension_months}m`, 105, y);
-      doc.text(log.previous_expiry_date ? new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 130, y);
-      doc.text(log.new_expiry_date ? new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 155, y);
-      doc.text(new Date(log.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), 175, y);
+      doc.text((log.user_name || '').substring(0, 16), 16, y);
+      doc.text((log.user_email || '').substring(0, 28), 50, y);
+      doc.text((log.user_phone || '-').substring(0, 15), 105, y);
+      doc.text(`+${log.extension_months}m`, 150, y);
+      doc.text(log.previous_expiry_date ? new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 180, y);
+      doc.text(log.new_expiry_date ? new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 210, y);
+      doc.text(new Date(log.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), 240, y);
       y += 8;
     });
     
@@ -86,10 +89,11 @@ export default function AdminExtensions() {
   };
 
   const exportToExcel = () => {
-    const headers = ['Name', 'Email', 'Extension (Months)', 'Previous Expiry', 'New Expiry', 'Extended On'];
+    const headers = ['Name', 'Email', 'Phone', 'Extension (Months)', 'Previous Expiry', 'New Expiry', 'Extended On'];
     const rows = extensionLogs.map((log) => [
       log.user_name || '',
       log.user_email || '',
+      log.user_phone || '',
       String(log.extension_months || 0),
       log.previous_expiry_date ? new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
       log.new_expiry_date ? new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '',

@@ -39,6 +39,7 @@ export default function AdminExpired() {
     id: string;
     name: string;
     email: string;
+    phone: string | null;
     programExpiryDate: string | null;
     whatsAppExpiryDate: string | null;
     hasWhatsAppSupport: boolean;
@@ -136,8 +137,15 @@ Coach Zoe`;
     return { subject, body };
   };
 
+  const getEmailStatus = (userId: string) => {
+    const logs = renewalEmailLogs.filter(log => log.user_id === userId);
+    if (logs.length === 0) return 'No emails sent';
+    if (logs.length === 1) return 'Initial sent';
+    return 'Follow-up sent';
+  };
+
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF('landscape');
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
     
     doc.setFontSize(18);
@@ -147,32 +155,37 @@ Coach Zoe`;
     doc.setTextColor(100);
     doc.text(`Generated: ${now} IST`, 14, 28);
     
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(0);
     let y = 40;
     
     doc.setFillColor(245, 245, 245);
-    doc.rect(14, y - 5, 180, 8, 'F');
+    doc.rect(14, y - 5, 268, 8, 'F');
     doc.setFont('helvetica', 'bold');
     doc.text('Name', 16, y);
     doc.text('Email', 55, y);
-    doc.text('Program', 105, y);
-    doc.text('Expired On', 145, y);
+    doc.text('Phone', 115, y);
+    doc.text('Program', 165, y);
+    doc.text('Expired On', 200, y);
+    doc.text('Email Status', 240, y);
     y += 10;
     
     doc.setFont('helvetica', 'normal');
     expiredMembers.forEach((member) => {
-      if (y > 270) {
+      if (y > 190) {
         doc.addPage();
         y = 20;
       }
       const program = [member.programExpired ? 'HYC' : '', member.whatsAppExpired ? 'WA' : ''].filter(Boolean).join(', ');
       const expiryDate = member.whatsAppExpiryDate || member.programExpiryDate;
+      const emailStatus = getEmailStatus(member.id);
       
-      doc.text((member.name || '').substring(0, 20), 16, y);
-      doc.text((member.email || '').substring(0, 25), 55, y);
-      doc.text(program, 105, y);
-      doc.text(expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '', 145, y);
+      doc.text((member.name || '').substring(0, 18), 16, y);
+      doc.text((member.email || '').substring(0, 30), 55, y);
+      doc.text((member.phone || '-').substring(0, 15), 115, y);
+      doc.text(program, 165, y);
+      doc.text(expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 200, y);
+      doc.text(emailStatus, 240, y);
       y += 8;
     });
     
@@ -181,15 +194,18 @@ Coach Zoe`;
   };
 
   const exportToExcel = () => {
-    const headers = ['Name', 'Email', 'Program', 'Expired On'];
+    const headers = ['Name', 'Email', 'Phone', 'Program', 'Expired On', 'Email Status'];
     const rows = expiredMembers.map((member) => {
       const program = [member.programExpired ? 'Heal Your Core' : '', member.whatsAppExpired ? 'WhatsApp' : ''].filter(Boolean).join(', ');
       const expiryDate = member.whatsAppExpiryDate || member.programExpiryDate;
+      const emailStatus = getEmailStatus(member.id);
       return [
         member.name || '',
         member.email || '',
+        member.phone || '',
         program,
-        expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
+        expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
+        emailStatus
       ];
     });
     

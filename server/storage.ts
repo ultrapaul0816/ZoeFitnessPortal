@@ -208,6 +208,7 @@ export interface IStorage {
       userId: string;
       userName: string;
       userEmail: string;
+      userPhone: string | null;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -1378,6 +1379,7 @@ export class MemStorage implements IStorage {
       userId: string;
       userName: string;
       userEmail: string;
+      userPhone: string | null;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -1409,6 +1411,7 @@ export class MemStorage implements IStorage {
           userId: user.id,
           userName: `${user.firstName} ${user.lastName}`,
           userEmail: user.email,
+          userPhone: user.phone || null,
           programExpiring: !!programExpiring,
           whatsAppExpiring: !!whatsAppExpiring,
           programExpiryDate: userProgram?.expiryDate,
@@ -2347,6 +2350,7 @@ class DatabaseStorage implements IStorage {
       userId: string;
       userName: string;
       userEmail: string;
+      userPhone: string | null;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -2379,6 +2383,7 @@ class DatabaseStorage implements IStorage {
           userId: user.id,
           userName: `${user.firstName} ${user.lastName}`,
           userEmail: user.email,
+          userPhone: user.phone || null,
           programExpiring: !!programExpiring,
           whatsAppExpiring: !!whatsAppExpiring,
           programExpiryDate: userProgram?.expiryDate,
