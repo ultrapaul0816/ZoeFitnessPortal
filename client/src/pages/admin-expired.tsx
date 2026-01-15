@@ -1,15 +1,35 @@
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw, UserMinus, UserCheck } from "lucide-react";
+import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw, UserMinus, UserCheck, Copy, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function AdminExpired() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+
+  const [extensionDialogOpen, setExtensionDialogOpen] = useState(false);
+  const [extensionMember, setExtensionMember] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    programExpiryDate?: string | null;
+    whatsAppExpiryDate?: string | null;
+  } | null>(null);
+  const [extensionMonths, setExtensionMonths] = useState<number>(3);
+
+  const [reminderEmailData, setReminderEmailData] = useState<{
+    userName: string;
+    userEmail: string;
+    programExpiryDate?: string | null;
+    whatsAppExpiryDate?: string | null;
+  } | null>(null);
 
   const { data: expiredMembers = [], isLoading } = useQuery<Array<{
     id: string;
@@ -59,6 +79,58 @@ export default function AdminExpired() {
       toast({ title: "Email Logged", description: "Email sent date and time recorded" });
     },
   });
+
+  const extendMembershipMutation = useMutation({
+    mutationFn: async (data: { userId: string; months: number; notes?: string }) => {
+      const response = await apiRequest("POST", `/api/admin/whatsapp/extend/${data.userId}`, {
+        months: data.months,
+        notes: data.notes,
+      });
+      return response.json();
+    },
+    onSuccess: async () => {
+      toast({ title: "Success", description: `Membership extended by ${extensionMonths} months!` });
+      setExtensionDialogOpen(false);
+      setExtensionMember(null);
+      setExtensionMonths(3);
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/expired-members"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/extension-logs"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to extend membership", variant: "destructive" });
+    },
+  });
+
+  const generateReminderEmail = (data: { userName: string; programExpiryDate?: string | null; whatsAppExpiryDate?: string | null }) => {
+    const formatDate = (dateStr: string | null | undefined) => {
+      if (!dateStr) return null;
+      return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    };
+    
+    const programDate = formatDate(data.programExpiryDate);
+    const whatsAppDate = formatDate(data.whatsAppExpiryDate);
+    
+    let expiryInfo = '';
+    if (programDate) expiryInfo += `- Heal Your Core Program: expired on ${programDate}\n`;
+    if (whatsAppDate) expiryInfo += `- WhatsApp Support: expired on ${whatsAppDate}\n`;
+
+    const subject = `Your Membership Has Expired - We Miss You!`;
+    const body = `Hi ${data.userName},
+
+We noticed your membership access has expired and we'd love to have you back!
+
+${expiryInfo}
+Your progress and journey matter to us. Renew now to continue where you left off and stay connected with our supportive community.
+
+Renewal: https://rzp.io/rzp/sFzniAWK (Rs. 1,000 for 3 months WhatsApp support)
+
+If you have any questions, please reply to this email.
+
+With love,
+Coach Zoe`;
+
+    return { subject, body };
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
@@ -116,8 +188,8 @@ export default function AdminExpired() {
                   <thead>
                     <tr className="bg-gradient-to-r from-gray-50 to-slate-50">
                       <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Member</th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Program</th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Expired On</th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Emails Sent</th>
                       <th className="text-right px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -138,7 +210,7 @@ export default function AdminExpired() {
                           <td className="px-6 py-5">
                             <div className="flex flex-col gap-1.5">
                               {member.whatsAppExpired && (
-                                <Badge variant="outline" className="w-fit px-3 py-1 rounded-lg bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200 font-medium">
+                                <Badge variant="outline" className="w-fit px-3 py-1 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-green-200 font-medium">
                                   <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                                   WhatsApp
                                 </Badge>
@@ -146,24 +218,30 @@ export default function AdminExpired() {
                               {member.programExpired && (
                                 <Badge variant="outline" className="w-fit px-3 py-1 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border-amber-200 font-medium">
                                   <Dumbbell className="w-3.5 h-3.5 mr-1.5" />
-                                  Program
+                                  Heal Your Core
                                 </Badge>
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-5 text-sm text-gray-600">
-                            {member.whatsAppExpiryDate && (
-                              <div className="flex items-center gap-2">
-                                <span className="text-gray-400">WA:</span>
-                                <span className="font-medium">{new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                              </div>
-                            )}
-                            {member.programExpiryDate && (
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-gray-400">Prog:</span>
-                                <span className="font-medium">{new Date(member.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                              </div>
-                            )}
+                          <td className="px-6 py-5">
+                            <div className="space-y-1.5 text-sm">
+                              {member.whatsAppExpired && member.whatsAppExpiryDate && (
+                                <div className="flex items-center gap-2">
+                                  <MessageSquare className="w-3.5 h-3.5 text-green-500" />
+                                  <span className="font-medium text-gray-700">
+                                    {new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                  </span>
+                                </div>
+                              )}
+                              {member.programExpired && member.programExpiryDate && (
+                                <div className="flex items-center gap-2">
+                                  <Dumbbell className="w-3.5 h-3.5 text-amber-500" />
+                                  <span className="font-medium text-gray-700">
+                                    {new Date(member.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-5">
                             <div className="flex flex-col gap-1.5">
@@ -182,10 +260,35 @@ export default function AdminExpired() {
                           </td>
                           <td className="px-6 py-5">
                             <div className="flex items-center justify-end gap-2">
-                              <Button size="sm" variant="outline" className="h-9 px-4 text-xs font-medium rounded-lg border-gray-200 hover:bg-gray-50 hover:border-gray-300">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="h-9 px-4 text-xs font-medium rounded-lg border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                                onClick={() => {
+                                  setExtensionMember({
+                                    id: member.id,
+                                    name: member.name || 'Unknown',
+                                    email: member.email,
+                                    programExpiryDate: member.programExpiryDate,
+                                    whatsAppExpiryDate: member.whatsAppExpiryDate,
+                                  });
+                                  setExtensionDialogOpen(true);
+                                }}
+                              >
                                 Extend
                               </Button>
-                              <Button size="sm" className="h-9 px-4 text-xs font-medium rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-sm">
+                              <Button 
+                                size="sm" 
+                                className="h-9 px-4 text-xs font-medium rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-sm"
+                                onClick={() => {
+                                  setReminderEmailData({
+                                    userName: member.name || 'there',
+                                    userEmail: member.email,
+                                    programExpiryDate: member.programExpiryDate,
+                                    whatsAppExpiryDate: member.whatsAppExpiryDate,
+                                  });
+                                }}
+                              >
                                 <Mail className="w-3.5 h-3.5 mr-1.5" />
                                 Remind
                               </Button>
@@ -225,6 +328,110 @@ export default function AdminExpired() {
           </div>
         </div>
       </div>
+
+      <Dialog open={extensionDialogOpen} onOpenChange={setExtensionDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center">
+                <RefreshCw className="w-5 h-5 text-white" />
+              </div>
+              Extend Membership
+            </DialogTitle>
+          </DialogHeader>
+          {extensionMember && (
+            <div className="space-y-4 pt-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="font-medium">{extensionMember.name}</p>
+                <p className="text-sm text-gray-500">{extensionMember.email}</p>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Extension Period</label>
+                <Select value={String(extensionMonths)} onValueChange={(v) => setExtensionMonths(Number(v))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3">3 months (Rs. 1,000)</SelectItem>
+                    <SelectItem value="6">6 months (Rs. 2,000)</SelectItem>
+                    <SelectItem value="12">12 months (Rs. 4,000)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={() => { setExtensionDialogOpen(false); setExtensionMember(null); }}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-gradient-to-r from-emerald-500 to-green-600 text-white"
+                  disabled={extendMembershipMutation.isPending}
+                  onClick={() => {
+                    if (extensionMember) {
+                      extendMembershipMutation.mutate({
+                        userId: extensionMember.id,
+                        months: extensionMonths,
+                        notes: `Extended ${extensionMonths} months`,
+                      });
+                    }
+                  }}
+                >
+                  {extendMembershipMutation.isPending ? "Extending..." : "Extend"}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!reminderEmailData} onOpenChange={(open) => !open && setReminderEmailData(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-white" />
+              </div>
+              Expired Membership Reminder
+            </DialogTitle>
+          </DialogHeader>
+          {reminderEmailData && (() => {
+            const { subject, body } = generateReminderEmail(reminderEmailData);
+            const fullEmail = `To: ${reminderEmailData.userEmail}\nSubject: ${subject}\n\n${body}`;
+            return (
+              <div className="space-y-4 pt-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">To: {reminderEmailData.userEmail}</p>
+                  <p className="font-medium text-sm mb-2">Subject: {subject}</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg max-h-48 overflow-y-auto">
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans">{body}</pre>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(fullEmail);
+                      toast({ title: "Copied", description: "Email content copied to clipboard" });
+                    }}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy
+                  </Button>
+                  <Button
+                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+                    onClick={() => {
+                      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(reminderEmailData.userEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      window.open(gmailUrl, '_blank');
+                    }}
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Open in Gmail
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
