@@ -4,40 +4,63 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Activity, Search, Download, ChevronDown, FileText, FileSpreadsheet, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, Activity, Search, Download, ChevronDown, FileText, FileSpreadsheet, Calendar as CalendarIcon, Phone } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState, useMemo } from "react";
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays } from "date-fns";
 import jsPDF from "jspdf";
 import type { User } from "@shared/schema";
+import type { DateRange } from "react-day-picker";
 
 export default function AdminActive() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateFilter, setDateFilter] = useState<string>("7");
+  const [filterType, setFilterType] = useState<"daily" | "weekly" | "monthly">("daily");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 7),
+    to: new Date(),
+  });
 
   const { data: allUsers = [], isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
   });
 
-  const members = allUsers.filter(u => !u.isAdmin);
+  const members = allUsers.filter(u => !u.isAdmin && u.termsAccepted);
 
   const activeMembers = useMemo(() => {
     const now = new Date();
-    const daysAgo = new Date(now.getTime() - parseInt(dateFilter) * 24 * 60 * 60 * 1000);
+    let startDate: Date;
+    let endDate: Date = now;
+    
+    if (filterType === "daily" && dateRange?.from) {
+      startDate = dateRange.from;
+      endDate = dateRange.to || now;
+    } else if (filterType === "weekly") {
+      startDate = startOfWeek(now, { weekStartsOn: 1 });
+      endDate = endOfWeek(now, { weekStartsOn: 1 });
+    } else if (filterType === "monthly") {
+      startDate = startOfMonth(now);
+      endDate = endOfMonth(now);
+    } else {
+      startDate = subDays(now, 7);
+    }
     
     return members.filter(member => {
-      if (!member.lastActiveAt) return false;
-      const lastActive = new Date(member.lastActiveAt);
-      return lastActive >= daysAgo;
+      if (!member.createdAt) return false;
+      const createdAt = new Date(member.createdAt);
+      return createdAt >= startDate && createdAt <= endDate;
     }).sort((a, b) => {
-      const dateA = a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0;
-      const dateB = b.lastActiveAt ? new Date(b.lastActiveAt).getTime() : 0;
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return dateB - dateA;
     });
-  }, [members, dateFilter]);
+  }, [members, filterType, dateRange]);
 
   const filteredMembers = activeMembers.filter(member => {
     const name = `${member.firstName || ''} ${member.lastName || ''}`.toLowerCase();
@@ -45,20 +68,21 @@ export default function AdminActive() {
     return name.includes(searchQuery.toLowerCase()) || email.includes(searchQuery.toLowerCase());
   });
 
-  const formatLastActive = (date: Date | string | null) => {
-    if (!date) return '-';
-    const d = new Date(date);
-    const now = new Date();
-    const diffMs = now.getTime() - d.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const getDateRangeLabel = () => {
+    if (filterType === "daily" && dateRange?.from) {
+      const fromStr = format(dateRange.from, "d MMM");
+      const toStr = dateRange.to ? format(dateRange.to, "d MMM") : format(new Date(), "d MMM");
+      return `${fromStr} to ${toStr}`;
+    }
+    if (filterType === "weekly") {
+      const start = startOfWeek(new Date(), { weekStartsOn: 1 });
+      const end = endOfWeek(new Date(), { weekStartsOn: 1 });
+      return `${format(start, "d MMM")} to ${format(end, "d MMM")}`;
+    }
+    if (filterType === "monthly") {
+      return format(new Date(), "MMMM yyyy");
+    }
+    return "";
   };
 
   const exportToPDF = () => {
@@ -70,7 +94,7 @@ export default function AdminActive() {
     doc.text('Active Members', 14, 20);
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.text(`Generated: ${now} IST | Filter: Last ${dateFilter} days | Total: ${filteredMembers.length} members`, 14, 28);
+    doc.text(`Generated: ${now} IST | Period: ${getDateRangeLabel()} | Total: ${filteredMembers.length} members`, 14, 28);
     
     doc.setFontSize(8);
     doc.setTextColor(0);
@@ -82,7 +106,7 @@ export default function AdminActive() {
     doc.text('Name', 16, y);
     doc.text('Email', 55, y);
     doc.text('Phone', 115, y);
-    doc.text('Last Active', 165, y);
+    doc.text('Joined', 165, y);
     doc.text('Country', 210, y);
     doc.text('WhatsApp', 250, y);
     y += 10;
@@ -94,12 +118,12 @@ export default function AdminActive() {
         y = 20;
       }
       const name = `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.email;
-      const lastActive = member.lastActiveAt ? new Date(member.lastActiveAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+      const joined = member.createdAt ? new Date(member.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
       
       doc.text(name.substring(0, 20), 16, y);
       doc.text((member.email || '').substring(0, 30), 55, y);
       doc.text((member.phone || '-').substring(0, 15), 115, y);
-      doc.text(lastActive, 165, y);
+      doc.text(joined, 165, y);
       doc.text((member.country || '-').substring(0, 15), 210, y);
       doc.text(member.hasWhatsAppSupport ? 'Yes' : 'No', 250, y);
       y += 8;
@@ -110,15 +134,15 @@ export default function AdminActive() {
   };
 
   const exportToExcel = () => {
-    const headers = ['Name', 'Email', 'Phone', 'Last Active', 'Country', 'Has WhatsApp Support'];
+    const headers = ['Name', 'Email', 'Phone', 'Joined', 'Country', 'Has WhatsApp Support'];
     const rows = filteredMembers.map((member) => {
       const name = `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.email;
-      const lastActive = member.lastActiveAt ? new Date(member.lastActiveAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+      const joined = member.createdAt ? new Date(member.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
       return [
         name,
         member.email || '',
         member.phone || '',
-        lastActive,
+        joined,
         member.country || '',
         member.hasWhatsAppSupport ? 'Yes' : 'No'
       ];
@@ -143,24 +167,53 @@ export default function AdminActive() {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Active Members</h1>
-              <p className="text-sm text-gray-500">Members who have used the app recently</p>
+              <p className="text-sm text-gray-500">Members who joined during the selected period</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-40 border-green-200">
-                <Calendar className="w-4 h-4 mr-2 text-green-600" />
-                <SelectValue placeholder="Filter by date" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">Last 24 hours</SelectItem>
-                <SelectItem value="7">Last 7 days</SelectItem>
-                <SelectItem value="14">Last 14 days</SelectItem>
-                <SelectItem value="30">Last 30 days</SelectItem>
-                <SelectItem value="60">Last 60 days</SelectItem>
-                <SelectItem value="90">Last 90 days</SelectItem>
-              </SelectContent>
-            </Select>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="border-green-200 text-green-700 hover:bg-green-50 min-w-[180px]">
+                  <CalendarIcon className="w-4 h-4 mr-2" />
+                  {getDateRangeLabel()}
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-4" align="end">
+                <div className="space-y-4">
+                  <RadioGroup value={filterType} onValueChange={(v) => setFilterType(v as "daily" | "weekly" | "monthly")}>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="daily" id="daily" />
+                      <Label htmlFor="daily" className="font-medium">Daily</Label>
+                    </div>
+                    {filterType === "daily" && (
+                      <div className="ml-6 space-y-2">
+                        <Calendar
+                          mode="range"
+                          selected={dateRange}
+                          onSelect={setDateRange}
+                          numberOfMonths={1}
+                          className="rounded-md border"
+                        />
+                        {dateRange?.from && (
+                          <p className="text-sm text-blue-600">
+                            Selected: {format(dateRange.from, "d MMM")} to {dateRange.to ? format(dateRange.to, "d MMM") : "..."}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="weekly" id="weekly" />
+                      <Label htmlFor="weekly" className="font-medium">Weekly</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="monthly" id="monthly" />
+                      <Label htmlFor="monthly" className="font-medium">Monthly</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </PopoverContent>
+            </Popover>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
@@ -200,7 +253,7 @@ export default function AdminActive() {
                   <tr className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
                     <th className="text-left py-4 px-4 text-sm font-semibold text-green-900">Member</th>
                     <th className="text-left py-4 px-4 text-sm font-semibold text-green-900">Phone</th>
-                    <th className="text-left py-4 px-4 text-sm font-semibold text-green-900">Last Active</th>
+                    <th className="text-left py-4 px-4 text-sm font-semibold text-green-900">Joined</th>
                     <th className="text-left py-4 px-4 text-sm font-semibold text-green-900">Country</th>
                     <th className="text-left py-4 px-4 text-sm font-semibold text-green-900">WhatsApp</th>
                   </tr>
@@ -208,17 +261,18 @@ export default function AdminActive() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={5} className="py-12 text-center text-gray-500">Loading active members...</td>
+                      <td colSpan={5} className="py-12 text-center text-gray-500">Loading members...</td>
                     </tr>
                   ) : filteredMembers.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="py-12 text-center text-gray-500">
-                        No members active in the last {dateFilter} days
+                        No members joined during this period
                       </td>
                     </tr>
                   ) : (
                     filteredMembers.map((member) => {
                       const name = `${member.firstName || ''} ${member.lastName || ''}`.trim() || 'No name';
+                      const joined = member.createdAt ? new Date(member.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
                       
                       return (
                         <tr key={member.id} className="border-b border-gray-100 hover:bg-green-50/30 transition-colors">
@@ -234,15 +288,15 @@ export default function AdminActive() {
                             </div>
                           </td>
                           <td className="py-4 px-4">
-                            <span className="text-sm text-gray-600">{member.phone || '-'}</span>
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <Phone className="w-3 h-3" />
+                              {member.phone || '-'}
+                            </div>
                           </td>
                           <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                              <div className="flex items-center gap-1 text-sm text-gray-600">
-                                <Clock className="w-3 h-3" />
-                                {formatLastActive(member.lastActiveAt)}
-                              </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <CalendarIcon className="w-3 h-3" />
+                              {joined}
                             </div>
                           </td>
                           <td className="py-4 px-4">
@@ -264,7 +318,7 @@ export default function AdminActive() {
             </div>
             <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
               <p className="text-sm text-gray-600">
-                Showing <span className="font-semibold">{filteredMembers.length}</span> active members in the last <span className="font-semibold">{dateFilter}</span> days
+                Showing <span className="font-semibold text-green-600">{filteredMembers.length}</span> members who joined during <span className="font-semibold">{getDateRangeLabel()}</span>
               </p>
             </div>
           </CardContent>
