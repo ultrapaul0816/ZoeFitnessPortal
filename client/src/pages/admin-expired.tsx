@@ -2,12 +2,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw } from "lucide-react";
+import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw, UserMinus, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 export default function AdminExpired() {
   const [, navigate] = useLocation();
@@ -63,132 +61,155 @@ export default function AdminExpired() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <button
+          onClick={() => navigate("/admin")}
+          className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm hover:shadow-md hover:bg-white transition-all duration-300 mb-8"
+        >
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-red-100 group-hover:to-rose-100 transition-all duration-300">
+            <ArrowLeft className="w-4 h-4 text-gray-600 group-hover:text-red-600 transition-colors" />
+          </div>
+          <span className="font-medium text-gray-700 group-hover:text-gray-900 transition-colors">Back to Dashboard</span>
+        </button>
 
-        <Card className="border-red-200 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-red-50 to-red-100/50 border-b border-red-100">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-red-50 via-rose-50 to-pink-50 px-6 py-6 border-b border-red-100/50">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-red-100">
-                  <X className="w-6 h-6 text-red-600" />
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center shadow-lg shadow-red-200/50">
+                  <UserMinus className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-red-900">Expired Members</CardTitle>
-                  <p className="text-sm text-red-600 mt-1">Members needing renewal</p>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-red-800 to-rose-700 bg-clip-text text-transparent">
+                    Expired Members
+                  </h1>
+                  <p className="text-red-600 mt-1">Members needing renewal</p>
                 </div>
               </div>
-              <Badge className="bg-red-100 text-red-700 text-lg px-4 py-1">
-                {expiredMembers.length}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <div className="px-5 py-2 rounded-xl bg-gradient-to-br from-red-400 to-rose-500 shadow-lg shadow-red-200/50">
+                  <span className="text-2xl font-bold text-white">{expiredMembers.length}</span>
+                </div>
+              </div>
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
+          </div>
+
+          <div className="p-6">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+              <div className="flex items-center justify-center py-16">
+                <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center">
+                  <RefreshCw className="w-6 h-6 animate-spin text-red-600" />
+                </div>
               </div>
             ) : expiredMembers.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <Check className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No expired members</p>
+              <div className="text-center py-16">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center mx-auto mb-4">
+                  <UserCheck className="w-10 h-10 text-emerald-500" />
+                </div>
+                <p className="text-lg font-medium text-gray-600">No expired members</p>
+                <p className="text-sm text-gray-400 mt-1">All memberships are active</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-hidden rounded-xl border border-gray-100">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
-                    <tr>
-                      <th className="text-left px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Member</th>
-                      <th className="text-left px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                      <th className="text-left px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Expiry Date</th>
-                      <th className="text-left px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Emails Sent</th>
-                      <th className="text-right px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                  <thead>
+                    <tr className="bg-gradient-to-r from-gray-50 to-slate-50">
+                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Member</th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Emails Sent</th>
+                      <th className="text-right px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-gray-50">
                     {expiredMembers.map((member) => {
                       const emailLogs = getUserEmailLogs(member.id);
                       const logCount = emailLogs.length;
                       
                       return (
-                        <tr key={member.id} className="hover:bg-gray-50/50 transition-colors">
-                          <td className="px-6 py-4">
+                        <tr key={member.id} className="hover:bg-gradient-to-r hover:from-red-50/30 hover:to-transparent transition-all duration-200">
+                          <td className="px-6 py-5">
                             <div>
-                              <p className="font-medium text-gray-900">{member.name || 'Unknown'}</p>
-                              <p className="text-sm text-gray-500">{member.email}</p>
+                              <p className="font-semibold text-gray-900">{member.name || 'Unknown'}</p>
+                              <p className="text-sm text-gray-500 mt-0.5">{member.email}</p>
                             </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col gap-1">
+                          <td className="px-6 py-5">
+                            <div className="flex flex-col gap-1.5">
                               {member.whatsAppExpired && (
-                                <Badge variant="outline" className="w-fit bg-red-50 text-red-700 border-red-200">
-                                  <MessageSquare className="w-3 h-3 mr-1" />
+                                <Badge variant="outline" className="w-fit px-3 py-1 rounded-lg bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200 font-medium">
+                                  <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                                   WhatsApp
                                 </Badge>
                               )}
                               {member.programExpired && (
-                                <Badge variant="outline" className="w-fit bg-amber-50 text-amber-700 border-amber-200">
-                                  <Dumbbell className="w-3 h-3 mr-1" />
+                                <Badge variant="outline" className="w-fit px-3 py-1 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border-amber-200 font-medium">
+                                  <Dumbbell className="w-3.5 h-3.5 mr-1.5" />
                                   Program
                                 </Badge>
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-600">
+                          <td className="px-6 py-5 text-sm text-gray-600">
                             {member.whatsAppExpiryDate && (
-                              <div>WA: {new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-400">WA:</span>
+                                <span className="font-medium">{new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                              </div>
                             )}
                             {member.programExpiryDate && (
-                              <div>Prog: {new Date(member.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-gray-400">Prog:</span>
+                                <span className="font-medium">{new Date(member.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                              </div>
                             )}
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col gap-1">
+                          <td className="px-6 py-5">
+                            <div className="flex flex-col gap-1.5">
                               {emailLogs.slice(0, 2).map((log, idx) => (
                                 <div key={idx} className={cn(
-                                  "text-xs px-2 py-1 rounded-md w-fit",
-                                  idx === 0 && logCount > 1 ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"
+                                  "text-xs px-2.5 py-1 rounded-lg w-fit font-medium",
+                                  idx === 0 && logCount > 1 
+                                    ? "bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700" 
+                                    : "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700"
                                 )}>
                                   {idx === 0 && logCount > 1 ? "Follow-up" : "Initial"}: {new Date(log.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}
                                 </div>
                               ))}
-                              {logCount === 0 && <span className="text-xs text-gray-400">No emails sent</span>}
+                              {logCount === 0 && <span className="text-xs text-gray-400 italic">No emails sent</span>}
                             </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-5">
                             <div className="flex items-center justify-end gap-2">
-                              <Button size="sm" variant="outline" className="h-8 text-xs">
+                              <Button size="sm" variant="outline" className="h-9 px-4 text-xs font-medium rounded-lg border-gray-200 hover:bg-gray-50 hover:border-gray-300">
                                 Extend
                               </Button>
-                              <Button size="sm" variant="secondary" className="h-8 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700">
-                                <Mail className="w-3 h-3 mr-1" />
+                              <Button size="sm" className="h-9 px-4 text-xs font-medium rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-sm">
+                                <Mail className="w-3.5 h-3.5 mr-1.5" />
                                 Remind
                               </Button>
                               <button
                                 className={cn(
-                                  "h-8 px-3 rounded-md flex items-center justify-center text-xs font-medium",
-                                  logCount === 0 ? "bg-gray-100 text-gray-500 hover:bg-gray-200" :
-                                  logCount === 1 ? "bg-emerald-500 text-white hover:bg-emerald-600" :
-                                  "bg-amber-500 text-white opacity-50 cursor-not-allowed"
+                                  "h-9 w-9 rounded-lg flex items-center justify-center transition-all duration-200",
+                                  logCount === 0 ? "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600" :
+                                  logCount === 1 ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-sm hover:shadow-md" :
+                                  "bg-gradient-to-br from-amber-400 to-orange-500 text-white opacity-50 cursor-not-allowed"
                                 )}
                                 onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
                                 disabled={logCount >= 2}
+                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up" : "Max emails logged"}
                               >
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
-                                className="h-8 px-3 rounded-md bg-red-100 hover:bg-red-200 text-red-600"
+                                className="h-9 w-9 rounded-lg flex items-center justify-center bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 transition-all duration-200"
                                 onClick={() => {
                                   if (confirm(`Archive ${member.name || member.email}?`)) {
                                     removeExpiredMemberMutation.mutate(member.id);
                                   }
                                 }}
+                                title="Archive member"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -201,8 +222,8 @@ export default function AdminExpired() {
                 </table>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
