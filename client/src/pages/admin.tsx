@@ -57,6 +57,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [expiredMembersOpen, setExpiredMembersOpen] = useState(true);
   const [recentExtensionsOpen, setRecentExtensionsOpen] = useState(true);
+  const [archivedItemsOpen, setArchivedItemsOpen] = useState(false);
   const [expiringSoonOpen, setExpiringSoonOpen] = useState(true);
   const { toast } = useToast();
 
@@ -149,6 +150,19 @@ export default function Admin() {
     notes: string | null;
   }>>({
     queryKey: ["/api/admin/renewal-email-logs"],
+    enabled: isAdmin,
+  });
+
+  // Archived items query
+  const { data: archivedItems = [], refetch: refetchArchivedItems } = useQuery<Array<{
+    id: string;
+    item_type: string;
+    original_id: string;
+    item_data: any;
+    archived_at: string;
+    archived_by: string | null;
+  }>>({
+    queryKey: ["/api/admin/archived-items"],
     enabled: isAdmin,
   });
 
@@ -763,16 +777,17 @@ Stronger With Zoe Support`;
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/expired-members"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/archived-items"] });
       toast({
         variant: "success",
-        title: "Removed",
-        description: "Member removed from expired list",
+        title: "Archived",
+        description: "Member archived from expired list",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to remove member",
+        description: "Failed to archive member",
         variant: "destructive",
       });
     },
@@ -785,16 +800,64 @@ Stronger With Zoe Support`;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/extension-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/archived-items"] });
       toast({
         variant: "success",
-        title: "Deleted",
-        description: "Extension log deleted",
+        title: "Archived",
+        description: "Extension log archived",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to delete log",
+        description: "Failed to archive log",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const restoreArchivedItemMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const response = await apiRequest("POST", `/api/admin/archived-items/${itemId}/restore`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/archived-items"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/extension-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/expired-members"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        variant: "success",
+        title: "Restored",
+        description: "Item restored successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to restore item",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const permanentDeleteArchivedMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/archived-items/${itemId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/archived-items"] });
+      toast({
+        variant: "success",
+        title: "Deleted",
+        description: "Item permanently deleted",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete item",
         variant: "destructive",
       });
     },
@@ -1364,6 +1427,101 @@ Stronger With Zoe Support`;
             </CollapsibleContent>
           </Card>
         </Collapsible>
+
+        {/* 4. Archived Items - Collapsible */}
+        {archivedItems.length > 0 && (
+          <Collapsible open={archivedItemsOpen} onOpenChange={setArchivedItemsOpen} className="mb-4">
+            <Card className="border-gray-200 bg-gray-50/30">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-gray-100/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-gray-100">
+                        <FolderOpen className="w-4 h-4 text-gray-600" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-sm font-medium text-gray-900">Archived Items</CardTitle>
+                        <CardDescription className="text-xs text-gray-600">Removed items that can be restored</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                        {archivedItems.length}
+                      </Badge>
+                      <ChevronDown className={cn("w-4 h-4 text-gray-600 transition-transform", archivedItemsOpen && "rotate-180")} />
+                    </div>
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <div className="space-y-2">
+                    {archivedItems.map((item) => {
+                      const data = item.item_data;
+                      const isExtensionLog = item.item_type === 'extension_log';
+                      
+                      return (
+                        <div key={item.id} className="p-3 bg-white rounded-lg border border-gray-200">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="outline" className={cn(
+                                  "text-xs",
+                                  isExtensionLog 
+                                    ? "bg-green-50 text-green-700 border-green-200" 
+                                    : "bg-red-50 text-red-700 border-red-200"
+                                )}>
+                                  {isExtensionLog ? 'Extension Log' : 'Expired Member'}
+                                </Badge>
+                                <p className="text-sm font-semibold truncate">
+                                  {isExtensionLog ? data.user_name : (data.first_name || data.last_name ? `${data.first_name || ''} ${data.last_name || ''}`.trim() : data.email)}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-gray-600">
+                                <span className="text-gray-500">Archived:</span>
+                                <span>{new Date(item.archived_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                {isExtensionLog && data.extension_months && (
+                                  <>
+                                    <span className="text-gray-400">|</span>
+                                    <span>+{data.extension_months} month{data.extension_months !== 1 ? 's' : ''}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                                onClick={() => restoreArchivedItemMutation.mutate(item.id)}
+                                disabled={restoreArchivedItemMutation.isPending}
+                              >
+                                <RefreshCw className="w-3 h-3 mr-1" />
+                                Restore
+                              </Button>
+                              <button
+                                className="h-7 w-7 rounded-md flex items-center justify-center transition-all bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600"
+                                onClick={() => {
+                                  if (confirm('Permanently delete this item? This cannot be undone.')) {
+                                    permanentDeleteArchivedMutation.mutate(item.id);
+                                  }
+                                }}
+                                disabled={permanentDeleteArchivedMutation.isPending}
+                                title="Permanently delete"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+        )}
 
         {/* Activity Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">

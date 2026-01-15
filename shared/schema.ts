@@ -900,6 +900,21 @@ export const insertRenewalEmailLogSchema = createInsertSchema(renewalEmailLogs).
   sentAt: true,
 });
 
+// Archived admin items - for soft-deleted extension logs and expired member removals
+export const archivedAdminItems = pgTable("archived_admin_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  itemType: text("item_type").notNull(), // 'extension_log' or 'expired_member'
+  originalId: varchar("original_id").notNull(), // ID of the original record
+  itemData: jsonb("item_data").notNull(), // Full data of the archived item
+  archivedAt: timestamp("archived_at").default(sql`now()`),
+  archivedBy: varchar("archived_by"), // admin who archived the item
+});
+
+export const insertArchivedAdminItemSchema = createInsertSchema(archivedAdminItems).omit({
+  id: true,
+  archivedAt: true,
+});
+
 export const insertEducationalTopicSchema = createInsertSchema(educationalTopics).omit({
   id: true,
   createdAt: true,

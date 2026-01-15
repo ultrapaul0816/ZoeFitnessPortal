@@ -3969,35 +3969,160 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Delete extension log
+  // Delete extension log (archive it first)
   app.delete("/api/admin/whatsapp/extension-logs/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      await storage.db.execute(sql`
-        DELETE FROM whatsapp_membership_logs WHERE id = ${id}
+      const adminId = req.session?.userId;
+      
+      // Get the log data first
+      const logResult = await storage.db.execute(sql`
+        SELECT * FROM whatsapp_membership_logs WHERE id = ${id}
       `);
-      res.json({ message: "Extension log deleted successfully" });
+      
+      if (logResult.rows.length > 0) {
+        // Archive the log
+        await storage.db.execute(sql`
+          INSERT INTO archived_admin_items (item_type, original_id, item_data, archived_by)
+          VALUES ('extension_log', ${id}, ${JSON.stringify(logResult.rows[0])}, ${adminId || null})
+        `);
+        
+        // Delete the original
+        await storage.db.execute(sql`
+          DELETE FROM whatsapp_membership_logs WHERE id = ${id}
+        `);
+      }
+      
+      res.json({ message: "Extension log archived successfully" });
     } catch (error) {
       console.error("Delete extension log error:", error);
-      res.status(500).json({ message: "Failed to delete extension log" });
+      res.status(500).json({ message: "Failed to archive extension log" });
     }
   });
 
-  // Remove member from expired list (clear WhatsApp support status)
+  // Remove member from expired list (archive and clear WhatsApp support status)
   app.delete("/api/admin/whatsapp/expired-members/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      await storage.db.execute(sql`
-        UPDATE users 
-        SET has_whatsapp_support = false,
-            whatsapp_support_expiry_date = NULL,
-            whatsapp_support_duration = NULL
-        WHERE id = ${id}
+      const adminId = req.session?.userId;
+      
+      // Get the user data first
+      const userResult = await storage.db.execute(sql`
+        SELECT id, first_name, last_name, email, has_whatsapp_support, 
+               whatsapp_support_duration, whatsapp_support_expiry_date, valid_until
+        FROM users WHERE id = ${id}
       `);
+      
+      if (userResult.rows.length > 0) {
+        // Archive the expired member data
+        await storage.db.execute(sql`
+          INSERT INTO archived_admin_items (item_type, original_id, item_data, archived_by)
+          VALUES ('expired_member', ${id}, ${JSON.stringify(userResult.rows[0])}, ${adminId || null})
+        `);
+        
+        // Clear WhatsApp support status
+        await storage.db.execute(sql`
+          UPDATE users 
+          SET has_whatsapp_support = false,
+              whatsapp_support_expiry_date = NULL,
+              whatsapp_support_duration = NULL
+          WHERE id = ${id}
+        `);
+      }
+      
       res.json({ message: "Member removed from expired list" });
     } catch (error) {
       console.error("Remove expired member error:", error);
       res.status(500).json({ message: "Failed to remove member from list" });
+    }
+  });
+
+  // Get archived admin items
+  app.get("/api/admin/archived-items", async (req, res) => {
+    try {
+      const { type } = req.query;
+      let query = sql`SELECT * FROM archived_admin_items`;
+      
+      if (type) {
+        query = sql`SELECT * FROM archived_admin_items WHERE item_type = ${type}`;
+      }
+      
+      const result = await storage.db.execute(sql`
+        SELECT * FROM archived_admin_items 
+        ${type ? sql`WHERE item_type = ${type}` : sql``}
+        ORDER BY archived_at DESC
+      `);
+      
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Get archived items error:", error);
+      res.status(500).json({ message: "Failed to get archived items" });
+    }
+  });
+
+  // Restore archived extension log
+  app.post("/api/admin/archived-items/:id/restore", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Get the archived item
+      const archiveResult = await storage.db.execute(sql`
+        SELECT * FROM archived_admin_items WHERE id = ${id}
+      `);
+      
+      if (archiveResult.rows.length === 0) {
+        return res.status(404).json({ message: "Archived item not found" });
+      }
+      
+      const archivedItem = archiveResult.rows[0] as any;
+      const itemData = archivedItem.item_data;
+      
+      if (archivedItem.item_type === 'extension_log') {
+        // Restore the extension log
+        await storage.db.execute(sql`
+          INSERT INTO whatsapp_membership_logs 
+            (id, user_id, user_name, user_email, action_type, previous_expiry_date, 
+             new_expiry_date, extension_months, notes, performed_by, created_at)
+          VALUES 
+            (${itemData.id}, ${itemData.user_id}, ${itemData.user_name}, ${itemData.user_email},
+             ${itemData.action_type}, ${itemData.previous_expiry_date ? new Date(itemData.previous_expiry_date) : null},
+             ${itemData.new_expiry_date ? new Date(itemData.new_expiry_date) : null}, ${itemData.extension_months},
+             ${itemData.notes}, ${itemData.performed_by}, ${itemData.created_at ? new Date(itemData.created_at) : new Date()})
+        `);
+      } else if (archivedItem.item_type === 'expired_member') {
+        // Restore the expired member's WhatsApp status
+        await storage.db.execute(sql`
+          UPDATE users 
+          SET has_whatsapp_support = ${itemData.has_whatsapp_support || true},
+              whatsapp_support_duration = ${itemData.whatsapp_support_duration},
+              whatsapp_support_expiry_date = ${itemData.whatsapp_support_expiry_date ? new Date(itemData.whatsapp_support_expiry_date) : null}
+          WHERE id = ${archivedItem.original_id}
+        `);
+      }
+      
+      // Delete from archive
+      await storage.db.execute(sql`
+        DELETE FROM archived_admin_items WHERE id = ${id}
+      `);
+      
+      res.json({ message: "Item restored successfully" });
+    } catch (error) {
+      console.error("Restore archived item error:", error);
+      res.status(500).json({ message: "Failed to restore item" });
+    }
+  });
+
+  // Permanently delete archived item
+  app.delete("/api/admin/archived-items/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`
+        DELETE FROM archived_admin_items WHERE id = ${id}
+      `);
+      res.json({ message: "Archived item permanently deleted" });
+    } catch (error) {
+      console.error("Delete archived item error:", error);
+      res.status(500).json({ message: "Failed to delete archived item" });
     }
   });
 
