@@ -137,11 +137,16 @@ Coach Zoe`;
     return { subject, body };
   };
 
-  const getEmailStatus = (userId: string) => {
-    const logs = renewalEmailLogs.filter(log => log.user_id === userId);
-    if (logs.length === 0) return 'No emails sent';
-    if (logs.length === 1) return 'Initial sent';
-    return 'Follow-up sent';
+  const getEmailStatusDetails = (userId: string) => {
+    const logs = renewalEmailLogs.filter(log => log.user_id === userId).sort((a, b) => 
+      new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
+    );
+    if (logs.length === 0) return { initial: '', followUp: '' };
+    const formatDate = (date: string) => new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    return {
+      initial: logs[0] ? formatDate(logs[0].sent_at) : '',
+      followUp: logs[1] ? formatDate(logs[1].sent_at) : ''
+    };
   };
 
   const exportToPDF = () => {
@@ -155,7 +160,7 @@ Coach Zoe`;
     doc.setTextColor(100);
     doc.text(`Generated: ${now} IST`, 14, 28);
     
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setTextColor(0);
     let y = 40;
     
@@ -163,11 +168,12 @@ Coach Zoe`;
     doc.rect(14, y - 5, 268, 8, 'F');
     doc.setFont('helvetica', 'bold');
     doc.text('Name', 16, y);
-    doc.text('Email', 55, y);
-    doc.text('Phone', 115, y);
-    doc.text('Program', 165, y);
-    doc.text('Expired On', 200, y);
-    doc.text('Email Status', 240, y);
+    doc.text('Email', 48, y);
+    doc.text('Phone', 100, y);
+    doc.text('Program', 140, y);
+    doc.text('Expired On', 165, y);
+    doc.text('Initial Email', 200, y);
+    doc.text('Follow-up', 240, y);
     y += 10;
     
     doc.setFont('helvetica', 'normal');
@@ -178,14 +184,15 @@ Coach Zoe`;
       }
       const program = [member.programExpired ? 'HYC' : '', member.whatsAppExpired ? 'WA' : ''].filter(Boolean).join(', ');
       const expiryDate = member.whatsAppExpiryDate || member.programExpiryDate;
-      const emailStatus = getEmailStatus(member.id);
+      const emailStatus = getEmailStatusDetails(member.id);
       
-      doc.text((member.name || '').substring(0, 18), 16, y);
-      doc.text((member.email || '').substring(0, 30), 55, y);
-      doc.text((member.phone || '-').substring(0, 15), 115, y);
-      doc.text(program, 165, y);
-      doc.text(expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 200, y);
-      doc.text(emailStatus, 240, y);
+      doc.text((member.name || '').substring(0, 15), 16, y);
+      doc.text((member.email || '').substring(0, 26), 48, y);
+      doc.text((member.phone || '-').substring(0, 14), 100, y);
+      doc.text(program, 140, y);
+      doc.text(expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 165, y);
+      doc.text(emailStatus.initial || '-', 200, y);
+      doc.text(emailStatus.followUp || '-', 240, y);
       y += 8;
     });
     
@@ -194,18 +201,19 @@ Coach Zoe`;
   };
 
   const exportToExcel = () => {
-    const headers = ['Name', 'Email', 'Phone', 'Program', 'Expired On', 'Email Status'];
+    const headers = ['Name', 'Email', 'Phone', 'Program', 'Expired On', 'Initial Email Sent', 'Follow-up Email Sent'];
     const rows = expiredMembers.map((member) => {
       const program = [member.programExpired ? 'Heal Your Core' : '', member.whatsAppExpired ? 'WhatsApp' : ''].filter(Boolean).join(', ');
       const expiryDate = member.whatsAppExpiryDate || member.programExpiryDate;
-      const emailStatus = getEmailStatus(member.id);
+      const emailStatus = getEmailStatusDetails(member.id);
       return [
         member.name || '',
         member.email || '',
         member.phone || '',
         program,
         expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
-        emailStatus
+        emailStatus.initial || '',
+        emailStatus.followUp || ''
       ];
     });
     
