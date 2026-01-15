@@ -254,7 +254,7 @@ Coach Zoe`;
                                     ? "bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700" 
                                     : "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700"
                                 )}>
-                                  {idx === 0 && logCount > 1 ? "Follow-up" : "Initial"}: {new Date(log.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}
+                                  {idx === 0 && logCount > 1 ? "Follow-up" : "Initial"}: {new Date(log.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} {new Date(log.sent_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' })}
                                 </div>
                               ))}
                               {logCount === 0 && <span className="text-xs text-gray-400 italic">No emails sent</span>}
