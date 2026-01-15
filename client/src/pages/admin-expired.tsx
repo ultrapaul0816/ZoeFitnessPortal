@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw, UserMinus, UserCheck, Copy, ExternalLink } from "lucide-react";
+import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw, UserMinus, UserCheck, Copy, ExternalLink, Download, FileSpreadsheet, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import jsPDF from "jspdf";
 
 export default function AdminExpired() {
   const [, navigate] = useLocation();
@@ -134,6 +136,72 @@ Coach Zoe`;
     return { subject, body };
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    
+    doc.setFontSize(18);
+    doc.setTextColor(220, 38, 38);
+    doc.text('Expired Members', 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${now} IST`, 14, 28);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    let y = 40;
+    
+    doc.setFillColor(245, 245, 245);
+    doc.rect(14, y - 5, 180, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.text('Name', 16, y);
+    doc.text('Email', 55, y);
+    doc.text('Program', 105, y);
+    doc.text('Expired On', 145, y);
+    y += 10;
+    
+    doc.setFont('helvetica', 'normal');
+    expiredMembers.forEach((member) => {
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      const program = [member.programExpired ? 'HYC' : '', member.whatsAppExpired ? 'WA' : ''].filter(Boolean).join(', ');
+      const expiryDate = member.whatsAppExpiryDate || member.programExpiryDate;
+      
+      doc.text((member.name || '').substring(0, 20), 16, y);
+      doc.text((member.email || '').substring(0, 25), 55, y);
+      doc.text(program, 105, y);
+      doc.text(expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '', 145, y);
+      y += 8;
+    });
+    
+    doc.save(`expired-members-${new Date().toISOString().split('T')[0]}.pdf`);
+    toast({ title: "Exported", description: "PDF downloaded successfully" });
+  };
+
+  const exportToExcel = () => {
+    const headers = ['Name', 'Email', 'Program', 'Expired On'];
+    const rows = expiredMembers.map((member) => {
+      const program = [member.programExpired ? 'Heal Your Core' : '', member.whatsAppExpired ? 'WhatsApp' : ''].filter(Boolean).join(', ');
+      const expiryDate = member.whatsAppExpiryDate || member.programExpiryDate;
+      return [
+        member.name || '',
+        member.email || '',
+        program,
+        expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
+      ];
+    });
+    
+    const csvContent = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `expired-members-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    toast({ title: "Exported", description: "Excel file downloaded successfully" });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -162,6 +230,24 @@ Coach Zoe`;
                 </div>
               </div>
               <div className="flex items-center gap-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl border-red-200 hover:bg-red-50">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={exportToPDF}>
+                      <FileText className="w-4 h-4 mr-2 text-red-500" />
+                      Export as PDF
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={exportToExcel}>
+                      <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" />
+                      Export as Excel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <div className="px-5 py-2 rounded-xl bg-gradient-to-br from-red-400 to-rose-500 shadow-lg shadow-red-200/50">
                   <span className="text-2xl font-bold text-white">{expiredMembers.length}</span>
                 </div>

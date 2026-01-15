@@ -2,9 +2,11 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, RefreshCw, X, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, RefreshCw, X, ArrowRight, Sparkles, Download, FileSpreadsheet, FileText } from "lucide-react";
+import jsPDF from "jspdf";
 
 export default function AdminExtensions() {
   const [, navigate] = useLocation();
@@ -38,6 +40,71 @@ export default function AdminExtensions() {
     },
   });
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    
+    doc.setFontSize(18);
+    doc.setTextColor(16, 185, 129);
+    doc.text('Recent Extensions', 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${now} IST`, 14, 28);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    let y = 40;
+    
+    doc.setFillColor(245, 245, 245);
+    doc.rect(14, y - 5, 180, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.text('Name', 16, y);
+    doc.text('Email', 55, y);
+    doc.text('Extension', 105, y);
+    doc.text('Previous', 130, y);
+    doc.text('New', 155, y);
+    doc.text('Extended On', 175, y);
+    y += 10;
+    
+    doc.setFont('helvetica', 'normal');
+    extensionLogs.forEach((log) => {
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text((log.user_name || '').substring(0, 18), 16, y);
+      doc.text((log.user_email || '').substring(0, 22), 55, y);
+      doc.text(`+${log.extension_months}m`, 105, y);
+      doc.text(log.previous_expiry_date ? new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 130, y);
+      doc.text(log.new_expiry_date ? new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '', 155, y);
+      doc.text(new Date(log.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), 175, y);
+      y += 8;
+    });
+    
+    doc.save(`extensions-${new Date().toISOString().split('T')[0]}.pdf`);
+    toast({ title: "Exported", description: "PDF downloaded successfully" });
+  };
+
+  const exportToExcel = () => {
+    const headers = ['Name', 'Email', 'Extension (Months)', 'Previous Expiry', 'New Expiry', 'Extended On'];
+    const rows = extensionLogs.map((log) => [
+      log.user_name || '',
+      log.user_email || '',
+      String(log.extension_months || 0),
+      log.previous_expiry_date ? new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
+      log.new_expiry_date ? new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
+      new Date(log.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    ]);
+    
+    const csvContent = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `extensions-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    toast({ title: "Exported", description: "Excel file downloaded successfully" });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -66,6 +133,24 @@ export default function AdminExtensions() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl border-emerald-200 hover:bg-emerald-50">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={exportToPDF}>
+                      <FileText className="w-4 h-4 mr-2 text-red-500" />
+                      Export as PDF
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={exportToExcel}>
+                      <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" />
+                      Export as Excel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <div className="px-5 py-2 rounded-xl bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg shadow-emerald-200/50">
                   <span className="text-2xl font-bold text-white">{extensionLogs.length}</span>
                 </div>

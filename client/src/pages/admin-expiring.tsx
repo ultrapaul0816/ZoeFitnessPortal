@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, Clock, Mail, Check, MessageSquare, Dumbbell, RefreshCw, AlertTriangle, Copy, ExternalLink } from "lucide-react";
+import { ArrowLeft, Clock, Mail, Check, MessageSquare, Dumbbell, RefreshCw, AlertTriangle, Copy, ExternalLink, Download, FileSpreadsheet, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import jsPDF from "jspdf";
 
 export default function AdminExpiring() {
   const [, navigate] = useLocation();
@@ -135,6 +137,83 @@ Coach Zoe`;
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    
+    doc.setFontSize(18);
+    doc.setTextColor(217, 119, 6);
+    doc.text('Members Expiring Soon', 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${now} IST`, 14, 28);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    let y = 40;
+    
+    doc.setFillColor(245, 245, 245);
+    doc.rect(14, y - 5, 180, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.text('Name', 16, y);
+    doc.text('Email', 60, y);
+    doc.text('Program', 110, y);
+    doc.text('Days Left', 145, y);
+    doc.text('Expiry Date', 170, y);
+    y += 10;
+    
+    doc.setFont('helvetica', 'normal');
+    expiringMembers.forEach((member) => {
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      const daysLeft = Math.min(
+        member.programExpiring ? getDaysUntilExpiry(member.programExpiryDate) : 999,
+        member.whatsAppExpiring ? getDaysUntilExpiry(member.whatsAppExpiryDate) : 999
+      );
+      const program = [member.programExpiring ? 'HYC' : '', member.whatsAppExpiring ? 'WA' : ''].filter(Boolean).join(', ');
+      const expiryDate = member.programExpiryDate || member.whatsAppExpiryDate;
+      
+      doc.text(member.userName?.substring(0, 20) || '', 16, y);
+      doc.text(member.userEmail?.substring(0, 25) || '', 60, y);
+      doc.text(program, 110, y);
+      doc.text(String(daysLeft), 145, y);
+      doc.text(expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '', 170, y);
+      y += 8;
+    });
+    
+    doc.save(`expiring-members-${new Date().toISOString().split('T')[0]}.pdf`);
+    toast({ title: "Exported", description: "PDF downloaded successfully" });
+  };
+
+  const exportToExcel = () => {
+    const headers = ['Name', 'Email', 'Program', 'Days Left', 'Expiry Date'];
+    const rows = expiringMembers.map((member) => {
+      const daysLeft = Math.min(
+        member.programExpiring ? getDaysUntilExpiry(member.programExpiryDate) : 999,
+        member.whatsAppExpiring ? getDaysUntilExpiry(member.whatsAppExpiryDate) : 999
+      );
+      const program = [member.programExpiring ? 'Heal Your Core' : '', member.whatsAppExpiring ? 'WhatsApp' : ''].filter(Boolean).join(', ');
+      const expiryDate = member.programExpiryDate || member.whatsAppExpiryDate;
+      return [
+        member.userName || '',
+        member.userEmail || '',
+        program,
+        String(daysLeft),
+        expiryDate ? new Date(expiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
+      ];
+    });
+    
+    const csvContent = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `expiring-members-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    toast({ title: "Exported", description: "Excel file downloaded successfully" });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -163,6 +242,24 @@ Coach Zoe`;
                 </div>
               </div>
               <div className="flex items-center gap-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl border-amber-200 hover:bg-amber-50">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={exportToPDF}>
+                      <FileText className="w-4 h-4 mr-2 text-red-500" />
+                      Export as PDF
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={exportToExcel}>
+                      <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" />
+                      Export as Excel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <div className="px-5 py-2 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-200/50">
                   <span className="text-2xl font-bold text-white">{expiringMembers.length}</span>
                 </div>
