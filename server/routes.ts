@@ -4000,7 +4000,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Remove member from expired list (archive and clear WhatsApp support status)
+  // Remove member from expired list (archive and clear expired status)
   app.delete("/api/admin/whatsapp/expired-members/:id", async (req, res) => {
     try {
       const { id } = req.params;
@@ -4020,12 +4020,13 @@ RESPONSE GUIDELINES:
           VALUES ('expired_member', ${id}, ${JSON.stringify(userResult.rows[0])}, ${adminId || null})
         `);
         
-        // Clear WhatsApp support status
+        // Clear all expired status (both WhatsApp and program)
         await storage.db.execute(sql`
           UPDATE users 
           SET has_whatsapp_support = false,
               whatsapp_support_expiry_date = NULL,
-              whatsapp_support_duration = NULL
+              whatsapp_support_duration = NULL,
+              valid_until = NULL
           WHERE id = ${id}
         `);
       }
@@ -4090,12 +4091,13 @@ RESPONSE GUIDELINES:
              ${itemData.notes}, ${itemData.performed_by}, ${itemData.created_at ? new Date(itemData.created_at) : new Date()})
         `);
       } else if (archivedItem.item_type === 'expired_member') {
-        // Restore the expired member's WhatsApp status
+        // Restore the expired member's status (both WhatsApp and program)
         await storage.db.execute(sql`
           UPDATE users 
-          SET has_whatsapp_support = ${itemData.has_whatsapp_support || true},
+          SET has_whatsapp_support = ${itemData.has_whatsapp_support || false},
               whatsapp_support_duration = ${itemData.whatsapp_support_duration},
-              whatsapp_support_expiry_date = ${itemData.whatsapp_support_expiry_date ? new Date(itemData.whatsapp_support_expiry_date) : null}
+              whatsapp_support_expiry_date = ${itemData.whatsapp_support_expiry_date ? new Date(itemData.whatsapp_support_expiry_date) : null},
+              valid_until = ${itemData.valid_until ? new Date(itemData.valid_until) : null}
           WHERE id = ${archivedItem.original_id}
         `);
       }
