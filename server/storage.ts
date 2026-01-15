@@ -3704,7 +3704,8 @@ class DatabaseStorage implements IStorage {
   }
 
   async getRecentCheckins(limit: number = 10): Promise<(UserCheckin & { user: Pick<User, 'id' | 'firstName' | 'lastName'> })[]> {
-    const result = await this.db
+    // Get data from user_checkins table
+    const userCheckinResults = await this.db
       .select({
         id: userCheckins.id,
         userId: userCheckins.userId,
@@ -3725,7 +3726,58 @@ class DatabaseStorage implements IStorage {
       .innerJoin(users, eq(userCheckins.userId, users.id))
       .orderBy(desc(userCheckins.createdAt))
       .limit(limit);
-    return result;
+    
+    // Get data from daily_checkins table (newer check-in system)
+    const dailyCheckinResults = await this.db
+      .select({
+        id: dailyCheckins.id,
+        userId: dailyCheckins.userId,
+        mood: dailyCheckins.mood,
+        energyLevel: dailyCheckins.energyLevel,
+        createdAt: dailyCheckins.createdAt,
+        user: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+        },
+      })
+      .from(dailyCheckins)
+      .innerJoin(users, eq(dailyCheckins.userId, users.id))
+      .where(sql`${dailyCheckins.mood} IS NOT NULL`)
+      .orderBy(desc(dailyCheckins.createdAt))
+      .limit(limit);
+    
+    // Combine and sort by date, return most recent
+    const combined = [
+      ...userCheckinResults.map(r => ({
+        ...r,
+        goals: r.goals || null,
+        postpartumWeeksAtCheckin: r.postpartumWeeksAtCheckin || null,
+        notes: r.notes || null,
+        isPartial: r.isPartial || false,
+      })),
+      ...dailyCheckinResults.map(r => ({
+        id: r.id,
+        userId: r.userId,
+        mood: r.mood,
+        energyLevel: r.energyLevel,
+        goals: null as string[] | null,
+        postpartumWeeksAtCheckin: null as number | null,
+        notes: null as string | null,
+        isPartial: false,
+        createdAt: r.createdAt,
+        user: r.user,
+      })),
+    ];
+    
+    // Sort by createdAt descending and take limit
+    combined.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+    
+    return combined.slice(0, limit);
   }
 
   async getCheckinAnalytics(): Promise<{
@@ -3735,45 +3787,64 @@ class DatabaseStorage implements IStorage {
     popularGoals: { goal: string; count: number }[];
     checkinFrequency: { period: string; count: number }[];
   }> {
-    // Get total check-ins
-    const totalResult = await this.db
-      .select({ count: count() })
-      .from(userCheckins);
-    const totalCheckins = totalResult[0]?.count || 0;
+    // Get total from both tables
+    const userCheckinTotal = await this.db.select({ count: count() }).from(userCheckins);
+    const dailyCheckinTotal = await this.db.select({ count: count() }).from(dailyCheckins).where(sql`${dailyCheckins.mood} IS NOT NULL`);
+    const totalCheckins = (userCheckinTotal[0]?.count || 0) + (dailyCheckinTotal[0]?.count || 0);
 
-    // Get check-ins by mood
-    const moodResult = await this.db
-      .select({
-        mood: userCheckins.mood,
-        count: count(),
-      })
+    // Get mood from both tables
+    const userMoodResult = await this.db
+      .select({ mood: userCheckins.mood, count: count() })
       .from(userCheckins)
       .where(sql`${userCheckins.mood} IS NOT NULL`)
       .groupBy(userCheckins.mood);
-    const checkinsByMood = moodResult.map(r => ({
-      mood: r.mood || 'unknown',
-      count: r.count,
-    }));
+    
+    const dailyMoodResult = await this.db
+      .select({ mood: dailyCheckins.mood, count: count() })
+      .from(dailyCheckins)
+      .where(sql`${dailyCheckins.mood} IS NOT NULL`)
+      .groupBy(dailyCheckins.mood);
+    
+    // Combine mood counts
+    const moodCounts: Record<string, number> = {};
+    for (const r of userMoodResult) {
+      if (r.mood) moodCounts[r.mood] = (moodCounts[r.mood] || 0) + r.count;
+    }
+    for (const r of dailyMoodResult) {
+      if (r.mood) moodCounts[r.mood] = (moodCounts[r.mood] || 0) + r.count;
+    }
+    const checkinsByMood = Object.entries(moodCounts)
+      .map(([mood, count]) => ({ mood, count }))
+      .sort((a, b) => b.count - a.count);
 
-    // Get check-ins by energy level
-    const energyResult = await this.db
-      .select({
-        energyLevel: userCheckins.energyLevel,
-        count: count(),
-      })
+    // Get energy from both tables
+    const userEnergyResult = await this.db
+      .select({ energyLevel: userCheckins.energyLevel, count: count() })
       .from(userCheckins)
       .where(sql`${userCheckins.energyLevel} IS NOT NULL`)
       .groupBy(userCheckins.energyLevel);
-    const checkinsByEnergy = energyResult.map(r => ({
-      energyLevel: r.energyLevel || 0,
-      count: r.count,
-    }));
+    
+    const dailyEnergyResult = await this.db
+      .select({ energyLevel: dailyCheckins.energyLevel, count: count() })
+      .from(dailyCheckins)
+      .where(sql`${dailyCheckins.energyLevel} IS NOT NULL`)
+      .groupBy(dailyCheckins.energyLevel);
+    
+    // Combine energy counts
+    const energyCounts: Record<number, number> = {};
+    for (const r of userEnergyResult) {
+      if (r.energyLevel) energyCounts[r.energyLevel] = (energyCounts[r.energyLevel] || 0) + r.count;
+    }
+    for (const r of dailyEnergyResult) {
+      if (r.energyLevel) energyCounts[r.energyLevel] = (energyCounts[r.energyLevel] || 0) + r.count;
+    }
+    const checkinsByEnergy = Object.entries(energyCounts)
+      .map(([level, count]) => ({ energyLevel: parseInt(level), count }))
+      .sort((a, b) => a.energyLevel - b.energyLevel);
 
-    // Get popular goals (flatten the array and count)
+    // Get popular goals from user_checkins only (daily_checkins doesn't have goals)
     const goalsResult = await this.db
-      .select({
-        goals: userCheckins.goals,
-      })
+      .select({ goals: userCheckins.goals })
       .from(userCheckins)
       .where(sql`${userCheckins.goals} IS NOT NULL`);
     
@@ -3789,7 +3860,7 @@ class DatabaseStorage implements IStorage {
       .map(([goal, count]) => ({ goal, count }))
       .sort((a, b) => b.count - a.count);
 
-    // Get check-in frequency by time period
+    // Get check-in frequency by time period (from both tables)
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekStart = new Date(todayStart);
@@ -3797,25 +3868,19 @@ class DatabaseStorage implements IStorage {
     const monthStart = new Date(todayStart);
     monthStart.setDate(monthStart.getDate() - 30);
 
-    const todayCount = await this.db
-      .select({ count: count() })
-      .from(userCheckins)
-      .where(gte(userCheckins.createdAt, todayStart));
-
-    const weekCount = await this.db
-      .select({ count: count() })
-      .from(userCheckins)
-      .where(gte(userCheckins.createdAt, weekStart));
-
-    const monthCount = await this.db
-      .select({ count: count() })
-      .from(userCheckins)
-      .where(gte(userCheckins.createdAt, monthStart));
+    const userToday = await this.db.select({ count: count() }).from(userCheckins).where(gte(userCheckins.createdAt, todayStart));
+    const dailyToday = await this.db.select({ count: count() }).from(dailyCheckins).where(and(gte(dailyCheckins.createdAt, todayStart), sql`${dailyCheckins.mood} IS NOT NULL`));
+    
+    const userWeek = await this.db.select({ count: count() }).from(userCheckins).where(gte(userCheckins.createdAt, weekStart));
+    const dailyWeek = await this.db.select({ count: count() }).from(dailyCheckins).where(and(gte(dailyCheckins.createdAt, weekStart), sql`${dailyCheckins.mood} IS NOT NULL`));
+    
+    const userMonth = await this.db.select({ count: count() }).from(userCheckins).where(gte(userCheckins.createdAt, monthStart));
+    const dailyMonth = await this.db.select({ count: count() }).from(dailyCheckins).where(and(gte(dailyCheckins.createdAt, monthStart), sql`${dailyCheckins.mood} IS NOT NULL`));
 
     const checkinFrequency = [
-      { period: 'Today', count: todayCount[0]?.count || 0 },
-      { period: 'Last 7 Days', count: weekCount[0]?.count || 0 },
-      { period: 'Last 30 Days', count: monthCount[0]?.count || 0 },
+      { period: 'Today', count: (userToday[0]?.count || 0) + (dailyToday[0]?.count || 0) },
+      { period: 'Last 7 Days', count: (userWeek[0]?.count || 0) + (dailyWeek[0]?.count || 0) },
+      { period: 'Last 30 Days', count: (userMonth[0]?.count || 0) + (dailyMonth[0]?.count || 0) },
     ];
 
     return {
