@@ -166,7 +166,7 @@ export default function AdminActive() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Active Members</h1>
+              <h1 className="text-2xl font-bold text-gray-900">New Signups</h1>
               <p className="text-sm text-gray-500">Members who joined during the selected period</p>
             </div>
           </div>

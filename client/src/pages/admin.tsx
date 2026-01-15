@@ -955,15 +955,15 @@ Stronger With Zoe Support`;
     >
       {activeTab === 'overview' && (
         <div className="space-y-6">
-        {/* Section Header */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Member Management</h2>
-          <p className="text-sm text-gray-500">Quick access to member lists, activity tracking, and membership status</p>
+        {/* Section Header - Member Overview */}
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-gray-900 mb-0.5">Member Overview</h2>
+          <p className="text-xs text-gray-500">View and manage all members</p>
         </div>
 
-        {/* Quick Action Cards - Navigate to Detail Pages */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          {/* Total Members Card */}
+        {/* Row 1 - Member Overview Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          {/* Total Members Card - Pink */}
           <div 
             className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-50 via-rose-50 to-pink-50 border border-pink-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/members')}
@@ -986,52 +986,62 @@ Stronger With Zoe Support`;
             </div>
           </div>
 
-          {/* Active Members Card */}
+          {/* New Signups Card - Purple */}
           <div 
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border border-green-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 via-violet-50 to-fuchsia-50 border border-purple-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/active')}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 to-violet-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative p-5">
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-200/50 group-hover:scale-110 transition-transform duration-300">
-                  <Activity className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-violet-500 flex items-center justify-center shadow-lg shadow-purple-200/50 group-hover:scale-110 transition-transform duration-300">
+                  <UserPlus className="w-6 h-6 text-white" />
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                  <ArrowUpRight className="w-4 h-4 text-green-600" />
+                  <ArrowUpRight className="w-4 h-4 text-purple-600" />
                 </div>
               </div>
-              <p className="text-3xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent mb-1">
+              <p className="text-3xl font-bold bg-gradient-to-r from-purple-700 to-violet-600 bg-clip-text text-transparent mb-1">
                 {adminStats?.activeMembers || 0}
               </p>
-              <p className="text-sm font-semibold text-green-800">Active Members</p>
-              <p className="text-xs text-green-600/80 mt-0.5">Using the app</p>
+              <p className="text-sm font-semibold text-purple-800">New Signups</p>
+              <p className="text-xs text-purple-600/80 mt-0.5">Filter by date</p>
             </div>
           </div>
 
-          {/* WhatsApp Support Card */}
+          {/* WhatsApp Support Card - Cyan/Teal */}
           <div 
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 border border-blue-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-50 via-teal-50 to-emerald-50 border border-cyan-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/whatsapp')}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-indigo-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-teal-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative p-5">
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-200/50 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-200/50 group-hover:scale-110 transition-transform duration-300">
                   <MessageSquare className="w-6 h-6 text-white" />
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                  <ArrowUpRight className="w-4 h-4 text-blue-600" />
+                  <ArrowUpRight className="w-4 h-4 text-cyan-600" />
                 </div>
               </div>
-              <p className="text-3xl font-bold bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent mb-1">
+              <p className="text-3xl font-bold bg-gradient-to-r from-cyan-700 to-teal-600 bg-clip-text text-transparent mb-1">
                 {allUsers.filter(u => !u.isAdmin && u.hasWhatsAppSupport).length}
               </p>
-              <p className="text-sm font-semibold text-blue-800">WhatsApp Support</p>
-              <p className="text-xs text-blue-600/80 mt-0.5">HYC + Community</p>
+              <p className="text-sm font-semibold text-cyan-800">WhatsApp Support</p>
+              <p className="text-xs text-cyan-600/80 mt-0.5">HYC + Community</p>
             </div>
           </div>
-          {/* Expiring Soon Card */}
+        </div>
+
+        {/* Section Header - Membership Status */}
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-gray-900 mb-0.5">Membership Status</h2>
+          <p className="text-xs text-gray-500">Track expirations, renewals, and archives</p>
+        </div>
+
+        {/* Row 2 - Membership Status Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          {/* Expiring Soon Card - Amber */}
           <div 
             className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/expiring')}
@@ -1040,7 +1050,7 @@ Stronger With Zoe Support`;
             <div className="relative p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200/50 group-hover:scale-110 transition-transform duration-300">
-                  <AlertTriangle className="w-6 h-6 text-white" />
+                  <Clock className="w-6 h-6 text-white" />
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                   <ArrowUpRight className="w-4 h-4 text-amber-600" />
@@ -1053,13 +1063,10 @@ Stronger With Zoe Support`;
               <p className="text-xs text-amber-600/80 mt-0.5">Next 7 days</p>
             </div>
           </div>
-        </div>
 
-        {/* Second Row - Membership Status Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          {/* Expired Members Card */}
+          {/* Expired Members Card - Red */}
           <div 
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 border border-red-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-50 via-rose-50 to-red-50 border border-red-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/expired')}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-red-400/5 to-rose-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -1075,35 +1082,35 @@ Stronger With Zoe Support`;
               <p className="text-3xl font-bold bg-gradient-to-r from-red-700 to-rose-600 bg-clip-text text-transparent mb-1">
                 {expiredMembers.length}
               </p>
-              <p className="text-sm font-semibold text-red-800">Expired Members</p>
+              <p className="text-sm font-semibold text-red-800">Expired</p>
               <p className="text-xs text-red-600/80 mt-0.5">Need renewal</p>
             </div>
           </div>
 
-          {/* Recent Extensions Card */}
+          {/* Recent Extensions Card - Green */}
           <div 
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border border-emerald-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 border border-green-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/extensions')}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-green-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative p-5">
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-200/50 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-200/50 group-hover:scale-110 transition-transform duration-300">
                   <RefreshCw className="w-6 h-6 text-white" />
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                  <ArrowUpRight className="w-4 h-4 text-emerald-600" />
+                  <ArrowUpRight className="w-4 h-4 text-green-600" />
                 </div>
               </div>
-              <p className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-green-600 bg-clip-text text-transparent mb-1">
+              <p className="text-3xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent mb-1">
                 {extensionLogs?.length || 0}
               </p>
-              <p className="text-sm font-semibold text-emerald-800">Recent Extensions</p>
-              <p className="text-xs text-emerald-600/80 mt-0.5">Last 30 days</p>
+              <p className="text-sm font-semibold text-green-800">Extensions</p>
+              <p className="text-xs text-green-600/80 mt-0.5">Recent renewals</p>
             </div>
           </div>
 
-          {/* Archived Items Card */}
+          {/* Archived Items Card - Slate */}
           <div 
             className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50 border border-slate-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/archived')}
@@ -1121,8 +1128,8 @@ Stronger With Zoe Support`;
               <p className="text-3xl font-bold bg-gradient-to-r from-slate-700 to-gray-600 bg-clip-text text-transparent mb-1">
                 {archivedItems?.length || 0}
               </p>
-              <p className="text-sm font-semibold text-slate-800">Archived Items</p>
-              <p className="text-xs text-slate-600/80 mt-0.5">Removed members</p>
+              <p className="text-sm font-semibold text-slate-800">Archived</p>
+              <p className="text-xs text-slate-600/80 mt-0.5">Removed items</p>
             </div>
           </div>
         </div>
