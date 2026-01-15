@@ -3969,6 +3969,38 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Delete extension log
+  app.delete("/api/admin/whatsapp/extension-logs/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`
+        DELETE FROM whatsapp_membership_logs WHERE id = ${id}
+      `);
+      res.json({ message: "Extension log deleted successfully" });
+    } catch (error) {
+      console.error("Delete extension log error:", error);
+      res.status(500).json({ message: "Failed to delete extension log" });
+    }
+  });
+
+  // Remove member from expired list (clear WhatsApp support status)
+  app.delete("/api/admin/whatsapp/expired-members/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.db.execute(sql`
+        UPDATE users 
+        SET has_whatsapp_support = false,
+            whatsapp_support_expiry_date = NULL,
+            whatsapp_support_duration = NULL
+        WHERE id = ${id}
+      `);
+      res.json({ message: "Member removed from expired list" });
+    } catch (error) {
+      console.error("Remove expired member error:", error);
+      res.status(500).json({ message: "Failed to remove member from list" });
+    }
+  });
+
   // Log renewal email sent
   app.post("/api/admin/renewal-email-logs", async (req, res) => {
     try {

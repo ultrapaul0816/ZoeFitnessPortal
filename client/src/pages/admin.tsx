@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Check, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText, Copy } from "lucide-react";
+import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Settings, Save, FolderOpen, Plus, UserPlus, UserX, UserCheck, Clock, MessageSquare, Mail, Dumbbell, Search, Filter, MoreHorizontal, RefreshCw, ArrowUpRight, ArrowDownRight, ArrowLeft, Activity, LogIn, CheckCircle, Check, Camera, Send, UserMinus, Trophy, Sparkles, ChevronDown, Heart, Smile, Zap, Target, ClipboardCheck, Loader2, Info, ImageIcon, MailOpen, FileText, Copy, X } from "lucide-react";
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import CheckinAnalyticsCard from "@/components/admin/CheckinAnalyticsCard";
@@ -755,6 +755,51 @@ Stronger With Zoe Support`;
     },
   });
 
+  const removeExpiredMemberMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/whatsapp/expired-members/${userId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/expired-members"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        variant: "success",
+        title: "Removed",
+        description: "Member removed from expired list",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to remove member",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteExtensionLogMutation = useMutation({
+    mutationFn: async (logId: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/whatsapp/extension-logs/${logId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/whatsapp/extension-logs"] });
+      toast({
+        variant: "success",
+        title: "Deleted",
+        description: "Extension log deleted",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete log",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleResetPassword = async () => {
     if (!resetPasswordMember) return;
 
@@ -1211,6 +1256,18 @@ Stronger With Zoe Support`;
                               >
                                 <Check className="w-4 h-4" />
                               </button>
+                              <button
+                                className="h-8 px-3 rounded-md flex items-center justify-center transition-all bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 text-xs"
+                                onClick={() => {
+                                  if (confirm(`Remove ${member.name || member.email} from expired list? This will clear their WhatsApp support status.`)) {
+                                    removeExpiredMemberMutation.mutate(member.id);
+                                  }
+                                }}
+                                disabled={removeExpiredMemberMutation.isPending}
+                                title="Remove from expired list"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1271,18 +1328,32 @@ Stronger With Zoe Support`;
                               <span>{new Date(log.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                             </div>
                           </div>
-                          <div className="text-right text-xs shrink-0">
-                            {log.previous_expiry_date && log.new_expiry_date && (
-                              <div className="flex items-center gap-2">
-                                <span className="text-gray-500">
-                                  {new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                                </span>
-                                <span className="text-green-600">→</span>
-                                <span className="font-medium text-green-700">
-                                  {new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </span>
-                              </div>
-                            )}
+                          <div className="flex items-center gap-2 shrink-0">
+                            <div className="text-right text-xs">
+                              {log.previous_expiry_date && log.new_expiry_date && (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-500">
+                                    {new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                  </span>
+                                  <span className="text-green-600">→</span>
+                                  <span className="font-medium text-green-700">
+                                    {new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <button
+                              className="h-7 w-7 rounded-md flex items-center justify-center transition-all bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600"
+                              onClick={() => {
+                                if (confirm(`Delete this extension log for ${log.user_name}?`)) {
+                                  deleteExtensionLogMutation.mutate(log.id);
+                                }
+                              }}
+                              disabled={deleteExtensionLogMutation.isPending}
+                              title="Delete log"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
                           </div>
                         </div>
                       </div>
