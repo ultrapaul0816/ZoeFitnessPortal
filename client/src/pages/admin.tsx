@@ -1012,84 +1012,96 @@ Stronger With Zoe Support`;
         {/* Quick Action Cards - Navigate to Detail Pages */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           {/* Expiring Soon Card */}
-          <Card 
-            className="border-amber-200 bg-amber-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+          <div 
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/expiring')}
           >
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-lg bg-amber-100">
-                  <AlertTriangle className="w-5 h-5 text-amber-600" />
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-400/5 to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200/50 group-hover:scale-110 transition-transform duration-300">
+                  <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-amber-400" />
+                <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                  <ArrowUpRight className="w-4 h-4 text-amber-600" />
+                </div>
               </div>
-              <p className="text-2xl font-bold text-amber-800 mb-1">
+              <p className="text-3xl font-bold bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent mb-1">
                 {adminStats?.expiringUsers?.length || 0}
               </p>
-              <p className="text-xs font-medium text-amber-700">Expiring Soon</p>
-              <p className="text-[10px] text-amber-600 mt-0.5">Next 7 days</p>
-            </CardContent>
-          </Card>
+              <p className="text-sm font-semibold text-amber-800">Expiring Soon</p>
+              <p className="text-xs text-amber-600/80 mt-0.5">Next 7 days</p>
+            </div>
+          </div>
 
           {/* Expired Members Card */}
-          <Card 
-            className="border-red-200 bg-red-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+          <div 
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 border border-red-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/expired')}
           >
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-lg bg-red-100">
-                  <UserMinus className="w-5 h-5 text-red-600" />
+            <div className="absolute inset-0 bg-gradient-to-br from-red-400/5 to-rose-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center shadow-lg shadow-red-200/50 group-hover:scale-110 transition-transform duration-300">
+                  <UserMinus className="w-6 h-6 text-white" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-red-400" />
+                <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                  <ArrowUpRight className="w-4 h-4 text-red-600" />
+                </div>
               </div>
-              <p className="text-2xl font-bold text-red-800 mb-1">
+              <p className="text-3xl font-bold bg-gradient-to-r from-red-700 to-rose-600 bg-clip-text text-transparent mb-1">
                 {expiredMembers.length}
               </p>
-              <p className="text-xs font-medium text-red-700">Expired Members</p>
-              <p className="text-[10px] text-red-600 mt-0.5">Need renewal</p>
-            </CardContent>
-          </Card>
+              <p className="text-sm font-semibold text-red-800">Expired Members</p>
+              <p className="text-xs text-red-600/80 mt-0.5">Need renewal</p>
+            </div>
+          </div>
 
           {/* Recent Extensions Card */}
-          <Card 
-            className="border-emerald-200 bg-emerald-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+          <div 
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border border-emerald-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/extensions')}
           >
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-lg bg-emerald-100">
-                  <RefreshCw className="w-5 h-5 text-emerald-600" />
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-green-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-200/50 group-hover:scale-110 transition-transform duration-300">
+                  <RefreshCw className="w-6 h-6 text-white" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+                <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                  <ArrowUpRight className="w-4 h-4 text-emerald-600" />
+                </div>
               </div>
-              <p className="text-2xl font-bold text-emerald-800 mb-1">
+              <p className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-green-600 bg-clip-text text-transparent mb-1">
                 {extensionLogs?.length || 0}
               </p>
-              <p className="text-xs font-medium text-emerald-700">Recent Extensions</p>
-              <p className="text-[10px] text-emerald-600 mt-0.5">Last 30 days</p>
-            </CardContent>
-          </Card>
+              <p className="text-sm font-semibold text-emerald-800">Recent Extensions</p>
+              <p className="text-xs text-emerald-600/80 mt-0.5">Last 30 days</p>
+            </div>
+          </div>
 
           {/* Archived Items Card */}
-          <Card 
-            className="border-gray-200 bg-gray-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+          <div 
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50 border border-slate-100/50 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             onClick={() => setLocation('/admin/archived')}
           >
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-lg bg-gray-100">
-                  <FolderOpen className="w-5 h-5 text-gray-600" />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-400/5 to-gray-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-400 to-gray-500 flex items-center justify-center shadow-lg shadow-slate-200/50 group-hover:scale-110 transition-transform duration-300">
+                  <FolderOpen className="w-6 h-6 text-white" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-gray-400" />
+                <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                  <ArrowUpRight className="w-4 h-4 text-slate-600" />
+                </div>
               </div>
-              <p className="text-2xl font-bold text-gray-800 mb-1">
+              <p className="text-3xl font-bold bg-gradient-to-r from-slate-700 to-gray-600 bg-clip-text text-transparent mb-1">
                 {archivedItems?.length || 0}
               </p>
-              <p className="text-xs font-medium text-gray-700">Archived Items</p>
-              <p className="text-[10px] text-gray-600 mt-0.5">Removed members</p>
-            </CardContent>
-          </Card>
+              <p className="text-sm font-semibold text-slate-800">Archived Items</p>
+              <p className="text-xs text-slate-600/80 mt-0.5">Removed members</p>
+            </div>
+          </div>
         </div>
 
 
