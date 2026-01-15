@@ -19,6 +19,10 @@ import AdminExercises from "@/pages/admin-exercises";
 import AdminWorkouts from "@/pages/admin-workouts";
 import AdminWorkoutVideos from "@/pages/admin-workout-videos";
 import AdminPreview from "@/pages/admin-preview";
+import AdminExpired from "@/pages/admin-expired";
+import AdminExpiring from "@/pages/admin-expiring";
+import AdminExtensions from "@/pages/admin-extensions";
+import AdminArchived from "@/pages/admin-archived";
 import MyLibrary from "@/pages/my-library";
 import MyCourses from "@/pages/my-courses";
 import CourseViewer from "@/pages/course-viewer";
@@ -59,6 +63,10 @@ function Router() {
       <Route path="/admin/workouts" component={AdminWorkouts} />
       <Route path="/admin/workout-videos" component={AdminWorkoutVideos} />
       <Route path="/admin/preview" component={AdminPreview} />
+      <Route path="/admin/expired" component={AdminExpired} />
+      <Route path="/admin/expiring" component={AdminExpiring} />
+      <Route path="/admin/extensions" component={AdminExtensions} />
+      <Route path="/admin/archived" component={AdminArchived} />
       <Route path="/heal-your-core" component={() => (
         <Suspense fallback={<PageLoader message="Loading your program..." />}>
           <HealYourCorePage />

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ import { useAdminAuth } from "@/hooks/use-admin-auth";
 
 export default function Admin() {
   const { isLoading: authLoading, isAdmin, user: authUser } = useAdminAuth();
+  const [, setLocation] = useLocation();
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [assetDisplayNames, setAssetDisplayNames] = useState<{[key: string]: string}>({});
@@ -55,10 +57,6 @@ export default function Admin() {
   const [resetManualPassword, setResetManualPassword] = useState('');
   const [resetPasswordMember, setResetPasswordMember] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<string>('overview');
-  const [expiredMembersOpen, setExpiredMembersOpen] = useState(true);
-  const [recentExtensionsOpen, setRecentExtensionsOpen] = useState(true);
-  const [archivedItemsOpen, setArchivedItemsOpen] = useState(false);
-  const [expiringSoonOpen, setExpiringSoonOpen] = useState(true);
   const { toast } = useToast();
 
   const addUserForm = useForm<AdminCreateUser>({
@@ -1011,517 +1009,89 @@ Stronger With Zoe Support`;
           </Card>
         </div>
 
-        {/* 1. Members Expiring Soon - Full Width Collapsible */}
-        {adminStats?.expiringUsers && adminStats.expiringUsers.length > 0 && (
-          <Collapsible open={expiringSoonOpen} onOpenChange={setExpiringSoonOpen} className="mb-4">
-            <Card className="border-amber-200 bg-amber-50/30">
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-amber-50/50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-amber-100">
-                        <AlertTriangle className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-sm font-medium text-amber-900">Members Expiring Soon</CardTitle>
-                        <CardDescription className="text-xs text-amber-700">Next 7 days</CardDescription>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700">
-                        {adminStats.expiringUsers.length}
-                      </Badge>
-                      <ChevronDown className={cn("w-4 h-4 text-amber-600 transition-transform", expiringSoonOpen && "rotate-180")} />
-                    </div>
-                  </div>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    {adminStats.expiringUsers.map((user) => {
-                      const memberData = allUsers.find(u => u.id === user.userId);
-                      const emailLogs = getUserEmailLogs(user.userId);
-                      const logCount = emailLogs.length;
-                      return (
-                        <div key={user.userId} className="p-3 bg-white rounded-lg border border-amber-100">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="text-sm font-semibold truncate">{user.userName}</p>
-                                <span className="text-xs text-muted-foreground">•</span>
-                                <p className="text-xs text-muted-foreground truncate">{memberData?.email || ''}</p>
-                              </div>
-                              <div className="flex flex-wrap gap-3 mb-1">
-                                {user.programExpiring && (
-                                  <div className="flex items-center gap-2 text-xs">
-                                    <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
-                                      <Dumbbell className="w-3 h-3" />
-                                      Heal Your Core
-                                    </span>
-                                    <span className="text-gray-600">
-                                      Expires {user.programExpiryDate ? new Date(user.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
-                                    </span>
-                                  </div>
-                                )}
-                                {user.whatsAppExpiring && (
-                                  <div className="flex items-center gap-2 text-xs">
-                                    <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
-                                      <MessageSquare className="w-3 h-3" />
-                                      WhatsApp
-                                    </span>
-                                    <span className="text-gray-600">
-                                      Expires {user.whatsAppExpiryDate ? new Date(user.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              {emailLogs.length > 0 && (
-                                <div className="flex flex-col gap-1.5 mt-2">
-                                  {emailLogs.slice(0, 2).map((log, idx) => (
-                                    <div 
-                                      key={idx}
-                                      className={cn(
-                                        "inline-flex items-center gap-2 text-xs px-2 py-1 rounded-md w-fit",
-                                        idx === 0 && logCount > 1 ? "bg-amber-50 border border-amber-100" : "bg-emerald-50 border border-emerald-100"
-                                      )}
-                                    >
-                                      <span className={cn(
-                                        "w-1.5 h-1.5 rounded-full",
-                                        idx === 0 && logCount > 1 ? "bg-amber-500" : "bg-emerald-500"
-                                      )} />
-                                      <span className={cn(
-                                        "font-medium",
-                                        idx === 0 && logCount > 1 ? "text-amber-700" : "text-emerald-700"
-                                      )}>
-                                        {idx === 0 && logCount > 1 ? "Follow-up sent" : "Email sent"}
-                                      </span>
-                                      <span className={cn(
-                                        idx === 0 && logCount > 1 ? "text-amber-600" : "text-emerald-600"
-                                      )}>
-                                        {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} at {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}
-                                      </span>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex gap-2 shrink-0 items-center">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-8 px-3 text-xs"
-                                onClick={() => {
-                                  setExtensionMember({
-                                    id: user.userId,
-                                    name: user.userName,
-                                    email: memberData?.email || '',
-                                    programExpiryDate: user.programExpiryDate ? String(user.programExpiryDate) : null,
-                                    whatsAppExpiryDate: user.whatsAppExpiryDate ? String(user.whatsAppExpiryDate) : null,
-                                    isExpiringSoon: true,
-                                  });
-                                  setExtensionDialogOpen(true);
-                                }}
-                              >
-                                Extend
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                className="h-8 px-3 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
-                                onClick={() => {
-                                  setReminderEmailData({
-                                    userName: user.userName,
-                                    userEmail: memberData?.email || '',
-                                    type: 'expiring',
-                                    programExpiryDate: user.programExpiryDate ? String(user.programExpiryDate) : null,
-                                    whatsAppExpiryDate: user.whatsAppExpiryDate ? String(user.whatsAppExpiryDate) : null,
-                                  });
-                                }}
-                              >
-                                <Mail className="w-3 h-3 mr-1" />
-                                Remind
-                              </Button>
-                              <button
-                                className={cn(
-                                  "h-8 px-3 rounded-md flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md text-xs font-medium",
-                                  logCount === 0
-                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-500 hover:from-gray-200 hover:to-gray-300 hover:text-gray-600"
-                                    : logCount === 1
-                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
-                                    : "bg-gradient-to-br from-amber-400 to-orange-500 text-white cursor-not-allowed opacity-70"
-                                )}
-                                onClick={() => logEmailMutation.mutate({ userId: user.userId, emailType: 'expiring' })}
-                                disabled={logEmailMutation.isPending || logCount >= 2}
-                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
-                              >
-                                <Check className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        )}
-
-        {/* 2. Expired Members - Full Width Collapsible */}
-        <Collapsible open={expiredMembersOpen} onOpenChange={setExpiredMembersOpen} className="mb-4">
-          <Card className="border-red-200 bg-red-50/30">
-            <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-red-50/50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-red-100">
-                      <UserMinus className="w-4 h-4 text-red-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-sm font-medium text-red-900">Expired Members</CardTitle>
-                      <CardDescription className="text-xs text-red-700">Members needing renewal</CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-xs bg-red-100 text-red-700">
-                      {expiredMembers.length}
-                    </Badge>
-                    <ChevronDown className={cn("w-4 h-4 text-red-600 transition-transform", expiredMembersOpen && "rotate-180")} />
-                  </div>
+        {/* Quick Action Cards - Navigate to Detail Pages */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          {/* Expiring Soon Card */}
+          <Card 
+            className="border-amber-200 bg-amber-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+            onClick={() => setLocation('/admin/expiring')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-amber-100">
+                  <AlertTriangle className="w-5 h-5 text-amber-600" />
                 </div>
-              </CardHeader>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-0">
-                {expiredMembers.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
-                    <UserCheck className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p className="text-xs">No expired members</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {expiredMembers.map((member) => {
-                      const emailLogs = getUserEmailLogs(member.id);
-                      const logCount = emailLogs.length;
-                      return (
-                        <div key={member.id} className="p-3 bg-white rounded-lg border border-red-100">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="text-sm font-semibold truncate">{member.name || 'Unknown'}</p>
-                                <span className="text-xs text-muted-foreground">•</span>
-                                <p className="text-xs text-muted-foreground truncate">{member.email}</p>
-                              </div>
-                              <div className="flex flex-wrap gap-3 mb-1">
-                                {member.whatsAppExpired && member.whatsAppExpiryDate && (
-                                  <div className="flex items-center gap-2 text-xs">
-                                    <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
-                                      <MessageSquare className="w-3 h-3" />
-                                      WhatsApp
-                                    </span>
-                                    <span className="text-gray-600">
-                                      Expired {new Date(member.whatsAppExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                    </span>
-                                  </div>
-                                )}
-                                {member.programExpired && member.programExpiryDate && (
-                                  <div className="flex items-center gap-2 text-xs">
-                                    <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
-                                      <Dumbbell className="w-3 h-3" />
-                                      Heal Your Core
-                                    </span>
-                                    <span className="text-gray-600">
-                                      Expired {new Date(member.programExpiryDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              {emailLogs.length > 0 && (
-                                <div className="flex flex-col gap-1.5 mt-2">
-                                  {emailLogs.slice(0, 2).map((log, idx) => (
-                                    <div 
-                                      key={idx}
-                                      className={cn(
-                                        "inline-flex items-center gap-2 text-xs px-2 py-1 rounded-md w-fit",
-                                        idx === 0 && logCount > 1 ? "bg-amber-50 border border-amber-100" : "bg-emerald-50 border border-emerald-100"
-                                      )}
-                                    >
-                                      <span className={cn(
-                                        "w-1.5 h-1.5 rounded-full",
-                                        idx === 0 && logCount > 1 ? "bg-amber-500" : "bg-emerald-500"
-                                      )} />
-                                      <span className={cn(
-                                        "font-medium",
-                                        idx === 0 && logCount > 1 ? "text-amber-700" : "text-emerald-700"
-                                      )}>
-                                        {idx === 0 && logCount > 1 ? "Follow-up sent" : "Email sent"}
-                                      </span>
-                                      <span className={cn(
-                                        idx === 0 && logCount > 1 ? "text-amber-600" : "text-emerald-600"
-                                      )}>
-                                        {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })} at {new Date(log.sent_at + (log.sent_at.includes('Z') ? '' : 'Z')).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' })}
-                                      </span>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex gap-2 shrink-0 items-center">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-8 px-3 text-xs"
-                                onClick={() => {
-                                  setExtensionMember({
-                                    id: member.id,
-                                    name: member.name || 'Unknown',
-                                    email: member.email,
-                                    programExpiryDate: member.programExpiryDate,
-                                    whatsAppExpiryDate: member.whatsAppExpiryDate,
-                                    isExpiringSoon: false,
-                                  });
-                                  setExtensionDialogOpen(true);
-                                }}
-                              >
-                                Extend
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                className="h-8 px-3 text-xs bg-pink-100 hover:bg-pink-200 text-pink-700"
-                                onClick={() => {
-                                  setReminderEmailData({
-                                    userName: member.name || 'there',
-                                    userEmail: member.email,
-                                    type: 'expired',
-                                    programExpiryDate: member.programExpiryDate,
-                                    whatsAppExpiryDate: member.whatsAppExpiryDate,
-                                  });
-                                }}
-                              >
-                                <Mail className="w-3 h-3 mr-1" />
-                                Remind
-                              </Button>
-                              <button
-                                className={cn(
-                                  "h-8 px-3 rounded-md flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md text-xs font-medium",
-                                  logCount === 0
-                                    ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-500 hover:from-gray-200 hover:to-gray-300 hover:text-gray-600"
-                                    : logCount === 1
-                                    ? "bg-gradient-to-br from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600"
-                                    : "bg-gradient-to-br from-amber-400 to-orange-500 text-white cursor-not-allowed opacity-70"
-                                )}
-                                onClick={() => logEmailMutation.mutate({ userId: member.id, emailType: 'expired' })}
-                                disabled={logEmailMutation.isPending || logCount >= 2}
-                                title={logCount === 0 ? "Log email sent" : logCount === 1 ? "Log follow-up email" : "Both emails logged"}
-                              >
-                                <Check className="w-4 h-4" />
-                              </button>
-                              <button
-                                className="h-8 px-3 rounded-md flex items-center justify-center transition-all bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 text-xs"
-                                onClick={() => {
-                                  if (confirm(`Remove ${member.name || member.email} from expired list? This will clear their WhatsApp support status.`)) {
-                                    removeExpiredMemberMutation.mutate(member.id);
-                                  }
-                                }}
-                                disabled={removeExpiredMemberMutation.isPending}
-                                title="Remove from expired list"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </CollapsibleContent>
+                <ArrowUpRight className="w-4 h-4 text-amber-400" />
+              </div>
+              <p className="text-2xl font-bold text-amber-800 mb-1">
+                {adminStats?.expiringUsers?.length || 0}
+              </p>
+              <p className="text-xs font-medium text-amber-700">Expiring Soon</p>
+              <p className="text-[10px] text-amber-600 mt-0.5">Next 7 days</p>
+            </CardContent>
           </Card>
-        </Collapsible>
 
-        {/* 3. Recent Extensions - Full Width Collapsible */}
-        <Collapsible open={recentExtensionsOpen} onOpenChange={setRecentExtensionsOpen} className="mb-4">
-          <Card className="border-green-200 bg-green-50/30">
-            <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-green-50/50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-green-100">
-                      <RefreshCw className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-sm font-medium text-green-900">Recent Extensions</CardTitle>
-                      <CardDescription className="text-xs text-green-700">Membership renewals log</CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
-                      {extensionLogs.length}
-                    </Badge>
-                    <ChevronDown className={cn("w-4 h-4 text-green-600 transition-transform", recentExtensionsOpen && "rotate-180")} />
-                  </div>
+          {/* Expired Members Card */}
+          <Card 
+            className="border-red-200 bg-red-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+            onClick={() => setLocation('/admin/expired')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-red-100">
+                  <UserMinus className="w-5 h-5 text-red-600" />
                 </div>
-              </CardHeader>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-0">
-                {extensionLogs.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
-                    <RefreshCw className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p className="text-xs">No extensions recorded yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {extensionLogs.slice(0, 10).map((log) => (
-                      <div key={log.id} className="p-3 bg-white rounded-lg border border-green-100">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="text-sm font-semibold truncate">{log.user_name}</p>
-                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                +{log.extension_months} month{log.extension_months !== 1 ? 's' : ''}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-600">
-                              <span className="font-medium text-gray-500">Extended on:</span>
-                              <span>{new Date(log.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <div className="text-right text-xs">
-                              {log.previous_expiry_date && log.new_expiry_date && (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-gray-500">
-                                    {new Date(log.previous_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                                  </span>
-                                  <span className="text-green-600">→</span>
-                                  <span className="font-medium text-green-700">
-                                    {new Date(log.new_expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                            <button
-                              className="h-7 w-7 rounded-md flex items-center justify-center transition-all bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600"
-                              onClick={() => {
-                                if (confirm(`Delete this extension log for ${log.user_name}?`)) {
-                                  deleteExtensionLogMutation.mutate(log.id);
-                                }
-                              }}
-                              disabled={deleteExtensionLogMutation.isPending}
-                              title="Delete log"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </CollapsibleContent>
+                <ArrowUpRight className="w-4 h-4 text-red-400" />
+              </div>
+              <p className="text-2xl font-bold text-red-800 mb-1">
+                {expiredMembers.length}
+              </p>
+              <p className="text-xs font-medium text-red-700">Expired Members</p>
+              <p className="text-[10px] text-red-600 mt-0.5">Need renewal</p>
+            </CardContent>
           </Card>
-        </Collapsible>
 
-        {/* 4. Archived Items - Collapsible */}
-        {archivedItems.length > 0 && (
-          <Collapsible open={archivedItemsOpen} onOpenChange={setArchivedItemsOpen} className="mb-4">
-            <Card className="border-gray-200 bg-gray-50/30">
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-100/50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-gray-100">
-                        <FolderOpen className="w-4 h-4 text-gray-600" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-sm font-medium text-gray-900">Archived Items</CardTitle>
-                        <CardDescription className="text-xs text-gray-600">Removed items that can be restored</CardDescription>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">
-                        {archivedItems.length}
-                      </Badge>
-                      <ChevronDown className={cn("w-4 h-4 text-gray-600 transition-transform", archivedItemsOpen && "rotate-180")} />
-                    </div>
-                  </div>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    {archivedItems.map((item) => {
-                      const data = item.item_data;
-                      const isExtensionLog = item.item_type === 'extension_log';
-                      
-                      return (
-                        <div key={item.id} className="p-3 bg-white rounded-lg border border-gray-200">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Badge variant="outline" className={cn(
-                                  "text-xs",
-                                  isExtensionLog 
-                                    ? "bg-green-50 text-green-700 border-green-200" 
-                                    : "bg-red-50 text-red-700 border-red-200"
-                                )}>
-                                  {isExtensionLog ? 'Extension Log' : 'Expired Member'}
-                                </Badge>
-                                <p className="text-sm font-semibold truncate">
-                                  {isExtensionLog ? data.user_name : (data.first_name || data.last_name ? `${data.first_name || ''} ${data.last_name || ''}`.trim() : data.email)}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2 text-xs text-gray-600">
-                                <span className="text-gray-500">Archived:</span>
-                                <span>{new Date(item.archived_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                                {isExtensionLog && data.extension_months && (
-                                  <>
-                                    <span className="text-gray-400">|</span>
-                                    <span>+{data.extension_months} month{data.extension_months !== 1 ? 's' : ''}</span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
-                                onClick={() => restoreArchivedItemMutation.mutate(item.id)}
-                                disabled={restoreArchivedItemMutation.isPending}
-                              >
-                                <RefreshCw className="w-3 h-3 mr-1" />
-                                Restore
-                              </Button>
-                              <button
-                                className="h-7 w-7 rounded-md flex items-center justify-center transition-all bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600"
-                                onClick={() => {
-                                  if (confirm('Permanently delete this item? This cannot be undone.')) {
-                                    permanentDeleteArchivedMutation.mutate(item.id);
-                                  }
-                                }}
-                                disabled={permanentDeleteArchivedMutation.isPending}
-                                title="Permanently delete"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        )}
+          {/* Recent Extensions Card */}
+          <Card 
+            className="border-emerald-200 bg-emerald-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+            onClick={() => setLocation('/admin/extensions')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-emerald-100">
+                  <RefreshCw className="w-5 h-5 text-emerald-600" />
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+              </div>
+              <p className="text-2xl font-bold text-emerald-800 mb-1">
+                {extensionLogs?.length || 0}
+              </p>
+              <p className="text-xs font-medium text-emerald-700">Recent Extensions</p>
+              <p className="text-[10px] text-emerald-600 mt-0.5">Last 30 days</p>
+            </CardContent>
+          </Card>
+
+          {/* Archived Items Card */}
+          <Card 
+            className="border-gray-200 bg-gray-50/30 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+            onClick={() => setLocation('/admin/archived')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gray-100">
+                  <FolderOpen className="w-5 h-5 text-gray-600" />
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-gray-400" />
+              </div>
+              <p className="text-2xl font-bold text-gray-800 mb-1">
+                {archivedItems?.length || 0}
+              </p>
+              <p className="text-xs font-medium text-gray-700">Archived Items</p>
+              <p className="text-[10px] text-gray-600 mt-0.5">Removed members</p>
+            </CardContent>
+          </Card>
+        </div>
+
 
         {/* Activity Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
