@@ -1442,6 +1442,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Failed to log workout completion activity:', activityError);
       }
 
+      // Also log to weekly_workout_sessions for progress tracking
+      try {
+        // Parse week number from workoutId (e.g., "week1-day1" → 1)
+        const weekMatch = completionData.workoutId.match(/week(\d+)/i);
+        const week = weekMatch ? parseInt(weekMatch[1]) : 1;
+        
+        // Get current session count for this week to determine session number
+        const existingSessions = await storage.getWeeklyWorkoutSessions(completionData.userId, week);
+        const workoutSessions = existingSessions.filter(s => s.sessionType === 'workout');
+        const sessionNumber = workoutSessions.length + 1;
+        
+        // Only log if this is a new session (not duplicate for same day)
+        const today = new Date().toISOString().split('T')[0];
+        const alreadyLoggedToday = existingSessions.some(s => 
+          s.sessionType === 'workout' && 
+          s.completedAt && 
+          new Date(s.completedAt).toISOString().split('T')[0] === today
+        );
+        
+        if (!alreadyLoggedToday && sessionNumber <= 4) {
+          await storage.createWorkoutSession({
+            userId: completionData.userId,
+            week,
+            sessionType: 'workout',
+            sessionNumber,
+            rating: completionData.challengeRating || null,
+            notes: completionData.notes || null,
+          });
+          console.log(`[WORKOUT-SESSIONS] Logged workout session: user=${completionData.userId}, week=${week}, session=${sessionNumber}`);
+        }
+      } catch (sessionError) {
+        console.error('Failed to log workout session:', sessionError);
+      }
+
       res.json(completion);
     } catch (error) {
       res.status(500).json({ message: "Failed to complete workout" });
