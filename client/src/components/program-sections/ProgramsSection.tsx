@@ -27,45 +27,7 @@ interface WeekProgressData {
 }
 
 function getProgressBadge(weekProgress: WeekProgressData | undefined, colorScheme: ProgramData['colorScheme']) {
-  if (!weekProgress) {
-    return null;
-  }
-  
-  if (weekProgress.isComplete) {
-    return (
-      <Badge className="bg-green-500 text-white text-xs px-2 py-0.5 flex items-center gap-1">
-        <CheckCircle className="w-3 h-3" />
-        Complete
-      </Badge>
-    );
-  }
-  
-  if (weekProgress.isSkipped) {
-    return (
-      <Badge className="bg-orange-500 text-white text-xs px-2 py-0.5 flex items-center gap-1">
-        <SkipForward className="w-3 h-3" />
-        Skipped
-      </Badge>
-    );
-  }
-  
-  if (weekProgress.isCurrent) {
-    return (
-      <Badge className="bg-pink-500 text-white text-xs px-2 py-0.5">
-        {weekProgress.workoutsCompleted}/4 Workouts
-      </Badge>
-    );
-  }
-  
-  if (weekProgress.isFuture) {
-    return (
-      <Badge variant="outline" className="border-gray-300 text-gray-500 text-xs px-2 py-0.5 flex items-center gap-1">
-        <Eye className="w-3 h-3" />
-        Preview
-      </Badge>
-    );
-  }
-  
+  // Progress badges temporarily disabled until workout tracking is properly implemented
   return null;
 }
 
@@ -80,15 +42,12 @@ function StaticProgramCard({ program, isExpanded, onToggle, weekProgress, onSkip
   const progressBadge = getProgressBadge(weekProgress, colorScheme);
   
   const handleToggle = () => {
-    if (weekProgress?.isFuture && !isExpanded && onSkipWarning) {
-      onSkipWarning(program.week);
-    } else {
-      onToggle();
-    }
+    // Skip warning disabled - allow free navigation between weeks
+    onToggle();
   };
   
   return (
-    <Card className={`overflow-hidden border-l-4 ${colorScheme.borderColor} ${weekProgress?.isFuture ? 'opacity-75' : ''}`}>
+    <Card className={`overflow-hidden border-l-4 ${colorScheme.borderColor}`}>
       <CardHeader className={`${colorScheme.bgColor} cursor-pointer`} onClick={handleToggle}>
         <div className="block lg:hidden">
           <div className="mb-4 flex items-center gap-2">
