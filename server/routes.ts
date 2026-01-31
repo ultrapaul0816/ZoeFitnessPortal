@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { randomUUID } from "crypto";
+import { randomUUID, createHmac } from "crypto";
 import { sql } from "drizzle-orm";
 import { storage } from "./storage";
 import {
@@ -6266,6 +6266,269 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     } catch (error) {
       console.error("Error bulk enrolling users:", error);
       res.status(500).json({ message: "Failed to bulk enroll users" });
+    }
+  });
+
+  // ==================== SHOPIFY WEBHOOK ====================
+  
+  // Product to course mapping - maps Shopify product titles/IDs to course IDs
+  const SHOPIFY_PRODUCT_COURSE_MAP: Record<string, { courseId: string; durationMonths: number }> = {
+    // Add your Shopify product mappings here
+    'heal your core': { courseId: 'heal-your-core-course', durationMonths: 12 },
+    'heal-your-core': { courseId: 'heal-your-core-course', durationMonths: 12 },
+    'prenatal strength': { courseId: 'prenatal-strength-course', durationMonths: 12 },
+    'prenatal-strength': { courseId: 'prenatal-strength-course', durationMonths: 12 },
+    '2-week core reset': { courseId: 'quick-core-reset', durationMonths: 3 },
+    'quick-core-reset': { courseId: 'quick-core-reset', durationMonths: 3 },
+  };
+
+  // Helper to generate random password
+  function generatePassword(length = 10): string {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  }
+
+  // Verify Shopify webhook signature
+  function verifyShopifyWebhook(body: string, signature: string | undefined, secret: string): boolean {
+    if (!signature) return false;
+    const hmac = createHmac('sha256', secret);
+    hmac.update(body, 'utf8');
+    const computedSignature = 'sha256=' + hmac.digest('base64');
+    return computedSignature === signature;
+  }
+
+  // Shopify webhook endpoint for order creation
+  app.post("/api/webhooks/shopify/order-created", async (req, res) => {
+    try {
+      const shopifySecret = process.env.SHOPIFY_WEBHOOK_SECRET;
+      const rawBody = JSON.stringify(req.body);
+      const signature = req.headers['x-shopify-hmac-sha256'] as string;
+
+      // Verify webhook signature if secret is configured
+      if (shopifySecret && !verifyShopifyWebhook(rawBody, signature, shopifySecret)) {
+        console.error("Shopify webhook signature verification failed");
+        return res.status(401).json({ message: "Invalid signature" });
+      }
+
+      const order = req.body;
+      console.log("Received Shopify order webhook:", order.id);
+
+      // Extract customer data
+      const customer = order.customer || {};
+      const email = customer.email || order.email;
+      const firstName = customer.first_name || order.billing_address?.first_name || 'Customer';
+      const lastName = customer.last_name || order.billing_address?.last_name || '';
+      const phone = customer.phone || order.billing_address?.phone || null;
+
+      if (!email) {
+        console.error("No email in Shopify order:", order.id);
+        return res.status(400).json({ message: "No customer email in order" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      
+      let userId: string;
+      let password: string | null = null;
+      let isNewUser = false;
+
+      if (existingUser) {
+        userId = existingUser.id;
+        console.log("Existing user found for Shopify order:", email);
+      } else {
+        // Create new user
+        isNewUser = true;
+        password = generatePassword();
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        const now = new Date();
+        const oneYearFromNow = new Date();
+        oneYearFromNow.setFullYear(now.getFullYear() + 1);
+
+        const newUser = await storage.createUser({
+          email,
+          password: hashedPassword,
+          firstName,
+          lastName,
+          phone,
+          isAdmin: false,
+          profilePictureUrl: null,
+          termsAccepted: true, // Auto-accept since they agreed on Shopify
+          termsAcceptedAt: now,
+          disclaimerAccepted: true,
+          disclaimerAcceptedAt: now,
+          validFrom: now,
+          validUntil: oneYearFromNow,
+          hasWhatsAppSupport: false,
+          whatsAppSupportDuration: null,
+          whatsAppSupportExpiryDate: null,
+        });
+
+        userId = newUser.id;
+        console.log("Created new user from Shopify order:", email);
+      }
+
+      // Process line items and enroll in courses
+      const lineItems = order.line_items || [];
+      const enrolledCourses: string[] = [];
+
+      for (const item of lineItems) {
+        const productTitle = (item.title || item.name || '').toLowerCase();
+        const productId = item.product_id?.toString() || '';
+
+        // Find matching course
+        let courseMapping = SHOPIFY_PRODUCT_COURSE_MAP[productTitle] || 
+                           SHOPIFY_PRODUCT_COURSE_MAP[productId];
+
+        // Try partial match if exact match not found
+        if (!courseMapping) {
+          for (const [key, value] of Object.entries(SHOPIFY_PRODUCT_COURSE_MAP)) {
+            if (productTitle.includes(key) || key.includes(productTitle)) {
+              courseMapping = value;
+              break;
+            }
+          }
+        }
+
+        if (courseMapping) {
+          // Check if already enrolled
+          const existingEnrollment = await storage.db.execute(sql`
+            SELECT id FROM course_enrollments 
+            WHERE user_id = ${userId} AND course_id = ${courseMapping.courseId}
+          `);
+
+          if (existingEnrollment.rows.length === 0) {
+            // Calculate expiry date
+            const expiryDate = new Date();
+            expiryDate.setMonth(expiryDate.getMonth() + courseMapping.durationMonths);
+
+            // Create enrollment
+            const enrollmentId = randomUUID();
+            await storage.db.execute(sql`
+              INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, expires_at, enrolled_at)
+              VALUES (${enrollmentId}, ${courseMapping.courseId}, ${userId}, 'active', 0, ${expiryDate}, NOW())
+            `);
+
+            enrolledCourses.push(courseMapping.courseId);
+            console.log(`Enrolled user ${email} in course ${courseMapping.courseId}`);
+          }
+        }
+      }
+
+      // Store payment record
+      const totalAmount = Math.round(parseFloat(order.total_price || '0') * 100); // Convert to paise
+      const paymentId = randomUUID();
+      await storage.db.execute(sql`
+        INSERT INTO payments (id, user_id, source, transaction_id, order_id, product_name, amount, currency, status, metadata, created_at)
+        VALUES (
+          ${paymentId}, 
+          ${userId}, 
+          'shopify', 
+          ${order.id?.toString() || null}, 
+          ${order.order_number?.toString() || order.name || null},
+          ${lineItems.map((i: any) => i.title).join(', ')},
+          ${totalAmount},
+          ${order.currency || 'INR'},
+          'completed',
+          ${JSON.stringify({ shopify_order: order.id, line_items: lineItems.map((i: any) => ({ title: i.title, quantity: i.quantity, price: i.price })) })},
+          NOW()
+        )
+      `);
+
+      // Send welcome email for new users
+      if (isNewUser && password) {
+        try {
+          await emailService.send({
+            to: email,
+            subject: "Welcome to Stronger with Zoe! 💪",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                  <h1 style="color: #EC4899; margin: 0;">Welcome to Stronger with Zoe!</h1>
+                </div>
+                
+                <p>Hi ${firstName}! 👋</p>
+                
+                <p>Thank you for your purchase! Your account has been created and you're all set to begin your fitness journey.</p>
+                
+                <div style="background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border-radius: 12px; padding: 20px; margin: 20px 0;">
+                  <h3 style="margin-top: 0; color: #BE185D;">Your Login Details</h3>
+                  <p><strong>Email:</strong> ${email}</p>
+                  <p><strong>Password:</strong> ${password}</p>
+                  <p style="font-size: 12px; color: #6B7280;">We recommend changing your password after your first login.</p>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="https://app.strongerwithzoe.in" style="background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    Start Your Journey →
+                  </a>
+                </div>
+                
+                <p>If you have any questions, feel free to reach out!</p>
+                
+                <p>With love,<br><strong>Coach Zoe</strong> 💕</p>
+              </div>
+            `,
+          });
+          console.log("Welcome email sent to:", email);
+        } catch (emailError) {
+          console.error("Failed to send welcome email:", emailError);
+          // Don't fail the webhook for email errors
+        }
+      }
+
+      res.status(200).json({ 
+        success: true, 
+        userId, 
+        isNewUser,
+        enrolledCourses,
+        message: isNewUser ? "User created and enrolled" : "Existing user - enrollment processed"
+      });
+
+    } catch (error) {
+      console.error("Shopify webhook error:", error);
+      res.status(500).json({ message: "Webhook processing failed" });
+    }
+  });
+
+  // Test endpoint to simulate Shopify webhook (admin only)
+  app.post("/api/admin/test-shopify-webhook", requireAdmin, async (req, res) => {
+    try {
+      const { email, firstName, lastName, productName, amount } = req.body;
+      
+      // Simulate a Shopify order payload
+      const mockOrder = {
+        id: `test-${Date.now()}`,
+        order_number: `TEST-${Date.now()}`,
+        email,
+        customer: {
+          email,
+          first_name: firstName,
+          last_name: lastName,
+        },
+        line_items: [
+          { title: productName || 'Heal Your Core', quantity: 1, price: (amount || 2999).toString() }
+        ],
+        total_price: (amount || 2999).toString(),
+        currency: 'INR',
+      };
+
+      // Forward to the actual webhook handler
+      const response = await fetch(`http://localhost:5000/api/webhooks/shopify/order-created`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mockOrder),
+      });
+
+      const result = await response.json();
+      res.json(result);
+    } catch (error) {
+      console.error("Test webhook error:", error);
+      res.status(500).json({ message: "Test webhook failed" });
     }
   });
 

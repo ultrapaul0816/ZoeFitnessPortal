@@ -495,6 +495,23 @@ export const courseEnrollments = pgTable("course_enrollments", {
   progressPercentage: integer("progress_percentage").default(0),
 });
 
+// Payments - stores payment/purchase records from Shopify and other sources
+export const payments = pgTable("payments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  source: text("source").notNull().default("shopify"), // shopify, manual, razorpay, etc.
+  transactionId: text("transaction_id"), // External transaction/order ID
+  orderId: text("order_id"), // Shopify order ID
+  productName: text("product_name"), // Product purchased
+  productId: text("product_id"), // Shopify product ID
+  amount: integer("amount").notNull(), // Amount in smallest currency unit (paise/cents)
+  currency: text("currency").default("INR"),
+  status: text("status").default("completed"), // pending, completed, failed, refunded
+  paymentMethod: text("payment_method"), // card, upi, netbanking, etc.
+  metadata: jsonb("metadata"), // Additional payment data
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 // User Module Progress - tracks progress per module
 export const userModuleProgress = pgTable("user_module_progress", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -815,6 +832,14 @@ export const insertCourseEnrollmentSchema = createInsertSchema(courseEnrollments
   status: z.enum(['active', 'completed', 'expired', 'cancelled']).default('active'),
 });
 
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  source: z.enum(['shopify', 'manual', 'razorpay', 'stripe']).default('shopify'),
+  status: z.enum(['pending', 'completed', 'failed', 'refunded']).default('completed'),
+});
+
 export const insertUserModuleProgressSchema = createInsertSchema(userModuleProgress).omit({
   id: true,
   startedAt: true,
@@ -1111,6 +1136,8 @@ export type ContentItem = typeof contentItems.$inferSelect;
 export type InsertContentItem = z.infer<typeof insertContentItemSchema>;
 export type CourseEnrollment = typeof courseEnrollments.$inferSelect;
 export type InsertCourseEnrollment = z.infer<typeof insertCourseEnrollmentSchema>;
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type UserModuleProgress = typeof userModuleProgress.$inferSelect;
 export type InsertUserModuleProgress = z.infer<typeof insertUserModuleProgressSchema>;
 export type UserContentCompletion = typeof userContentCompletion.$inferSelect;
