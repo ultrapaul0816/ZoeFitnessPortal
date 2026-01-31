@@ -24,6 +24,7 @@ import { Eye, Edit, Users, CalendarIcon, TrendingUp, AlertTriangle, Image, Setti
 import WorkoutContentManager from "@/components/admin/WorkoutContentManager";
 import AdminLayout from "@/components/admin/AdminLayout";
 import CheckinAnalyticsCard from "@/components/admin/CheckinAnalyticsCard";
+import ActivityAnalyticsCard from "@/components/admin/ActivityAnalyticsCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -1468,6 +1469,9 @@ Stronger With Zoe Support`;
             </CardContent>
           </Card>
         </div>
+
+        {/* Activity & Engagement Analytics */}
+        <ActivityAnalyticsCard />
 
         {/* Additional Cards Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
