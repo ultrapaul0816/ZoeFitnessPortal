@@ -6273,11 +6273,14 @@ Keep it to 2-4 sentences, warm and encouraging.`;
   
   // Product to course mapping - maps Shopify product titles/IDs to course IDs
   const SHOPIFY_PRODUCT_COURSE_MAP: Record<string, { courseId: string; durationMonths: number }> = {
-    // Add your Shopify product mappings here
+    // Heal Your Core variations
+    'postnatal: heal your core (1 year access)': { courseId: 'heal-your-core-course', durationMonths: 12 },
     'heal your core': { courseId: 'heal-your-core-course', durationMonths: 12 },
     'heal-your-core': { courseId: 'heal-your-core-course', durationMonths: 12 },
+    // Prenatal Strength variations
     'prenatal strength': { courseId: 'prenatal-strength-course', durationMonths: 12 },
     'prenatal-strength': { courseId: 'prenatal-strength-course', durationMonths: 12 },
+    // Quick Core Reset variations
     '2-week core reset': { courseId: 'quick-core-reset', durationMonths: 3 },
     'quick-core-reset': { courseId: 'quick-core-reset', durationMonths: 3 },
   };
@@ -6443,7 +6446,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       if (isNewUser && password) {
         try {
           await emailService.send({
-            to: email,
+            to: { email, name: `${firstName} ${lastName}`.trim() },
             subject: "Welcome to Stronger with Zoe! 💪",
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
