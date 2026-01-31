@@ -812,6 +812,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mark onboarding as completed
+  app.post("/api/onboarding/complete", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      await storage.updateUser(req.session.userId, {
+        hasCompletedOnboarding: true,
+      });
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error(`[ONBOARDING] Error completing onboarding:`, error?.message || error);
+      res.status(500).json({ message: "Failed to complete onboarding" });
+    }
+  });
+
   // Mark check-in prompt as dismissed (updates lastCheckinPromptAt without creating a check-in)
   app.post("/api/checkins/dismiss", async (req, res) => {
     try {

@@ -25,6 +25,9 @@ import DailyMoodPopup from "@/components/daily-mood-popup";
 import MoodInsightsCard from "@/components/mood-insights-card";
 import ZoeEncouragement from "@/components/zoe-encouragement";
 import ExpiryNotification from "@/components/expiry-notification";
+import { OnboardingModal } from "@/components/onboarding-modal";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
@@ -91,6 +94,23 @@ export default function Dashboard() {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [isWorkoutExpanded, setIsWorkoutExpanded] = useState(false); // Start minimized
   const [workoutViewTab, setWorkoutViewTab] = useState<"today" | "full-program">("today");
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Mutation to complete onboarding
+  const completeOnboardingMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/onboarding/complete");
+    },
+    onSuccess: () => {
+      setShowOnboarding(false);
+      // Update local user state
+      if (user) {
+        const updatedUser = { ...user, hasCompletedOnboarding: true };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    },
+  });
 
   // Auto-hide welcome message after 3 seconds
   useEffect(() => {
@@ -140,6 +160,11 @@ export default function Dashboard() {
           if (!lastLogin || lastLogin !== today) {
             setIsFirstLogin(true);
             localStorage.setItem("lastLoginDate", today);
+          }
+          
+          // Show onboarding for users who haven't completed it
+          if (!data.user.hasCompletedOnboarding) {
+            setShowOnboarding(true);
           }
           
           // Initialize profile data with user info
@@ -1075,6 +1100,13 @@ export default function Dashboard() {
 
       {/* Expiry Notification Popup */}
       <ExpiryNotification user={user} />
+
+      {/* Onboarding Tour Modal */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onComplete={() => completeOnboardingMutation.mutate()}
+        userName={user.firstName}
+      />
 
       {/* Daily Check-in Modal (Progress tracking) */}
       <DailyCheckinModal

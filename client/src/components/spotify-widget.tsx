@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Music, Play, Pause, SkipForward, SkipBack, ExternalLink, Headphones, Volume2 } from "lucide-react";
+import { Music, Play, Pause, SkipForward, SkipBack, ExternalLink, Headphones, Volume2, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SiSpotify } from "react-icons/si";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -72,13 +73,30 @@ export function SpotifyWidget({ currentWeek }: SpotifyWidgetProps) {
 
   const currentPlaylist = playlists?.find(p => p.week === currentWeek);
 
-  // If Spotify not connected, show minimal button
+  // If Spotify not connected, show minimal button with help info
   if (!spotifyStatus?.connected) {
     return (
-      <div className="flex items-center justify-center gap-2 p-3 bg-gray-100 rounded-lg border border-gray-200">
-        <SiSpotify className="w-5 h-5 text-gray-400" />
-        <span className="text-sm text-gray-500">Spotify not connected</span>
-      </div>
+      <TooltipProvider>
+        <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200">
+          <div className="flex items-center gap-2">
+            <SiSpotify className="w-5 h-5 text-gray-400" />
+            <span className="text-sm text-gray-500">Spotify not connected</span>
+          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600">
+                <Info className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="max-w-[250px] p-3">
+              <p className="text-sm font-medium mb-1">How to use Workout Music</p>
+              <p className="text-xs text-gray-600">
+                Connect your Spotify account to play curated playlists during workouts. You'll need Spotify Premium for full playback control.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
     );
   }
 
@@ -89,7 +107,7 @@ export function SpotifyWidget({ currentWeek }: SpotifyWidgetProps) {
   };
 
   return (
-    <>
+    <TooltipProvider>
       {/* Compact Music Widget */}
       <Card className={`bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 transition-all ${isExpanded ? 'shadow-md' : ''}`}>
         <CardContent className="p-3">
@@ -98,6 +116,23 @@ export function SpotifyWidget({ currentWeek }: SpotifyWidgetProps) {
             <div className="flex items-center gap-2">
               <SiSpotify className="w-5 h-5 text-[#1DB954]" />
               <span className="text-sm font-medium text-gray-700">Workout Music</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-gray-400 hover:text-gray-600">
+                    <Info className="w-3.5 h-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-[280px] p-3">
+                  <p className="text-sm font-medium mb-1">How to use Workout Music</p>
+                  <ul className="text-xs text-gray-600 space-y-1">
+                    <li>1. Tap the play button to start this week's playlist</li>
+                    <li>2. Music plays on your active Spotify device</li>
+                    <li>3. Use controls to pause, skip, or change tracks</li>
+                    <li>4. Tap "Playlists" to browse all weekly playlists</li>
+                  </ul>
+                  <p className="text-xs text-gray-500 mt-2 italic">Spotify Premium required for full control</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
             <Button
               variant="ghost"
@@ -298,6 +333,6 @@ export function SpotifyWidget({ currentWeek }: SpotifyWidgetProps) {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </TooltipProvider>
   );
 }
