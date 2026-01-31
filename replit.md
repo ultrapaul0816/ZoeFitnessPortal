@@ -53,6 +53,12 @@ Goals are stored in the user's database profile and will be used to personalize 
 
 ## Communication & Engagement
 **Email Automation & Campaigns**: Includes email campaign management with a database-stored template library, dynamic variable replacement, open tracking, audience targeting, test emails, and scheduling. An Email Analytics Dashboard provides performance metrics. Seven trigger-based email automation rules support welcome, workout congratulations, program completion, incomplete signup reminders, and cascading re-engagement based on inactivity.
+**WhatsApp Support Expiry Reminders**: Automated daily scheduler checks for users whose WhatsApp support is expiring soon and sends branded reminder emails:
+- 7-day reminder: Sent when support expires in exactly 7 days
+- 3-day reminder: Sent when support expires in exactly 3 days
+- Includes renewal link (₹1,000 for 3 months via Razorpay)
+- Tracks reminders sent per user to prevent duplicates
+- Reminders reset when support is extended for new renewal cycle
 **Spotify Workout Music Integration**: Users can access curated workout playlists via a mini player widget in the "Today's Workout" view, utilizing Replit's Spotify Connector for OAuth and offering 6 weekly curated playlists.
 
 ## Wellness Tracking & Insights
