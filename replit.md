@@ -44,6 +44,14 @@ The application provides a 6-week program with detailed exercises, coach notes, 
 
 Goals are stored in the user's database profile and will be used to personalize the experience, workout recommendations, and Zoe's coaching messages.
 
+## User Onboarding
+**First-Time User Tour**: New users who haven't completed onboarding see an interactive welcome modal that walks them through:
+- Dashboard overview and navigation
+- Today's Workout feature and how to track progress
+- AI Coach Zoe for personalized guidance
+- Community features for connecting with other mamas
+The tour can be replayed anytime from the "How It Works" option in profile settings. Completion is tracked in the user's database profile (`hasCompletedOnboarding`).
+
 ## Admin Preview Mode
 **Admin Preview Page**: Administrators can preview the app as users would see it on mobile devices. The feature includes:
 - Device frame simulation (iPhone 14 Pro, iPhone SE, Android)
@@ -59,13 +67,13 @@ Goals are stored in the user's database profile and will be used to personalize 
 - Includes renewal link (₹1,000 for 3 months via Razorpay)
 - Tracks reminders sent per user to prevent duplicates
 - Reminders reset when support is extended for new renewal cycle
-**Spotify Workout Music Integration**: Users can access curated workout playlists via a mini player widget in the "Today's Workout" view, utilizing Replit's Spotify Connector for OAuth and offering 6 weekly curated playlists.
+**Spotify Workout Music Integration**: Users can access curated workout playlists via a mini player widget in the "Today's Workout" view, utilizing Replit's Spotify Connector for OAuth and offering 6 weekly curated playlists. An info icon with tooltip explains how to connect and use the music feature.
 
 ## Wellness Tracking & Insights
 **Dual Check-in System**:
 1.  **Daily Mood Check-in**: A 2-step flow (mood, then energy level) auto-shows daily on login.
 2.  **Workout Completion Check-in**: Detailed performance logging with 7 tracking points (completion, breathing, water, cardio, gratitude, challenges), accessible via a floating action button.
-**Weekly Summary & Mood Insights**: The dashboard displays check-in streaks, progress bars for water and cardio, consistency percentages, and a visual calendar. A collapsible "Mood & Energy" card shows top mood, average energy level with trends, and a 7-day mood history strip. A one-click WhatsApp sharing feature generates a pre-formatted weekly summary message.
+**Weekly Summary & Mood Insights**: The dashboard displays check-in streaks, progress bars for water and cardio, consistency percentages, and a visual calendar. A collapsible "Mood & Energy" card shows top mood, average energy level with trends, and a 7-day mood history strip. A "Share to Community" button creates a progress post visible to other users.
 **Admin Check-in Analytics**: The admin dashboard includes a "Community Mood & Energy" card showing aggregated mood distribution, average energy levels, and energy trend charts across all users.
 
 ## User Activity Tracking
