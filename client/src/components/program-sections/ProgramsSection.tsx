@@ -9,12 +9,13 @@ import { useWorkoutContent } from "@/hooks/useWorkoutContent";
 import { useWorkoutSessionProgress, useSkipWeek } from "@/hooks/useWorkoutSessions";
 
 interface NavigationProps {
-  programId: string;
-  canGoNext: () => boolean;
-  canGoPrevious: () => boolean;
-  navigateToNextTab: () => void;
-  navigateToPreviousTab: () => void;
-  getNavigationText: (direction: 'prev' | 'next') => string;
+  programId?: string;
+  canGoNext?: () => boolean;
+  canGoPrevious?: () => boolean;
+  navigateToNextTab?: () => void;
+  navigateToPreviousTab?: () => void;
+  getNavigationText?: (direction: 'prev' | 'next') => string;
+  isEmbedded?: boolean;
 }
 
 interface WeekProgressData {
@@ -216,7 +217,8 @@ export default function ProgramsSection({
   canGoPrevious, 
   navigateToNextTab, 
   navigateToPreviousTab,
-  getNavigationText 
+  getNavigationText,
+  isEmbedded = false
 }: NavigationProps) {
   const [expandedPrograms, setExpandedPrograms] = useState<Record<string, boolean>>({});
   const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
@@ -826,39 +828,41 @@ export default function ProgramsSection({
         )}
       </Card>
 
-      {/* Navigation Buttons */}
-      <div className="mt-12 pt-8 border-t border-gray-200">
-        <div className="text-center mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
-          <p className="text-sm text-gray-600">Navigate through your recovery program</p>
+      {/* Navigation Buttons - only show when not embedded */}
+      {!isEmbedded && canGoNext && canGoPrevious && navigateToNextTab && navigateToPreviousTab && getNavigationText && (
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Continue Your Journey</h3>
+            <p className="text-sm text-gray-600">Navigate through your recovery program</p>
+          </div>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            {canGoPrevious() && (
+              <Button
+                variant="outline"
+                className="border-2 border-pink-300 text-pink-600 hover:bg-pink-50 px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
+                data-testid="button-prev-section-programs"
+                onClick={navigateToPreviousTab}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                {getNavigationText('prev')}
+              </Button>
+            )}
+            {canGoNext() && (
+              <Button
+                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
+                data-testid="button-next-section-programs"
+                onClick={navigateToNextTab}
+              >
+                {getNavigationText('next')}
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+          <div className="text-center mt-4">
+            <p className="text-xs text-gray-500">Complete your holistic recovery journey</p>
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-          {canGoPrevious() && (
-            <Button
-              variant="outline"
-              className="border-2 border-pink-300 text-pink-600 hover:bg-pink-50 px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
-              data-testid="button-prev-section-programs"
-              onClick={navigateToPreviousTab}
-            >
-              <ChevronLeft className="w-4 h-4" />
-              {getNavigationText('prev')}
-            </Button>
-          )}
-          {canGoNext() && (
-            <Button
-              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 sm:px-8 py-4 sm:py-3 text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
-              data-testid="button-next-section-programs"
-              onClick={navigateToNextTab}
-            >
-              {getNavigationText('next')}
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-        <div className="text-center mt-4">
-          <p className="text-xs text-gray-500">Complete your holistic recovery journey</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

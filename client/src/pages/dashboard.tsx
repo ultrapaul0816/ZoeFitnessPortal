@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown, ClipboardCheck, ChevronRight, Play } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown, ClipboardCheck, ChevronRight, Play, Dumbbell, List } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ProgramCard from "@/components/program-card";
@@ -17,6 +18,7 @@ import CommunityModal from "@/components/community-modal";
 import ProfileSettings from "@/components/profile-settings";
 import ProfileBanner from "@/components/profile-banner";
 import TodaysWorkout from "@/components/todays-workout";
+import ProgramsSection from "@/components/program-sections/ProgramsSection";
 import WeeklySummary from "@/components/weekly-summary";
 import DailyCheckinModal from "@/components/daily-checkin-modal";
 import DailyMoodPopup from "@/components/daily-mood-popup";
@@ -88,6 +90,7 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [isWorkoutExpanded, setIsWorkoutExpanded] = useState(false); // Start minimized
+  const [workoutViewTab, setWorkoutViewTab] = useState<"today" | "full-program">("today");
 
   // Auto-hide welcome message after 3 seconds
   useEffect(() => {
@@ -807,30 +810,68 @@ export default function Dashboard() {
           </section>
         )} */}
 
-        {/* Today's Workout Card - Main workout experience (collapsible) */}
+        {/* Heal Your Core - Tabbed Workout Section */}
         {memberPrograms.length > 0 && (
           <section className="mb-8">
-            <TodaysWorkout 
-              userId={user.id}
-              isFirstLogin={isFirstLogin && stats.completedWorkouts === 0}
-              onStartWorkout={(weekNumber) => {
-                setLocation(`/heal-your-core?week=${weekNumber}`);
-              }}
-              isExpanded={isWorkoutExpanded}
-              onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
-            />
+            <Card className="bg-white border-2 border-pink-100 shadow-lg rounded-2xl overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-3">
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Dumbbell className="w-5 h-5" />
+                  Heal Your Core
+                </h2>
+              </div>
+              
+              {/* Tabs */}
+              <Tabs value={workoutViewTab} onValueChange={(v) => setWorkoutViewTab(v as "today" | "full-program")} className="w-full">
+                <div className="px-4 pt-3">
+                  <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
+                    <TabsTrigger 
+                      value="today" 
+                      className="data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-sm rounded-md py-2 text-sm font-medium"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Today's Workout
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="full-program" 
+                      className="data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-sm rounded-md py-2 text-sm font-medium"
+                    >
+                      <List className="w-4 h-4 mr-2" />
+                      Full Program
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+                
+                <TabsContent value="today" className="mt-0 p-0">
+                  <TodaysWorkout 
+                    userId={user.id}
+                    isFirstLogin={isFirstLogin && stats.completedWorkouts === 0}
+                    onStartWorkout={(weekNumber) => {
+                      setLocation(`/heal-your-core?week=${weekNumber}`);
+                    }}
+                    isExpanded={isWorkoutExpanded}
+                    onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="full-program" className="mt-0 p-4">
+                  <ProgramsSection 
+                    isEmbedded={true}
+                  />
+                </TabsContent>
+              </Tabs>
+            </Card>
           </section>
         )}
 
-        {/* Enrolled Courses Cards */}
-        {courseEnrollments.length > 0 && (
+        {/* Other Enrolled Courses Cards (excluding Heal Your Core) */}
+        {courseEnrollments.filter(e => e.course_id !== 'heal-your-core-course').length > 0 && (
           <section className="mb-8">
             <div className="flex flex-wrap justify-center gap-6">
-              {courseEnrollments.map((enrollment) => {
+              {courseEnrollments.filter(e => e.course_id !== 'heal-your-core-course').map((enrollment) => {
                 const isExpired = enrollment.expires_at && new Date(enrollment.expires_at) < new Date();
-                const courseUrl = enrollment.course_id === 'heal-your-core-course' 
-                  ? '/heal-your-core' 
-                  : enrollment.course_id === 'prenatal-strength-course'
+                const courseUrl = enrollment.course_id === 'prenatal-strength-course'
                   ? '/prenatal-strength'
                   : `/courses/${enrollment.course_id}`;
                 return (
