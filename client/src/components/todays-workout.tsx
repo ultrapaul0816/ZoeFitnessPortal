@@ -393,34 +393,34 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome, Mama! 💕</h2>
                 <p className="text-gray-600 text-sm">
-                  Before we begin, I have a quick message for you...
+                  I'm so proud of you for taking this step for yourself.
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl overflow-hidden shadow-md">
-                {showWelcomeVideo ? (
-                  <div className="aspect-video">
-                    <iframe
-                      src="https://www.youtube.com/embed/SrEKb2TMLzA?autoplay=1"
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      title="Welcome from Zoe"
-                    />
+              <div className="bg-white rounded-xl p-5 shadow-md space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center flex-shrink-0">
+                    <span className="text-white text-lg">Z</span>
                   </div>
-                ) : (
-                  <button
-                    onClick={() => setShowWelcomeVideo(true)}
-                    className="relative w-full aspect-video bg-gradient-to-br from-pink-100 to-purple-100 flex flex-col items-center justify-center hover:from-pink-200 hover:to-purple-200 transition-colors"
-                    data-testid="button-play-welcome-video"
-                  >
-                    <div className="w-20 h-20 rounded-full bg-pink-500 flex items-center justify-center shadow-lg mb-3">
-                      <Play className="w-10 h-10 text-white ml-1" />
-                    </div>
-                    <span className="text-pink-700 font-semibold">Watch Zoe's Welcome Message</span>
-                    <span className="text-gray-500 text-sm mt-1">2 min video</span>
-                  </button>
-                )}
+                  <div className="bg-pink-50 rounded-2xl rounded-tl-sm p-4 flex-1">
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      Hey mama! I'm Zoe, your coach through this journey. This program is designed 
+                      specifically for postpartum bodies - we'll rebuild your core strength gently 
+                      and safely, at YOUR pace.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center flex-shrink-0">
+                    <span className="text-white text-lg">Z</span>
+                  </div>
+                  <div className="bg-pink-50 rounded-2xl rounded-tl-sm p-4 flex-1">
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      Remember: healing over hustle. Listen to your body, take breaks when you need them, 
+                      and celebrate every small win. You've got this, and I've got you! 💪
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className="bg-white/80 rounded-xl p-4">
