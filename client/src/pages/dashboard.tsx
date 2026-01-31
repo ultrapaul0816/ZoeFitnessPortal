@@ -855,7 +855,7 @@ export default function Dashboard() {
                   </TabsList>
                 </div>
                 
-                <TabsContent value="today" className="mt-0 p-0">
+                <TabsContent value="today" className="mt-0 p-4 pb-6">
                   <TodaysWorkout 
                     userId={user.id}
                     isFirstLogin={isFirstLogin && stats.completedWorkouts === 0}
