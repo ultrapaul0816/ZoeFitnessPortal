@@ -6,10 +6,12 @@ import {
   createReEngagementEmail,
   createProgramReminderEmail,
   createCompletionCelebrationEmail,
+  createWhatsAppExpiryReminderEmail,
   type WelcomeEmailData,
   type ReEngagementEmailData,
   type ProgramReminderEmailData,
   type CompletionCelebrationEmailData,
+  type WhatsAppExpiryReminderData,
 } from './templates';
 
 class EmailService {
@@ -80,6 +82,23 @@ class EmailService {
     data: Omit<CompletionCelebrationEmailData, 'firstName'>
   ): Promise<EmailSendResult> {
     const template = createCompletionCelebrationEmail({
+      firstName: user.firstName,
+      ...data,
+    });
+
+    return this.send({
+      to: { email: user.email, name: `${user.firstName} ${user.lastName}` },
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+  }
+
+  async sendWhatsAppExpiryReminderEmail(
+    user: User,
+    data: Omit<WhatsAppExpiryReminderData, 'firstName'>
+  ): Promise<EmailSendResult> {
+    const template = createWhatsAppExpiryReminderEmail({
       firstName: user.firstName,
       ...data,
     });

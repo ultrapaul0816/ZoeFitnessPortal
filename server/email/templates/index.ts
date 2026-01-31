@@ -4,6 +4,7 @@ export { createProgramReminderEmail } from './program-reminder';
 export { createCompletionCelebrationEmail } from './completion-celebration';
 export { createCompleteSignupEmail } from './complete-signup';
 export { createPasswordResetEmail } from './password-reset';
+export { createWhatsAppExpiryReminderEmail } from './whatsapp-expiry-reminder';
 
 export type {
   EmailTemplate,
@@ -12,5 +13,6 @@ export type {
   ProgramReminderEmailData,
   CompletionCelebrationEmailData,
   CompleteSignupEmailData,
+  WhatsAppExpiryReminderData,
 } from './base';
 export type { PasswordResetEmailData } from './password-reset';

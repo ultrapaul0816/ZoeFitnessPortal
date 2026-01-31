@@ -35,3 +35,10 @@ export interface CompleteSignupEmailData {
   email: string;
   daysSinceSignup: number;
 }
+
+export interface WhatsAppExpiryReminderData {
+  firstName: string;
+  daysRemaining: number;
+  expiryDate: Date;
+  renewalLink: string;
+}
