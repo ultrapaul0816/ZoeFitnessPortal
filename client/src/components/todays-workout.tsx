@@ -28,7 +28,9 @@ import {
   Camera,
   Trophy,
   ArrowRight,
-  Flame
+  Flame,
+  ThumbsUp,
+  ThumbsDown
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -68,6 +70,7 @@ interface ChatMessage {
   content: string;
   action?: { type: "swap_workout"; week: number };
   suggestedActions?: SuggestedAction[];
+  feedback?: "helpful" | "not-helpful" | null;
 }
 
 const SWAPS_PER_WEEK = 2;
@@ -139,6 +142,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [showWeekComplete, setShowWeekComplete] = useState(false);
   const prevWorkoutsCompletedRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedWeekOverride, setSelectedWeekOverride] = useState<number | null>(null);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
     queryKey: ["/api/workout-progress", userId],
@@ -335,11 +339,12 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
     return null;
   }
 
-  const currentProgram = workoutPrograms.find(p => p.week === progress.currentWeek) || workoutPrograms[0];
+  const displayWeek = selectedWeekOverride || progress.currentWeek;
+  const currentProgram = workoutPrograms.find(p => p.week === displayWeek) || workoutPrograms[0];
   const exercises = currentProgram.part2.exercises;
   const allExercisesComplete = completedExercises.size === exercises.length;
   const isWorkoutCompletedToday = progress.workoutCompletedToday;
-  const programInfo = programOverviews[progress.currentWeek] || programOverviews[1];
+  const programInfo = programOverviews[displayWeek] || programOverviews[1];
 
   const isFirstWorkout = progress.totalWorkoutsCompleted === 0 && !isWorkoutCompletedToday;
 
@@ -731,9 +736,21 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             <div>
               <CardTitle className="text-xl font-bold">This Week's Workout</CardTitle>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-pink-100 text-sm">
-                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {todayDayType === 'workout' ? `Core ${workoutsCompletedThisWeek + 1}/4` : todayDayType === 'cardio' ? 'Cardio' : 'Rest'}
-                </p>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={selectedWeekOverride || sessionProgress?.currentWeek || progress.currentWeek}
+                    onChange={(e) => setSelectedWeekOverride(Number(e.target.value))}
+                    className="bg-white/20 text-white border border-white/30 rounded-md px-2 py-0.5 text-sm font-medium cursor-pointer hover:bg-white/30 transition-colors"
+                    data-testid="week-selector"
+                  >
+                    {[1, 2, 3, 4, 5, 6].map((week) => (
+                      <option key={week} value={week} className="text-gray-800">
+                        Week {week}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-pink-100 text-sm">• {todayDayType === 'workout' ? `Core ${workoutsCompletedThisWeek + 1}/4` : todayDayType === 'cardio' ? 'Cardio' : 'Rest'}</span>
+                </div>
                 <Badge 
                   variant="secondary" 
                   className={`text-xs px-2 py-0.5 ${
@@ -1120,7 +1137,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                         data-testid="button-ask-zoe"
                       >
                         <MessageCircle className="w-4 h-4 mr-1" />
-                        Chat with Zoe
+                        AI Zoe
                       </Button>
                       <Button
                         onClick={openZoeWithSwapRequest}
@@ -1278,6 +1295,53 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                           {action.label}
                         </button>
                       ))}
+                    </div>
+                  )}
+                  
+                  {/* AI Response Feedback Buttons */}
+                  {msg.role === "assistant" && (
+                    <div className="mt-2 ml-2 flex items-center gap-2">
+                      <span className="text-xs text-gray-400">Was this helpful?</span>
+                      <button
+                        onClick={() => {
+                          setChatMessages(prev => prev.map((m, i) => 
+                            i === idx ? { ...m, feedback: "helpful" } : m
+                          ));
+                          toast({ 
+                            title: "Thanks for your feedback!", 
+                            description: "This helps us improve Zoe's responses." 
+                          });
+                        }}
+                        className={`p-1.5 rounded-full transition-colors ${
+                          msg.feedback === "helpful" 
+                            ? "bg-green-100 text-green-600" 
+                            : "hover:bg-gray-100 text-gray-400 hover:text-green-600"
+                        }`}
+                        data-testid={`feedback-helpful-${idx}`}
+                        disabled={msg.feedback !== undefined && msg.feedback !== null}
+                      >
+                        <ThumbsUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setChatMessages(prev => prev.map((m, i) => 
+                            i === idx ? { ...m, feedback: "not-helpful" } : m
+                          ));
+                          toast({ 
+                            title: "Thanks for your feedback!", 
+                            description: "We'll work on improving Zoe's responses." 
+                          });
+                        }}
+                        className={`p-1.5 rounded-full transition-colors ${
+                          msg.feedback === "not-helpful" 
+                            ? "bg-red-100 text-red-600" 
+                            : "hover:bg-gray-100 text-gray-400 hover:text-red-600"
+                        }`}
+                        data-testid={`feedback-not-helpful-${idx}`}
+                        disabled={msg.feedback !== undefined && msg.feedback !== null}
+                      >
+                        <ThumbsDown className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   )}
                 </div>
