@@ -68,6 +68,34 @@ Goals are stored in the user's database profile and will be used to personalize 
 **Weekly Summary & Mood Insights**: The dashboard displays check-in streaks, progress bars for water and cardio, consistency percentages, and a visual calendar. A collapsible "Mood & Energy" card shows top mood, average energy level with trends, and a 7-day mood history strip. A one-click WhatsApp sharing feature generates a pre-formatted weekly summary message.
 **Admin Check-in Analytics**: The admin dashboard includes a "Community Mood & Energy" card showing aggregated mood distribution, average energy levels, and energy trend charts across all users.
 
+## User Activity Tracking
+**Automatic Activity Tracking**: The platform automatically tracks user activity for engagement analytics:
+- Page views (Dashboard, Courses, Community, Profile, etc.)
+- Feature usage patterns
+- Login frequency and timing
+- Session activity
+
+**Admin Activity Analytics Dashboard**: A dedicated "Activity & Engagement" card in the admin dashboard shows:
+- Daily active users trend chart
+- Top pages visited with bar chart
+- Activity type distribution (pie chart)
+- Activity by hour of day
+- Most active users leaderboard
+- Configurable time range (7, 30, or 90 days)
+
+**User Activity Summary (Admin View)**: When viewing a member's profile in admin, the Activity tab now includes:
+- Total activities count
+- Last active timestamp
+- Recent login count
+- Top pages visited by that user
+- Most active days of the week
+- Detailed activity log timeline
+
+**API Endpoints**:
+- `POST /api/track`: Frontend tracking endpoint for page views and feature usage
+- `GET /api/admin/activity-analytics`: Aggregated activity analytics for admin dashboard
+- `GET /api/admin/users/:userId/activity-summary`: Individual user activity summary
+
 ## Multi-Course Management System
 The platform supports multiple courses with a flexible structure.
 **Admin Tools**:
