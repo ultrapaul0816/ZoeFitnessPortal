@@ -6507,6 +6507,53 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // Test endpoint to send WhatsApp expiry reminder email (admin only)
+  app.post("/api/admin/test-whatsapp-reminder", requireAdmin, async (req, res) => {
+    try {
+      const { email, daysRemaining = 7 } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Build renewal link with pre-filled user data
+      const BASE_RENEWAL_LINK = 'https://rzp.io/rzp/SiWM4aC';
+      const params = new URLSearchParams();
+      params.append('prefill[email]', user.email);
+      if (user.phone) {
+        const cleanPhone = user.phone.replace(/\D/g, '');
+        if (cleanPhone.length >= 10) {
+          params.append('prefill[contact]', cleanPhone);
+        }
+      }
+      const renewalLink = `${BASE_RENEWAL_LINK}?${params.toString()}`;
+      
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + daysRemaining);
+      
+      await emailService.sendWhatsAppExpiryReminderEmail(user, {
+        daysRemaining,
+        expiryDate,
+        renewalLink,
+      });
+      
+      console.log(`[Test WhatsApp Reminder] Sent ${daysRemaining}-day reminder email to ${email}`);
+      res.json({ 
+        success: true, 
+        message: `WhatsApp reminder email sent to ${email}`,
+        renewalLink,
+      });
+    } catch (error) {
+      console.error("Test WhatsApp reminder error:", error);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
   // Test endpoint to simulate Shopify webhook (admin only)
   app.post("/api/admin/test-shopify-webhook", requireAdmin, async (req, res) => {
     try {
