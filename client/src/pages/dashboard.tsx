@@ -816,10 +816,22 @@ export default function Dashboard() {
             <Card className="bg-white border-2 border-pink-100 shadow-lg rounded-2xl overflow-hidden">
               {/* Header */}
               <div className="bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-3">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Dumbbell className="w-5 h-5" />
-                  Heal Your Core
-                </h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Dumbbell className="w-5 h-5" />
+                    Heal Your Core
+                  </h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setLocation('/heal-your-core')}
+                    className="text-white hover:bg-white/20 text-xs font-medium px-3 py-1.5 h-auto"
+                    data-testid="button-explore-full-program"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 mr-1.5" />
+                    Explore Program
+                  </Button>
+                </div>
               </div>
               
               {/* Tabs */}
