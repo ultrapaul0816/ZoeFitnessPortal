@@ -749,34 +749,30 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                       </option>
                     ))}
                   </select>
-                  <span className="text-pink-100 text-sm">• {todayDayType === 'workout' ? `Core ${workoutsCompletedThisWeek + 1}/4` : todayDayType === 'cardio' ? 'Cardio' : 'Rest'}</span>
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs px-2 py-0.5 ${
+                      todayDayType === 'workout' 
+                        ? 'bg-white/20 text-white' 
+                        : todayDayType === 'cardio' 
+                          ? 'bg-green-400/30 text-green-100' 
+                          : 'bg-purple-400/30 text-purple-100'
+                    }`}
+                  >
+                    {todayDayType === 'workout' ? `Workout ${workoutsCompletedThisWeek + 1}/4` : todayDayTypeLabel}
+                  </Badge>
                 </div>
-                <Badge 
-                  variant="secondary" 
-                  className={`text-xs px-2 py-0.5 ${
-                    todayDayType === 'workout' 
-                      ? 'bg-white/20 text-white' 
-                      : todayDayType === 'cardio' 
-                        ? 'bg-green-400/30 text-green-100' 
-                        : 'bg-purple-400/30 text-purple-100'
-                  }`}
-                >
-                  Today: {todayDayTypeLabel}
-                </Badge>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              {/* Streak Display */}
+            <div className="flex items-center gap-2">
               {(sessionProgress?.currentStreak || 0) > 0 && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-pink-400/30 to-purple-400/30 rounded-full border border-pink-300/50">
-                  <Flame className="w-4 h-4 text-pink-200" />
-                  <span className="text-sm font-bold text-white">{sessionProgress?.currentStreak}</span>
-                  <span className="text-xs text-pink-100">day streak</span>
+                <div className="flex items-center gap-1 px-2 py-1 bg-white/20 rounded-full">
+                  <Flame className="w-3.5 h-3.5 text-pink-200" />
+                  <span className="text-xs font-bold text-white">{sessionProgress?.currentStreak}</span>
                 </div>
               )}
-              <div className="text-right">
-                <div className="text-2xl font-bold">{workoutsCompletedThisWeek}/4</div>
-                <div className="text-xs text-pink-100">workouts this week</div>
+              <div className="text-center px-2 py-1 bg-white/20 rounded-full">
+                <span className="text-xs font-bold text-white">{workoutsCompletedThisWeek}/4</span>
               </div>
               {onToggleExpand && (
                 <button
