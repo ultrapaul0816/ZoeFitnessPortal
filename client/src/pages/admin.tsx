@@ -238,7 +238,7 @@ export default function Admin() {
     const firstName = data.userName?.split(' ')[0] || 'there';
 
     // Payment link
-    const paymentLink = 'https://rzp.io/rzp/sFzniAWK';
+    const paymentLink = 'https://rzp.io/rzp/SiWM4aC';
 
     if (isExpiring) {
       // EXPIRING SOON EMAIL - WhatsApp Community Support

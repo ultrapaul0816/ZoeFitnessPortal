@@ -127,7 +127,7 @@ We noticed your membership access has expired and we'd love to have you back!
 ${expiryInfo}
 Your progress and journey matter to us. Renew now to continue where you left off and stay connected with our supportive community.
 
-Renewal: https://rzp.io/rzp/sFzniAWK (Rs. 1,000 for 3 months WhatsApp support)
+Renewal: https://rzp.io/rzp/SiWM4aC (Rs. 1,000 for 3 months WhatsApp support)
 
 If you have any questions, please reply to this email.
 

@@ -120,7 +120,7 @@ We wanted to reach out because your membership access is expiring soon.
 ${expiryInfo}
 To continue your recovery journey with full access to your program and our supportive community, please renew your membership.
 
-Renewal: https://rzp.io/rzp/sFzniAWK (Rs. 1,000 for 3 months WhatsApp support)
+Renewal: https://rzp.io/rzp/SiWM4aC (Rs. 1,000 for 3 months WhatsApp support)
 
 If you have any questions, please reply to this email.
 

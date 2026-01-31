@@ -16,7 +16,7 @@ interface ExpiryInfo {
   expiryDate: Date;
 }
 
-const PAYMENT_LINK = 'https://rzp.io/rzp/sFzniAWK';
+const PAYMENT_LINK = 'https://rzp.io/rzp/SiWM4aC';
 
 export default function ExpiryNotification({ user }: ExpiryNotificationProps) {
   const [dismissedNotifications, setDismissedNotifications] = useState<string[]>([]);
