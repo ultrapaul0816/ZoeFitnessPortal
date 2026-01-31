@@ -491,6 +491,24 @@ Stronger With Zoe Support`;
     enabled: !!fullProfileMember?.id,
   });
 
+  // User activity summary for member profile
+  const { data: userActivitySummary } = useQuery<{
+    totalActivities: number;
+    lastActive: string | null;
+    topPages: { page: string; count: number }[];
+    topFeatures: { feature: string; count: number }[];
+    activityByDay: { day: string; count: number }[];
+    recentLogins: string[];
+  }>({
+    queryKey: ["/api/admin/users", fullProfileMember?.id, "activity-summary"],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/users/${fullProfileMember?.id}/activity-summary`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch');
+      return res.json();
+    },
+    enabled: !!fullProfileMember?.id,
+  });
+
   // Check-in analytics view toggle (today vs this week)
   const [checkinView, setCheckinView] = useState<'today' | 'week'>('today');
   
@@ -3549,6 +3567,67 @@ Stronger With Zoe Support`;
 
               {/* Activity Tab */}
               <TabsContent value="activity" className="space-y-4">
+                {/* Activity Summary */}
+                {userActivitySummary && (
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 mb-4">
+                    <h4 className="font-semibold text-sm text-blue-800 mb-3 flex items-center gap-2">
+                      <Activity className="w-4 h-4" />
+                      Engagement Summary
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                      <div className="bg-white/70 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-blue-600">{userActivitySummary.totalActivities}</p>
+                        <p className="text-xs text-gray-500">Total Activities</p>
+                      </div>
+                      <div className="bg-white/70 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-pink-600">{userActivitySummary.recentLogins.length}</p>
+                        <p className="text-xs text-gray-500">Recent Logins</p>
+                      </div>
+                      <div className="bg-white/70 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-purple-600">{userActivitySummary.topPages.length}</p>
+                        <p className="text-xs text-gray-500">Pages Visited</p>
+                      </div>
+                      <div className="bg-white/70 rounded-lg p-3 text-center">
+                        <p className="text-sm font-medium text-gray-700">
+                          {userActivitySummary.lastActive 
+                            ? format(new Date(userActivitySummary.lastActive), "MMM dd, HH:mm")
+                            : 'Never'}
+                        </p>
+                        <p className="text-xs text-gray-500">Last Active</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {userActivitySummary.topPages.length > 0 && (
+                        <div className="bg-white/70 rounded-lg p-3">
+                          <p className="text-xs font-semibold text-gray-600 mb-2">Top Pages</p>
+                          <div className="space-y-1">
+                            {userActivitySummary.topPages.slice(0, 4).map((p, i) => (
+                              <div key={i} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-700">{p.page}</span>
+                                <span className="text-blue-600 font-medium">{p.count}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {userActivitySummary.activityByDay.length > 0 && (
+                        <div className="bg-white/70 rounded-lg p-3">
+                          <p className="text-xs font-semibold text-gray-600 mb-2">Most Active Days</p>
+                          <div className="space-y-1">
+                            {userActivitySummary.activityByDay.slice(0, 4).map((d, i) => (
+                              <div key={i} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-700">{d.day}</span>
+                                <span className="text-purple-600 font-medium">{d.count} activities</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-sm text-purple-700">Activity Logs ({fullProfileData.activityLogs.length})</h3>
                 </div>
@@ -3558,15 +3637,19 @@ Stronger With Zoe Support`;
                       <div key={log.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-100">
                         <div className={`w-2 h-2 rounded-full ${
                           log.activityType === 'login' ? 'bg-blue-500' :
-                          log.activityType === 'workout_completion' ? 'bg-green-500' :
+                          log.activityType === 'login_otp' ? 'bg-blue-400' :
+                          log.activityType === 'page_view' ? 'bg-indigo-500' :
+                          log.activityType === 'feature_usage' ? 'bg-purple-500' :
+                          log.activityType === 'workout_complete' ? 'bg-green-500' :
                           log.activityType === 'workout_start' ? 'bg-pink-500' :
+                          log.activityType === 'daily_checkin' ? 'bg-yellow-500' :
                           'bg-gray-400'
                         }`}></div>
                         <div className="flex-1">
                           <p className="text-sm font-medium capitalize">{log.activityType.replace(/_/g, ' ')}</p>
                           {log.metadata && Object.keys(log.metadata).length > 0 && (
                             <p className="text-xs text-muted-foreground">
-                              {log.metadata.workoutName || log.metadata.programName || ''}
+                              {log.metadata.page || log.metadata.feature || log.metadata.workoutName || log.metadata.programName || ''}
                             </p>
                           )}
                         </div>
