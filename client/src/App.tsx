@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense } from "react";
+import { useActivityTracking } from "@/hooks/use-activity-tracking";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
@@ -45,6 +46,11 @@ function PageLoader({ message }: { message: string }) {
       <p className="text-gray-600 font-medium">{message}</p>
     </div>
   );
+}
+
+function ActivityTracker() {
+  useActivityTracking();
+  return null;
 }
 
 function Router() {
@@ -97,6 +103,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <ActivityTracker />
         <Toaster />
         <Router />
       </TooltipProvider>
