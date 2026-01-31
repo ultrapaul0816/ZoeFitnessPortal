@@ -572,7 +572,7 @@ export default function Progress() {
               </div>
               <div>
                 <h2 className="text-lg md:text-2xl font-bold text-gray-900">Finish Photo</h2>
-                <p className="text-xs md:text-sm text-gray-600">Your progress (Week 6+)</p>
+                <p className="text-xs md:text-sm text-gray-600">Your transformation photo (after program)</p>
               </div>
             </div>
 

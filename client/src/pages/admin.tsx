@@ -2175,14 +2175,17 @@ Stronger With Zoe Support`;
                                   )}
                                 </div>
                               </div>
-                              {enrollment.expires_at && (
+                              {enrollment.expires_at && (() => {
+                                const isEnrollmentExpired = new Date(enrollment.expires_at) < new Date();
+                                return (
                                 <div className="text-right">
                                   <p className="text-xs text-muted-foreground">Expires</p>
-                                  <p className="text-xs font-medium">
+                                  <p className={`text-xs font-medium ${isEnrollmentExpired ? 'text-red-600' : 'text-green-600'}`}>
                                     {new Date(enrollment.expires_at).toLocaleDateString()}
                                   </p>
                                 </div>
-                              )}
+                                );
+                              })()}
                             </div>
                           </div>
                         ))}
