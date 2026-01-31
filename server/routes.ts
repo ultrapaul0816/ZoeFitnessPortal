@@ -6592,6 +6592,29 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // Production seed endpoints
+  app.post("/api/admin/seed/heal-your-core", requireAdmin, async (req, res) => {
+    try {
+      const { seedHealYourCoreCourse } = await import("./production-seed");
+      const result = await seedHealYourCoreCourse();
+      res.json(result);
+    } catch (error) {
+      console.error("Seed error:", error);
+      res.status(500).json({ success: false, message: `Seed failed: ${error}` });
+    }
+  });
+
+  app.post("/api/admin/seed/enroll-all-users", requireAdmin, async (req, res) => {
+    try {
+      const { enrollAllUsersInHealYourCore } = await import("./production-seed");
+      const result = await enrollAllUsersInHealYourCore();
+      res.json(result);
+    } catch (error) {
+      console.error("Enrollment error:", error);
+      res.status(500).json({ success: false, message: `Enrollment failed: ${error}`, enrolled: 0 });
+    }
+  });
+
   // Test endpoint to simulate Shopify webhook (admin only)
   app.post("/api/admin/test-shopify-webhook", requireAdmin, async (req, res) => {
     try {
