@@ -22,6 +22,7 @@ export const users = pgTable("users", {
   hasWhatsAppSupport: boolean("has_whatsapp_support").default(false),
   whatsAppSupportDuration: integer("whatsapp_support_duration"),
   whatsAppSupportExpiryDate: timestamp("whatsapp_support_expiry_date"),
+  whatsAppRemindersSent: text("whatsapp_reminders_sent").array(), // ['7-day', '3-day'] to track sent reminders
   country: text("country"),
   bio: text("bio"),
   instagramHandle: text("instagram_handle"),
