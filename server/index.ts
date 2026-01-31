@@ -3,6 +3,7 @@ import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { startWhatsAppReminderScheduler } from "./schedulers/whatsapp-reminder";
 
 const app = express();
 app.set('trust proxy', true);
@@ -102,5 +103,8 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Start scheduled tasks
+    startWhatsAppReminderScheduler();
   });
 })();

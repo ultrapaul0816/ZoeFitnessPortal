@@ -3939,6 +3939,7 @@ RESPONSE GUIDELINES:
       if (newWhatsAppDate) {
         updateData.whatsAppSupportExpiryDate = newWhatsAppDate;
         updateData.hasWhatsAppSupport = true;
+        updateData.whatsAppRemindersSent = []; // Reset reminders for new renewal cycle
       }
 
       const updatedUser = await storage.updateUser(id, updateData);
@@ -4398,10 +4399,15 @@ RESPONSE GUIDELINES:
         const expiryDate = new Date(now);
         expiryDate.setMonth(expiryDate.getMonth() + updateData.whatsAppSupportDuration);
         updateData.whatsAppSupportExpiryDate = expiryDate;
+        updateData.whatsAppRemindersSent = []; // Reset reminders for new support period
+      } else if (updateData.whatsAppSupportExpiryDate) {
+        // If expiry date is being updated (extended), reset reminders
+        updateData.whatsAppRemindersSent = [];
       } else if (!updateData.hasWhatsAppSupport) {
         // Clear WhatsApp support fields if disabled
         updateData.whatsAppSupportDuration = null;
         updateData.whatsAppSupportExpiryDate = null;
+        updateData.whatsAppRemindersSent = null;
       }
 
       const updatedUser = await storage.updateUser(id, updateData);
