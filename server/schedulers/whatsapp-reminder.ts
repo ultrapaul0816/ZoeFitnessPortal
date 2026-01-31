@@ -2,9 +2,15 @@ import { storage } from '../storage';
 import { emailService } from '../email/service';
 
 const RENEWAL_LINK = 'https://rzp.io/rzp/sFzniAWK';
+const isProduction = process.env.NODE_ENV === 'production';
 
 export async function checkAndSendWhatsAppExpiryReminders() {
   console.log('[WhatsApp Reminder] Starting daily check...');
+  
+  if (!isProduction) {
+    console.log('[WhatsApp Reminder] Skipping in development environment - emails only sent in production');
+    return { sevenDayRemindersSent: 0, threeDayRemindersSent: 0, totalUsersChecked: 0, skipped: true };
+  }
   
   const now = new Date();
 

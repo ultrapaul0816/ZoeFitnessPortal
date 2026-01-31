@@ -6448,8 +6448,9 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         )
       `);
 
-      // Send welcome email for new users
-      if (isNewUser && password) {
+      // Send welcome email for new users (production only)
+      const isProductionEnv = process.env.NODE_ENV === 'production';
+      if (isNewUser && password && isProductionEnv) {
         try {
           await emailService.send({
             to: { email, name: `${firstName} ${lastName}`.trim() },
@@ -6488,6 +6489,8 @@ Keep it to 2-4 sentences, warm and encouraging.`;
           console.error("Failed to send welcome email:", emailError);
           // Don't fail the webhook for email errors
         }
+      } else if (isNewUser && password && !isProductionEnv) {
+        console.log("[Shopify Webhook] Skipping welcome email in development environment for:", email);
       }
 
       res.status(200).json({ 
