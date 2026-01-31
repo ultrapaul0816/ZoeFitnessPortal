@@ -2531,6 +2531,55 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Track user activity (page views, feature usage)
+  app.post("/api/track", async (req, res) => {
+    try {
+      if (!req.session?.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const { type, page, feature, metadata } = req.body;
+      const userId = req.session.user.id;
+      
+      if (type === 'page_view' && page) {
+        await storage.createActivityLog(userId, 'page_view', { page, ...metadata });
+      } else if (type === 'feature_usage' && feature) {
+        await storage.createActivityLog(userId, 'feature_usage', { feature, ...metadata });
+      } else if (type && metadata) {
+        await storage.createActivityLog(userId, type, metadata);
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Track error:", error);
+      res.status(500).json({ message: "Failed to track activity" });
+    }
+  });
+
+  // Activity analytics for admin dashboard
+  app.get("/api/admin/activity-analytics", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const analytics = await storage.getActivityAnalytics(days);
+      res.json(analytics);
+    } catch (error) {
+      console.error("Activity analytics error:", error);
+      res.status(500).json({ message: "Failed to fetch activity analytics" });
+    }
+  });
+
+  // User activity summary for admin user profile view
+  app.get("/api/admin/users/:userId/activity-summary", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const summary = await storage.getUserActivitySummary(userId);
+      res.json(summary);
+    } catch (error) {
+      console.error("User activity summary error:", error);
+      res.status(500).json({ message: "Failed to fetch user activity summary" });
+    }
+  });
+
   // Checkin analytics for admin dashboard - aggregated mood & energy insights
   app.get("/api/admin/checkin-analytics", async (req, res) => {
     try {

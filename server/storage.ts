@@ -4869,6 +4869,204 @@ class DatabaseStorage implements IStorage {
 
     return (result[0]?.count || 0) > 0;
   }
+
+  // Activity Analytics
+  async getActivityAnalytics(days: number = 30): Promise<{
+    pageViews: { page: string; count: number }[];
+    featureUsage: { feature: string; count: number }[];
+    dailyActiveUsers: { date: string; count: number }[];
+    topActiveUsers: { userId: string; firstName: string; lastName: string; activityCount: number }[];
+    activityByType: { type: string; count: number }[];
+    activityByHour: { hour: number; count: number }[];
+  }> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Page views by page
+    const pageViewsResult = await this.db
+      .select({
+        page: sql<string>`metadata->>'page'`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .where(
+        and(
+          eq(activityLogs.activityType, 'page_view'),
+          gte(activityLogs.createdAt, startDate)
+        )
+      )
+      .groupBy(sql`metadata->>'page'`)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(10);
+
+    // Feature usage counts
+    const featureUsageResult = await this.db
+      .select({
+        feature: sql<string>`metadata->>'feature'`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .where(
+        and(
+          eq(activityLogs.activityType, 'feature_usage'),
+          gte(activityLogs.createdAt, startDate)
+        )
+      )
+      .groupBy(sql`metadata->>'feature'`)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(10);
+
+    // Daily active users (unique users per day)
+    const dailyActiveResult = await this.db
+      .select({
+        date: sql<string>`DATE(created_at)::text`,
+        count: sql<number>`COUNT(DISTINCT user_id)::int`,
+      })
+      .from(activityLogs)
+      .where(gte(activityLogs.createdAt, startDate))
+      .groupBy(sql`DATE(created_at)`)
+      .orderBy(sql`DATE(created_at)`);
+
+    // Top active users
+    const topActiveResult = await this.db
+      .select({
+        userId: activityLogs.userId,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        activityCount: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .leftJoin(users, eq(activityLogs.userId, users.id))
+      .where(gte(activityLogs.createdAt, startDate))
+      .groupBy(activityLogs.userId, users.firstName, users.lastName)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(10);
+
+    // Activity by type
+    const activityByTypeResult = await this.db
+      .select({
+        type: activityLogs.activityType,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .where(gte(activityLogs.createdAt, startDate))
+      .groupBy(activityLogs.activityType)
+      .orderBy(sql`COUNT(*) DESC`);
+
+    // Activity by hour of day
+    const activityByHourResult = await this.db
+      .select({
+        hour: sql<number>`EXTRACT(HOUR FROM created_at)::int`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .where(gte(activityLogs.createdAt, startDate))
+      .groupBy(sql`EXTRACT(HOUR FROM created_at)`)
+      .orderBy(sql`EXTRACT(HOUR FROM created_at)`);
+
+    return {
+      pageViews: pageViewsResult.filter(p => p.page).map(p => ({ page: p.page, count: p.count })),
+      featureUsage: featureUsageResult.filter(f => f.feature).map(f => ({ feature: f.feature, count: f.count })),
+      dailyActiveUsers: dailyActiveResult.map(d => ({ date: d.date, count: d.count })),
+      topActiveUsers: topActiveResult.map(u => ({
+        userId: u.userId,
+        firstName: u.firstName || 'Unknown',
+        lastName: u.lastName || '',
+        activityCount: u.activityCount,
+      })),
+      activityByType: activityByTypeResult.map(a => ({ type: a.type, count: a.count })),
+      activityByHour: activityByHourResult.map(h => ({ hour: h.hour, count: h.count })),
+    };
+  }
+
+  // Get activity summary for a specific user
+  async getUserActivitySummary(userId: string): Promise<{
+    totalActivities: number;
+    lastActive: Date | null;
+    topPages: { page: string; count: number }[];
+    topFeatures: { feature: string; count: number }[];
+    activityByDay: { day: string; count: number }[];
+    recentLogins: Date[];
+  }> {
+    // Total activities
+    const totalResult = await this.db
+      .select({ count: sql<number>`COUNT(*)::int` })
+      .from(activityLogs)
+      .where(eq(activityLogs.userId, userId));
+
+    // Last active
+    const lastActiveResult = await this.db
+      .select({ lastActive: sql<Date>`MAX(created_at)` })
+      .from(activityLogs)
+      .where(eq(activityLogs.userId, userId));
+
+    // Top pages
+    const topPagesResult = await this.db
+      .select({
+        page: sql<string>`metadata->>'page'`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .where(
+        and(
+          eq(activityLogs.userId, userId),
+          eq(activityLogs.activityType, 'page_view')
+        )
+      )
+      .groupBy(sql`metadata->>'page'`)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(5);
+
+    // Top features used
+    const topFeaturesResult = await this.db
+      .select({
+        feature: sql<string>`metadata->>'feature'`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .where(
+        and(
+          eq(activityLogs.userId, userId),
+          eq(activityLogs.activityType, 'feature_usage')
+        )
+      )
+      .groupBy(sql`metadata->>'feature'`)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(5);
+
+    // Activity by day of week
+    const activityByDayResult = await this.db
+      .select({
+        day: sql<string>`to_char(created_at, 'Day')`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(activityLogs)
+      .where(eq(activityLogs.userId, userId))
+      .groupBy(sql`to_char(created_at, 'Day')`)
+      .orderBy(sql`COUNT(*) DESC`);
+
+    // Recent logins (last 10)
+    const recentLoginsResult = await this.db
+      .select({ createdAt: activityLogs.createdAt })
+      .from(activityLogs)
+      .where(
+        and(
+          eq(activityLogs.userId, userId),
+          sql`activity_type IN ('login', 'login_otp')`
+        )
+      )
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(10);
+
+    return {
+      totalActivities: totalResult[0]?.count || 0,
+      lastActive: lastActiveResult[0]?.lastActive || null,
+      topPages: topPagesResult.filter(p => p.page).map(p => ({ page: p.page, count: p.count })),
+      topFeatures: topFeaturesResult.filter(f => f.feature).map(f => ({ feature: f.feature, count: f.count })),
+      activityByDay: activityByDayResult.map(d => ({ day: d.day.trim(), count: d.count })),
+      recentLogins: recentLoginsResult.map(r => r.createdAt!).filter(Boolean),
+    };
+  }
 }
 
 // Use Database Storage for persistent data
