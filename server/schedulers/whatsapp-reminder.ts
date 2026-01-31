@@ -1,8 +1,23 @@
 import { storage } from '../storage';
 import { emailService } from '../email/service';
 
-const RENEWAL_LINK = 'https://rzp.io/rzp/sFzniAWK';
+const BASE_RENEWAL_LINK = 'https://rzp.io/rzp/SiWM4aC';
 const isProduction = process.env.NODE_ENV === 'production';
+
+function buildRenewalLink(email: string, phone?: string | null): string {
+  const params = new URLSearchParams();
+  if (email) {
+    params.append('prefill[email]', email);
+  }
+  if (phone) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.length >= 10) {
+      params.append('prefill[contact]', cleanPhone);
+    }
+  }
+  const queryString = params.toString();
+  return queryString ? `${BASE_RENEWAL_LINK}?${queryString}` : BASE_RENEWAL_LINK;
+}
 
 export async function checkAndSendWhatsAppExpiryReminders() {
   console.log('[WhatsApp Reminder] Starting daily check...');
@@ -36,10 +51,11 @@ export async function checkAndSendWhatsAppExpiryReminders() {
 
       if (daysUntilExpiry === 7 && !remindersSent.includes('7-day')) {
         try {
+          const renewalLink = buildRenewalLink(user.email, user.phone);
           await emailService.sendWhatsAppExpiryReminderEmail(user, {
             daysRemaining: 7,
             expiryDate: expiryDate,
-            renewalLink: RENEWAL_LINK,
+            renewalLink,
           });
 
           await storage.updateUser(user.id, {
@@ -55,10 +71,11 @@ export async function checkAndSendWhatsAppExpiryReminders() {
 
       if (daysUntilExpiry === 3 && !remindersSent.includes('3-day')) {
         try {
+          const renewalLink = buildRenewalLink(user.email, user.phone);
           await emailService.sendWhatsAppExpiryReminderEmail(user, {
             daysRemaining: 3,
             expiryDate: expiryDate,
-            renewalLink: RENEWAL_LINK,
+            renewalLink,
           });
 
           await storage.updateUser(user.id, {
