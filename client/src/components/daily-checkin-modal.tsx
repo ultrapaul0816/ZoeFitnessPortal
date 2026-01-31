@@ -25,8 +25,8 @@ import {
   PartyPopper,
   Users,
   Info,
+  Loader2,
 } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -81,6 +81,7 @@ export default function DailyCheckinModal({
   const [gratitude, setGratitude] = useState("");
   const [struggles, setStruggles] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [savedData, setSavedData] = useState<{
     workoutCompleted: boolean;
     breathingPractice: boolean;
@@ -183,27 +184,53 @@ export default function DailyCheckinModal({
     });
   };
 
-  const generateWhatsAppMessage = () => {
-    if (!savedData) return "";
+  const handleShareToCommunity = async () => {
+    if (!savedData || !userId) return;
     
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    const wins: string[] = [];
+    setIsSharing(true);
     
-    if (savedData.workoutCompleted) wins.push("💪 Completed my workout");
-    if (savedData.breathingPractice) wins.push("🧘 Did breathing exercises");
-    if (savedData.waterLiters >= 2) wins.push(`💧 ${savedData.waterLiters.toFixed(1)}L of water`);
-    else if (savedData.waterLiters > 0) wins.push(`💧 ${savedData.waterLiters.toFixed(1)}L of water`);
-    if (savedData.cardioMinutes >= 30) wins.push(`🏃 ${savedData.cardioMinutes} min cardio/walking`);
-    else if (savedData.cardioMinutes > 0) wins.push(`🚶 ${savedData.cardioMinutes} min walking`);
-    
-    const message = `✨ My Check-in for ${today} ✨\n\n${wins.length > 0 ? wins.join('\n') : 'Taking it easy today 💗'}\n\n#HealYourCore #PostpartumStrength`;
-    
-    return `https://wa.me/?text=${encodeURIComponent(message)}`;
-  };
-
-  const shareToWhatsApp = () => {
-    const url = generateWhatsAppMessage();
-    window.open(url, '_blank');
+    try {
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      const wins: string[] = [];
+      
+      if (savedData.workoutCompleted) wins.push("💪 Completed my workout");
+      if (savedData.breathingPractice) wins.push("🌬️ Did breathing exercises");
+      if (savedData.waterLiters > 0) wins.push(`💧 ${savedData.waterLiters.toFixed(1)}L of water`);
+      if (savedData.cardioMinutes > 0) wins.push(`🏃 ${savedData.cardioMinutes} min cardio/walking`);
+      
+      const progressMessage = `✨ My Check-in for ${today} ✨\n\n${wins.length > 0 ? wins.join('\n') : 'Taking it easy today 💗'}\n\nEvery day counts! 💕`;
+      
+      const formData = new FormData();
+      formData.append('userId', userId);
+      formData.append('content', progressMessage);
+      formData.append('category', 'progress');
+      
+      const response = await fetch('/api/community/posts', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to share');
+      }
+      
+      toast({
+        title: "Shared to Community! 🎉",
+        description: "Your check-in has been posted. Other mamas can celebrate with you!",
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/community/posts"] });
+      handleClose();
+    } catch (error) {
+      toast({
+        title: "Couldn't share",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   return (
@@ -250,18 +277,23 @@ export default function DailyCheckinModal({
                 </div>
               </div>
               
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+              <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
                 <p className="text-sm text-gray-700 mb-3">
-                  <span className="font-semibold text-green-700">Share with the community!</span>
+                  <span className="font-semibold text-pink-700">Share with the community!</span>
                   <br />Build momentum by celebrating together 💪
                 </p>
                 <Button
-                  onClick={shareToWhatsApp}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg"
-                  data-testid="button-share-whatsapp"
+                  onClick={handleShareToCommunity}
+                  disabled={isSharing}
+                  className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg"
+                  data-testid="button-share-community"
                 >
-                  <SiWhatsapp className="w-5 h-5 mr-2" />
-                  Share on WhatsApp
+                  {isSharing ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <Users className="w-5 h-5 mr-2" />
+                  )}
+                  {isSharing ? "Sharing..." : "Share to Community"}
                 </Button>
               </div>
               
