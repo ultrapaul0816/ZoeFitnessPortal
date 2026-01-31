@@ -1086,6 +1086,7 @@ export default function Dashboard() {
           user={user}
           onUserUpdate={setUser}
           initialView={currentView}
+          onShowOnboarding={() => setShowOnboarding(true)}
         />
       )}
 

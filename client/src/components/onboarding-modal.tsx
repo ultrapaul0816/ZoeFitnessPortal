@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { 
   Dumbbell, 
@@ -92,6 +92,8 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden" onPointerDownOutside={(e) => e.preventDefault()}>
+        <DialogTitle className="sr-only">Welcome Tour</DialogTitle>
+        <DialogDescription className="sr-only">A guided tour of the app features</DialogDescription>
         <div className="bg-gradient-to-br from-pink-50 to-purple-50 p-6">
           <div className="flex flex-col items-center text-center">
             <div className="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center mb-4">
