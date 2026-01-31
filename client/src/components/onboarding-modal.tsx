@@ -137,14 +137,7 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
                   Back
                 </Button>
               ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSkip}
-                  className="text-gray-400"
-                >
-                  Skip Tour
-                </Button>
+                <div />
               )}
               
               <Button
@@ -155,6 +148,15 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
                 {!isLastStep && <ChevronRight className="w-4 h-4 ml-1" />}
               </Button>
             </div>
+            
+            {!isLastStep && (
+              <button
+                onClick={handleSkip}
+                className="mt-4 text-xs text-gray-400 hover:text-gray-600 underline"
+              >
+                Don't show this again
+              </button>
+            )}
           </div>
         </div>
       </DialogContent>
