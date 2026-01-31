@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
@@ -22,8 +22,11 @@ import {
   TrendingUp,
   Calendar,
   Pencil,
+  Users,
+  Loader2,
 } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import DailyCheckinModal from "./daily-checkin-modal";
 import type { DailyCheckin } from "@shared/schema";
 
@@ -64,6 +67,8 @@ interface WeeklySummaryProps {
 export default function WeeklySummary({ compact = false, userId: propUserId }: WeeklySummaryProps) {
   const [showCheckinModal, setShowCheckinModal] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const { toast } = useToast();
 
   // Get userId from prop or localStorage
   const userId = propUserId || (() => {
@@ -143,9 +148,56 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
     });
   };
 
-  const handleWhatsAppShare = () => {
-    if (summary?.whatsappUrl) {
-      window.open(summary.whatsappUrl, '_blank');
+  const handleShareToCommunity = async () => {
+    if (!userId || !summary) return;
+    
+    setIsSharing(true);
+    
+    try {
+      // Build a nice progress message for the community
+      const progressMessage = `
+🌟 My Weekly Progress Update!
+
+💪 ${stats.workoutDays} workout days this week
+🌬️ ${stats.breathingDays} days of breathing practice  
+💧 Averaging ${stats.avgWaterGlasses} glasses of water
+🏃 ${stats.avgCardioMinutes} min cardio on average
+🔥 ${stats.currentStreak} day streak!
+
+Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
+      `.trim();
+      
+      const formData = new FormData();
+      formData.append('userId', userId);
+      formData.append('content', progressMessage);
+      formData.append('category', 'progress');
+      formData.append('weekNumber', String(summary.programWeek || 1));
+      
+      const response = await fetch('/api/community/posts', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to share');
+      }
+      
+      toast({
+        title: "Shared to Community! 🎉",
+        description: "Your progress has been posted. Other mamas can now celebrate with you!",
+      });
+      
+      // Invalidate community posts cache
+      queryClient.invalidateQueries({ queryKey: ["/api/community/posts"] });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Sharing failed",
+        description: "Please try again in a moment.",
+      });
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -328,12 +380,17 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
             </div>
 
             <Button
-              onClick={handleWhatsAppShare}
-              className="w-full bg-green-500 hover:bg-green-600 text-white"
-              data-testid="button-share-whatsapp"
+              onClick={handleShareToCommunity}
+              disabled={isSharing}
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+              data-testid="button-share-community"
             >
-              <SiWhatsapp className="h-5 w-5 mr-2" />
-              Share Progress on WhatsApp
+              {isSharing ? (
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              ) : (
+                <Users className="h-5 w-5 mr-2" />
+              )}
+              {isSharing ? "Sharing..." : "Share to Community"}
             </Button>
           </CardContent>
         )}
