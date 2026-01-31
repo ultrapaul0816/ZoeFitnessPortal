@@ -6521,18 +6521,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Build renewal link with pre-filled user data
-      const BASE_RENEWAL_LINK = 'https://rzp.io/rzp/SiWM4aC';
-      const params = new URLSearchParams();
-      params.append('prefill[email]', user.email);
-      if (user.phone) {
-        const cleanPhone = user.phone.replace(/\D/g, '');
-        if (cleanPhone.length >= 10) {
-          params.append('prefill[contact]', cleanPhone);
-        }
-      }
-      const renewalLink = `${BASE_RENEWAL_LINK}?${params.toString()}`;
-      
+      const renewalLink = 'https://rzp.io/rzp/SiWM4aC';
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + daysRemaining);
       
