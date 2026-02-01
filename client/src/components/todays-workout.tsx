@@ -143,6 +143,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const prevWorkoutsCompletedRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedWeekOverride, setSelectedWeekOverride] = useState<number | null>(null);
+  const [showWorkoutOnRestDay, setShowWorkoutOnRestDay] = useState(false);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
     queryKey: ["/api/workout-progress", userId],
@@ -821,7 +822,43 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
         </CardHeader>
 
         <CardContent className="p-4 space-y-4">
-          {isWorkoutCompletedToday ? (
+          {/* Rest Day View - Show by default on rest days */}
+          {todayDayType === 'rest' && !showWorkoutOnRestDay ? (
+            <div className="space-y-4">
+              <div className="p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border border-purple-200 rounded-xl text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400"></div>
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center shadow-lg">
+                  <span className="text-4xl">💤</span>
+                </div>
+                <h3 className="text-2xl font-bold text-purple-700 mb-2">It's Your Rest Day!</h3>
+                <p className="text-purple-600 text-base mb-4">
+                  Take some well-deserved rest today, mama. Your body is healing and rebuilding stronger!
+                </p>
+                <div className="bg-white/60 rounded-lg p-4 mb-4 border border-purple-100">
+                  <p className="text-sm text-gray-600 italic">
+                    "Rest days are growth days. Your muscles repair and strengthen while you relax. Honor your body's need for recovery." 
+                  </p>
+                  <p className="text-xs text-pink-500 mt-2 font-medium">— Coach Zoe 💕</p>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-center gap-4 text-sm text-purple-600">
+                    <span>🧘 Gentle stretching</span>
+                    <span>💧 Stay hydrated</span>
+                    <span>😴 Get good sleep</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowWorkoutOnRestDay(true)}
+                    className="mx-auto mt-2 border-purple-300 text-purple-700 hover:bg-purple-100"
+                    data-testid="button-workout-anyway"
+                  >
+                    <Dumbbell className="w-4 h-4 mr-2" />
+                    I want to workout anyway
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : isWorkoutCompletedToday ? (
             <div className="space-y-4">
               {/* Celebration Banner */}
               <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl text-center relative overflow-hidden">

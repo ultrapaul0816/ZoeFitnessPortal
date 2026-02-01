@@ -158,28 +158,39 @@ export function SpotifyWidget({ currentWeek }: SpotifyWidgetProps) {
                 <p className="text-sm font-medium text-gray-800 truncate">{currentPlaylist.name}</p>
                 <p className="text-xs text-gray-500 truncate">{currentPlaylist.description}</p>
               </div>
-              {playback?.isPlaying ? (
-                <div className="flex items-center gap-1">
-                  <span className="flex gap-0.5">
-                    <span className="w-1 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></span>
-                    <span className="w-1 h-4 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></span>
-                    <span className="w-1 h-2 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></span>
-                  </span>
-                </div>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-full bg-[#1DB954] hover:bg-[#1ed760] text-white"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlayPlaylist(currentPlaylist);
-                  }}
-                  data-testid="button-play-current-playlist"
+              <div className="flex items-center gap-2">
+                {playback?.isPlaying ? (
+                  <div className="flex items-center gap-1">
+                    <span className="flex gap-0.5">
+                      <span className="w-1 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></span>
+                      <span className="w-1 h-4 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></span>
+                      <span className="w-1 h-2 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></span>
+                    </span>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 rounded-full bg-[#1DB954] hover:bg-[#1ed760] text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePlayPlaylist(currentPlaylist);
+                    }}
+                    data-testid="button-play-current-playlist"
+                  >
+                    <Play className="w-4 h-4 ml-0.5" fill="white" />
+                  </Button>
+                )}
+                <a
+                  href={currentPlaylist.spotifyUri}
+                  onClick={(e) => e.stopPropagation()}
+                  className="h-8 w-8 p-0 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors"
+                  title="Open in Spotify app"
+                  data-testid="button-open-spotify-app"
                 >
-                  <Play className="w-4 h-4 ml-0.5" fill="white" />
-                </Button>
-              )}
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           )}
 
