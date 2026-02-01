@@ -7,6 +7,7 @@ import { ChevronDown, ChevronRight, ChevronLeft, Play, Loader2, CheckCircle, Ski
 import { ProgramData } from "@/data/workoutPrograms";
 import { useWorkoutContent } from "@/hooks/useWorkoutContent";
 import { useWorkoutSessionProgress, useSkipWeek } from "@/hooks/useWorkoutSessions";
+import { VideoLink, PlayAllButton } from "@/components/video-modal";
 
 interface NavigationProps {
   programId?: string;
@@ -100,65 +101,60 @@ function StaticProgramCard({ program, isExpanded, onToggle, weekProgress, onSkip
       </CardHeader>
       
       {isExpanded && (
-        <CardContent className="p-4">
-          <div className={`mb-4 ${colorScheme.bgColor} p-4 rounded-xl border-l-4 ${colorScheme.borderColor} shadow-sm`}>
+        <CardContent className="p-3 sm:p-4">
+          <div className={`mb-4 ${colorScheme.bgColor} p-3 rounded-xl border-l-4 ${colorScheme.borderColor} shadow-sm`}>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full`} style={{backgroundColor: colorScheme.borderColor.replace('border-', '')}}></div>
                 <span className={`${colorScheme.textColor} font-bold text-sm uppercase tracking-wide`}>Coach's Note</span>
               </div>
-              <p className="text-gray-700 text-sm leading-relaxed pl-4">{program.coachNote}</p>
+              <p className="text-gray-700 text-sm leading-relaxed pl-3">{program.coachNote}</p>
             </div>
           </div>
 
-          <div className="mb-6">
-            <div className={`${colorScheme.sectionClass} p-3 rounded-t-lg`}>
+          <div className="mb-4">
+            <div className={`${colorScheme.sectionClass} p-2.5 rounded-t-lg`}>
               <div className="flex items-center gap-2">
                 <h4 className="font-bold text-white text-sm uppercase tracking-wide">{program.part1.title}</h4>
               </div>
             </div>
-            <div className={`${colorScheme.bgColor} p-4 rounded-b-lg border ${colorScheme.borderColor} space-y-3`}>
+            <div className={`${colorScheme.bgColor} p-3 rounded-b-lg border ${colorScheme.borderColor} space-y-2`}>
               {program.part1.exercises.map((ex, idx) => (
-                <div key={idx} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div key={idx} className="flex items-center justify-between gap-2">
                   {ex.url ? (
-                    <a href={ex.url} target="_blank" rel="noopener noreferrer" className={`${colorScheme.textColor} font-semibold underline cursor-pointer text-sm`}>
+                    <VideoLink url={ex.url} title={ex.name} className={`${colorScheme.textColor} font-semibold underline cursor-pointer text-sm flex-1 text-left`}>
                       {ex.name}
-                    </a>
+                    </VideoLink>
                   ) : (
-                    <span className={`${colorScheme.textColor} font-semibold text-sm`}>{ex.name}</span>
+                    <span className={`${colorScheme.textColor} font-semibold text-sm flex-1`}>{ex.name}</span>
                   )}
-                  <span className={`${colorScheme.textColor} font-bold text-sm ${colorScheme.bgColor} px-3 py-1 rounded-full`}>{ex.reps}</span>
+                  <span className={`${colorScheme.textColor} font-bold text-xs ${colorScheme.bgColor} px-2 py-1 rounded-full whitespace-nowrap`}>{ex.reps}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="mb-6">
-            <div className={`${colorScheme.sectionClass} p-3 rounded-t-lg`}>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-white text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
-                </div>
-                <Button className={`${colorScheme.buttonColor} text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg self-start sm:self-center`}>
-                  <Play className="w-4 h-4" />
-                  <a href={program.part2.playlistUrl} target="_blank" rel="noopener noreferrer">PLAY ALL</a>
-                </Button>
+          <div className="mb-4">
+            <div className={`${colorScheme.sectionClass} p-2.5 rounded-t-lg`}>
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wide">Part 2: Main Workout (3 Rounds)</h4>
+                <PlayAllButton url={program.part2.playlistUrl} colorClass={colorScheme.buttonColor} />
               </div>
             </div>
-            <div className="bg-white rounded-b-lg border border-gray-200 p-4">
-              <div className="space-y-3">
+            <div className="bg-white rounded-b-lg border border-gray-200 p-2 sm:p-3">
+              <div className="space-y-2">
                 {program.part2.exercises.map((exercise) => (
-                  <div key={exercise.num} className={`bg-gray-50 rounded-lg p-4 border-l-4 ${colorScheme.borderColor} ${colorScheme.hoverBg} transition-colors`}>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className={`w-8 h-8 ${colorScheme.sectionClass} text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0`}>
+                  <div key={exercise.num} className={`bg-gray-50 rounded-lg p-2.5 sm:p-3 border-l-4 ${colorScheme.borderColor} ${colorScheme.hoverBg} transition-colors`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div className={`w-6 h-6 sm:w-7 sm:h-7 ${colorScheme.sectionClass} text-white rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0`}>
                           {exercise.num}
                         </div>
-                        <a href={exercise.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm">
+                        <VideoLink url={exercise.url} title={exercise.name} className="text-blue-600 hover:text-blue-800 underline font-semibold leading-tight text-sm text-left flex-1">
                           {exercise.name}
-                        </a>
+                        </VideoLink>
                       </div>
-                      <div className="text-gray-700 font-bold text-sm bg-white px-3 py-1.5 rounded-full border flex-shrink-0">
+                      <div className="text-gray-700 font-bold text-xs bg-white px-2 py-1 rounded-full border flex-shrink-0 whitespace-nowrap">
                         {exercise.reps} ×3
                       </div>
                     </div>
@@ -168,39 +164,35 @@ function StaticProgramCard({ program, isExpanded, onToggle, weekProgress, onSkip
             </div>
           </div>
 
-          <div className={`${colorScheme.bgColor} p-4 rounded-xl border-l-4 ${colorScheme.borderColor} shadow-sm`}>
-            <div className="space-y-3">
+          <div className={`${colorScheme.bgColor} p-3 rounded-xl border-l-4 ${colorScheme.borderColor} shadow-sm`}>
+            <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full`} style={{backgroundColor: colorScheme.borderColor.replace('border-', '')}}></div>
                 <h4 className={`font-bold ${colorScheme.textColor} text-sm uppercase tracking-wide`}>How To Use</h4>
               </div>
-              <div className="pl-4 space-y-3">
+              <div className="pl-3 space-y-2">
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  All <span className="text-blue-600 underline font-medium">blue underlined text</span> is clickable and will open a video link. 
-                  <span className="font-semibold"> PLAY ALL</span> indicates that the following workout can be played as a single 
-                  playlist containing all the exercises to make it easier to flow through. However, please have listened to each exercise instruction beforehand.
+                  Tap any <span className="text-blue-600 underline font-medium">blue text</span> to watch the video. 
+                  <span className="font-semibold"> PLAY ALL</span> plays the full workout as a playlist.
                 </p>
-                <div className={`${colorScheme.bgColor} p-3 rounded-lg border ${colorScheme.borderColor}`}>
+                <div className={`${colorScheme.bgColor} p-2 rounded-lg border ${colorScheme.borderColor}`}>
                   <p className={`${colorScheme.textColor} text-sm font-medium`}>
-                    <span className="font-bold">Rest:</span> Rest a minimum of 30 secs - ONE minute between movements. Rest more if needed.
+                    <span className="font-bold">Rest:</span> 30 secs - 1 min between exercises.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-orange-50 p-4 rounded-xl border-l-4 border-orange-500 shadow-sm mt-4">
-            <div className="space-y-3">
+          <div className="bg-orange-50 p-3 rounded-xl border-l-4 border-orange-500 shadow-sm mt-3">
+            <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <h4 className="font-bold text-orange-800 text-sm uppercase tracking-wide">Important Safety</h4>
+                <h4 className="font-bold text-orange-800 text-sm uppercase tracking-wide">Safety Tips</h4>
               </div>
-              <div className="pl-4 bg-orange-100 p-3 rounded-lg">
-                <p className="text-orange-800 text-sm leading-relaxed">
-                  <span className="font-semibold">Listen to Your Body:</span> Always pay attention to how you feel and adjust accordingly. | 
-                  <span className="font-semibold">Take Options Given:</span> Utilize the modifications provided to suit your comfort level. | 
-                  <span className="font-semibold">Reduce Reps/Rounds:</span> Don't hesitate to reduce the number of repetitions or rounds if needed. | 
-                  <span className="font-semibold">Adjust Weights:</span> Opt for lighter weights or no weights at all if you feel any discomfort.
+              <div className="pl-3 bg-orange-100 p-2 rounded-lg">
+                <p className="text-orange-800 text-xs leading-relaxed">
+                  Listen to your body. Use modifications. Reduce reps if needed. Go lighter on weights.
                 </p>
               </div>
             </div>
