@@ -36,6 +36,7 @@ import type { User as UserType, CommunityPost, PostComment } from "@shared/schem
 import { compressImage } from "@/lib/imageCompression";
 import { PhotoEditor } from "@/components/ui/photo-editor";
 import { ImageCarousel } from "@/components/ui/image-carousel";
+import BottomNav from "@/components/bottom-nav";
 
 // Category icons and labels
 const CATEGORIES = {
@@ -938,14 +939,20 @@ export default function Community() {
         />
       )}
 
-      {/* Floating Action Button (mobile) */}
+      {/* Floating Action Button (mobile) - positioned above bottom nav */}
       <Button
         onClick={() => setShowCreatePost(true)}
-        className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg md:hidden z-30"
+        className="fixed bottom-20 right-6 rounded-full w-14 h-14 shadow-lg md:hidden z-30"
         data-testid="button-fab-create"
       >
         <Plus className="w-6 h-6" />
       </Button>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
+      
+      {/* Spacer for bottom nav */}
+      <div className="h-20" />
     </div>
   );
 }

@@ -25,6 +25,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ProfileSettings from "@/components/profile-settings";
 import ZoeEncouragement from "@/components/zoe-encouragement";
+import BottomNav from "@/components/bottom-nav";
 import zoeImagePath from "@assets/zoe_1_1764958643553.png";
 import type { User } from "@shared/schema";
 
@@ -372,6 +373,12 @@ export default function MyCourses() {
           }}
         />
       )}
+
+      {/* Bottom Navigation */}
+      <BottomNav />
+      
+      {/* Spacer for bottom nav */}
+      <div className="h-20" />
     </div>
   );
 }

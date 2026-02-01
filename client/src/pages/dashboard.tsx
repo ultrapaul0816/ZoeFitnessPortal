@@ -26,6 +26,7 @@ import MoodInsightsCard from "@/components/mood-insights-card";
 import ZoeEncouragement from "@/components/zoe-encouragement";
 import ExpiryNotification from "@/components/expiry-notification";
 import { OnboardingModal } from "@/components/onboarding-modal";
+import BottomNav from "@/components/bottom-nav";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
@@ -1126,10 +1127,10 @@ export default function Dashboard() {
         onClose={() => setShowDailyCheckinModal(false)}
       />
 
-      {/* Floating Daily Check-in Button */}
+      {/* Floating Daily Check-in Button - positioned above bottom nav */}
       <button
         onClick={() => setShowDailyCheckinModal(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group z-40 hover:scale-110"
+        className="fixed bottom-20 right-6 w-14 h-14 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group z-40 hover:scale-110"
         aria-label="Log daily check-in"
         data-testid="button-open-daily-checkin"
       >
@@ -1138,6 +1139,12 @@ export default function Dashboard() {
           Daily Check-in
         </span>
       </button>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
+      
+      {/* Spacer for bottom nav */}
+      <div className="h-20" />
     </div>
   );
 }

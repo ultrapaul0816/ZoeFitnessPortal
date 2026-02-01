@@ -33,6 +33,7 @@ import ProgressPhotos from "@/pages/progress-photos";
 import CourseViewer from "@/pages/course-viewer";
 import PrenatalStrength from "@/pages/prenatal-strength";
 import Community from "@/pages/community";
+import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 
 // Lazy load heavy pages to improve initial load time
@@ -96,6 +97,7 @@ function Router() {
       <Route path="/prenatal-strength" component={PrenatalStrength} />
       <Route path="/courses/:courseId" component={CourseViewer} />
       <Route path="/community" component={Community} />
+      <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
   );
