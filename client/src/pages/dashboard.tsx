@@ -248,10 +248,20 @@ export default function Dashboard() {
 
   if (!user) return null;
 
+  // Check if user has Heal Your Core course enrollment (active and not expired)
+  const hasHealYourCoreEnrollment = courseEnrollments.some(
+    (e) => e.course_id === 'heal-your-core-course' && 
+           e.status === 'active' && 
+           (!e.expires_at || new Date(e.expires_at) > new Date())
+  );
+
+  // User has access to workout features if they have member programs OR course enrollment
+  const hasWorkoutAccess = memberPrograms.length > 0 || hasHealYourCoreEnrollment;
+
   const stats = {
     completedWorkouts: memberPrograms.reduce((total, mp) => total + (mp.progress || 0), 0),
     currentStreak: "7 days",
-    activePrograms: memberPrograms.filter((mp) => mp.isActive).length,
+    activePrograms: memberPrograms.filter((mp) => mp.isActive).length + (hasHealYourCoreEnrollment ? 1 : 0),
   };
 
   // Profile Content Component
@@ -782,14 +792,14 @@ export default function Dashboard() {
 
 
         {/* Mood & Energy Insights Card */}
-        {memberPrograms.length > 0 && (
+        {hasWorkoutAccess && (
           <section className="mb-6">
             <MoodInsightsCard userId={user.id} />
           </section>
         )}
 
         {/* Weekly Progress Summary with Check-in Button */}
-        {memberPrograms.length > 0 && (
+        {hasWorkoutAccess && (
           <section className="mb-8">
             <WeeklySummary />
           </section>
@@ -836,7 +846,7 @@ export default function Dashboard() {
         )} */}
 
         {/* Heal Your Core - Tabbed Workout Section */}
-        {memberPrograms.length > 0 && (
+        {hasWorkoutAccess && (
           <section className="mb-8">
             <Card className="bg-white border-2 border-pink-100 shadow-lg rounded-2xl overflow-hidden">
               {/* Header */}

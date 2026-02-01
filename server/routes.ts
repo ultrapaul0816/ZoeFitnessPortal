@@ -417,6 +417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           instagramHandle: user.instagramHandle,
           postpartumWeeks: user.postpartumWeeks,
           lastLoginAt: user.lastLoginAt,
+          hasCompletedOnboarding: user.hasCompletedOnboarding,
         },
       });
     } catch (error) {
