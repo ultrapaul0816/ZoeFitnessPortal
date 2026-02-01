@@ -418,6 +418,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           postpartumWeeks: user.postpartumWeeks,
           lastLoginAt: user.lastLoginAt,
           hasCompletedOnboarding: user.hasCompletedOnboarding,
+          hasSeenFirstWorkoutWelcome: user.hasSeenFirstWorkoutWelcome,
         },
       });
     } catch (error) {
@@ -828,6 +829,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error(`[ONBOARDING] Error completing onboarding:`, error?.message || error);
       res.status(500).json({ message: "Failed to complete onboarding" });
+    }
+  });
+
+  // Mark first workout welcome as seen
+  app.post("/api/first-workout-welcome/complete", async (req, res) => {
+    try {
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      await storage.updateUser(req.session.userId, {
+        hasSeenFirstWorkoutWelcome: true,
+      });
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error(`[FIRST-WORKOUT-WELCOME] Error marking as seen:`, error?.message || error);
+      res.status(500).json({ message: "Failed to mark first workout welcome as seen" });
     }
   });
 

@@ -45,6 +45,7 @@ interface TodaysWorkoutProps {
   isFirstLogin?: boolean;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  hasSeenFirstWorkoutWelcome?: boolean;
 }
 
 interface WorkoutProgress {
@@ -118,7 +119,7 @@ function getYouTubeEmbedUrl(url: string): string {
   return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : "";
 }
 
-export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = false, isExpanded = true, onToggleExpand }: TodaysWorkoutProps) {
+export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = false, isExpanded = true, onToggleExpand, hasSeenFirstWorkoutWelcome = false }: TodaysWorkoutProps) {
   const [showZoeChat, setShowZoeChat] = useState(false);
   const [showVideoPlayer, setShowVideoPlayer] = useState<string | null>(null);
   const [showProgramInfo, setShowProgramInfo] = useState(false);
@@ -136,7 +137,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const [showFirstWorkoutWelcome, setShowFirstWorkoutWelcome] = useState(true);
+  const [showFirstWorkoutWelcome, setShowFirstWorkoutWelcome] = useState(!hasSeenFirstWorkoutWelcome);
   const [welcomeStep, setWelcomeStep] = useState<'video' | 'photo' | 'ready'>('video');
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
   const [showWeekComplete, setShowWeekComplete] = useState(false);
@@ -165,6 +166,16 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   );
   const workoutsCompletedThisWeek = currentWeekProgress?.workoutsCompleted || 0;
   const nextWorkoutNumber = workoutsCompletedThisWeek + 1;
+
+  const markWelcomeSeenMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/first-workout-welcome/complete", {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/session"] });
+    },
+  });
 
   const zoeChatMutation = useMutation({
     mutationFn: async (message: string) => {
@@ -588,7 +599,10 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               </div>
 
               <Button
-                onClick={() => setShowFirstWorkoutWelcome(false)}
+                onClick={() => {
+                  setShowFirstWorkoutWelcome(false);
+                  markWelcomeSeenMutation.mutate();
+                }}
                 className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white py-6 text-lg"
                 data-testid="button-begin-first-workout"
               >

@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   loginCount: integer("login_count").default(0),
   lastCheckinPromptAt: timestamp("last_checkin_prompt_at"),
   hasCompletedOnboarding: boolean("has_completed_onboarding").default(false),
+  hasSeenFirstWorkoutWelcome: boolean("has_seen_first_workout_welcome").default(false),
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 

@@ -899,6 +899,7 @@ export default function Dashboard() {
                     }}
                     isExpanded={isWorkoutExpanded}
                     onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
+                    hasSeenFirstWorkoutWelcome={user.hasSeenFirstWorkoutWelcome}
                   />
                 </TabsContent>
                 
