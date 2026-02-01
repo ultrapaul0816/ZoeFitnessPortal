@@ -29,6 +29,7 @@ import AdminActive from "@/pages/admin-active";
 import AdminWhatsApp from "@/pages/admin-whatsapp";
 import MyLibrary from "@/pages/my-library";
 import MyCourses from "@/pages/my-courses";
+import ProgressPhotos from "@/pages/progress-photos";
 import CourseViewer from "@/pages/course-viewer";
 import PrenatalStrength from "@/pages/prenatal-strength";
 import Community from "@/pages/community";
@@ -91,6 +92,7 @@ function Router() {
       )} />
       <Route path="/my-library" component={MyLibrary} />
       <Route path="/my-courses" component={MyCourses} />
+      <Route path="/my-progress-photos" component={ProgressPhotos} />
       <Route path="/prenatal-strength" component={PrenatalStrength} />
       <Route path="/courses/:courseId" component={CourseViewer} />
       <Route path="/community" component={Community} />

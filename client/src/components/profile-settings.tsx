@@ -1231,6 +1231,29 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
               </button>
             </div>
 
+            {/* My Progress Photos */}
+            <div className="flex justify-start">
+              <button 
+                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
+                style={{ animationDelay: '220ms' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                  setLocation("/my-progress-photos");
+                }}
+                data-testid="button-my-progress-photos"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
+                  <Camera className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">My Progress Photos</span>
+                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
+                  <ChevronRight className="w-4 h-4 text-pink-500" />
+                </div>
+              </button>
+            </div>
+
             {/* Divider */}
             <div className="flex justify-start my-2 pl-3">
               <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
