@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense } from "react";
 import { useActivityTracking } from "@/hooks/use-activity-tracking";
+import UpdatePrompt from "@/components/update-prompt";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
@@ -107,6 +108,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <UpdatePrompt />
         <ActivityTracker />
         <Toaster />
         <Router />
