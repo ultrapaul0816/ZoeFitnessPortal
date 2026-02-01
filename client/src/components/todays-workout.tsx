@@ -145,6 +145,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedWeekOverride, setSelectedWeekOverride] = useState<number | null>(null);
   const [showWorkoutOnRestDay, setShowWorkoutOnRestDay] = useState(false);
+  const [isLoadingRestDayWorkout, setIsLoadingRestDayWorkout] = useState(false);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
     queryKey: ["/api/workout-progress", userId],
@@ -862,12 +863,28 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </div>
                   <Button
                     variant="outline"
-                    onClick={() => setShowWorkoutOnRestDay(true)}
-                    className="mx-auto mt-2 border-purple-300 text-purple-700 hover:bg-purple-100"
+                    onClick={() => {
+                      setIsLoadingRestDayWorkout(true);
+                      setTimeout(() => {
+                        setIsLoadingRestDayWorkout(false);
+                        setShowWorkoutOnRestDay(true);
+                      }, 2000);
+                    }}
+                    disabled={isLoadingRestDayWorkout}
+                    className="mx-auto mt-2 border-purple-300 text-purple-700 hover:bg-purple-100 min-w-[220px]"
                     data-testid="button-workout-anyway"
                   >
-                    <Dumbbell className="w-4 h-4 mr-2" />
-                    I want to workout anyway
+                    {isLoadingRestDayWorkout ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Love your dedication! 💪
+                      </>
+                    ) : (
+                      <>
+                        <Dumbbell className="w-4 h-4 mr-2" />
+                        I want to workout anyway
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

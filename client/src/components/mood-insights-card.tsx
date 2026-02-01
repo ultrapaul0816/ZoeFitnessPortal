@@ -50,6 +50,11 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false, 
     enabled: !!userId,
   });
 
+  const { data: todayCheckin } = useQuery<{ mood?: string; energyLevel?: number } | null>({
+    queryKey: ["/api/daily-checkins", userId, "today"],
+    enabled: !!userId,
+  });
+
   if (isLoading || !stats) {
     return null;
   }
@@ -95,6 +100,23 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false, 
             )}
           </button>
         </CardTitle>
+        {isCollapsed && todayCheckin && (todayCheckin.mood || todayCheckin.energyLevel) && (
+          <div className="flex items-center gap-3 mt-2 text-sm text-gray-600">
+            <span className="font-medium">Today:</span>
+            {todayCheckin.mood && (
+              <span className="flex items-center gap-1">
+                <span className="text-lg">{moodEmojis[todayCheckin.mood] || '🙂'}</span>
+                <span className="capitalize">{todayCheckin.mood}</span>
+              </span>
+            )}
+            {todayCheckin.energyLevel && (
+              <span className="flex items-center gap-1">
+                <Zap className="h-4 w-4 text-amber-500" />
+                <span>{todayCheckin.energyLevel}/5</span>
+              </span>
+            )}
+          </div>
+        )}
       </CardHeader>
       {!isCollapsed && (<CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
