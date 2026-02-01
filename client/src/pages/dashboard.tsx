@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown, ClipboardCheck, ChevronRight, Play, Dumbbell, List } from "lucide-react";
+import { Bell, User, CheckCircle, Flame, Calendar, Menu, BookOpen, CreditCard, LogOut, Globe, Info, ChevronDown, ClipboardCheck, ChevronRight, Play, Dumbbell, List, Users, MessageCircle, Heart } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ProgramCard from "@/components/program-card";
@@ -772,6 +772,34 @@ export default function Dashboard() {
           variant="card"
           className="mb-6"
         />
+
+        {/* Community Quick Access Card */}
+        <Link href="/community">
+          <Card className="mb-6 bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 group-hover:text-pink-600 transition-colors">
+                      Mama Community
+                    </h3>
+                    <p className="text-sm text-gray-600">Share wins, get support, connect with other mamas</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="hidden sm:flex items-center gap-1 text-pink-500">
+                    <Heart className="w-4 h-4" />
+                    <MessageCircle className="w-4 h-4" />
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-pink-400 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Profile Completion Banner */}
         <ProfileBanner 
