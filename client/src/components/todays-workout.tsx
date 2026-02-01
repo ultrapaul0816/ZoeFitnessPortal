@@ -37,6 +37,7 @@ import { useToast } from "@/hooks/use-toast";
 import { workoutPrograms, ProgramData, Exercise } from "@/data/workoutPrograms";
 import { useWorkoutSessionProgress, useLogWorkoutSession, getDayType, getDayTypeLabel, getWeekSchedule } from "@/hooks/useWorkoutSessions";
 import { SpotifyWidget } from "@/components/spotify-widget";
+import { PlayAllButton } from "@/components/video-modal";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 
 interface TodaysWorkoutProps {
@@ -1029,15 +1030,10 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                       </h5>
                     </div>
                     {currentProgram.part2.playlistUrl && (
-                      <a
-                        href={currentProgram.part2.playlistUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-1.5 rounded-full transition-colors"
-                      >
-                        <Play className="w-3 h-3" />
-                        PLAY ALL
-                      </a>
+                      <PlayAllButton 
+                        url={currentProgram.part2.playlistUrl}
+                        colorClass="bg-white/20 hover:bg-white/30"
+                      />
                     )}
                   </div>
                 </div>

@@ -2251,6 +2251,39 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Create new text-only community post (JSON)
+  app.post("/api/community/posts/text", async (req, res) => {
+    try {
+      const { userId, content, category, weekNumber, isSensitiveContent } = req.body;
+      
+      // Validate required fields
+      if (!userId || !content) {
+        return res.status(400).json({ message: "User ID and content are required" });
+      }
+
+      // Validate with schema
+      const postData = insertCommunityPostSchema.parse({
+        userId,
+        content,
+        category: category || 'progress',
+        weekNumber: weekNumber ? parseInt(weekNumber) : undefined,
+        isSensitiveContent: isSensitiveContent === true || isSensitiveContent === 'true',
+      });
+
+      const post = await storage.createCommunityPost(postData);
+      res.status(201).json(post);
+    } catch (error) {
+      console.error("Error creating text post:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create post" });
+    }
+  });
+
   // Create new community post with multiple image uploads (max 4)
   app.post(
     "/api/community/posts",

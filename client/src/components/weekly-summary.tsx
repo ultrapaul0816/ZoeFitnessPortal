@@ -167,21 +167,13 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
 Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
       `.trim();
       
-      const formData = new FormData();
-      formData.append('userId', userId);
-      formData.append('content', progressMessage);
-      formData.append('category', 'progress');
-      formData.append('weekNumber', String(summary.programWeek || 1));
-      
-      const response = await fetch('/api/community/posts', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
+      await apiRequest("POST", "/api/community/posts/text", {
+        userId,
+        content: progressMessage,
+        category: "progress",
+        weekNumber: summary.programWeek || 1,
+        isSensitiveContent: false,
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to share');
-      }
       
       toast({
         title: "Shared to Community! 🎉",
