@@ -18,20 +18,34 @@ interface VideoModalProps {
 function getYouTubeEmbedUrl(url: string): string | null {
   if (!url) return null;
   
-  let videoId = "";
-  
-  if (url.includes("youtube.com/watch")) {
-    const urlParams = new URL(url).searchParams;
-    videoId = urlParams.get("v") || "";
-  } else if (url.includes("youtu.be/")) {
-    videoId = url.split("youtu.be/")[1]?.split(/[?&]/)[0] || "";
-  } else if (url.includes("youtube.com/embed/")) {
-    videoId = url.split("youtube.com/embed/")[1]?.split(/[?&]/)[0] || "";
+  try {
+    const urlObj = new URL(url);
+    
+    // Handle YouTube playlist URLs
+    if (url.includes("youtube.com/playlist") || urlObj.searchParams.get("list")) {
+      const playlistId = urlObj.searchParams.get("list");
+      if (playlistId) {
+        return `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1&rel=0`;
+      }
+    }
+    
+    // Handle single video URLs
+    let videoId = "";
+    
+    if (url.includes("youtube.com/watch")) {
+      videoId = urlObj.searchParams.get("v") || "";
+    } else if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split(/[?&]/)[0] || "";
+    } else if (url.includes("youtube.com/embed/")) {
+      videoId = url.split("youtube.com/embed/")[1]?.split(/[?&]/)[0] || "";
+    }
+    
+    if (!videoId) return null;
+    
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  } catch {
+    return null;
   }
-  
-  if (!videoId) return null;
-  
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
 }
 
 export function VideoModal({ isOpen, onClose, videoUrl, title }: VideoModalProps) {

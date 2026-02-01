@@ -93,6 +93,7 @@ import {
   EducationalTopic,
   weeklyWorkoutSessions,
   skippedWeeks,
+  courseEnrollments,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -3144,7 +3145,7 @@ class DatabaseStorage implements IStorage {
     }
     
     // Also check memberPrograms table for admin enrollments
-    const enrollments = await this.db
+    const memberEnrollments = await this.db
       .select()
       .from(memberPrograms)
       .where(
@@ -3155,7 +3156,39 @@ class DatabaseStorage implements IStorage {
         )
       );
     
-    return enrollments.length > 0;
+    if (memberEnrollments.length > 0) {
+      return true;
+    }
+    
+    // Also check courseEnrollments table for course-based access
+    // Map program IDs to their corresponding course IDs
+    const programToCourseMap: Record<string, string> = {
+      "b03be40d-290e-4c96-bbb4-0267371c8024": "heal-your-core-course", // Heal Your Core program -> course
+    };
+    
+    const courseId = programToCourseMap[programId];
+    if (courseId) {
+      const courseEnrollmentResults = await this.db
+        .select()
+        .from(courseEnrollments)
+        .where(
+          and(
+            eq(courseEnrollments.userId, userId),
+            eq(courseEnrollments.courseId, courseId),
+            eq(courseEnrollments.status, "active"),
+            or(
+              isNull(courseEnrollments.expiresAt),
+              gte(courseEnrollments.expiresAt, new Date())
+            )
+          )
+        );
+      
+      if (courseEnrollmentResults.length > 0) {
+        return true;
+      }
+    }
+    
+    return false;
   }
   async createProgressEntry(
     entry: InsertProgressTracking
