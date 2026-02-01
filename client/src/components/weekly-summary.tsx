@@ -241,56 +241,55 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
     <>
       <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-100">
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <div 
-              className="flex-1 cursor-pointer" 
-              onClick={() => setIsCollapsed(!isCollapsed)}
-            >
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <TrendingUp className="h-5 w-5 text-pink-500" />
-                Week {summary?.programWeek || 1} Progress
-                <button 
-                  className="ml-2 p-1 rounded-full hover:bg-pink-100 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsCollapsed(!isCollapsed);
-                  }}
-                  data-testid="button-toggle-progress"
-                >
-                  {isCollapsed ? (
-                    <ChevronDown className="h-4 w-4 text-pink-500" />
-                  ) : (
-                    <ChevronUp className="h-4 w-4 text-pink-500" />
-                  )}
-                </button>
-              </CardTitle>
-              {!isCollapsed && (
-                <CardDescription>Your wellness journey this week</CardDescription>
-              )}
-            </div>
-            <Button
-              variant={hasCheckedInToday ? "outline" : "default"}
-              size="sm"
-              onClick={() => setShowCheckinModal(true)}
-              className={hasCheckedInToday 
-                ? "border-pink-200 hover:bg-pink-100" 
-                : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white"
-              }
-              data-testid="button-checkin"
-            >
-              {hasCheckedInToday ? (
-                <>
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Update Today's Log
-                </>
-              ) : (
-                <>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Log Today's Progress
-                </>
-              )}
-            </Button>
+          <div 
+            className="cursor-pointer" 
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <TrendingUp className="h-5 w-5 text-pink-500" />
+              This Week's Progress
+              <span className="text-sm font-normal text-pink-500">(Week {summary?.programWeek || 1})</span>
+              <button 
+                className="ml-auto p-1 rounded-full hover:bg-pink-100 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsCollapsed(!isCollapsed);
+                }}
+                data-testid="button-toggle-progress"
+              >
+                {isCollapsed ? (
+                  <ChevronDown className="h-4 w-4 text-pink-500" />
+                ) : (
+                  <ChevronUp className="h-4 w-4 text-pink-500" />
+                )}
+              </button>
+            </CardTitle>
+            {!isCollapsed && (
+              <CardDescription>Your wellness journey this week</CardDescription>
+            )}
           </div>
+          <Button
+            variant={hasCheckedInToday ? "outline" : "default"}
+            size="sm"
+            onClick={() => setShowCheckinModal(true)}
+            className={`w-full mt-3 ${hasCheckedInToday 
+              ? "border-pink-200 hover:bg-pink-100" 
+              : "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white"
+            }`}
+            data-testid="button-checkin"
+          >
+            {hasCheckedInToday ? (
+              <>
+                <Pencil className="h-4 w-4 mr-2" />
+                Update Today's Log
+              </>
+            ) : (
+              <>
+                <Calendar className="h-4 w-4 mr-2" />
+                Log Today's Progress
+              </>
+            )}
+          </Button>
         </CardHeader>
 
         {!isCollapsed && (
