@@ -116,6 +116,15 @@ export default function ZoeEncouragement({
   const [greeting] = useState(() => getRandomItem(greetings));
   const [message, setMessage] = useState(() => getPersonalizedMessage(user, context));
 
+  // Auto-retract the daily tip after 4 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, 4000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const refreshTip = () => {
     setCurrentTip(getRandomItem(motivationalTips));
     setMessage(getPersonalizedMessage(user, context));

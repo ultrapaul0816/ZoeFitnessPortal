@@ -540,11 +540,11 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   data-testid="input-before-photo"
                 />
                 
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     onClick={() => fileInputRef.current?.click()}
                     variant="outline"
-                    className="flex-1 border-purple-300 text-purple-700 hover:bg-purple-100"
+                    className="w-full sm:flex-1 border-purple-300 text-purple-700 hover:bg-purple-100"
                     data-testid="button-upload-before-photo"
                   >
                     <Camera className="w-4 h-4 mr-2" />
@@ -553,7 +553,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   <Button
                     onClick={() => setWelcomeStep('ready')}
                     variant="ghost"
-                    className="text-gray-500 hover:text-gray-700"
+                    className="w-full sm:w-auto text-gray-500 hover:text-gray-700"
                     data-testid="button-skip-photo"
                   >
                     Skip for now
