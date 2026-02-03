@@ -7,11 +7,13 @@ import {
   createProgramReminderEmail,
   createCompletionCelebrationEmail,
   createWhatsAppExpiryReminderEmail,
+  createDailyWorkoutReminderEmail,
   type WelcomeEmailData,
   type ReEngagementEmailData,
   type ProgramReminderEmailData,
   type CompletionCelebrationEmailData,
   type WhatsAppExpiryReminderData,
+  type DailyWorkoutReminderData,
 } from './templates';
 
 class EmailService {
@@ -150,6 +152,20 @@ class EmailService {
     return this.send({
       to: { email: toEmail, name: 'Test Recipient' },
       subject: customSubject || template.subject,
+      html: template.html,
+      text: template.text,
+    });
+  }
+
+  async sendDailyWorkoutReminderEmail(
+    toEmail: string,
+    data: DailyWorkoutReminderData
+  ): Promise<EmailSendResult> {
+    const template = createDailyWorkoutReminderEmail(data);
+
+    return this.send({
+      to: { email: toEmail, name: data.firstName },
+      subject: template.subject,
       html: template.html,
       text: template.text,
     });

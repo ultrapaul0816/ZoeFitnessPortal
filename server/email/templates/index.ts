@@ -5,6 +5,7 @@ export { createCompletionCelebrationEmail } from './completion-celebration';
 export { createCompleteSignupEmail } from './complete-signup';
 export { createPasswordResetEmail } from './password-reset';
 export { createWhatsAppExpiryReminderEmail } from './whatsapp-expiry-reminder';
+export { createDailyWorkoutReminderEmail } from './daily-workout-reminder';
 
 export type {
   EmailTemplate,
@@ -16,3 +17,4 @@ export type {
   WhatsAppExpiryReminderData,
 } from './base';
 export type { PasswordResetEmailData } from './password-reset';
+export type { DailyWorkoutReminderData } from './daily-workout-reminder';

@@ -93,7 +93,8 @@ export default function Dashboard() {
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [currentView, setCurrentView] = useState<'menu' | 'profile' | 'purchases' | 'support'>('menu');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
-  const [isWorkoutExpanded, setIsWorkoutExpanded] = useState(false); // Start minimized
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [isWorkoutExpanded, setIsWorkoutExpanded] = useState(false); // Start minimized on mobile
   const [workoutViewTab, setWorkoutViewTab] = useState<"today" | "full-program">("today");
   const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -119,6 +120,20 @@ export default function Dashboard() {
       setShowWelcomeMessage(false);
     }, 3000);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Check if desktop and auto-expand workout
+  useEffect(() => {
+    const checkDesktop = () => {
+      const isDesktopNow = window.innerWidth >= 1024;
+      setIsDesktop(isDesktopNow);
+      if (isDesktopNow) {
+        setIsWorkoutExpanded(true);
+      }
+    };
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
   useEffect(() => {

@@ -3105,6 +3105,49 @@ RESPONSE GUIDELINES:
     }
   });
 
+  // Daily workout reminder test email
+  app.post("/api/admin/email/send-daily-reminder-test", adminOperationLimiter, async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user?.role !== "admin") {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { email, firstName } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email address" });
+      }
+
+      const result = await emailService.sendDailyWorkoutReminderEmail(email, {
+        firstName: firstName || "Mama",
+        currentStreak: 5,
+        todayWorkoutName: "Core Strengthening - Week 2, Day 3",
+        motivationalMessage: "Every workout brings you closer to feeling strong and confident in your body. Your consistency is inspiring!"
+      });
+
+      if (!result.success) {
+        return res.status(500).json({ 
+          message: "Failed to send daily reminder email",
+          error: result.error 
+        });
+      }
+
+      res.json({ 
+        success: true,
+        message: "Daily workout reminder email sent successfully",
+        messageId: result.messageId
+      });
+    } catch (error) {
+      console.error("Daily reminder email test error:", error);
+      res.status(500).json({ message: "Failed to send daily reminder email" });
+    }
+  });
+
   // Template test email endpoint
   app.post("/api/admin/email-campaigns/send-test", adminOperationLimiter, async (req, res) => {
     try {
