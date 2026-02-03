@@ -7,39 +7,41 @@ import { lazy, Suspense } from "react";
 import { useActivityTracking } from "@/hooks/use-activity-tracking";
 import UpdatePrompt from "@/components/update-prompt";
 import Login from "@/pages/login";
-import Dashboard from "@/pages/dashboard";
-import Admin from "@/pages/admin";
-import AdminAnalytics from "@/pages/admin-analytics";
-import AdminEmailCampaigns from "@/pages/admin-email-campaigns";
-import AdminEmailAnalytics from "@/pages/admin-email-analytics";
-import AdminAutomationSettings from "@/pages/admin-automation-settings";
-import AdminCourses from "@/pages/admin-courses";
-import AdminModuleEditor from "@/pages/admin-module-editor";
-import AdminCourseEditor from "@/pages/admin-course-editor";
-import AdminCoursePreview from "@/pages/admin-course-preview";
-import AdminExercises from "@/pages/admin-exercises";
-import AdminWorkouts from "@/pages/admin-workouts";
-import AdminWorkoutVideos from "@/pages/admin-workout-videos";
-import AdminPreview from "@/pages/admin-preview";
-import AdminExpired from "@/pages/admin-expired";
-import AdminExpiring from "@/pages/admin-expiring";
-import AdminExtensions from "@/pages/admin-extensions";
-import AdminArchived from "@/pages/admin-archived";
-import AdminMembers from "@/pages/admin-members";
-import AdminActive from "@/pages/admin-active";
-import AdminWhatsApp from "@/pages/admin-whatsapp";
-import MyLibrary from "@/pages/my-library";
-import MyCourses from "@/pages/my-courses";
-import ProgressPhotos from "@/pages/progress-photos";
-import CourseViewer from "@/pages/course-viewer";
-import PrenatalStrength from "@/pages/prenatal-strength";
-import Community from "@/pages/community";
-import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 
-// Lazy load heavy pages to improve initial load time
+// Lazy load all heavy pages to improve initial load time
+const Dashboard = lazy(() => import("@/pages/dashboard"));
+const Community = lazy(() => import("@/pages/community"));
+const MyCourses = lazy(() => import("@/pages/my-courses"));
+const MyLibrary = lazy(() => import("@/pages/my-library"));
+const Profile = lazy(() => import("@/pages/profile"));
+const ProgressPhotos = lazy(() => import("@/pages/progress-photos"));
+const CourseViewer = lazy(() => import("@/pages/course-viewer"));
+const PrenatalStrength = lazy(() => import("@/pages/prenatal-strength"));
 const HealYourCorePage = lazy(() => import("@/pages/heal-your-core"));
 const Progress = lazy(() => import("@/pages/progress"));
+
+// Lazy load admin pages (rarely accessed by regular users)
+const Admin = lazy(() => import("@/pages/admin"));
+const AdminAnalytics = lazy(() => import("@/pages/admin-analytics"));
+const AdminEmailCampaigns = lazy(() => import("@/pages/admin-email-campaigns"));
+const AdminEmailAnalytics = lazy(() => import("@/pages/admin-email-analytics"));
+const AdminAutomationSettings = lazy(() => import("@/pages/admin-automation-settings"));
+const AdminCourses = lazy(() => import("@/pages/admin-courses"));
+const AdminModuleEditor = lazy(() => import("@/pages/admin-module-editor"));
+const AdminCourseEditor = lazy(() => import("@/pages/admin-course-editor"));
+const AdminCoursePreview = lazy(() => import("@/pages/admin-course-preview"));
+const AdminExercises = lazy(() => import("@/pages/admin-exercises"));
+const AdminWorkouts = lazy(() => import("@/pages/admin-workouts"));
+const AdminWorkoutVideos = lazy(() => import("@/pages/admin-workout-videos"));
+const AdminPreview = lazy(() => import("@/pages/admin-preview"));
+const AdminExpired = lazy(() => import("@/pages/admin-expired"));
+const AdminExpiring = lazy(() => import("@/pages/admin-expiring"));
+const AdminExtensions = lazy(() => import("@/pages/admin-extensions"));
+const AdminArchived = lazy(() => import("@/pages/admin-archived"));
+const AdminMembers = lazy(() => import("@/pages/admin-members"));
+const AdminActive = lazy(() => import("@/pages/admin-active"));
+const AdminWhatsApp = lazy(() => import("@/pages/admin-whatsapp"));
 
 // Loading component for lazy-loaded pages
 function PageLoader({ message }: { message: string }) {
@@ -56,49 +58,49 @@ function ActivityTracker() {
   return null;
 }
 
+function LazyRoute({ component: Component, message }: { component: React.LazyExoticComponent<() => JSX.Element>; message: string }) {
+  return (
+    <Suspense fallback={<PageLoader message={message} />}>
+      <Component />
+    </Suspense>
+  );
+}
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Login} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/admin" component={Admin} />
-      <Route path="/admin/analytics" component={AdminAnalytics} />
-      <Route path="/admin-email-campaigns" component={AdminEmailCampaigns} />
-      <Route path="/admin-email-analytics" component={AdminEmailAnalytics} />
-      <Route path="/admin-automation-settings" component={AdminAutomationSettings} />
-      <Route path="/admin/courses" component={AdminCourses} />
-      <Route path="/admin/modules" component={AdminCourses} />
-      <Route path="/admin/modules/:moduleId" component={AdminModuleEditor} />
-      <Route path="/admin/courses/:courseId" component={AdminCourseEditor} />
-      <Route path="/admin/courses/:courseId/preview" component={AdminCoursePreview} />
-      <Route path="/admin/exercises" component={AdminExercises} />
-      <Route path="/admin/workouts" component={AdminWorkouts} />
-      <Route path="/admin/workout-videos" component={AdminWorkoutVideos} />
-      <Route path="/admin/preview" component={AdminPreview} />
-      <Route path="/admin/expired" component={AdminExpired} />
-      <Route path="/admin/expiring" component={AdminExpiring} />
-      <Route path="/admin/extensions" component={AdminExtensions} />
-      <Route path="/admin/archived" component={AdminArchived} />
-      <Route path="/admin/members" component={AdminMembers} />
-      <Route path="/admin/active" component={AdminActive} />
-      <Route path="/admin/whatsapp" component={AdminWhatsApp} />
-      <Route path="/heal-your-core" component={() => (
-        <Suspense fallback={<PageLoader message="Loading your program..." />}>
-          <HealYourCorePage />
-        </Suspense>
-      )} />
-      <Route path="/progress" component={() => (
-        <Suspense fallback={<PageLoader message="Loading progress tracker..." />}>
-          <Progress />
-        </Suspense>
-      )} />
-      <Route path="/my-library" component={MyLibrary} />
-      <Route path="/my-courses" component={MyCourses} />
-      <Route path="/my-progress-photos" component={ProgressPhotos} />
-      <Route path="/prenatal-strength" component={PrenatalStrength} />
-      <Route path="/courses/:courseId" component={CourseViewer} />
-      <Route path="/community" component={Community} />
-      <Route path="/profile" component={Profile} />
+      <Route path="/dashboard" component={() => <LazyRoute component={Dashboard} message="Loading dashboard..." />} />
+      <Route path="/admin" component={() => <LazyRoute component={Admin} message="Loading admin..." />} />
+      <Route path="/admin/analytics" component={() => <LazyRoute component={AdminAnalytics} message="Loading analytics..." />} />
+      <Route path="/admin-email-campaigns" component={() => <LazyRoute component={AdminEmailCampaigns} message="Loading..." />} />
+      <Route path="/admin-email-analytics" component={() => <LazyRoute component={AdminEmailAnalytics} message="Loading..." />} />
+      <Route path="/admin-automation-settings" component={() => <LazyRoute component={AdminAutomationSettings} message="Loading..." />} />
+      <Route path="/admin/courses" component={() => <LazyRoute component={AdminCourses} message="Loading courses..." />} />
+      <Route path="/admin/modules" component={() => <LazyRoute component={AdminCourses} message="Loading modules..." />} />
+      <Route path="/admin/modules/:moduleId" component={() => <LazyRoute component={AdminModuleEditor} message="Loading..." />} />
+      <Route path="/admin/courses/:courseId" component={() => <LazyRoute component={AdminCourseEditor} message="Loading..." />} />
+      <Route path="/admin/courses/:courseId/preview" component={() => <LazyRoute component={AdminCoursePreview} message="Loading..." />} />
+      <Route path="/admin/exercises" component={() => <LazyRoute component={AdminExercises} message="Loading..." />} />
+      <Route path="/admin/workouts" component={() => <LazyRoute component={AdminWorkouts} message="Loading..." />} />
+      <Route path="/admin/workout-videos" component={() => <LazyRoute component={AdminWorkoutVideos} message="Loading..." />} />
+      <Route path="/admin/preview" component={() => <LazyRoute component={AdminPreview} message="Loading..." />} />
+      <Route path="/admin/expired" component={() => <LazyRoute component={AdminExpired} message="Loading..." />} />
+      <Route path="/admin/expiring" component={() => <LazyRoute component={AdminExpiring} message="Loading..." />} />
+      <Route path="/admin/extensions" component={() => <LazyRoute component={AdminExtensions} message="Loading..." />} />
+      <Route path="/admin/archived" component={() => <LazyRoute component={AdminArchived} message="Loading..." />} />
+      <Route path="/admin/members" component={() => <LazyRoute component={AdminMembers} message="Loading..." />} />
+      <Route path="/admin/active" component={() => <LazyRoute component={AdminActive} message="Loading..." />} />
+      <Route path="/admin/whatsapp" component={() => <LazyRoute component={AdminWhatsApp} message="Loading..." />} />
+      <Route path="/heal-your-core" component={() => <LazyRoute component={HealYourCorePage} message="Loading your program..." />} />
+      <Route path="/progress" component={() => <LazyRoute component={Progress} message="Loading progress tracker..." />} />
+      <Route path="/my-library" component={() => <LazyRoute component={MyLibrary} message="Loading library..." />} />
+      <Route path="/my-courses" component={() => <LazyRoute component={MyCourses} message="Loading courses..." />} />
+      <Route path="/my-progress-photos" component={() => <LazyRoute component={ProgressPhotos} message="Loading photos..." />} />
+      <Route path="/prenatal-strength" component={() => <LazyRoute component={PrenatalStrength} message="Loading..." />} />
+      <Route path="/courses/:courseId" component={() => <LazyRoute component={CourseViewer} message="Loading course..." />} />
+      <Route path="/community" component={() => <LazyRoute component={Community} message="Loading community..." />} />
+      <Route path="/profile" component={() => <LazyRoute component={Profile} message="Loading profile..." />} />
       <Route component={NotFound} />
     </Switch>
   );
