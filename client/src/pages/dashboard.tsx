@@ -876,12 +876,6 @@ export default function Dashboard() {
               </section>
             )}
 
-            {/* Weekly Progress Summary - Now shown above workout tabs for better UX */}
-            {hasWorkoutAccess && (
-              <section className="mb-6">
-                <WeeklySummary compact={false} />
-              </section>
-            )}
 
             {/* TEMPORARILY HIDDEN - User Journey Card - Shows progress and Start Now button */}
         {/* {memberPrograms.length > 0 && (
