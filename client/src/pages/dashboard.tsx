@@ -1204,6 +1204,11 @@ export default function Dashboard() {
               {hasWorkoutAccess && (
                 <MoodInsightsCard userId={user.id} keepOpenOnDesktop={true} />
               )}
+
+              {/* Weekly Progress Summary */}
+              {hasWorkoutAccess && (
+                <WeeklySummary />
+              )}
             </div>
           </div>
         </div>

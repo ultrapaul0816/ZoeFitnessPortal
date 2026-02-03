@@ -666,10 +666,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="text-right mr-2">
-                <div className="font-bold">{workoutsCompletedThisWeek}/4</div>
-                <div className="text-xs text-pink-100">this week</div>
-              </div>
               <ChevronDown className="w-5 h-5" />
             </div>
           </div>
@@ -782,15 +778,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {(sessionProgress?.currentStreak || 0) > 0 && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-white/20 rounded-full">
-                  <Flame className="w-3.5 h-3.5 text-pink-200" />
-                  <span className="text-xs font-bold text-white">{sessionProgress?.currentStreak}</span>
-                </div>
-              )}
-              <div className="text-center px-2 py-1 bg-white/20 rounded-full">
-                <span className="text-xs font-bold text-white">{workoutsCompletedThisWeek}/4</span>
-              </div>
               {onToggleExpand && (
                 <button
                   onClick={onToggleExpand}
@@ -803,10 +790,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               )}
             </div>
           </div>
-          <Progress 
-            value={(workoutsCompletedThisWeek / 4) * 100} 
-            className="h-2 mt-3 bg-pink-300"
-          />
           
           {/* Weekly Schedule Mini View */}
           <div className="flex justify-between mt-3 px-1">
@@ -910,19 +893,6 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                     <div className="text-2xl font-bold text-green-600">{exercises.length}</div>
                     <div className="text-xs text-gray-500">Exercises</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-pink-600">{workoutsCompletedThisWeek}/4</div>
-                    <div className="text-xs text-gray-500">This Week</div>
-                  </div>
-                  {(sessionProgress?.currentStreak || 0) > 0 && (
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-pink-500 flex items-center justify-center gap-1">
-                        <Flame className="w-5 h-5" />
-                        {sessionProgress?.currentStreak}
-                      </div>
-                      <div className="text-xs text-gray-500">Day Streak</div>
-                    </div>
-                  )}
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-600">{sessionProgress?.totalWorkoutsCompleted || 0}</div>
                     <div className="text-xs text-gray-500">Total</div>
