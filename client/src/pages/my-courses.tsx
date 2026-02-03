@@ -48,7 +48,6 @@ export default function MyCourses() {
   const [user, setUser] = useState<User | null>(null);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [activeTab, setActiveTab] = useState<"enrolled" | "browse">("enrolled");
-  const { toast } = useToast();
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
