@@ -29,6 +29,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import DailyCheckinModal from "./daily-checkin-modal";
 import type { DailyCheckin } from "@shared/schema";
+import { getWeekSchedule } from "@/hooks/useWorkoutSessions";
 
 interface WeeklySummaryData {
   weekStart: string;
@@ -123,6 +124,7 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
   };
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const weekSchedule = getWeekSchedule(); // Get workout types for each day
   
   // Milestone messages based on streak
   const getStreakMessage = (streak: number) => {
@@ -314,6 +316,7 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
                 const today = new Date().getDay();
                 const adjustedToday = today === 0 ? 6 : today - 1;
                 const isToday = index === adjustedToday;
+                const daySchedule = weekSchedule[index];
                 
                 return (
                   <div 
@@ -328,10 +331,17 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       hasActivity 
                         ? 'bg-gradient-to-br from-pink-500 to-rose-500 text-white' 
-                        : 'bg-gray-100 text-gray-400'
+                        : daySchedule?.type === 'workout'
+                          ? 'bg-pink-100 text-pink-500'
+                          : daySchedule?.type === 'cardio'
+                            ? 'bg-green-100 text-green-500'
+                            : 'bg-purple-100 text-purple-500'
                     }`}>
-                      {hasActivity ? '✓' : '·'}
+                      {hasActivity ? '✓' : daySchedule?.type === 'workout' ? 'C' : daySchedule?.type === 'cardio' ? '🏃' : '💤'}
                     </div>
+                    <span className="text-[10px] text-gray-400">
+                      {daySchedule?.type === 'workout' ? 'Core' : daySchedule?.type === 'cardio' ? 'Cardio' : 'Rest'}
+                    </span>
                   </div>
                 );
               })}
