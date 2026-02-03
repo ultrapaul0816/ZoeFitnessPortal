@@ -149,6 +149,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [showWorkoutOnRestDay, setShowWorkoutOnRestDay] = useState(false);
   const [isLoadingRestDayWorkout, setIsLoadingRestDayWorkout] = useState(false);
   const [isCardioMode, setIsCardioMode] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
     queryKey: ["/api/workout-progress", userId],
@@ -755,6 +756,13 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowSchedule(!showSchedule)}
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors text-lg"
+                aria-label="View weekly schedule"
+              >
+                📅
+              </button>
               {onToggleExpand && (
                 <button
                   onClick={onToggleExpand}
@@ -768,31 +776,54 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             </div>
           </div>
           
-          {/* Workout Type Toggle */}
-          <div className="flex gap-2 mt-3">
-            <button
-              onClick={() => setIsCardioMode(false)}
-              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                !isCardioMode 
-                  ? 'bg-white text-pink-600 shadow-md' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
-              }`}
-            >
-              <Dumbbell className="w-4 h-4 inline mr-1.5" />
-              Core Workout
-            </button>
+          {/* Weekly Schedule Popover */}
+          {showSchedule && (
+            <div className="mt-3 bg-white/95 rounded-lg p-3 text-gray-800">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-sm">Weekly Schedule</h4>
+                <button 
+                  onClick={() => setShowSchedule(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex justify-between gap-1">
+                {weekSchedule.map((day, idx) => (
+                  <div key={idx} className="flex flex-col items-center gap-1 flex-1">
+                    <span className={`text-[10px] font-medium ${day.day === todayDayName ? 'text-pink-600' : 'text-gray-500'}`}>
+                      {day.day}
+                    </span>
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                      day.day === todayDayName
+                        ? 'bg-pink-500 text-white ring-2 ring-pink-300'
+                        : day.type === 'workout'
+                          ? 'bg-pink-100 text-pink-600'
+                          : day.type === 'cardio'
+                            ? 'bg-green-100 text-green-600'
+                            : 'bg-purple-100 text-purple-600'
+                    }`}>
+                      {day.type === 'workout' ? 'C' : day.type === 'cardio' ? '🏃' : '💤'}
+                    </div>
+                    <span className="text-[9px] text-gray-400">
+                      {day.type === 'workout' ? 'Core' : day.type === 'cardio' ? 'Cardio' : 'Rest'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Show alternative option based on day type */}
+          {todayDayType !== 'cardio' && !isCardioMode && (
             <button
               onClick={() => setIsCardioMode(true)}
-              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                isCardioMode 
-                  ? 'bg-white text-green-600 shadow-md' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
-              }`}
+              className="mt-3 w-full py-2 px-3 rounded-lg text-sm font-medium bg-white/20 text-white hover:bg-white/30 transition-all flex items-center justify-center gap-2"
             >
-              <Wind className="w-4 h-4 inline mr-1.5" />
-              Cardio
+              <Wind className="w-4 h-4" />
+              Do Cardio Instead
             </button>
-          </div>
+          )}
         </CardHeader>
 
         <CardContent className="p-4 space-y-4">
