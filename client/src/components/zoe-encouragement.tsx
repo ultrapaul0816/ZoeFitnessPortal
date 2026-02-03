@@ -136,13 +136,13 @@ export default function ZoeEncouragement({
 
   if (variant === "inline") {
     return (
-      <div className={`flex items-start gap-3 p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-100 ${className}`}>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center flex-shrink-0">
+      <div className={`flex items-start gap-3 p-4 bg-gradient-to-r from-slate-50 to-rose-50/60 rounded-xl border border-gray-200/80 ${className}`}>
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center flex-shrink-0">
           <TipIcon className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-pink-700">{greeting}</p>
-          <p className="text-sm text-gray-700 mt-1">{currentTip.tip}</p>
+          <p className="text-sm font-medium text-gray-700">{greeting}</p>
+          <p className="text-sm text-gray-600 mt-1">{currentTip.tip}</p>
         </div>
         {dismissible && (
           <Button
@@ -160,8 +160,8 @@ export default function ZoeEncouragement({
 
   if (variant === "banner") {
     return (
-      <div className={`relative overflow-hidden bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white px-4 py-3 rounded-xl ${className}`}>
-        <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-white/10 to-transparent"></div>
+      <div className={`relative overflow-hidden bg-gradient-to-r from-rose-500 to-pink-500 text-white px-4 py-3 rounded-xl ${className}`}>
+        <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/10 to-transparent"></div>
         <div className="relative flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">

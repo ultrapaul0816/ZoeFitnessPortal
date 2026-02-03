@@ -102,11 +102,11 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
 
   if (isLoading) {
     return (
-      <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-100">
+      <Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-gray-200/80">
         <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-pink-100 rounded w-1/3"></div>
-            <div className="h-20 bg-pink-100 rounded"></div>
+            <div className="h-6 bg-gray-100 rounded w-1/3"></div>
+            <div className="h-20 bg-gray-100 rounded"></div>
           </div>
         </CardContent>
       </Card>
@@ -197,15 +197,15 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
     return (
       <>
         <Card 
-          className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-100 hover:shadow-md transition-shadow cursor-pointer"
+          className="bg-gradient-to-br from-slate-50 to-gray-50 border-gray-200/80 hover:shadow-md transition-shadow cursor-pointer"
           onClick={() => setShowCheckinModal(true)}
           data-testid="card-daily-checkin-compact"
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-pink-100 rounded-lg">
-                  <Calendar className="h-5 w-5 text-pink-600" />
+                <div className="p-2 bg-rose-100 rounded-lg">
+                  <Calendar className="h-5 w-5 text-rose-500" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Daily Check-in</h3>
@@ -231,16 +231,16 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
 
   return (
     <>
-      <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-100">
+      <Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-gray-200/80">
         <CardHeader className="pb-2">
           <div 
             className="cursor-pointer" 
             onClick={() => setIsCollapsed(!isCollapsed)}
           >
             <CardTitle className="flex items-center gap-2 text-xl">
-              <TrendingUp className="h-5 w-5 text-pink-500" />
+              <TrendingUp className="h-5 w-5 text-rose-500" />
               This Week's Progress
-              <span className="text-sm font-normal text-pink-500">(Week {summary?.programWeek || 1})</span>
+              <span className="text-sm font-normal text-gray-500">(Week {summary?.programWeek || 1})</span>
               <button 
                 className="ml-auto p-1 rounded-full hover:bg-pink-100 transition-colors"
                 onClick={(e) => {

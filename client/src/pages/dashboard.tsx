@@ -786,32 +786,28 @@ export default function Dashboard() {
 
             {/* Community Quick Access Card - Mobile only */}
             <div className="lg:hidden">
-              <Link href="/community">
-                <Card className="mb-6 bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
-                          <Users className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-800 group-hover:text-pink-600 transition-colors">
-                            Mama Community
-                          </h3>
-                          <p className="text-sm text-gray-600">Share wins, get support, connect with other mamas</p>
-                        </div>
+              <Card className="mb-6 bg-gradient-to-r from-rose-50/80 to-pink-50/80 border-rose-200/60 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+                        <Users className="w-6 h-6 text-white" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="hidden sm:flex items-center gap-1 text-pink-500">
-                          <Heart className="w-4 h-4" />
-                          <MessageCircle className="w-4 h-4" />
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-pink-400 group-hover:translate-x-1 transition-transform" />
+                      <div>
+                        <h3 className="font-semibold text-gray-800">
+                          Mama Community
+                        </h3>
+                        <p className="text-sm text-gray-600">Share wins, get support, connect with other mamas</p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    <Link href="/community">
+                      <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white">
+                        View
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Profile Completion Banner */}
@@ -1128,30 +1124,32 @@ export default function Dashboard() {
               />
 
               {/* Community Quick Access Card */}
-              <Link href="/community">
-                <Card className="bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
-                          <Users className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-800 group-hover:text-pink-600 transition-colors">
-                            Mama Community
-                          </h3>
-                          <p className="text-sm text-gray-600">Connect with other mamas</p>
-                        </div>
+              <Card className="bg-gradient-to-r from-rose-50/80 to-pink-50/80 border-rose-200/60 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+                        <Users className="w-6 h-6 text-white" />
                       </div>
-                      <ChevronRight className="w-5 h-5 text-pink-400 group-hover:translate-x-1 transition-transform" />
+                      <div>
+                        <h3 className="font-semibold text-gray-800">
+                          Mama Community
+                        </h3>
+                        <p className="text-sm text-gray-600">Connect with other mamas</p>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    <Link href="/community">
+                      <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white">
+                        View
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Mood & Energy Insights Card */}
               {hasWorkoutAccess && (
-                <MoodInsightsCard userId={user.id} />
+                <MoodInsightsCard userId={user.id} keepOpenOnDesktop={true} />
               )}
 
               {/* Weekly Progress Summary */}
