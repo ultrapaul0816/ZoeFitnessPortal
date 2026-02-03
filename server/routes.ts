@@ -3165,7 +3165,7 @@ RESPONSE GUIDELINES:
         return res.status(400).json({ message: "Template type is required" });
       }
 
-      const validTemplates = ['welcome', 're-engagement', 'program-reminder', 'completion-celebration'];
+      const validTemplates = ['welcome', 're-engagement', 'program-reminder', 'completion-celebration', 'daily-workout-reminder'];
       if (!validTemplates.includes(templateType)) {
         return res.status(400).json({ message: "Invalid template type" });
       }
@@ -3176,7 +3176,7 @@ RESPONSE GUIDELINES:
       }
 
       const result = await emailService.sendTemplateTestEmail(
-        templateType as 'welcome' | 're-engagement' | 'program-reminder' | 'completion-celebration',
+        templateType as 'welcome' | 're-engagement' | 'program-reminder' | 'completion-celebration' | 'daily-workout-reminder',
         email,
         subject
       );

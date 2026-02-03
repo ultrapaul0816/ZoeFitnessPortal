@@ -113,7 +113,7 @@ class EmailService {
     });
   }
 
-  async sendTemplateTestEmail(templateType: 'welcome' | 're-engagement' | 'program-reminder' | 'completion-celebration', toEmail: string, customSubject?: string): Promise<EmailSendResult> {
+  async sendTemplateTestEmail(templateType: 'welcome' | 're-engagement' | 'program-reminder' | 'completion-celebration' | 'daily-workout-reminder', toEmail: string, customSubject?: string): Promise<EmailSendResult> {
     let template;
     
     switch (templateType) {
@@ -145,6 +145,14 @@ class EmailService {
           programName: 'Your Postpartum Strength Recovery Program',
           completionDate: new Date(),
           weeksCompleted: 6,
+        });
+        break;
+      case 'daily-workout-reminder':
+        template = createDailyWorkoutReminderEmail({
+          firstName: 'Mama',
+          currentStreak: 5,
+          todayWorkoutName: 'Week 3 - Core Foundations',
+          motivationalMessage: 'Every workout brings you closer to feeling strong and confident in your body. You\'ve got this!',
         });
         break;
     }
