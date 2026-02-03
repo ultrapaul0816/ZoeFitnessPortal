@@ -203,6 +203,7 @@ export default function Dashboard() {
   const { data: memberPrograms = [] } = useQuery<(MemberProgram & { program: Program })[]>({
     queryKey: ["/api/member-programs", user?.id],
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch user's enrolled courses
@@ -224,23 +225,27 @@ export default function Dashboard() {
   }>>({
     queryKey: ["/api/my-course-enrollments"],
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: notifications = [] } = useQuery<Notification[]>({
     queryKey: ["/api/notifications", user?.id],
     enabled: !!user?.id,
+    staleTime: 60 * 1000,
   });
 
   // Get all programs for premium program display
   const { data: allPrograms = [] } = useQuery({
     queryKey: ["/api/programs"],
     enabled: !!user?.id,
+    staleTime: 10 * 60 * 1000,
   });
 
   // Check if user has completed today's daily check-in
   const { data: todaysDailyCheckin } = useQuery({
     queryKey: ["/api/daily-checkins", user?.id, "today"],
     enabled: !!user?.id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const hasCheckedInToday = !!todaysDailyCheckin;
@@ -928,7 +933,7 @@ export default function Dashboard() {
                     }}
                     isExpanded={isWorkoutExpanded}
                     onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
-                    hasSeenFirstWorkoutWelcome={user.hasSeenFirstWorkoutWelcome}
+                    hasSeenFirstWorkoutWelcome={user.hasSeenFirstWorkoutWelcome ?? undefined}
                   />
                 </TabsContent>
                 
