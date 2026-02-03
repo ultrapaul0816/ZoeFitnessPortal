@@ -763,83 +763,89 @@ export default function Dashboard() {
           <div className="mb-6 animate-in fade-in duration-300" style={{
             animation: showWelcomeMessage ? 'fadeIn 0.3s ease-in' : 'fadeOut 0.5s ease-out forwards'
           }}>
-            <h1 className="text-2xl font-bold text-foreground mb-1">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
               Welcome back, {user.firstName}! 💪
             </h1>
-            <p className="text-sm text-muted-foreground">Ready to get stronger today?</p>
+            <p className="text-sm lg:text-base text-muted-foreground">Ready to get stronger today?</p>
           </div>
         )}
 
-        {/* Coach Zoe's Daily Tip */}
-        <ZoeEncouragement 
-          user={user} 
-          context="dashboard" 
-          variant="card"
-          className="mb-6"
-        />
+        {/* Desktop: Two-column layout, Mobile: Single column */}
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+          {/* Main Content Column - Workouts and Courses */}
+          <div className="lg:col-span-8">
+            {/* Coach Zoe's Daily Tip - Mobile only (shown in sidebar on desktop) */}
+            <div className="lg:hidden">
+              <ZoeEncouragement 
+                user={user} 
+                context="dashboard" 
+                variant="card"
+                className="mb-6"
+              />
+            </div>
 
-        {/* Community Quick Access Card */}
-        <Link href="/community">
-          <Card className="mb-6 bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 group-hover:text-pink-600 transition-colors">
-                      Mama Community
-                    </h3>
-                    <p className="text-sm text-gray-600">Share wins, get support, connect with other mamas</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="hidden sm:flex items-center gap-1 text-pink-500">
-                    <Heart className="w-4 h-4" />
-                    <MessageCircle className="w-4 h-4" />
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-pink-400 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
+            {/* Community Quick Access Card - Mobile only */}
+            <div className="lg:hidden">
+              <Link href="/community">
+                <Card className="mb-6 bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
+                          <Users className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800 group-hover:text-pink-600 transition-colors">
+                            Mama Community
+                          </h3>
+                          <p className="text-sm text-gray-600">Share wins, get support, connect with other mamas</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="hidden sm:flex items-center gap-1 text-pink-500">
+                          <Heart className="w-4 h-4" />
+                          <MessageCircle className="w-4 h-4" />
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-pink-400 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
 
-        {/* Profile Completion Banner */}
-        <ProfileBanner 
-          onCompleteProfile={() => {
-            setShowProfileSettings(true);
-            // Use a small delay to ensure the hamburger menu is open before switching to profile view
-            setTimeout(() => {
-              setCurrentView('profile');
-            }, 100);
-          }}
-          context={{
-            location: 'dashboard',
-            isFirstLogin: isFirstLogin,
-            hasCompletedWorkout: stats.completedWorkouts > 0,
-            sessionStartTime: Date.now()
-          }}
-          className="mb-8"
-        />
+            {/* Profile Completion Banner */}
+            <ProfileBanner 
+              onCompleteProfile={() => {
+                setShowProfileSettings(true);
+                setTimeout(() => {
+                  setCurrentView('profile');
+                }, 100);
+              }}
+              context={{
+                location: 'dashboard',
+                isFirstLogin: isFirstLogin,
+                hasCompletedWorkout: stats.completedWorkouts > 0,
+                sessionStartTime: Date.now()
+              }}
+              className="mb-8"
+            />
 
+            {/* Mood & Energy Insights Card - Mobile only */}
+            {hasWorkoutAccess && (
+              <section className="mb-6 lg:hidden">
+                <MoodInsightsCard userId={user.id} />
+              </section>
+            )}
 
-        {/* Mood & Energy Insights Card */}
-        {hasWorkoutAccess && (
-          <section className="mb-6">
-            <MoodInsightsCard userId={user.id} />
-          </section>
-        )}
+            {/* Weekly Progress Summary - Mobile only */}
+            {hasWorkoutAccess && (
+              <section className="mb-8 lg:hidden">
+                <WeeklySummary />
+              </section>
+            )}
 
-        {/* Weekly Progress Summary with Check-in Button */}
-        {hasWorkoutAccess && (
-          <section className="mb-8">
-            <WeeklySummary />
-          </section>
-        )}
-
-        {/* TEMPORARILY HIDDEN - User Journey Card - Shows progress and Start Now button */}
+            {/* TEMPORARILY HIDDEN - User Journey Card - Shows progress and Start Now button */}
         {/* {memberPrograms.length > 0 && (
           <section className="mb-6">
             <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border-purple-200 shadow-md overflow-hidden">
@@ -879,236 +885,282 @@ export default function Dashboard() {
           </section>
         )} */}
 
-        {/* Heal Your Core - Tabbed Workout Section */}
-        {hasWorkoutAccess && (
-          <section className="mb-8">
-            <Card className="bg-white border-2 border-pink-100 shadow-lg rounded-2xl overflow-hidden">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Dumbbell className="w-5 h-5" />
-                    Heal Your Core
-                  </h2>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setLocation('/heal-your-core')}
-                    className="text-white hover:bg-white/20 text-xs font-medium px-3 py-1.5 h-auto"
-                    data-testid="button-explore-full-program"
-                  >
-                    <BookOpen className="w-3.5 h-3.5 mr-1.5" />
-                    Explore Program
-                  </Button>
-                </div>
-              </div>
-              
-              {/* Tabs */}
-              <Tabs value={workoutViewTab} onValueChange={(v) => setWorkoutViewTab(v as "today" | "full-program")} className="w-full">
-                <div className="px-4 pt-3">
-                  <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
-                    <TabsTrigger 
-                      value="today" 
-                      className="data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-sm rounded-md py-2 text-sm font-medium"
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      Today's Workout
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="full-program" 
-                      className="data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-sm rounded-md py-2 text-sm font-medium"
-                    >
-                      <List className="w-4 h-4 mr-2" />
-                      Full Program
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-                
-                <TabsContent value="today" className="mt-0 p-4 pb-6">
-                  <TodaysWorkout 
-                    userId={user.id}
-                    isFirstLogin={isFirstLogin && stats.completedWorkouts === 0}
-                    onStartWorkout={(weekNumber) => {
-                      setLocation(`/heal-your-core?week=${weekNumber}`);
-                    }}
-                    isExpanded={isWorkoutExpanded}
-                    onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
-                    hasSeenFirstWorkoutWelcome={user.hasSeenFirstWorkoutWelcome ?? undefined}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="full-program" className="mt-0 p-4">
-                  <ProgramsSection 
-                    isEmbedded={true}
-                  />
-                </TabsContent>
-              </Tabs>
-            </Card>
-          </section>
-        )}
+            {/* Heal Your Core - Tabbed Workout Section */}
+            {hasWorkoutAccess && (
+              <section className="mb-8">
+                <Card className="bg-white border-2 border-pink-100 shadow-lg rounded-2xl overflow-hidden">
+                  {/* Header */}
+                  <div className="bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-3 lg:px-6 lg:py-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-lg lg:text-xl font-bold text-white flex items-center gap-2">
+                        <Dumbbell className="w-5 h-5 lg:w-6 lg:h-6" />
+                        Heal Your Core
+                      </h2>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setLocation('/heal-your-core')}
+                        className="text-white hover:bg-white/20 text-xs lg:text-sm font-medium px-3 py-1.5 h-auto"
+                        data-testid="button-explore-full-program"
+                      >
+                        <BookOpen className="w-3.5 h-3.5 lg:w-4 lg:h-4 mr-1.5" />
+                        Explore Program
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Tabs */}
+                  <Tabs value={workoutViewTab} onValueChange={(v) => setWorkoutViewTab(v as "today" | "full-program")} className="w-full">
+                    <div className="px-4 lg:px-6 pt-3">
+                      <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
+                        <TabsTrigger 
+                          value="today" 
+                          className="data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-sm rounded-md py-2 lg:py-2.5 text-sm lg:text-base font-medium"
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          Today's Workout
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="full-program" 
+                          className="data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-sm rounded-md py-2 lg:py-2.5 text-sm lg:text-base font-medium"
+                        >
+                          <List className="w-4 h-4 mr-2" />
+                          Full Program
+                        </TabsTrigger>
+                      </TabsList>
+                    </div>
+                    
+                    <TabsContent value="today" className="mt-0 p-4 lg:p-6 pb-6">
+                      <TodaysWorkout 
+                        userId={user.id}
+                        isFirstLogin={isFirstLogin && stats.completedWorkouts === 0}
+                        onStartWorkout={(weekNumber) => {
+                          setLocation(`/heal-your-core?week=${weekNumber}`);
+                        }}
+                        isExpanded={isWorkoutExpanded}
+                        onToggleExpand={() => setIsWorkoutExpanded(!isWorkoutExpanded)}
+                        hasSeenFirstWorkoutWelcome={user.hasSeenFirstWorkoutWelcome ?? undefined}
+                      />
+                    </TabsContent>
+                    
+                    <TabsContent value="full-program" className="mt-0 p-4 lg:p-6">
+                      <ProgramsSection 
+                        isEmbedded={true}
+                      />
+                    </TabsContent>
+                  </Tabs>
+                </Card>
+              </section>
+            )}
 
-        {/* Other Enrolled Courses Cards (excluding Heal Your Core) */}
-        {courseEnrollments.filter(e => e.course_id !== 'heal-your-core-course').length > 0 && (
-          <section className="mb-8">
-            <div className="flex flex-wrap justify-center gap-6">
-              {courseEnrollments.filter(e => e.course_id !== 'heal-your-core-course').map((enrollment) => {
-                const isExpired = enrollment.expires_at && new Date(enrollment.expires_at) < new Date();
-                const courseUrl = enrollment.course_id === 'prenatal-strength-course'
-                  ? '/prenatal-strength'
-                  : `/courses/${enrollment.course_id}`;
-                return (
-                  <div key={enrollment.id} className="w-full max-w-md">
-                    <button
-                      onClick={() => setLocation(courseUrl)}
-                      className={`w-full bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-200'} hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left`}
-                      data-testid={`button-view-course-${enrollment.course_id}`}
-                    >
-                      {/* Course Cover Image */}
-                      <div className="relative w-full aspect-[4/5] overflow-hidden">
-                        {enrollment.course_image_url ? (
-                          <img 
-                            src={enrollment.course_image_url} 
-                            alt={enrollment.course_name} 
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
-                            <BookOpen className="w-16 h-16 text-white opacity-50" />
-                          </div>
-                        )}
-                        {isExpired && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <span className="bg-red-500 text-white px-4 py-2 rounded-full font-medium">Access Expired</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Course Details */}
-                      <div className="p-5 space-y-4">
-                        <h3 className="text-xl font-bold text-gray-900">{enrollment.course_name}</h3>
-                        {enrollment.course_description && (
-                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
-                            {enrollment.course_description}
-                          </p>
-                        )}
-                        
-                        {/* Course Info */}
-                        <div className="space-y-2 pt-2">
-                          {enrollment.course_weeks && (
-                            <div className="flex items-center gap-2 text-gray-700">
-                              <Calendar className="w-4 h-4 text-pink-500" />
-                              <span className="text-sm">{enrollment.course_weeks} Weeks</span>
-                            </div>
-                          )}
-                          {enrollment.course_difficulty && (
-                            <div className="flex items-center gap-2 text-gray-700">
-                              <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
-                              <span className="text-sm capitalize">{enrollment.course_difficulty} level</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Progress & Access Badge */}
-                        <div className="pt-2 space-y-2">
-                          {enrollment.progress_percentage > 0 && (
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                <div 
-                                  className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full transition-all"
-                                  style={{ width: `${enrollment.progress_percentage}%` }}
-                                />
+            {/* Other Enrolled Courses Cards (excluding Heal Your Core) */}
+            {courseEnrollments.filter(e => e.course_id !== 'heal-your-core-course').length > 0 && (
+              <section className="mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {courseEnrollments.filter(e => e.course_id !== 'heal-your-core-course').map((enrollment) => {
+                    const isExpired = enrollment.expires_at && new Date(enrollment.expires_at) < new Date();
+                    const courseUrl = enrollment.course_id === 'prenatal-strength-course'
+                      ? '/prenatal-strength'
+                      : `/courses/${enrollment.course_id}`;
+                    return (
+                      <div key={enrollment.id} className="w-full">
+                        <button
+                          onClick={() => setLocation(courseUrl)}
+                          className={`w-full bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-200'} hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left`}
+                          data-testid={`button-view-course-${enrollment.course_id}`}
+                        >
+                          {/* Course Cover Image */}
+                          <div className="relative w-full aspect-video lg:aspect-[4/3] overflow-hidden">
+                            {enrollment.course_image_url ? (
+                              <img 
+                                src={enrollment.course_image_url} 
+                                alt={enrollment.course_name} 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
+                                <BookOpen className="w-16 h-16 text-white opacity-50" />
                               </div>
-                              <span className="text-xs font-medium text-gray-600">{enrollment.progress_percentage}%</span>
+                            )}
+                            {isExpired && (
+                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                <span className="bg-red-500 text-white px-4 py-2 rounded-full font-medium">Access Expired</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Course Details */}
+                          <div className="p-5 space-y-4">
+                            <h3 className="text-xl font-bold text-gray-900">{enrollment.course_name}</h3>
+                            {enrollment.course_description && (
+                              <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 lg:line-clamp-3">
+                                {enrollment.course_description}
+                              </p>
+                            )}
+                            
+                            {/* Course Info */}
+                            <div className="flex flex-wrap gap-4 pt-2">
+                              {enrollment.course_weeks && (
+                                <div className="flex items-center gap-2 text-gray-700">
+                                  <Calendar className="w-4 h-4 text-pink-500" />
+                                  <span className="text-sm">{enrollment.course_weeks} Weeks</span>
+                                </div>
+                              )}
+                              {enrollment.course_difficulty && (
+                                <div className="flex items-center gap-2 text-gray-700">
+                                  <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
+                                  <span className="text-sm capitalize">{enrollment.course_difficulty} level</span>
+                                </div>
+                              )}
                             </div>
-                          )}
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 border ${isExpired ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'} text-sm font-medium rounded-full`}>
-                            <span>{isExpired ? '⚠️' : '☆'}</span> {isExpired ? 'Expired' : 'Premium Access'}
-                          </span>
+                            
+                            {/* Progress & Access Badge */}
+                            <div className="pt-2 space-y-2">
+                              {enrollment.progress_percentage > 0 && (
+                                <div className="flex items-center gap-2">
+                                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div 
+                                      className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full transition-all"
+                                      style={{ width: `${enrollment.progress_percentage}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-xs font-medium text-gray-600">{enrollment.progress_percentage}%</span>
+                                </div>
+                              )}
+                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 border ${isExpired ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'} text-sm font-medium rounded-full`}>
+                                <span>{isExpired ? '⚠️' : '☆'}</span> {isExpired ? 'Expired' : 'Premium Access'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Continue Button */}
+                          <div className="px-5 pb-5">
+                            <div className={`w-full py-3 ${isExpired ? 'bg-gray-400' : 'bg-gradient-to-r from-purple-500 to-pink-500'} text-white font-semibold rounded-lg flex items-center justify-center gap-2`}>
+                              <Play className="w-4 h-4" />
+                              {isExpired ? 'Contact Support' : enrollment.progress_percentage > 0 ? 'Continue' : 'Start Course'}
+                            </div>
+                            {!isExpired && (
+                              <p className="text-center text-green-600 text-sm mt-2 flex items-center justify-center gap-1">
+                                <CheckCircle className="w-4 h-4" />
+                                You have full access to this course
+                              </p>
+                            )}
+                          </div>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* Legacy Program Access Card (for backward compatibility) */}
+            {memberPrograms.length > 0 && courseEnrollments.length === 0 && (
+              <section className="mb-8 flex justify-center">
+                <div className="w-full max-w-md lg:max-w-lg">
+                  <button
+                    onClick={() => setLocation('/heal-your-core')}
+                    className="w-full bg-white rounded-2xl border border-gray-200 hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left"
+                    data-testid="button-view-full-program"
+                  >
+                    <div className="relative w-full aspect-video lg:aspect-[4/3] overflow-hidden">
+                      <img 
+                        src={PROGRAM_IMAGE_URL} 
+                        alt="Heal Your Core Program" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-5 lg:p-6 space-y-4">
+                      <h3 className="text-xl lg:text-2xl font-bold text-gray-900">Your Postpartum Strength Recovery Program</h3>
+                      <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
+                        A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.
+                      </p>
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <Calendar className="w-4 h-4 text-pink-500" />
+                          <span className="text-sm">6 Weeks</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
+                          <span className="text-sm">Postnatal level</span>
                         </div>
                       </div>
-                      
-                      {/* Continue Button */}
-                      <div className="px-5 pb-5">
-                        <div className={`w-full py-3 ${isExpired ? 'bg-gray-400' : 'bg-gradient-to-r from-purple-500 to-pink-500'} text-white font-semibold rounded-lg flex items-center justify-center gap-2`}>
-                          <Play className="w-4 h-4" />
-                          {isExpired ? 'Contact Support' : enrollment.progress_percentage > 0 ? 'Continue' : 'Start Course'}
-                        </div>
-                        {!isExpired && (
-                          <p className="text-center text-green-600 text-sm mt-2 flex items-center justify-center gap-1">
-                            <CheckCircle className="w-4 h-4" />
-                            You have full access to this course
-                          </p>
-                        )}
+                      <div className="pt-2">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-green-500 text-green-600 text-sm font-medium rounded-full">
+                          <span>☆</span> Premium Access
+                        </span>
                       </div>
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Legacy Program Access Card (for backward compatibility) */}
-        {memberPrograms.length > 0 && courseEnrollments.length === 0 && (
-          <section className="mb-8 flex justify-center">
-            <div className="w-full max-w-md">
-              <button
-                onClick={() => setLocation('/heal-your-core')}
-                className="w-full bg-white rounded-2xl border border-gray-200 hover:border-pink-300 transition-all hover:shadow-lg overflow-hidden text-left"
-                data-testid="button-view-full-program"
-              >
-                <div className="relative w-full aspect-[4/5] overflow-hidden">
-                  <img 
-                    src={PROGRAM_IMAGE_URL} 
-                    alt="Heal Your Core Program" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-5 space-y-4">
-                  <h3 className="text-xl font-bold text-gray-900">Your Postpartum Strength Recovery Program</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    A gentle, expert-led program to rebuild your core and pelvic floor, designed for mamas, whether you are 6 weeks or 6 years postpartum.
-                  </p>
-                  <div className="space-y-2 pt-2">
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <Calendar className="w-4 h-4 text-pink-500" />
-                      <span className="text-sm">6 Weeks</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <span className="w-4 h-4 text-pink-500 flex items-center justify-center text-xs">◎</span>
-                      <span className="text-sm">Postnatal level</span>
+                    <div className="px-5 lg:px-6 pb-5 lg:pb-6">
+                      <div className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg flex items-center justify-center gap-2">
+                        <Play className="w-4 h-4" />
+                        Continue
+                      </div>
+                      <p className="text-center text-green-600 text-sm mt-2 flex items-center justify-center gap-1">
+                        <CheckCircle className="w-4 h-4" />
+                        You have full access to this program
+                      </p>
                     </div>
-                  </div>
-                  <div className="pt-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-green-500 text-green-600 text-sm font-medium rounded-full">
-                      <span>☆</span> Premium Access
-                    </span>
-                  </div>
+                  </button>
                 </div>
-                <div className="px-5 pb-5">
-                  <div className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg flex items-center justify-center gap-2">
-                    <Play className="w-4 h-4" />
-                    Continue
-                  </div>
-                  <p className="text-center text-green-600 text-sm mt-2 flex items-center justify-center gap-1">
-                    <CheckCircle className="w-4 h-4" />
-                    You have full access to this program
-                  </p>
-                </div>
-              </button>
-            </div>
-          </section>
-        )}
+              </section>
+            )}
 
-        {/* No Programs Message */}
-        {memberPrograms.length === 0 && courseEnrollments.length === 0 && (
-          <section className="mb-8">
-            <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl p-8 shadow-lg border border-pink-200 text-center">
-              <p className="text-gray-500 text-lg">No programs assigned yet.</p>
-              <p className="text-gray-400 text-sm mt-2">Your admin will enroll you in programs soon.</p>
+            {/* No Programs Message */}
+            {memberPrograms.length === 0 && courseEnrollments.length === 0 && (
+              <section className="mb-8">
+                <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl p-8 shadow-lg border border-pink-200 text-center">
+                  <p className="text-gray-500 text-lg">No programs assigned yet.</p>
+                  <p className="text-gray-400 text-sm mt-2">Your admin will enroll you in programs soon.</p>
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* Sidebar Column - Desktop only */}
+          <div className="hidden lg:block lg:col-span-4">
+            <div className="sticky top-24 space-y-6">
+              {/* Coach Zoe's Daily Tip */}
+              <ZoeEncouragement 
+                user={user} 
+                context="dashboard" 
+                variant="card"
+              />
+
+              {/* Community Quick Access Card */}
+              <Link href="/community">
+                <Card className="bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
+                          <Users className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800 group-hover:text-pink-600 transition-colors">
+                            Mama Community
+                          </h3>
+                          <p className="text-sm text-gray-600">Connect with other mamas</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-pink-400 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Mood & Energy Insights Card */}
+              {hasWorkoutAccess && (
+                <MoodInsightsCard userId={user.id} />
+              )}
+
+              {/* Weekly Progress Summary */}
+              {hasWorkoutAccess && (
+                <WeeklySummary />
+              )}
             </div>
-          </section>
-        )}
+          </div>
+        </div>
       </main>
 
       {/* Community Modal */}
