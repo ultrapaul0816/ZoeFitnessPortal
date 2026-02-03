@@ -263,6 +263,20 @@ export default function Dashboard() {
     staleTime: 2 * 60 * 1000,
   });
 
+  // Get recent community posts for "new posts" count
+  const { data: recentPosts = [] } = useQuery<{ id: string; createdAt: string }[]>({
+    queryKey: ["/api/community/posts", { limit: 10 }],
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Count posts from the last 24 hours as "new"
+  const newPostsCount = recentPosts.filter(post => {
+    const postDate = new Date(post.createdAt);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    return postDate > oneDayAgo;
+  }).length;
+
   const hasCheckedInToday = !!todaysDailyCheckin;
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -801,20 +815,33 @@ export default function Dashboard() {
 
             {/* Community Quick Access Card - Mobile only */}
             <div className="lg:hidden">
-              <Card className="mb-6 bg-gradient-to-r from-rose-50/80 to-pink-50/80 border-rose-200/60 shadow-sm">
+              <Card className="mb-6 bg-white border border-gray-200 shadow-sm">
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
-                        <Users className="w-6 h-6 text-white" />
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+                        <Users className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-800">
-                          Mama Community
-                        </h3>
-                        <p className="text-sm text-gray-600">Share wins, get support, connect with other mamas</p>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-gray-800">Mama Community</h3>
+                          {newPostsCount > 0 && (
+                            <Badge className="bg-rose-500 text-white text-xs px-1.5 py-0.5 h-5">
+                              {newPostsCount} new
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500">Share wins & connect with other mamas</p>
                       </div>
                     </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href="/community?action=post" className="flex-1">
+                      <Button size="sm" variant="outline" className="w-full border-rose-200 text-rose-600 hover:bg-rose-50">
+                        <MessageCircle className="w-4 h-4 mr-1.5" />
+                        Share a Win
+                      </Button>
+                    </Link>
                     <Link href="/community">
                       <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white">
                         View
@@ -849,10 +876,10 @@ export default function Dashboard() {
               </section>
             )}
 
-            {/* Weekly Progress Summary - Mobile only */}
+            {/* Weekly Progress Summary - Now shown above workout tabs for better UX */}
             {hasWorkoutAccess && (
-              <section className="mb-8 lg:hidden">
-                <WeeklySummary />
+              <section className="mb-6">
+                <WeeklySummary compact={false} />
               </section>
             )}
 
@@ -1139,20 +1166,31 @@ export default function Dashboard() {
               />
 
               {/* Community Quick Access Card */}
-              <Card className="bg-gradient-to-r from-rose-50/80 to-pink-50/80 border-rose-200/60 shadow-sm">
+              <Card className="bg-white border border-gray-200 shadow-sm">
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
-                        <Users className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800">
-                          Mama Community
-                        </h3>
-                        <p className="text-sm text-gray-600">Connect with other mamas</p>
-                      </div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-white" />
                     </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-gray-800">Mama Community</h3>
+                        {newPostsCount > 0 && (
+                          <Badge className="bg-rose-500 text-white text-xs px-1.5 py-0.5 h-5">
+                            {newPostsCount} new
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500">Connect with other mamas</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href="/community?action=post" className="flex-1">
+                      <Button size="sm" variant="outline" className="w-full border-rose-200 text-rose-600 hover:bg-rose-50">
+                        <MessageCircle className="w-4 h-4 mr-1.5" />
+                        Share a Win
+                      </Button>
+                    </Link>
                     <Link href="/community">
                       <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white">
                         View
@@ -1165,11 +1203,6 @@ export default function Dashboard() {
               {/* Mood & Energy Insights Card */}
               {hasWorkoutAccess && (
                 <MoodInsightsCard userId={user.id} keepOpenOnDesktop={true} />
-              )}
-
-              {/* Weekly Progress Summary */}
-              {hasWorkoutAccess && (
-                <WeeklySummary />
               )}
             </div>
           </div>

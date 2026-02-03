@@ -33,13 +33,14 @@ export function createDailyWorkoutReminderEmail(data: DailyWorkoutReminderData):
       <td align="center" style="padding: 40px 20px;">
         <table role="presentation" style="max-width: 560px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);">
           
-          <!-- Header -->
+          <!-- Header with Zoe -->
           <tr>
-            <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f3f4f6;">
-              <div style="font-size: 28px; margin-bottom: 8px;">💪</div>
+            <td style="padding: 28px 32px 20px; text-align: center; border-bottom: 1px solid #f3f4f6;">
+              <img src="https://strongerwithzoe.com/assets/zoe-email-avatar.png" alt="Zoe" style="width: 64px; height: 64px; border-radius: 50%; margin-bottom: 12px; border: 3px solid #fce7f3;" />
               <h1 style="color: #1f2937; margin: 0; font-size: 22px; font-weight: 600;">
                 Good morning, ${firstName}!
               </h1>
+              <p style="color: #9ca3af; font-size: 13px; margin: 6px 0 0;">A note from Coach Zoe</p>
             </td>
           </tr>
           

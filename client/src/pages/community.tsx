@@ -118,6 +118,14 @@ export default function Community() {
     }
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
+
+    // Check URL params for auto-opening post modal
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('action') === 'post') {
+      setShowCreatePost(true);
+      // Clear the URL param without reloading
+      window.history.replaceState({}, '', '/community');
+    }
   }, [setLocation]);
 
   // Pagination state
@@ -839,6 +847,29 @@ export default function Community() {
           </DialogHeader>
 
           <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+            {/* Posting prompts - show only when content is empty */}
+            {postContent.length === 0 && postImagePreviews.length === 0 && (
+              <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                <p className="text-xs text-gray-500 font-medium mb-2">Ideas to get you started:</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { text: "I completed my workout today!", emoji: "💪" },
+                    { text: "Feeling proud of my progress...", emoji: "🎉" },
+                    { text: "Any tips for staying motivated?", emoji: "💡" },
+                    { text: "My energy levels have improved!", emoji: "⚡" },
+                  ].map((prompt, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setPostContent(prompt.text)}
+                      className="text-xs bg-white border border-gray-200 rounded-full px-3 py-1.5 hover:bg-rose-50 hover:border-rose-200 transition-colors text-gray-600 hover:text-rose-600"
+                    >
+                      {prompt.emoji} {prompt.text}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Image previews (grid layout for multiple images) */}
             {postImagePreviews.length > 0 && (
               <div className="grid grid-cols-2 gap-2">
