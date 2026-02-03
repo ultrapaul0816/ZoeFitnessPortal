@@ -30,7 +30,8 @@ import {
   ArrowRight,
   Flame,
   ThumbsUp,
-  ThumbsDown
+  ThumbsDown,
+  Wind
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -147,6 +148,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [selectedWeekOverride, setSelectedWeekOverride] = useState<number | null>(null);
   const [showWorkoutOnRestDay, setShowWorkoutOnRestDay] = useState(false);
   const [isLoadingRestDayWorkout, setIsLoadingRestDayWorkout] = useState(false);
+  const [isCardioMode, setIsCardioMode] = useState(false);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
     queryKey: ["/api/workout-progress", userId],
@@ -658,9 +660,9 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 <Dumbbell className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-lg">This Week's Workout</h3>
+                <h3 className="font-bold text-lg">Today's Workout</h3>
                 <p className="text-pink-100 text-sm">
-                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {todayDayType === 'workout' ? `Core ${workoutsCompletedThisWeek + 1}/4` : todayDayType === 'cardio' ? 'Cardio' : 'Rest'}
+                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {isCardioMode ? 'Cardio' : 'Core Workout'}
                   {isWorkoutCompletedToday && " ✓ Complete"}
                 </p>
               </div>
@@ -747,35 +749,10 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
         <CardHeader className="pb-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold">This Week's Workout</CardTitle>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex items-center gap-2">
-                  <select
-                    value={selectedWeekOverride || sessionProgress?.currentWeek || progress.currentWeek}
-                    onChange={(e) => setSelectedWeekOverride(Number(e.target.value))}
-                    className="bg-white/20 text-white border border-white/30 rounded-md px-2 py-0.5 text-sm font-medium cursor-pointer hover:bg-white/30 transition-colors"
-                    data-testid="week-selector"
-                  >
-                    {[1, 2, 3, 4, 5, 6].map((week) => (
-                      <option key={week} value={week} className="text-gray-800">
-                        Week {week}
-                      </option>
-                    ))}
-                  </select>
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs px-2 py-0.5 ${
-                      todayDayType === 'workout' 
-                        ? 'bg-white/20 text-white' 
-                        : todayDayType === 'cardio' 
-                          ? 'bg-green-400/30 text-green-100' 
-                          : 'bg-purple-400/30 text-purple-100'
-                    }`}
-                  >
-                    {todayDayType === 'workout' ? `Workout ${workoutsCompletedThisWeek + 1}/4` : todayDayTypeLabel}
-                  </Badge>
-                </div>
-              </div>
+              <CardTitle className="text-xl font-bold">Today's Workout</CardTitle>
+              <p className="text-pink-100 text-sm mt-0.5">
+                Week {sessionProgress?.currentWeek || progress.currentWeek} • {isCardioMode ? 'Cardio Day' : `Core Workout`}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               {onToggleExpand && (
@@ -791,32 +768,30 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             </div>
           </div>
           
-          {/* Weekly Schedule Mini View */}
-          <div className="flex justify-between mt-3 px-1">
-            {weekSchedule.map((day, idx) => {
-              const isToday = day.day === todayDayName;
-              return (
-                <div 
-                  key={idx} 
-                  className={`flex flex-col items-center ${isToday ? 'scale-110' : 'opacity-70'}`}
-                >
-                  <span className={`text-[10px] uppercase font-medium ${isToday ? 'text-white' : 'text-pink-200'}`}>
-                    {day.day}
-                  </span>
-                  <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                    isToday 
-                      ? 'bg-white text-pink-600 shadow-lg' 
-                      : day.type === 'workout' 
-                        ? 'bg-pink-400/50 text-white' 
-                        : day.type === 'cardio'
-                          ? 'bg-green-400/50 text-white'
-                          : 'bg-purple-400/50 text-white'
-                  }`}>
-                    {day.type === 'workout' ? 'C' : day.type === 'cardio' ? '🏃' : '💤'}
-                  </div>
-                </div>
-              );
-            })}
+          {/* Workout Type Toggle */}
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => setIsCardioMode(false)}
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                !isCardioMode 
+                  ? 'bg-white text-pink-600 shadow-md' 
+                  : 'bg-white/20 text-white hover:bg-white/30'
+              }`}
+            >
+              <Dumbbell className="w-4 h-4 inline mr-1.5" />
+              Core Workout
+            </button>
+            <button
+              onClick={() => setIsCardioMode(true)}
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                isCardioMode 
+                  ? 'bg-white text-green-600 shadow-md' 
+                  : 'bg-white/20 text-white hover:bg-white/30'
+              }`}
+            >
+              <Wind className="w-4 h-4 inline mr-1.5" />
+              Cardio
+            </button>
           </div>
         </CardHeader>
 
@@ -871,6 +846,68 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                     )}
                   </Button>
                 </div>
+              </div>
+            </div>
+          ) : isCardioMode ? (
+            <div className="space-y-4">
+              {/* Cardio Day Content */}
+              <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400"></div>
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
+                  <Wind className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-green-700 mb-2">Cardio Day</h3>
+                <p className="text-green-600 text-base mb-4">
+                  Get your heart pumping with 20-30 minutes of movement you enjoy!
+                </p>
+                
+                <div className="bg-white/60 rounded-lg p-4 mb-4 border border-green-100 text-left">
+                  <h4 className="font-semibold text-green-700 mb-3">Choose what feels good:</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm text-green-700">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🚶</span>
+                      <span>Brisk walk</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🏊</span>
+                      <span>Swimming</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🚴</span>
+                      <span>Cycling</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">💃</span>
+                      <span>Dance</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🧘</span>
+                      <span>Yoga flow</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🏃</span>
+                      <span>Light jog</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-pink-50/60 rounded-lg p-3 border border-pink-100">
+                  <p className="text-sm text-gray-600 italic">
+                    "Cardio helps your recovery and boosts your mood. Listen to your body and move at your own pace." 
+                  </p>
+                  <p className="text-xs text-pink-500 mt-2 font-medium">— Coach Zoe 💕</p>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <Button
+                  onClick={() => setIsCardioMode(false)}
+                  variant="outline"
+                  className="border-pink-200 text-pink-600 hover:bg-pink-50"
+                >
+                  <Dumbbell className="w-4 h-4 mr-2" />
+                  Switch to Core Workout
+                </Button>
               </div>
             </div>
           ) : isWorkoutCompletedToday ? (
