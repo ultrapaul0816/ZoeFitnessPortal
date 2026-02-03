@@ -1077,27 +1077,27 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   )}
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                   {exercises.map((exercise, idx) => (
                     <div 
                       key={idx}
                       className={`rounded-xl border overflow-hidden transition-all ${
                         completedExercises.has(exercise.num) 
                           ? 'bg-green-50 border-green-200' 
-                          : 'bg-white border-gray-100 hover:border-pink-200'
+                          : 'bg-white border-gray-100 hover:border-pink-200 hover:shadow-md'
                       }`}
                     >
-                      <div className="flex items-start gap-3 p-3">
+                      <div className="flex items-start gap-3 p-3 lg:p-4">
                         <Checkbox
                           checked={completedExercises.has(exercise.num)}
                           onCheckedChange={() => toggleExerciseComplete(exercise.num)}
-                          className="w-6 h-6 mt-1 border-2 border-pink-300 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 transition-all duration-200 data-[state=checked]:scale-110 data-[state=checked]:animate-[checkPop_0.3s_ease-out] hover:scale-105 active:scale-95"
+                          className="w-6 h-6 lg:w-7 lg:h-7 mt-1 border-2 border-pink-300 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 transition-all duration-200 data-[state=checked]:scale-110 data-[state=checked]:animate-[checkPop_0.3s_ease-out] hover:scale-105 active:scale-95"
                           data-testid={`checkbox-exercise-${exercise.num}`}
                         />
                         
                         <button
                           onClick={() => setShowVideoPlayer(exercise.url)}
-                          className="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 group"
+                          className="relative w-24 h-16 lg:w-32 lg:h-20 rounded-lg overflow-hidden flex-shrink-0 group"
                           data-testid={`video-thumbnail-${exercise.num}`}
                         >
                           <img 
@@ -1106,15 +1106,15 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                            <Youtube className="w-6 h-6 text-white" />
+                            <Youtube className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
                           </div>
                         </button>
 
                         <div className="flex-1 min-w-0">
-                          <p className={`font-semibold ${completedExercises.has(exercise.num) ? 'text-green-700 line-through' : 'text-gray-800'}`}>
+                          <p className={`font-semibold lg:text-lg ${completedExercises.has(exercise.num) ? 'text-green-700 line-through' : 'text-gray-800'}`}>
                             {exercise.name}
                           </p>
-                          <p className={`text-base font-bold mt-1 ${completedExercises.has(exercise.num) ? 'text-green-600' : 'text-pink-600'}`}>
+                          <p className={`text-base lg:text-lg font-bold mt-1 ${completedExercises.has(exercise.num) ? 'text-green-600' : 'text-pink-600'}`}>
                             {exercise.reps}
                           </p>
                         </div>
@@ -1225,7 +1225,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
 
       {/* Video Player Dialog */}
       <Dialog open={!!showVideoPlayer} onOpenChange={() => setShowVideoPlayer(null)}>
-        <DialogContent className="sm:max-w-2xl p-0 overflow-hidden">
+        <DialogContent className="sm:max-w-2xl lg:max-w-4xl p-0 overflow-hidden">
           <div className="aspect-video w-full">
             {showVideoPlayer && (
               <iframe
@@ -1241,7 +1241,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
 
       {/* Ask Zoe Chat Dialog */}
       <Dialog open={showZoeChat} onOpenChange={setShowZoeChat}>
-        <DialogContent className="sm:max-w-md h-[80vh] flex flex-col p-0">
+        <DialogContent className="sm:max-w-md lg:max-w-lg h-[80vh] flex flex-col p-0">
           <DialogHeader className="p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
