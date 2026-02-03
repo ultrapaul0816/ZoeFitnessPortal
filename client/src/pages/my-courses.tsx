@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
-  ArrowLeft, 
   BookOpen, 
   Clock, 
   Calendar,
   Play,
-  CheckCircle2,
   Sparkles,
   GraduationCap,
   ChevronRight,
@@ -21,8 +19,6 @@ import {
   Menu,
   Heart
 } from "lucide-react";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 import ProfileSettings from "@/components/profile-settings";
 import ZoeEncouragement from "@/components/zoe-encouragement";
 import BottomNav from "@/components/bottom-nav";
@@ -67,33 +63,6 @@ export default function MyCourses() {
     queryKey: ["/api/courses/enrolled"],
   });
 
-  const { data: availableCourses = [], isLoading: loadingAvailable } = useQuery<Course[]>({
-    queryKey: ["/api/courses/available"],
-  });
-
-  const enrollMutation = useMutation({
-    mutationFn: async (courseId: string) => {
-      return apiRequest("POST", `/api/courses/${courseId}/enroll`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/courses/enrolled"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/courses/available"] });
-      toast({
-        title: "Enrolled!",
-        description: "You're now enrolled in this course. Let's begin!",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Enrollment failed",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const browsableCourses = availableCourses.filter((c: any) => !c.is_enrolled);
-
   const getLevelColor = (level: string) => {
     switch (level?.toLowerCase()) {
       case "beginner":
@@ -107,10 +76,10 @@ export default function MyCourses() {
     }
   };
 
-  const CourseCard = ({ course, isEnrolled }: { course: Course; isEnrolled: boolean }) => (
+  const CourseCard = ({ course }: { course: Course }) => (
     <Card 
       className="overflow-hidden hover:shadow-lg transition-all duration-300 border-pink-100 group cursor-pointer"
-      onClick={() => isEnrolled && navigate(`/courses/${course.id}`)}
+      onClick={() => navigate(`/courses/${course.id}`)}
       data-testid={`card-course-${course.id}`}
     >
       <div className="relative">
@@ -125,7 +94,7 @@ export default function MyCourses() {
             <GraduationCap className="w-16 h-16 text-white/80" />
           </div>
         )}
-        {isEnrolled && course.progress_percentage !== undefined && (
+        {course.progress_percentage !== undefined && (
           <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-3 py-2">
             <div className="flex items-center justify-between text-white text-sm mb-1">
               <span>Progress</span>
@@ -154,7 +123,7 @@ export default function MyCourses() {
             <Clock className="w-4 h-4" />
             <span>{course.duration_weeks} weeks</span>
           </div>
-          {isEnrolled && course.enrolled_at && (
+          {course.enrolled_at && (
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
               <span>Started {new Date(course.enrolled_at).toLocaleDateString()}</span>
@@ -162,37 +131,13 @@ export default function MyCourses() {
           )}
         </div>
 
-        {isEnrolled ? (
-          <Button 
-            className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700"
-            data-testid={`button-continue-${course.id}`}
-          >
-            <Play className="w-4 h-4 mr-2" />
-            Continue Learning
-          </Button>
-        ) : (
-          <Button 
-            className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700"
-            onClick={(e) => {
-              e.stopPropagation();
-              enrollMutation.mutate(course.id);
-            }}
-            disabled={enrollMutation.isPending}
-            data-testid={`button-enroll-${course.id}`}
-          >
-            {enrollMutation.isPending ? (
-              <>
-                <span className="animate-spin mr-2">⏳</span>
-                Enrolling...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 mr-2" />
-                Start Course
-              </>
-            )}
-          </Button>
-        )}
+        <Button 
+          className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700"
+          data-testid={`button-continue-${course.id}`}
+        >
+          <Play className="w-4 h-4 mr-2" />
+          Continue Learning
+        </Button>
       </CardContent>
     </Card>
   );
@@ -281,7 +226,7 @@ export default function MyCourses() {
               data-testid="tab-browse"
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              Discover ({browsableCourses.length})
+              Coming Soon
             </TabsTrigger>
           </TabsList>
 
@@ -296,48 +241,31 @@ export default function MyCourses() {
                     No Courses Yet
                   </h3>
                   <p className="text-gray-500 mb-4 max-w-md mx-auto">
-                    You haven't started any courses yet. Browse our collection and find the perfect program for your postpartum journey!
+                    You haven't started any courses yet. Check back soon for new courses!
                   </p>
-                  <Button 
-                    onClick={() => setActiveTab("browse")}
-                    className="bg-gradient-to-r from-pink-500 to-pink-600"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Browse Courses
-                  </Button>
                 </CardContent>
               </Card>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {enrolledCourses.map((course) => (
-                  <CourseCard key={course.id} course={course} isEnrolled={true} />
+                  <CourseCard key={course.id} course={course} />
                 ))}
               </div>
             )}
           </TabsContent>
 
           <TabsContent value="browse" className="space-y-6">
-            {loadingAvailable ? (
-              <LoadingSkeleton />
-            ) : browsableCourses.length === 0 ? (
-              <Card className="border-dashed border-2 border-pink-200">
-                <CardContent className="py-12 text-center">
-                  <CheckCircle2 className="w-16 h-16 mx-auto text-green-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                    You're All Set!
-                  </h3>
-                  <p className="text-gray-500 max-w-md mx-auto">
-                    You're enrolled in all available courses. Keep up the amazing work!
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {browsableCourses.map((course) => (
-                  <CourseCard key={course.id} course={course} isEnrolled={false} />
-                ))}
-              </div>
-            )}
+            <Card className="border-dashed border-2 border-pink-200">
+              <CardContent className="py-12 text-center">
+                <Sparkles className="w-16 h-16 mx-auto text-pink-300 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  New Courses Coming Soon!
+                </h3>
+                <p className="text-gray-500 max-w-md mx-auto">
+                  We're working on exciting new courses to help you on your postpartum journey. Stay tuned!
+                </p>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
 
