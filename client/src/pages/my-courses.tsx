@@ -14,13 +14,10 @@ import {
   Play,
   Sparkles,
   GraduationCap,
-  ChevronRight,
-  Star,
   Menu,
   Heart
 } from "lucide-react";
 import ProfileSettings from "@/components/profile-settings";
-import ZoeEncouragement from "@/components/zoe-encouragement";
 import BottomNav from "@/components/bottom-nav";
 import zoeImagePath from "@assets/zoe_1_1764958643553.png";
 import type { User } from "@shared/schema";
@@ -75,10 +72,18 @@ export default function MyCourses() {
     }
   };
 
-  const CourseCard = ({ course }: { course: Course }) => (
+  const CourseCard = ({ course }: { course: Course }) => {
+    const getCourseLink = () => {
+      if (course.id === 'heal-your-core-course') {
+        return '/heal-your-core';
+      }
+      return `/courses/${course.id}`;
+    };
+
+    return (
     <Card 
       className="overflow-hidden hover:shadow-lg transition-all duration-300 border-pink-100 group cursor-pointer"
-      onClick={() => navigate(`/courses/${course.id}`)}
+      onClick={() => navigate(getCourseLink())}
       data-testid={`card-course-${course.id}`}
     >
       <div className="relative">
@@ -140,6 +145,7 @@ export default function MyCourses() {
       </CardContent>
     </Card>
   );
+  };
 
   const LoadingSkeleton = () => (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -268,25 +274,6 @@ export default function MyCourses() {
           </TabsContent>
         </Tabs>
 
-        <div className="mt-8 bg-gradient-to-r from-pink-100 to-pink-50 rounded-xl p-6 flex items-center gap-4">
-          <div className="bg-pink-500 rounded-full p-3">
-            <Star className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-800">
-              Looking for Heal Your Core?
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Your 6-week signature program is always available from the dashboard.
-            </p>
-          </div>
-          <Link href="/heal-your-core">
-            <Button variant="outline" className="border-pink-300 text-pink-600 hover:bg-pink-50">
-              Go to Program
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </Link>
-        </div>
       </main>
 
       {user && (
