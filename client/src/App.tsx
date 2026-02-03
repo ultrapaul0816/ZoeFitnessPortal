@@ -58,7 +58,7 @@ function ActivityTracker() {
   return null;
 }
 
-function LazyRoute({ component: Component, message }: { component: React.LazyExoticComponent<() => JSX.Element>; message: string }) {
+function LazyRoute({ component: Component, message }: { component: React.LazyExoticComponent<React.ComponentType<any>>; message: string }) {
   return (
     <Suspense fallback={<PageLoader message={message} />}>
       <Component />

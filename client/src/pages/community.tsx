@@ -120,8 +120,14 @@ export default function Community() {
     setUser(parsedUser);
   }, [setLocation]);
 
-  // Fetch posts with filters
-  const { data: posts = [], isLoading } = useQuery<EnrichedPost[]>({
+  // Pagination state
+  const [displayedPosts, setDisplayedPosts] = useState<EnrichedPost[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const POSTS_PER_PAGE = 15;
+
+  // Fetch posts with filters and pagination
+  const { data: postsData, isLoading } = useQuery<{ posts: EnrichedPost[]; total: number; hasMore: boolean }>({
     queryKey: [
       "/api/community/posts",
       selectedCategory,
@@ -133,6 +139,8 @@ export default function Community() {
       if (selectedCategory !== "all") params.append("category", selectedCategory);
       if (selectedWeek !== "all") params.append("weekNumber", String(selectedWeek));
       params.append("sortBy", sortBy);
+      params.append("limit", String(POSTS_PER_PAGE));
+      params.append("offset", "0");
       
       const url = `/api/community/posts?${params.toString()}`;
       const res = await fetch(url, { credentials: "include" });
@@ -140,7 +148,46 @@ export default function Community() {
       return res.json();
     },
     enabled: !!user,
+    staleTime: 30 * 1000,
   });
+
+  // Update displayed posts when initial data changes
+  useEffect(() => {
+    if (postsData) {
+      setDisplayedPosts(postsData.posts);
+      setHasMore(postsData.hasMore);
+    }
+  }, [postsData]);
+
+  // Load more posts function
+  const loadMorePosts = async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    
+    try {
+      const params = new URLSearchParams();
+      if (selectedCategory !== "all") params.append("category", selectedCategory);
+      if (selectedWeek !== "all") params.append("weekNumber", String(selectedWeek));
+      params.append("sortBy", sortBy);
+      params.append("limit", String(POSTS_PER_PAGE));
+      params.append("offset", String(displayedPosts.length));
+      
+      const url = `/api/community/posts?${params.toString()}`;
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch more posts");
+      const data = await res.json();
+      
+      setDisplayedPosts(prev => [...prev, ...data.posts]);
+      setHasMore(data.hasMore);
+    } catch (error) {
+      console.error("Error loading more posts:", error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Compatibility: posts array for existing code
+  const posts = displayedPosts;
 
   // Create post mutation
   const createPostMutation = useMutation({
@@ -183,25 +230,24 @@ export default function Community() {
       }
     },
     onMutate: async ({ postId, isLiked }) => {
-      await queryClient.cancelQueries({ queryKey: ["/api/community/posts"] });
-      const previousPosts = queryClient.getQueryData(["/api/community/posts"]);
+      const previousPosts = [...displayedPosts];
       
-      queryClient.setQueryData(["/api/community/posts"], (old: EnrichedPost[] | undefined) => {
-        return old?.map(post => 
-          post.id === postId 
-            ? { 
-                ...post, 
-                isLikedByUser: !isLiked,
-                likeCount: isLiked ? post.likeCount - 1 : post.likeCount + 1
-              }
-            : post
-        );
-      });
+      setDisplayedPosts(prev => prev.map(post => 
+        post.id === postId 
+          ? { 
+              ...post, 
+              isLikedByUser: !isLiked,
+              likeCount: isLiked ? post.likeCount - 1 : post.likeCount + 1
+            }
+          : post
+      ));
 
       return { previousPosts };
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(["/api/community/posts"], context?.previousPosts);
+      if (context?.previousPosts) {
+        setDisplayedPosts(context.previousPosts);
+      }
       toast({
         title: "Error",
         description: "Failed to update like",
@@ -263,16 +309,13 @@ export default function Community() {
       });
     },
     onMutate: async ({ postId }) => {
-      await queryClient.cancelQueries({ queryKey: ["/api/community/posts"] });
-      const previousPosts = queryClient.getQueryData(["/api/community/posts"]);
+      const previousPosts = [...displayedPosts];
       
-      queryClient.setQueryData(["/api/community/posts"], (old: EnrichedPost[] | undefined) => {
-        return old?.map(post => 
-          post.id === postId 
-            ? { ...post, commentCount: post.commentCount + 1 }
-            : post
-        );
-      });
+      setDisplayedPosts(prev => prev.map(post => 
+        post.id === postId 
+          ? { ...post, commentCount: post.commentCount + 1 }
+          : post
+      ));
 
       return { previousPosts };
     },
@@ -285,7 +328,9 @@ export default function Community() {
       });
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(["/api/community/posts"], context?.previousPosts);
+      if (context?.previousPosts) {
+        setDisplayedPosts(context.previousPosts);
+      }
       toast({
         title: "Error",
         description: "Failed to post comment",
@@ -743,21 +788,42 @@ export default function Community() {
               </Button>
             </div>
           ) : (
-            posts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                currentUser={user}
-                onLike={() => handleLikePost(post.id, post.isLikedByUser || false)}
-                onDelete={() => deletePostMutation.mutate(post.id)}
-                onReport={() => reportPostMutation.mutate(post.id)}
-                onShare={() => handleShareToInstagram(post)}
-                onShowComments={() => setShowComments(post.id)}
-                onShowLikers={() => setShowLikers(post.id)}
-                showSensitive={showSensitiveContent.has(post.id)}
-                onToggleSensitive={() => toggleSensitiveContent(post.id)}
-              />
-            ))
+            <>
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  currentUser={user}
+                  onLike={() => handleLikePost(post.id, post.isLikedByUser || false)}
+                  onDelete={() => deletePostMutation.mutate(post.id)}
+                  onReport={() => reportPostMutation.mutate(post.id)}
+                  onShare={() => handleShareToInstagram(post)}
+                  onShowComments={() => setShowComments(post.id)}
+                  onShowLikers={() => setShowLikers(post.id)}
+                  showSensitive={showSensitiveContent.has(post.id)}
+                  onToggleSensitive={() => toggleSensitiveContent(post.id)}
+                />
+              ))}
+              {hasMore && (
+                <div className="flex justify-center py-6">
+                  <Button
+                    variant="outline"
+                    onClick={loadMorePosts}
+                    disabled={isLoadingMore}
+                    className="px-8"
+                  >
+                    {isLoadingMore ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      "Load More Posts"
+                    )}
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

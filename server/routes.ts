@@ -2213,16 +2213,18 @@ RESPONSE GUIDELINES:
 
   // Community Feed Routes
   
-  // Get community posts with filtering and sorting
+  // Get community posts with filtering, sorting, and pagination
   app.get("/api/community/posts", async (req, res) => {
     try {
-      const { category, weekNumber, userId, sortBy } = req.query;
+      const { category, weekNumber, userId, sortBy, limit, offset } = req.query;
       
       const posts = await storage.getCommunityPosts({
         category: category as string | undefined,
         weekNumber: weekNumber ? parseInt(weekNumber as string) : undefined,
         userId: userId as string | undefined,
         sortBy: sortBy as 'newest' | 'mostLiked' | undefined,
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
       });
       
       res.json(posts);
@@ -2786,7 +2788,7 @@ RESPONSE GUIDELINES:
         emailHistory,
         workoutCompletions,
         memberPrograms,
-        communityPosts
+        communityPosts: communityPosts.posts
       });
     } catch (error) {
       console.error("Member profile error:", error);

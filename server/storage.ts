@@ -145,15 +145,19 @@ export interface IStorage {
     weekNumber?: number;
     userId?: string;
     sortBy?: 'newest' | 'mostLiked';
-  }): Promise<
-    (CommunityPost & {
+    limit?: number;
+    offset?: number;
+  }): Promise<{
+    posts: (CommunityPost & {
       user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
       likeCount: number;
       commentCount: number;
       isLikedByUser?: boolean;
       likes?: Array<{ userId: string; userName: string }>;
-    })[]
-  >;
+    })[];
+    total: number;
+    hasMore: boolean;
+  }>;
   getPostById(
     postId: string,
     currentUserId?: string
@@ -1032,15 +1036,19 @@ export class MemStorage implements IStorage {
     weekNumber?: number;
     userId?: string;
     sortBy?: 'newest' | 'mostLiked';
-  }): Promise<
-    (CommunityPost & {
+    limit?: number;
+    offset?: number;
+  }): Promise<{
+    posts: (CommunityPost & {
       user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
       likeCount: number;
       commentCount: number;
       isLikedByUser?: boolean;
       likes?: Array<{ userId: string; userName: string }>;
-    })[]
-  > {
+    })[];
+    total: number;
+    hasMore: boolean;
+  }> {
     let posts = Array.from(this.communityPosts.values());
 
     // Apply filters
@@ -1108,7 +1116,18 @@ export class MemStorage implements IStorage {
       });
     }
 
-    return enrichedPosts;
+    // Apply pagination
+    const total = enrichedPosts.length;
+    const limit = filters?.limit || total;
+    const offset = filters?.offset || 0;
+    const paginatedPosts = enrichedPosts.slice(offset, offset + limit);
+    const hasMore = offset + paginatedPosts.length < total;
+
+    return {
+      posts: paginatedPosts,
+      total,
+      hasMore,
+    };
   }
 
   async getPostById(
@@ -2728,15 +2747,19 @@ class DatabaseStorage implements IStorage {
     weekNumber?: number;
     userId?: string;
     sortBy?: 'newest' | 'mostLiked';
-  }): Promise<
-    (CommunityPost & {
+    limit?: number;
+    offset?: number;
+  }): Promise<{
+    posts: (CommunityPost & {
       user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
       likeCount: number;
       commentCount: number;
       isLikedByUser?: boolean;
       likes?: Array<{ userId: string; userName: string }>;
-    })[]
-  > {
+    })[];
+    total: number;
+    hasMore: boolean;
+  }> {
     // Build the where conditions
     const conditions = [];
     if (filters?.category) {
@@ -2833,7 +2856,18 @@ class DatabaseStorage implements IStorage {
       });
     }
 
-    return enrichedPosts;
+    // Apply pagination
+    const total = enrichedPosts.length;
+    const limit = filters?.limit || total;
+    const offset = filters?.offset || 0;
+    const paginatedPosts = enrichedPosts.slice(offset, offset + limit);
+    const hasMore = offset + paginatedPosts.length < total;
+
+    return {
+      posts: paginatedPosts,
+      total,
+      hasMore,
+    };
   }
 
   async getPostById(
