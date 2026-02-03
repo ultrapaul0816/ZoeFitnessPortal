@@ -242,7 +242,6 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
             <CardTitle className="flex items-center gap-2 text-xl">
               <TrendingUp className="h-5 w-5 text-rose-500" />
               This Week's Progress
-              <span className="text-sm font-normal text-gray-500">(Week {summary?.programWeek || 1})</span>
               <button 
                 className="ml-auto p-1 rounded-full hover:bg-pink-100 transition-colors"
                 onClick={(e) => {
