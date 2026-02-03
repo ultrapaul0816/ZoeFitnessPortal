@@ -6,7 +6,7 @@ Preferred communication style: Simple, everyday language.
 
 # System Architecture
 ## UI/UX
-The frontend uses React, TypeScript, Vite, shadcn/ui, and TailwindCSS, featuring a premium aesthetic with a pink brand theme, gradients, and rounded corners. It emphasizes mobile responsiveness with accessible notifications, scrollable dialogs, and floating action buttons. A fixed bottom navigation bar provides quick access to core features. The application is also installable as a Progressive Web App (PWA) with offline support and update notifications.
+The frontend uses React, TypeScript, Vite, shadcn/ui, and TailwindCSS, featuring a premium aesthetic with a pink brand theme, gradients, and rounded corners. The design is mobile-first with responsive desktop optimization using Tailwind's `lg:` breakpoint (1024px+). Desktop layout features a two-column design (8-column main content + 4-column sidebar) with larger typography, bigger video thumbnails, and a sticky sidebar for quick access to Zoe's tips, community, and progress stats. A fixed bottom navigation bar provides quick access to core features on mobile. The application is also installable as a Progressive Web App (PWA) with offline support and update notifications.
 
 ## Frontend
 State management is handled by TanStack Query, routing by wouter, and forms use React Hook Form with Zod validation. Performance is optimized with lazy loading and client-side image compression.
