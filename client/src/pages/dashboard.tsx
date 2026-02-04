@@ -723,22 +723,32 @@ export default function Dashboard() {
               </Link>
             </div>
             
-            {/* Right side - Daily Check-in Button */}
+            {/* Right side - Profile Button */}
             <div className="flex items-center">
-              <button 
-                className="p-2 sm:p-3 relative transition-all duration-300 md:hover:scale-110 active:scale-95 group touch-manipulation"
-                data-testid="button-daily-checkin"
-                aria-label="Daily check-in"
-                onClick={() => setShowDailyMoodPopup(true)}
-                title="Daily Check-in"
-              >
-                <div className="relative">
-                  <ClipboardCheck className="w-5 h-5 sm:w-6 sm:h-6 text-pink-500 md:group-hover:text-pink-600 transition-colors" />
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse" />
-                </div>
-                {/* Hover glow effect */}
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-rose-400/20 via-pink-500/20 to-pink-600/20 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
-              </button>
+              <Link href="/profile">
+                <button 
+                  className="p-2 sm:p-3 relative transition-all duration-300 md:hover:scale-110 active:scale-95 group touch-manipulation"
+                  data-testid="button-profile-header"
+                  aria-label="Profile"
+                  title="Profile"
+                >
+                  <div className="relative">
+                    {user.profilePictureUrl ? (
+                      <img 
+                        src={user.profilePictureUrl} 
+                        alt={user.firstName}
+                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border-2 border-pink-200 md:group-hover:border-pink-400 transition-colors"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center">
+                        <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                      </div>
+                    )}
+                  </div>
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-400/20 via-pink-500/20 to-pink-600/20 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
+                </button>
+              </Link>
             </div>
           </div>
         </div>

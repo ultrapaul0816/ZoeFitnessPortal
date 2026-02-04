@@ -1,5 +1,5 @@
 import { useLocation, Link } from "wouter";
-import { Home, Users, BookOpen, User } from "lucide-react";
+import { Home, Users, BookOpen, TrendingUp } from "lucide-react";
 
 interface BottomNavProps {
   className?: string;
@@ -12,7 +12,7 @@ export default function BottomNav({ className = "" }: BottomNavProps) {
     { path: "/dashboard", label: "Home", icon: Home },
     { path: "/community", label: "Community", icon: Users },
     { path: "/my-courses", label: "Courses", icon: BookOpen },
-    { path: "/profile", label: "Profile", icon: User },
+    { path: "/progress", label: "Progress", icon: TrendingUp },
   ];
 
   const isActive = (path: string) => {
