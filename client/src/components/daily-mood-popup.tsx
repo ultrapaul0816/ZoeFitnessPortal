@@ -30,11 +30,11 @@ const moodOptions = [
 ];
 
 const energyOptions = [
-  { value: 1, emoji: "🪫", label: "Very Low", description: "Running on empty", color: "from-red-400 to-rose-500", bgColor: "bg-red-50 hover:bg-red-100 border-red-200" },
-  { value: 2, emoji: "🔋", label: "Low", description: "Could use a rest", color: "from-orange-400 to-amber-500", bgColor: "bg-orange-50 hover:bg-orange-100 border-orange-200" },
-  { value: 3, emoji: "⚡", label: "Moderate", description: "Doing alright", color: "from-yellow-400 to-lime-500", bgColor: "bg-yellow-50 hover:bg-yellow-100 border-yellow-200" },
-  { value: 4, emoji: "✨", label: "Good", description: "Feeling energized", color: "from-green-400 to-emerald-500", bgColor: "bg-green-50 hover:bg-green-100 border-green-200" },
   { value: 5, emoji: "🚀", label: "High", description: "Ready to conquer!", color: "from-blue-400 to-cyan-500", bgColor: "bg-blue-50 hover:bg-blue-100 border-blue-200" },
+  { value: 4, emoji: "✨", label: "Good", description: "Feeling energized", color: "from-green-400 to-emerald-500", bgColor: "bg-green-50 hover:bg-green-100 border-green-200" },
+  { value: 3, emoji: "⚡", label: "Moderate", description: "Doing alright", color: "from-yellow-400 to-lime-500", bgColor: "bg-yellow-50 hover:bg-yellow-100 border-yellow-200" },
+  { value: 2, emoji: "🔋", label: "Low", description: "Could use a rest", color: "from-orange-400 to-amber-500", bgColor: "bg-orange-50 hover:bg-orange-100 border-orange-200" },
+  { value: 1, emoji: "🪫", label: "Very Low", description: "Running on empty", color: "from-red-400 to-rose-500", bgColor: "bg-red-50 hover:bg-red-100 border-red-200" },
 ];
 
 export default function DailyMoodPopup({
