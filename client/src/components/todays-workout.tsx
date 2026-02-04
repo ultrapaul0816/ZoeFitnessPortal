@@ -1269,8 +1269,11 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               <iframe
                 src={getYouTubeEmbedUrl(showVideoPlayer)}
                 className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                title="Exercise Video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+                loading="lazy"
               />
             )}
           </div>
