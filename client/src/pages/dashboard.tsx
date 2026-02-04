@@ -28,7 +28,7 @@ import ExpiryNotification from "@/components/expiry-notification";
 import { OnboardingModal } from "@/components/onboarding-modal";
 import BottomNav from "@/components/bottom-nav";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, prefetchAppData } from "@/lib/queryClient";
 import type { MemberProgram, Program, Notification, User as UserType } from "@shared/schema";
 
 const PROGRAM_IMAGE_URL = "/assets/Screenshot 2025-09-24 at 10.19.38_1758689399488.png";
@@ -200,6 +200,9 @@ export default function Dashboard() {
               setShowDailyMoodPopup(true);
             }, 500);
           }
+          
+          // Prefetch common data in background for faster navigation
+          prefetchAppData();
         } else {
           // Session check failed - try localStorage as fallback (useful for admin switching views)
           // This handles timing issues where session cookie may not be immediately available

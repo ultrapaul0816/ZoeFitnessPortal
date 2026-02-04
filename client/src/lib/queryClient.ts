@@ -47,8 +47,8 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 30 * 1000, // 30 seconds - fresh data
-      gcTime: 5 * 60 * 1000, // 5 minutes in cache
+      staleTime: 2 * 60 * 1000, // 2 minutes - keep data fresh longer
+      gcTime: 30 * 60 * 1000, // 30 minutes in cache
       retry: 1,
     },
     mutations: {
@@ -56,3 +56,20 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// Prefetch common data to speed up navigation
+export async function prefetchAppData() {
+  const prefetchPromises = [
+    queryClient.prefetchQuery({
+      queryKey: ["/api/community/posts"],
+      staleTime: 5 * 60 * 1000, // Community posts stay fresh for 5 minutes
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["/api/workout-progress"],
+      staleTime: 2 * 60 * 1000,
+    }),
+  ];
+  
+  // Run all prefetches in parallel, don't block on failures
+  await Promise.allSettled(prefetchPromises);
+}
