@@ -194,9 +194,7 @@ Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts!
         body: JSON.stringify({
           userId: String(userId),
           content: progressMessage,
-          category: "progress",
-          weekNumber: summary.programWeek || 1,
-          isSensitiveContent: false,
+          category: "wins",
         }),
       });
       

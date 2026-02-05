@@ -79,12 +79,10 @@ export default function BottomNav({ className = "" }: BottomNavProps) {
       {/* Progress Slide-up Sheet */}
       <Drawer open={showProgressSheet} onOpenChange={setShowProgressSheet}>
         <DrawerContent className="max-h-[85vh]">
-          <DrawerHeader className="pb-2">
-            <DrawerTitle className="text-center text-lg font-semibold text-gray-800">
-              This Week's Progress
-            </DrawerTitle>
+          <DrawerHeader className="pb-0 sr-only">
+            <DrawerTitle>Progress</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-8 overflow-y-auto">
+          <div className="px-4 pb-8 pt-2 overflow-y-auto">
             <WeeklySummary compact={false} />
           </div>
         </DrawerContent>
