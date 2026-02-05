@@ -128,6 +128,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [showVideoPlayer, setShowVideoPlayer] = useState<number | null>(null); // Now stores exercise index
   const [showProgramInfo, setShowProgramInfo] = useState(false);
   const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
+  const [completedRounds, setCompletedRounds] = useState(0);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [isZoeTyping, setIsZoeTyping] = useState(false);
@@ -150,7 +151,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const [selectedWeekOverride, setSelectedWeekOverride] = useState<number | null>(null);
   const [showWorkoutOnRestDay, setShowWorkoutOnRestDay] = useState(false);
   const [isLoadingRestDayWorkout, setIsLoadingRestDayWorkout] = useState(false);
-  const [isCardioMode, setIsCardioMode] = useState(false);
+  const [isCardioMode, setIsCardioMode] = useState<boolean | null>(null); // null = use default for day type
   const [showSchedule, setShowSchedule] = useState(false);
 
   const { data: progress, isLoading } = useQuery<WorkoutProgress>({
@@ -167,6 +168,11 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
   const todayDayTypeLabel = getDayTypeLabel(todayDayType);
   const weekSchedule = getWeekSchedule();
   const todayDayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeek];
+  
+  // Determine if we should show cardio view:
+  // - If user explicitly set a mode, use that
+  // - Otherwise, default to cardio if it's a cardio day
+  const showCardioView = isCardioMode !== null ? isCardioMode : todayDayType === 'cardio';
 
   const currentWeekProgress = sessionProgress?.weeklyProgress?.find(
     w => w.week === (sessionProgress?.currentWeek || 1)
@@ -665,7 +671,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
               <div>
                 <h3 className="font-bold text-lg">Today's Workout</h3>
                 <p className="text-pink-100 text-sm">
-                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {isCardioMode ? 'Cardio' : 'Core Workout'}
+                  Week {sessionProgress?.currentWeek || progress.currentWeek} • {showCardioView ? 'Cardio' : 'Core Workout'}
                   {isWorkoutCompletedToday && " ✓ Complete"}
                 </p>
               </div>
@@ -754,7 +760,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
             <div>
               <CardTitle className="text-xl font-bold">Today's Workout</CardTitle>
               <p className="text-pink-100 text-sm mt-0.5">
-                Week {sessionProgress?.currentWeek || progress.currentWeek} • {isCardioMode ? 'Cardio Day' : `Core Workout`}
+                Week {sessionProgress?.currentWeek || progress.currentWeek} • {showCardioView ? 'Cardio Day' : `Core Workout`}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -817,13 +823,22 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
           )}
           
           {/* Show alternative option based on day type */}
-          {todayDayType !== 'cardio' && !isCardioMode && (
+          {!showCardioView && (
             <button
               onClick={() => setIsCardioMode(true)}
               className="mt-3 w-full py-2 px-3 rounded-lg text-sm font-medium bg-white/20 text-white hover:bg-white/30 transition-all flex items-center justify-center gap-2"
             >
               <Wind className="w-4 h-4" />
               Do Cardio Instead
+            </button>
+          )}
+          {showCardioView && (
+            <button
+              onClick={() => setIsCardioMode(false)}
+              className="mt-3 w-full py-2 px-3 rounded-lg text-sm font-medium bg-white/20 text-white hover:bg-white/30 transition-all flex items-center justify-center gap-2"
+            >
+              <Dumbbell className="w-4 h-4" />
+              Do Core Workout Instead
             </button>
           )}
         </CardHeader>
@@ -881,7 +896,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
               </div>
             </div>
-          ) : isCardioMode ? (
+          ) : showCardioView ? (
             <div className="space-y-4">
               {/* Cardio Day Content */}
               <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl text-center relative overflow-hidden">
@@ -1154,7 +1169,29 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
               </div>
 
-              {allExercisesComplete && (
+              {/* Round Tracker */}
+              <div className="flex items-center justify-between bg-gray-50 rounded-xl p-3 border border-gray-200">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">Rounds completed:</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3].map((round) => (
+                    <button
+                      key={round}
+                      onClick={() => setCompletedRounds(completedRounds === round ? round - 1 : round)}
+                      className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all ${
+                        round <= completedRounds
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : 'bg-white border-gray-300 text-gray-400 hover:border-pink-300'
+                      }`}
+                    >
+                      {round <= completedRounds ? <CheckCircle className="w-5 h-5" /> : round}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {allExercisesComplete && completedRounds === 3 && (
                 <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
                   <h5 className="font-semibold text-green-700 mb-3">All exercises done! How was it?</h5>
                   <div className="flex gap-1 mb-3">
