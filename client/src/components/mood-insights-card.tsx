@@ -88,17 +88,33 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false, 
 
   return (
     <Card className="bg-gradient-to-br from-slate-50 via-gray-50 to-rose-50/50 border-gray-200/80 shadow-sm overflow-hidden">
-      <CardHeader className="pb-2 cursor-pointer" onClick={() => setIsCollapsed(!isCollapsed)}>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
-            <Heart className="h-4 w-4 text-white" />
+      <CardHeader className={`cursor-pointer ${isCollapsed ? 'pb-3 pt-3' : 'pb-2'}`} onClick={() => setIsCollapsed(!isCollapsed)}>
+        <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
+          <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center flex-shrink-0">
+            <Heart className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-white" />
           </div>
-          <span className="text-gray-800 flex-1 font-semibold">
-            Your Mood & Energy
+          <span className="text-gray-800 font-semibold text-sm lg:text-base">
+            {isCollapsed ? 'Mood' : 'Your Mood & Energy'}
           </span>
-          <Sparkles className="h-4 w-4 text-amber-500/80" />
+          {/* Inline today's mood/energy when collapsed - mobile compact */}
+          {isCollapsed && todayCheckin && (todayCheckin.mood || todayCheckin.energyLevel) && (
+            <div className="flex items-center gap-2 text-sm text-gray-600 flex-1">
+              <span className="text-gray-300">|</span>
+              {todayCheckin.mood && (
+                <span className="text-lg">{moodEmojis[todayCheckin.mood] || '🙂'}</span>
+              )}
+              {todayCheckin.energyLevel && (
+                <span className="flex items-center gap-0.5 text-xs">
+                  <Zap className="h-3 w-3 text-amber-500" />
+                  <span>{todayCheckin.energyLevel}/5</span>
+                </span>
+              )}
+            </div>
+          )}
+          {!isCollapsed && <span className="flex-1" />}
+          {!isCollapsed && <Sparkles className="h-4 w-4 text-amber-500/80" />}
           <button 
-            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
             onClick={(e) => {
               e.stopPropagation();
               setIsCollapsed(!isCollapsed);
@@ -112,23 +128,6 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false, 
             )}
           </button>
         </CardTitle>
-        {isCollapsed && todayCheckin && (todayCheckin.mood || todayCheckin.energyLevel) && (
-          <div className="flex items-center gap-3 mt-2 text-sm text-gray-600">
-            <span className="font-medium">Today:</span>
-            {todayCheckin.mood && (
-              <span className="flex items-center gap-1">
-                <span className="text-lg">{moodEmojis[todayCheckin.mood] || '🙂'}</span>
-                <span className="capitalize">{todayCheckin.mood}</span>
-              </span>
-            )}
-            {todayCheckin.energyLevel && (
-              <span className="flex items-center gap-1">
-                <Zap className="h-4 w-4 text-amber-500" />
-                <span>{todayCheckin.energyLevel}/5</span>
-              </span>
-            )}
-          </div>
-        )}
       </CardHeader>
       {!isCollapsed && (<CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3">

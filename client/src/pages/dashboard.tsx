@@ -798,40 +798,37 @@ export default function Dashboard() {
               />
             </div>
 
-            {/* Community Quick Access Card - Mobile only */}
+            {/* Community Quick Access Card - Mobile only - Compact single row */}
             <div className="lg:hidden">
               <Card className="mb-6 bg-white border border-gray-200 shadow-sm">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
-                        <Users className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-gray-800">Mama Community</h3>
-                          {newPostsCount > 0 && (
-                            <Badge className="bg-rose-500 text-white text-xs px-1.5 py-0.5 h-5">
-                              {newPostsCount} new
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-500">Share wins & connect with other mamas</p>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center flex-shrink-0">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-semibold text-gray-800 text-sm">Community</h3>
+                        {newPostsCount > 0 && (
+                          <Badge className="bg-rose-500 text-white text-[10px] px-1.5 py-0 h-4">
+                            {newPostsCount}
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Link href="/community?action=post" className="flex-1">
-                      <Button size="sm" variant="outline" className="w-full border-rose-200 text-rose-600 hover:bg-rose-50">
-                        <MessageCircle className="w-4 h-4 mr-1.5" />
-                        Share a Win
-                      </Button>
-                    </Link>
-                    <Link href="/community">
-                      <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white">
-                        View
-                      </Button>
-                    </Link>
+                    <div className="flex gap-1.5 flex-shrink-0">
+                      <Link href="/community?action=post">
+                        <Button size="sm" variant="outline" className="h-8 px-2.5 border-rose-200 text-rose-600 hover:bg-rose-50 text-xs">
+                          <MessageCircle className="w-3.5 h-3.5 mr-1" />
+                          Share
+                        </Button>
+                      </Link>
+                      <Link href="/community">
+                        <Button size="sm" className="h-8 px-3 bg-rose-500 hover:bg-rose-600 text-white text-xs">
+                          View
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
