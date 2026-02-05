@@ -138,6 +138,15 @@ export const passwordResetCodes = pgTable("password_reset_codes", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const magicLinks = pgTable("magic_links", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull(),
+  token: text("token").notNull().unique(),
+  isUsed: boolean("is_used").default(false),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 export const terms = pgTable("terms", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
@@ -1095,6 +1104,15 @@ export const insertPasswordResetCodeSchema = createInsertSchema(passwordResetCod
   createdAt: true,
 });
 export type InsertPasswordResetCode = z.infer<typeof insertPasswordResetCodeSchema>;
+
+export type MagicLink = typeof magicLinks.$inferSelect;
+
+export const insertMagicLinkSchema = createInsertSchema(magicLinks).omit({
+  id: true,
+  createdAt: true,
+  isUsed: true,
+});
+export type InsertMagicLink = z.infer<typeof insertMagicLinkSchema>;
 export type Terms = typeof terms.$inferSelect;
 export type InsertTerms = z.infer<typeof insertTermsSchema>;
 export type EmailTemplate = typeof emailTemplates.$inferSelect;

@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { loginSchema, type LoginData } from "@shared/schema";
-import { Shield, AlertTriangle, Mail, KeyRound, ArrowLeft, Lock, Eye, EyeOff, ShieldCheck, Heart, Sparkles } from "lucide-react";
+import { Shield, AlertTriangle, Mail, KeyRound, ArrowLeft, Lock, Eye, EyeOff, ShieldCheck, Heart, Sparkles, Wand2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 type ForgotPasswordStep = 'email' | 'code' | 'options' | 'newPassword';
@@ -67,6 +67,33 @@ export default function Login() {
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Magic link state
+  const [showMagicLink, setShowMagicLink] = useState(false);
+  const [magicLinkEmail, setMagicLinkEmail] = useState('');
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+
+  // Handle error params from magic link redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    if (error) {
+      const errorMessages: Record<string, string> = {
+        'invalid_link': 'The login link is invalid. Please request a new one.',
+        'expired_link': 'The login link has expired. Please request a new one.',
+        'user_not_found': 'Account not found. Please check your email address.',
+        'session_error': 'Something went wrong. Please try again.',
+        'verification_failed': 'Login failed. Please try again.',
+      };
+      toast({
+        variant: "destructive",
+        title: "Login Issue",
+        description: errorMessages[error] || 'Something went wrong. Please try again.',
+      });
+      // Clear the error from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [toast]);
 
   // Rotate testimonials every 5 seconds
   useEffect(() => {
@@ -245,6 +272,50 @@ export default function Login() {
       });
     },
   });
+
+  // Magic link mutation
+  const magicLinkMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await apiRequest("POST", "/api/auth/magic-link", { email });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to send magic link');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      setMagicLinkSent(true);
+      toast({
+        title: "Magic Link Sent! ✨",
+        description: "Check your email and click the link to log in instantly",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: "Couldn't send magic link",
+        description: error.message,
+      });
+    },
+  });
+
+  const handleMagicLinkOpen = () => {
+    setShowMagicLink(true);
+    setMagicLinkEmail('');
+    setMagicLinkSent(false);
+  };
+
+  const handleSendMagicLink = () => {
+    if (!magicLinkEmail) {
+      toast({
+        variant: "destructive",
+        title: "Email Required",
+        description: "Please enter your email address",
+      });
+      return;
+    }
+    magicLinkMutation.mutate(magicLinkEmail);
+  };
 
   const onSubmit = (data: LoginData) => {
     const loginData = {
@@ -590,20 +661,34 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Login with OTP Button - Equal prominence */}
-              <div className="mt-5 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '500ms' }}>
+              {/* Alternative login options */}
+              <div className="mt-5 space-y-3 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '500ms' }}>
+                {/* Magic Link - Primary alternative (most convenient) */}
+                <Button
+                  type="button"
+                  onClick={handleMagicLinkOpen}
+                  variant="outline"
+                  className="w-full h-12 border-2 border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
+                  data-testid="button-login-magic"
+                >
+                  <Wand2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span>Magic Link (One Click)</span>
+                </Button>
+                
+                {/* Email Code - Secondary option */}
                 <Button
                   type="button"
                   onClick={handleForgotPasswordOpen}
                   variant="outline"
-                  className="w-full h-12 border-2 border-pink-300 text-pink-600 hover:bg-pink-50 hover:border-pink-400 font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
+                  className="w-full h-11 border-2 border-pink-200 text-pink-500 hover:bg-pink-50 hover:border-pink-300 font-medium rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center space-x-2 group"
                   data-testid="button-login-otp"
                 >
                   <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   <span>Sign In with Email Code</span>
                 </Button>
-                <p className="text-xs text-gray-500 text-center mt-2">
-                  We'll send a 6-digit code to your email
+                
+                <p className="text-xs text-gray-400 text-center">
+                  No password needed - we'll email you a secure login
                 </p>
               </div>
 
@@ -894,6 +979,91 @@ export default function Login() {
                   </Button>
                 </div>
               </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Magic Link Dialog */}
+      <Dialog open={showMagicLink} onOpenChange={setShowMagicLink}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <Wand2 className="w-5 h-5 text-purple-500" />
+              Magic Link Login
+            </DialogTitle>
+            <DialogDescription className="text-gray-600">
+              {!magicLinkSent 
+                ? "Enter your email and we'll send you a magic link. Just click it to log in - no password needed!"
+                : "Check your email! Click the magic link to log in instantly."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 pt-4">
+            {!magicLinkSent ? (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Email Address</label>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={magicLinkEmail}
+                    onChange={(e) => setMagicLinkEmail(e.target.value)}
+                    className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-400"
+                    data-testid="input-magic-email"
+                  />
+                </div>
+                
+                <Button
+                  onClick={handleSendMagicLink}
+                  disabled={magicLinkMutation.isPending}
+                  className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-xl"
+                  data-testid="button-send-magic"
+                >
+                  {magicLinkMutation.isPending ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Sending...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Wand2 className="w-4 h-4 mr-2" />
+                      Send Magic Link
+                    </>
+                  )}
+                </Button>
+              </>
+            ) : (
+              <div className="text-center py-6">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center">
+                  <Mail className="w-8 h-8 text-purple-500" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-2">Check Your Email!</h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  We sent a magic link to <strong>{magicLinkEmail}</strong>
+                </p>
+                <p className="text-gray-500 text-xs">
+                  Click the link in the email to log in. The link expires in 15 minutes.
+                </p>
+                
+                <div className="mt-6 space-y-2">
+                  <Button
+                    onClick={() => magicLinkMutation.mutate(magicLinkEmail)}
+                    variant="outline"
+                    disabled={magicLinkMutation.isPending}
+                    className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
+                  >
+                    {magicLinkMutation.isPending ? "Sending..." : "Resend Magic Link"}
+                  </Button>
+                  <Button
+                    onClick={() => setShowMagicLink(false)}
+                    variant="ghost"
+                    className="w-full text-gray-500"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         </DialogContent>

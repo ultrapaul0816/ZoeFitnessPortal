@@ -679,6 +679,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Request Magic Link (passwordless login via email link)
+  app.post("/api/auth/magic-link", passwordResetLimiter, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if user exists - just say link sent
+        return res.json({ message: "If an account exists, a magic link has been sent to your email" });
+      }
+
+      // Generate a secure token using crypto
+      const crypto = await import('crypto');
+      const token = crypto.randomBytes(32).toString('hex');
+      
+      // Link expires in 15 minutes
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+      
+      // Delete any existing magic links for this user
+      await storage.deleteMagicLinks(email);
+      
+      // Store the magic link token
+      await storage.createMagicLink(email, token, expiresAt);
+      
+      // Build the magic link URL
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : process.env.BASE_URL || 'http://localhost:5000';
+      const magicLinkUrl = `${baseUrl}/auth/magic-link/${token}`;
+      
+      // Send magic link email
+      await emailService.sendMagicLinkEmail(
+        user.email,
+        user.firstName,
+        magicLinkUrl
+      );
+
+      console.log(`[MAGIC-LINK] Sent to: ${email}`);
+      res.json({ message: "If an account exists, a magic link has been sent to your email" });
+    } catch (error: any) {
+      console.error(`[MAGIC-LINK] Error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to send magic link" });
+    }
+  });
+
+  // Verify Magic Link and login
+  app.get("/api/auth/magic-link/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      if (!token) {
+        return res.redirect('/login?error=invalid_link');
+      }
+
+      const magicLink = await storage.getValidMagicLink(token);
+      if (!magicLink) {
+        return res.redirect('/login?error=expired_link');
+      }
+
+      const user = await storage.getUserByEmail(magicLink.email);
+      if (!user) {
+        return res.redirect('/login?error=user_not_found');
+      }
+
+      // Mark the magic link as used
+      await storage.markMagicLinkAsUsed(magicLink.id);
+
+      // Update user terms and last login
+      const updates: any = {
+        lastLoginAt: new Date(),
+      };
+      if (!user.termsAccepted) {
+        updates.termsAccepted = true;
+        updates.termsAcceptedAt = new Date();
+      }
+      if (!user.disclaimerAccepted) {
+        updates.disclaimerAccepted = true;
+        updates.disclaimerAcceptedAt = new Date();
+      }
+
+      await storage.updateUser(user.id, updates);
+
+      // Create session
+      req.session.userId = user.id;
+
+      // Log activity
+      try {
+        await storage.logActivity({
+          userId: user.id,
+          activityType: 'login',
+          pageUrl: '/auth/magic-link',
+          activityData: { method: 'magic_link' },
+        });
+      } catch (activityError) {
+        console.error('Failed to log magic link login activity:', activityError);
+      }
+
+      console.log(`[MAGIC-LINK] Login success for: ${magicLink.email}`);
+      
+      // Save session and redirect to dashboard
+      req.session.save((err) => {
+        if (err) {
+          console.error(`[MAGIC-LINK] Session save error:`, err);
+          return res.redirect('/login?error=session_error');
+        }
+        res.redirect('/dashboard');
+      });
+    } catch (error: any) {
+      console.error(`[MAGIC-LINK] Verify error:`, error?.message || error);
+      res.redirect('/login?error=verification_failed');
+    }
+  });
+
   // Change password for logged-in users
   app.post("/api/auth/change-password", async (req, res) => {
     try {

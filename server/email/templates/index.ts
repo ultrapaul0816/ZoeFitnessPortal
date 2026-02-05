@@ -6,6 +6,7 @@ export { createCompleteSignupEmail } from './complete-signup';
 export { createPasswordResetEmail } from './password-reset';
 export { createWhatsAppExpiryReminderEmail } from './whatsapp-expiry-reminder';
 export { createDailyWorkoutReminderEmail } from './daily-workout-reminder';
+export { createMagicLinkEmail } from './magic-link';
 
 export type {
   EmailTemplate,
@@ -18,3 +19,4 @@ export type {
 } from './base';
 export type { PasswordResetEmailData } from './password-reset';
 export type { DailyWorkoutReminderData } from './daily-workout-reminder';
+export type { MagicLinkEmailData } from './magic-link';

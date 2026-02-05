@@ -8,12 +8,14 @@ import {
   createCompletionCelebrationEmail,
   createWhatsAppExpiryReminderEmail,
   createDailyWorkoutReminderEmail,
+  createMagicLinkEmail,
   type WelcomeEmailData,
   type ReEngagementEmailData,
   type ProgramReminderEmailData,
   type CompletionCelebrationEmailData,
   type WhatsAppExpiryReminderData,
   type DailyWorkoutReminderData,
+  type MagicLinkEmailData,
 } from './templates';
 
 class EmailService {
@@ -173,6 +175,24 @@ class EmailService {
 
     return this.send({
       to: { email: toEmail, name: data.firstName },
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+  }
+
+  async sendMagicLinkEmail(
+    email: string,
+    firstName: string,
+    magicLinkUrl: string
+  ): Promise<EmailSendResult> {
+    const template = createMagicLinkEmail({
+      firstName,
+      magicLinkUrl,
+    });
+
+    return this.send({
+      to: { email, name: firstName },
       subject: template.subject,
       html: template.html,
       text: template.text,

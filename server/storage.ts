@@ -54,6 +54,7 @@ import {
   type InsertWeeklyWorkoutSession,
   type SkippedWeek,
   type InsertSkippedWeek,
+  type MagicLink,
 } from "@shared/schema";
 import {
   users,
@@ -80,6 +81,7 @@ import {
   emailOpens,
   emailAutomationRules,
   passwordResetCodes,
+  magicLinks,
   userCheckins,
   dailyCheckins,
   workoutProgramContent,
@@ -350,6 +352,12 @@ export interface IStorage {
   getValidPasswordResetCode(email: string, code: string): Promise<PasswordResetCode | undefined>;
   markPasswordResetCodeAsVerified(id: string): Promise<void>;
   deletePasswordResetCodes(email: string): Promise<void>;
+
+  // Magic Links
+  createMagicLink(email: string, token: string, expiresAt: Date): Promise<MagicLink>;
+  getValidMagicLink(token: string): Promise<MagicLink | undefined>;
+  markMagicLinkAsUsed(id: string): Promise<void>;
+  deleteMagicLinks(email: string): Promise<void>;
 
   // User Check-ins
   createUserCheckin(checkin: InsertUserCheckin): Promise<UserCheckin>;
@@ -1964,6 +1972,23 @@ export class MemStorage implements IStorage {
   }
 
   async deletePasswordResetCodes(email: string): Promise<void> {
+    // No-op
+  }
+
+  // Magic Links (MemStorage stubs)
+  async createMagicLink(email: string, token: string, expiresAt: Date): Promise<MagicLink> {
+    throw new Error("Magic links not supported in MemStorage");
+  }
+
+  async getValidMagicLink(token: string): Promise<MagicLink | undefined> {
+    return undefined;
+  }
+
+  async markMagicLinkAsUsed(id: string): Promise<void> {
+    // No-op
+  }
+
+  async deleteMagicLinks(email: string): Promise<void> {
     // No-op
   }
 
@@ -3722,6 +3747,47 @@ class DatabaseStorage implements IStorage {
     await this.db
       .delete(passwordResetCodes)
       .where(eq(passwordResetCodes.email, email.toLowerCase()));
+  }
+
+  // Magic Links
+  async createMagicLink(email: string, token: string, expiresAt: Date): Promise<MagicLink> {
+    const result = await this.db
+      .insert(magicLinks)
+      .values({
+        email: email.toLowerCase(),
+        token,
+        expiresAt,
+      })
+      .returning();
+    return result[0];
+  }
+
+  async getValidMagicLink(token: string): Promise<MagicLink | undefined> {
+    const result = await this.db
+      .select()
+      .from(magicLinks)
+      .where(
+        and(
+          eq(magicLinks.token, token),
+          eq(magicLinks.isUsed, false),
+          gte(magicLinks.expiresAt, new Date())
+        )
+      )
+      .limit(1);
+    return result[0];
+  }
+
+  async markMagicLinkAsUsed(id: string): Promise<void> {
+    await this.db
+      .update(magicLinks)
+      .set({ isUsed: true })
+      .where(eq(magicLinks.id, id));
+  }
+
+  async deleteMagicLinks(email: string): Promise<void> {
+    await this.db
+      .delete(magicLinks)
+      .where(eq(magicLinks.email, email.toLowerCase()));
   }
 
   // User Check-ins

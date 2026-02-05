@@ -20,7 +20,7 @@ const PgSession = connectPgSimple(session);
 
 // Configure cookie based on environment
 const cookieConfig = {
-  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days - extended for better user experience
   httpOnly: true,
   secure: isProduction, // Only require HTTPS in production
   sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
