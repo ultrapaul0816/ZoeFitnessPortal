@@ -1291,7 +1291,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
                 
                 {/* Exercise Info Panel */}
-                <div className="bg-white p-4 space-y-4">
+                <div className="bg-white p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-hidden">
                   {/* Progress indicator */}
                   <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
                     <span className="font-medium text-pink-600">{showVideoPlayer + 1}</span>
@@ -1301,15 +1301,15 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </div>
                   
                   {/* Exercise name and reps */}
-                  <div className="text-center">
-                    <h3 className="text-xl font-bold text-gray-800">{currentExercise.name}</h3>
-                    <p className="text-2xl font-bold text-pink-600 mt-1">{currentExercise.reps}</p>
+                  <div className="text-center px-2">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 break-words">{currentExercise.name}</h3>
+                    <p className="text-xl sm:text-2xl font-bold text-pink-600 mt-1">{currentExercise.reps}</p>
                   </div>
                   
                   {/* Mark as Done button */}
                   <Button
                     onClick={() => toggleExerciseComplete(currentExercise.num)}
-                    className={`w-full py-3 text-lg font-semibold ${
+                    className={`w-full py-2.5 sm:py-3 text-base sm:text-lg font-semibold ${
                       isCompleted 
                         ? 'bg-green-500 hover:bg-green-600 text-white' 
                         : 'bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white'
@@ -1330,16 +1330,16 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </Button>
                   
                   {/* Navigation */}
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center justify-between gap-2 w-full">
                     <Button
                       variant="outline"
                       onClick={() => setShowVideoPlayer(showVideoPlayer - 1)}
                       disabled={!prevExercise}
-                      className="flex-1 py-3"
+                      className="flex-1 py-2.5 sm:py-3 min-w-0 overflow-hidden"
                       data-testid="button-prev-exercise"
                     >
-                      <ChevronLeft className="w-4 h-4 mr-1" />
-                      <span className="truncate text-sm">
+                      <ChevronLeft className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate text-xs sm:text-sm ml-1">
                         {prevExercise ? prevExercise.name : 'Previous'}
                       </span>
                     </Button>
@@ -1348,13 +1348,13 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                       variant="outline"
                       onClick={() => setShowVideoPlayer(showVideoPlayer + 1)}
                       disabled={!nextExercise}
-                      className="flex-1 py-3"
+                      className="flex-1 py-2.5 sm:py-3 min-w-0 overflow-hidden"
                       data-testid="button-next-exercise"
                     >
-                      <span className="truncate text-sm">
+                      <span className="truncate text-xs sm:text-sm mr-1">
                         {nextExercise ? nextExercise.name : 'Next'}
                       </span>
-                      <ChevronRight className="w-4 h-4 ml-1" />
+                      <ChevronRight className="w-4 h-4 flex-shrink-0" />
                     </Button>
                   </div>
                 </div>
