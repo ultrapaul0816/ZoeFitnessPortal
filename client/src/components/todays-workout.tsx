@@ -41,7 +41,6 @@ import { useToast } from "@/hooks/use-toast";
 import { workoutPrograms, ProgramData, Exercise } from "@/data/workoutPrograms";
 import { useWorkoutSessionProgress, useLogWorkoutSession, getDayType, getDayTypeLabel, getWeekSchedule } from "@/hooks/useWorkoutSessions";
 import { SpotifyWidget } from "@/components/spotify-widget";
-import { PlayAllButton } from "@/components/video-modal";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 
 interface TodaysWorkoutProps {
@@ -1070,11 +1069,14 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                         Main Workout (3 Rounds)
                       </h5>
                     </div>
-                    {currentProgram.part2.playlistUrl && (
-                      <PlayAllButton 
-                        url={currentProgram.part2.playlistUrl}
-                        colorClass="bg-pink-100 hover:bg-pink-200 text-pink-600"
-                      />
+                    {exercises.length > 0 && (
+                      <Button 
+                        onClick={() => setShowVideoPlayer(0)}
+                        className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg"
+                      >
+                        <Play className="w-4 h-4" />
+                        PLAY ALL
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -1266,7 +1268,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
 
       {/* Video Player Dialog with Exercise Info */}
       <Dialog open={showVideoPlayer !== null} onOpenChange={() => setShowVideoPlayer(null)}>
-        <DialogContent className="sm:max-w-2xl lg:max-w-4xl p-0 overflow-hidden">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-4xl p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           {showVideoPlayer !== null && exercises[showVideoPlayer] && (() => {
             const currentExercise = exercises[showVideoPlayer];
             const prevExercise = showVideoPlayer > 0 ? exercises[showVideoPlayer - 1] : null;
