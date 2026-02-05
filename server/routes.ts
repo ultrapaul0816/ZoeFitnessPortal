@@ -768,18 +768,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create session
       req.session.userId = user.id;
 
-      // Log activity
-      try {
-        await storage.logActivity({
-          userId: user.id,
-          activityType: 'login',
-          pageUrl: '/auth/magic-link',
-          activityData: { method: 'magic_link' },
-        });
-      } catch (activityError) {
-        console.error('Failed to log magic link login activity:', activityError);
-      }
-
       console.log(`[MAGIC-LINK] Login success for: ${magicLink.email}`);
       
       // Save session and redirect to dashboard

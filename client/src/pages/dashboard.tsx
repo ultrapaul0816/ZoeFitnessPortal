@@ -267,11 +267,12 @@ export default function Dashboard() {
   });
 
   // Get recent community posts for "new posts" count
-  const { data: recentPosts = [] } = useQuery<{ id: string; createdAt: string }[]>({
-    queryKey: ["/api/community/posts", { limit: 10 }],
+  const { data: recentPostsData } = useQuery<{ posts: { id: string; createdAt: string }[] }>({
+    queryKey: ["/api/community/posts?limit=10"],
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,
   });
+  const recentPosts = recentPostsData?.posts || [];
 
   // Count posts from the last 24 hours as "new"
   const newPostsCount = recentPosts.filter(post => {

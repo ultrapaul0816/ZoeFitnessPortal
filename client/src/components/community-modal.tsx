@@ -20,9 +20,10 @@ export default function CommunityModal({ userId, onClose }: CommunityModalProps)
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: posts = [] } = useQuery<(CommunityPost & { user: Pick<User, 'firstName' | 'lastName'> })[]>({
-    queryKey: ["/api/community/posts", currentChannel],
+  const { data: postsData } = useQuery<{ posts: (CommunityPost & { user: Pick<User, 'firstName' | 'lastName'> })[] }>({
+    queryKey: [`/api/community/posts?category=${currentChannel}`],
   });
+  const posts = postsData?.posts || [];
 
   const postMutation = useMutation({
     mutationFn: async (content: string) => {
@@ -35,7 +36,7 @@ export default function CommunityModal({ userId, onClose }: CommunityModalProps)
     },
     onSuccess: () => {
       setMessage("");
-      queryClient.invalidateQueries({ queryKey: ["/api/community/posts", currentChannel] });
+      queryClient.invalidateQueries({ queryKey: [`/api/community/posts?category=${currentChannel}`] });
       toast({
         title: "Message sent!",
         description: "Your message has been posted to the community.",
