@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Play, 
   CheckCircle, 
+  Circle,
   Sparkles,
   MessageCircle,
   Send,
@@ -25,6 +26,8 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   Camera,
   Trophy,
   ArrowRight,
@@ -123,7 +126,7 @@ function getYouTubeEmbedUrl(url: string): string {
 
 export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = false, isExpanded = true, onToggleExpand, hasSeenFirstWorkoutWelcome = false }: TodaysWorkoutProps) {
   const [showZoeChat, setShowZoeChat] = useState(false);
-  const [showVideoPlayer, setShowVideoPlayer] = useState<string | null>(null);
+  const [showVideoPlayer, setShowVideoPlayer] = useState<number | null>(null); // Now stores exercise index
   const [showProgramInfo, setShowProgramInfo] = useState(false);
   const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -1134,7 +1137,7 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                         />
                         
                         <button
-                          onClick={() => setShowVideoPlayer(exercise.url)}
+                          onClick={() => setShowVideoPlayer(idx)}
                           className="relative w-24 h-16 lg:w-32 lg:h-20 rounded-lg overflow-hidden flex-shrink-0 group"
                           data-testid={`video-thumbnail-${exercise.num}`}
                         >
@@ -1261,22 +1264,101 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
         </CardContent>
       </Card>
 
-      {/* Video Player Dialog */}
-      <Dialog open={!!showVideoPlayer} onOpenChange={() => setShowVideoPlayer(null)}>
+      {/* Video Player Dialog with Exercise Info */}
+      <Dialog open={showVideoPlayer !== null} onOpenChange={() => setShowVideoPlayer(null)}>
         <DialogContent className="sm:max-w-2xl lg:max-w-4xl p-0 overflow-hidden">
-          <div className="aspect-video w-full">
-            {showVideoPlayer && (
-              <iframe
-                src={getYouTubeEmbedUrl(showVideoPlayer)}
-                className="w-full h-full"
-                title="Exercise Video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
-                loading="lazy"
-              />
-            )}
-          </div>
+          {showVideoPlayer !== null && exercises[showVideoPlayer] && (() => {
+            const currentExercise = exercises[showVideoPlayer];
+            const prevExercise = showVideoPlayer > 0 ? exercises[showVideoPlayer - 1] : null;
+            const nextExercise = showVideoPlayer < exercises.length - 1 ? exercises[showVideoPlayer + 1] : null;
+            const isCompleted = completedExercises.has(currentExercise.num);
+            
+            return (
+              <>
+                {/* Video */}
+                <div className="aspect-video w-full bg-black">
+                  <iframe
+                    src={getYouTubeEmbedUrl(currentExercise.url)}
+                    className="w-full h-full"
+                    title={currentExercise.name}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    loading="lazy"
+                  />
+                </div>
+                
+                {/* Exercise Info Panel */}
+                <div className="bg-white p-4 space-y-4">
+                  {/* Progress indicator */}
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <span className="font-medium text-pink-600">{showVideoPlayer + 1}</span>
+                    <span>of</span>
+                    <span>{exercises.length}</span>
+                    <span>exercises</span>
+                  </div>
+                  
+                  {/* Exercise name and reps */}
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-gray-800">{currentExercise.name}</h3>
+                    <p className="text-2xl font-bold text-pink-600 mt-1">{currentExercise.reps}</p>
+                  </div>
+                  
+                  {/* Mark as Done button */}
+                  <Button
+                    onClick={() => toggleExerciseComplete(currentExercise.num)}
+                    className={`w-full py-3 text-lg font-semibold ${
+                      isCompleted 
+                        ? 'bg-green-500 hover:bg-green-600 text-white' 
+                        : 'bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white'
+                    }`}
+                    data-testid="button-mark-done-video"
+                  >
+                    {isCompleted ? (
+                      <>
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Completed
+                      </>
+                    ) : (
+                      <>
+                        <Circle className="w-5 h-5 mr-2" />
+                        Mark as Done
+                      </>
+                    )}
+                  </Button>
+                  
+                  {/* Navigation */}
+                  <div className="flex items-center justify-between gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowVideoPlayer(showVideoPlayer - 1)}
+                      disabled={!prevExercise}
+                      className="flex-1 py-3"
+                      data-testid="button-prev-exercise"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-1" />
+                      <span className="truncate text-sm">
+                        {prevExercise ? prevExercise.name : 'Previous'}
+                      </span>
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowVideoPlayer(showVideoPlayer + 1)}
+                      disabled={!nextExercise}
+                      className="flex-1 py-3"
+                      data-testid="button-next-exercise"
+                    >
+                      <span className="truncate text-sm">
+                        {nextExercise ? nextExercise.name : 'Next'}
+                      </span>
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </DialogContent>
       </Dialog>
 
