@@ -55,6 +55,8 @@ import {
   type SkippedWeek,
   type InsertSkippedWeek,
   type MagicLink,
+  type WhatsappRequest,
+  type InsertWhatsappRequest,
 } from "@shared/schema";
 import {
   users,
@@ -96,6 +98,7 @@ import {
   weeklyWorkoutSessions,
   skippedWeeks,
   courseEnrollments,
+  whatsappRequests,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -506,6 +509,12 @@ export interface IStorage {
     hoursRemaining: number;
   }>;
   hasReceivedAutomationEmail(userId: string, triggerType: string): Promise<boolean>;
+  
+  // WhatsApp Requests
+  createWhatsappRequest(request: InsertWhatsappRequest): Promise<WhatsappRequest>;
+  getWhatsappRequests(status?: string): Promise<WhatsappRequest[]>;
+  updateWhatsappRequest(id: string, updates: Partial<WhatsappRequest>): Promise<WhatsappRequest | undefined>;
+  getWhatsappRequestByPaymentId(paymentId: string): Promise<WhatsappRequest | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -2288,6 +2297,23 @@ export class MemStorage implements IStorage {
 
   async hasReceivedAutomationEmail(userId: string, triggerType: string): Promise<boolean> {
     return false;
+  }
+
+  // WhatsApp Requests (stub for MemStorage)
+  async createWhatsappRequest(request: InsertWhatsappRequest): Promise<WhatsappRequest> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async getWhatsappRequests(status?: string): Promise<WhatsappRequest[]> {
+    return [];
+  }
+
+  async updateWhatsappRequest(id: string, updates: Partial<WhatsappRequest>): Promise<WhatsappRequest | undefined> {
+    return undefined;
+  }
+
+  async getWhatsappRequestByPaymentId(paymentId: string): Promise<WhatsappRequest | undefined> {
+    return undefined;
   }
 }
 
@@ -5207,6 +5233,29 @@ class DatabaseStorage implements IStorage {
       activityByDay: activityByDayResult.map(d => ({ day: d.day.trim(), count: d.count })),
       recentLogins: recentLoginsResult.map(r => r.createdAt!).filter(Boolean),
     };
+  }
+
+  // WhatsApp Requests
+  async createWhatsappRequest(request: InsertWhatsappRequest): Promise<WhatsappRequest> {
+    const result = await this.db.insert(whatsappRequests).values(request).returning();
+    return result[0];
+  }
+
+  async getWhatsappRequests(status?: string): Promise<WhatsappRequest[]> {
+    if (status) {
+      return await this.db.select().from(whatsappRequests).where(eq(whatsappRequests.status, status)).orderBy(desc(whatsappRequests.createdAt));
+    }
+    return await this.db.select().from(whatsappRequests).orderBy(desc(whatsappRequests.createdAt));
+  }
+
+  async updateWhatsappRequest(id: string, updates: Partial<WhatsappRequest>): Promise<WhatsappRequest | undefined> {
+    const result = await this.db.update(whatsappRequests).set(updates).where(eq(whatsappRequests.id, id)).returning();
+    return result[0];
+  }
+
+  async getWhatsappRequestByPaymentId(paymentId: string): Promise<WhatsappRequest | undefined> {
+    const result = await this.db.select().from(whatsappRequests).where(eq(whatsappRequests.paymentId, paymentId));
+    return result[0];
   }
 }
 

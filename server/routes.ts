@@ -6854,6 +6854,199 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // ==================== RAZORPAY WEBHOOK ====================
+  
+  // Verify Razorpay webhook signature
+  function verifyRazorpayWebhook(body: string, signature: string | undefined, secret: string): boolean {
+    if (!signature) return false;
+    const hmac = createHmac('sha256', secret);
+    hmac.update(body, 'utf8');
+    const computedSignature = hmac.digest('hex');
+    return computedSignature === signature;
+  }
+
+  // Razorpay webhook endpoint for WhatsApp community payments
+  app.post("/api/webhooks/razorpay", async (req, res) => {
+    try {
+      const razorpaySecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+      const rawBody = JSON.stringify(req.body);
+      const signature = req.headers['x-razorpay-signature'] as string;
+
+      // Verify webhook signature if secret is configured
+      if (razorpaySecret && !verifyRazorpayWebhook(rawBody, signature, razorpaySecret)) {
+        console.error("Razorpay webhook signature verification failed");
+        return res.status(401).json({ message: "Invalid signature" });
+      }
+
+      const event = req.body;
+      console.log("Received Razorpay webhook:", event.event);
+
+      // Handle payment.captured event (successful payment)
+      if (event.event === 'payment.captured') {
+        const payment = event.payload?.payment?.entity;
+        if (!payment) {
+          console.error("No payment entity in Razorpay webhook");
+          return res.status(400).json({ message: "Invalid payload" });
+        }
+
+        const email = payment.email;
+        const phone = payment.contact;
+        const amount = payment.amount; // In paise (₹1000 = 100000 paise)
+        const paymentId = payment.id;
+        const notes = payment.notes || {};
+        const description = payment.description || '';
+
+        console.log(`Razorpay payment captured: ${paymentId}, amount: ${amount}, email: ${email}, description: ${description}`);
+
+        // Check if this is a WhatsApp community payment (₹1000 = 100000 paise)
+        // Also check description or notes for "whatsapp" keyword
+        const isWhatsAppPayment = 
+          amount === 100000 || // Exactly ₹1000
+          description.toLowerCase().includes('whatsapp') ||
+          notes.purpose?.toLowerCase().includes('whatsapp') ||
+          notes.product?.toLowerCase().includes('whatsapp');
+
+        if (!isWhatsAppPayment) {
+          console.log("Not a WhatsApp payment, ignoring:", { amount, description, notes });
+          return res.status(200).json({ success: true, message: "Non-WhatsApp payment, ignored" });
+        }
+
+        // Check for duplicate payment
+        const existingRequest = await storage.getWhatsappRequestByPaymentId(paymentId);
+        if (existingRequest) {
+          console.log("Duplicate Razorpay payment webhook:", paymentId);
+          return res.status(200).json({ success: true, message: "Already processed" });
+        }
+
+        // Try to find existing user by email
+        let userId: string | null = null;
+        let userName = email; // Default to email if no user found
+        if (email) {
+          const existingUser = await storage.getUserByEmail(email);
+          if (existingUser) {
+            userId = existingUser.id;
+            userName = `${existingUser.firstName} ${existingUser.lastName}`.trim() || email;
+          }
+        }
+
+        // Create WhatsApp request
+        await storage.createWhatsappRequest({
+          userId,
+          email: email || 'unknown@razorpay.com',
+          name: userName,
+          phone: phone || null,
+          requestType: 'payment',
+          paymentId,
+          amount,
+          status: 'pending',
+          notes: JSON.stringify({ razorpayNotes: notes, description }),
+        });
+
+        console.log(`WhatsApp community request created for ${email} (payment: ${paymentId})`);
+
+        // Send email notification to admin
+        const isProductionEnv = process.env.NODE_ENV === 'production';
+        if (isProductionEnv) {
+          try {
+            const { Resend } = await import('resend');
+            const resend = new Resend(process.env.RESEND_API_KEY);
+            
+            await resend.emails.send({
+              from: 'Your Postpartum Strength <noreply@yourpostpartumstrength.com>',
+              to: 'sushil@realinfluencers.in',
+              subject: `New WhatsApp Community Payment - ${userName}`,
+              html: `
+                <h2>New WhatsApp Community Payment Received</h2>
+                <p>A user has paid ₹1000 for WhatsApp Community access.</p>
+                <table style="border-collapse: collapse; width: 100%; max-width: 500px;">
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Name:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${userName}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Email:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${email || 'Not provided'}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Phone:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${phone || 'Not provided'}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Amount:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">₹${(amount / 100).toFixed(2)}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Payment ID:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${paymentId}</td></tr>
+                </table>
+                <p style="margin-top: 20px;"><strong>Action Required:</strong> Please add this user to the WhatsApp Community and mark the request as completed in the admin panel.</p>
+              `,
+            });
+            console.log("Admin notification email sent for WhatsApp payment:", email);
+          } catch (emailError) {
+            console.error("Failed to send admin notification email:", emailError);
+          }
+        } else {
+          console.log("[Razorpay Webhook] Skipping admin email notification in development environment");
+        }
+
+        res.status(200).json({ success: true, message: "WhatsApp request created" });
+      } else {
+        // Other event types - acknowledge but don't process
+        console.log("Razorpay webhook event not handled:", event.event);
+        res.status(200).json({ success: true, message: "Event acknowledged" });
+      }
+
+    } catch (error) {
+      console.error("Razorpay webhook error:", error);
+      res.status(500).json({ message: "Webhook processing failed" });
+    }
+  });
+
+  // Admin endpoint to get pending WhatsApp requests
+  app.get("/api/admin/whatsapp-requests", requireAdmin, async (req, res) => {
+    try {
+      const status = req.query.status as string | undefined;
+      const requests = await storage.getWhatsappRequests(status);
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching WhatsApp requests:", error);
+      res.status(500).json({ message: "Failed to fetch requests" });
+    }
+  });
+
+  // Admin endpoint to complete/reject WhatsApp request
+  app.patch("/api/admin/whatsapp-requests/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status, notes } = req.body;
+      const adminId = (req.user as any)?.id;
+
+      if (!['completed', 'rejected'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+
+      const updated = await storage.updateWhatsappRequest(id, {
+        status,
+        completedAt: new Date(),
+        completedBy: adminId,
+        notes: notes || undefined,
+      });
+
+      if (!updated) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+
+      // If completed and user exists, enable WhatsApp support for them
+      if (status === 'completed' && updated.userId) {
+        const user = await storage.getUser(updated.userId);
+        if (user) {
+          // Set WhatsApp support for 6 months
+          const expiryDate = new Date();
+          expiryDate.setMonth(expiryDate.getMonth() + 6);
+          
+          await storage.updateUser(updated.userId, {
+            hasWhatsAppSupport: true,
+            whatsAppSupportDuration: 6,
+            whatsAppSupportExpiryDate: expiryDate,
+          });
+          console.log(`WhatsApp support enabled for user ${updated.userId} until ${expiryDate.toISOString()}`);
+        }
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating WhatsApp request:", error);
+      res.status(500).json({ message: "Failed to update request" });
+    }
+  });
+
   // Test endpoint to simulate Shopify webhook (admin only)
   app.post("/api/admin/test-shopify-webhook", requireAdmin, async (req, res) => {
     try {

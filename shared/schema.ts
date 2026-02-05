@@ -952,6 +952,29 @@ export const insertArchivedAdminItemSchema = createInsertSchema(archivedAdminIte
   archivedAt: true,
 });
 
+// WhatsApp community requests - tracks users who request or pay for WhatsApp access
+export const whatsappRequests = pgTable("whatsapp_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id"),
+  email: text("email").notNull(),
+  name: text("name").notNull(),
+  phone: text("phone"),
+  requestType: text("request_type").notNull(), // 'opt_in' (from profile), 'payment' (from razorpay)
+  paymentId: text("payment_id"), // Razorpay payment ID if payment
+  amount: integer("amount"), // Payment amount in paise
+  status: text("status").default("pending").notNull(), // 'pending', 'completed', 'rejected'
+  completedAt: timestamp("completed_at"),
+  completedBy: varchar("completed_by"), // admin who completed
+  notes: text("notes"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const insertWhatsappRequestSchema = createInsertSchema(whatsappRequests).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+});
+
 export const insertEducationalTopicSchema = createInsertSchema(educationalTopics).omit({
   id: true,
   createdAt: true,
@@ -1171,6 +1194,8 @@ export type WhatsappMembershipLog = typeof whatsappMembershipLogs.$inferSelect;
 export type InsertWhatsappMembershipLog = z.infer<typeof insertWhatsappMembershipLogSchema>;
 export type RenewalEmailLog = typeof renewalEmailLogs.$inferSelect;
 export type InsertRenewalEmailLog = z.infer<typeof insertRenewalEmailLogSchema>;
+export type WhatsappRequest = typeof whatsappRequests.$inferSelect;
+export type InsertWhatsappRequest = z.infer<typeof insertWhatsappRequestSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
