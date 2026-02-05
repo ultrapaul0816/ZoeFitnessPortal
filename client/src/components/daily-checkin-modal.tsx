@@ -82,6 +82,8 @@ export default function DailyCheckinModal({
   const [struggles, setStruggles] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [showSharePreview, setShowSharePreview] = useState(false);
+  const [previewMessage, setPreviewMessage] = useState("");
   const [savedData, setSavedData] = useState<{
     workoutCompleted: boolean;
     breathingPractice: boolean;
@@ -161,6 +163,8 @@ export default function DailyCheckinModal({
     setTimeout(() => {
       setShowSuccess(false);
       setSavedData(null);
+      setShowSharePreview(false);
+      setPreviewMessage("");
       setIsClosing(false);
       onClose();
     }, 200);
@@ -184,7 +188,7 @@ export default function DailyCheckinModal({
     });
   };
 
-  const handleShareToCommunity = async (e: React.MouseEvent) => {
+  const handleShowSharePreview = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -197,7 +201,22 @@ export default function DailyCheckinModal({
       return;
     }
     
-    if (!userId) {
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    const wins: string[] = [];
+    
+    if (savedData.workoutCompleted) wins.push("💪 Completed my workout");
+    if (savedData.breathingPractice) wins.push("🌬️ Did breathing exercises");
+    if (savedData.waterLiters > 0) wins.push(`💧 ${savedData.waterLiters.toFixed(1)}L of water`);
+    if (savedData.cardioMinutes > 0) wins.push(`🏃 ${savedData.cardioMinutes} min cardio/walking`);
+    
+    const message = `✨ My Check-in for ${today} ✨\n\n${wins.length > 0 ? wins.join('\n') : 'Taking it easy today 💗'}\n\nEvery day counts! 💕`;
+    
+    setPreviewMessage(message);
+    setShowSharePreview(true);
+  };
+
+  const handleConfirmShare = async () => {
+    if (!userId || !previewMessage) {
       toast({
         title: "Please log in",
         description: "You need to be logged in to share.",
@@ -209,16 +228,6 @@ export default function DailyCheckinModal({
     setIsSharing(true);
     
     try {
-      const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-      const wins: string[] = [];
-      
-      if (savedData.workoutCompleted) wins.push("💪 Completed my workout");
-      if (savedData.breathingPractice) wins.push("🌬️ Did breathing exercises");
-      if (savedData.waterLiters > 0) wins.push(`💧 ${savedData.waterLiters.toFixed(1)}L of water`);
-      if (savedData.cardioMinutes > 0) wins.push(`🏃 ${savedData.cardioMinutes} min cardio/walking`);
-      
-      const progressMessage = `✨ My Check-in for ${today} ✨\n\n${wins.length > 0 ? wins.join('\n') : 'Taking it easy today 💗'}\n\nEvery day counts! 💕`;
-      
       const response = await fetch('/api/community/posts/text', {
         method: 'POST',
         headers: {
@@ -226,7 +235,7 @@ export default function DailyCheckinModal({
         },
         body: JSON.stringify({
           userId,
-          content: progressMessage,
+          content: previewMessage,
           category: 'wins',
         }),
         credentials: 'include',
@@ -242,6 +251,7 @@ export default function DailyCheckinModal({
       });
       
       queryClient.invalidateQueries({ queryKey: ["/api/community/posts"] });
+      setShowSharePreview(false);
       handleClose();
     } catch (error) {
       toast({
@@ -298,26 +308,51 @@ export default function DailyCheckinModal({
                 </div>
               </div>
               
-              <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
-                <p className="text-sm text-gray-700 mb-3">
-                  <span className="font-semibold text-pink-700">Share with the community!</span>
-                  <br />Build momentum by celebrating together 💪
-                </p>
-                <Button
-                  type="button"
-                  onClick={(e) => handleShareToCommunity(e)}
-                  disabled={isSharing}
-                  className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg"
-                  data-testid="button-share-community"
-                >
-                  {isSharing ? (
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  ) : (
+              {!showSharePreview ? (
+                <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
+                  <p className="text-sm text-gray-700 mb-3">
+                    <span className="font-semibold text-pink-700">Share with the community!</span>
+                    <br />Build momentum by celebrating together 💪
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={(e) => handleShowSharePreview(e)}
+                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg"
+                    data-testid="button-share-community"
+                  >
                     <Users className="w-5 h-5 mr-2" />
-                  )}
-                  {isSharing ? "Sharing..." : "Share to Community"}
-                </Button>
-              </div>
+                    Share to Community
+                  </Button>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
+                  <p className="text-sm font-semibold text-pink-700 mb-2">Preview - This will be posted:</p>
+                  <div className="bg-white rounded-lg p-3 mb-3 text-sm text-gray-700 whitespace-pre-line border border-pink-100">
+                    {previewMessage}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowSharePreview(false)}
+                      className="flex-1 border-gray-200"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleConfirmShare}
+                      disabled={isSharing}
+                      className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+                    >
+                      {isSharing ? (
+                        <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      ) : null}
+                      {isSharing ? "Posting..." : "Confirm & Post"}
+                    </Button>
+                  </div>
+                </div>
+              )}
               
               <Button
                 variant="ghost"

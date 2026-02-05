@@ -69,6 +69,8 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
   const [showCheckinModal, setShowCheckinModal] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [showSharePreview, setShowSharePreview] = useState(false);
+  const [previewMessage, setPreviewMessage] = useState("");
   const { toast } = useToast();
 
   // Get userId from prop or localStorage
@@ -150,18 +152,9 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
     });
   };
 
-  const handleShareToCommunity = async (e: React.MouseEvent) => {
+  const handleShowSharePreview = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (!userId) {
-      toast({
-        variant: "destructive",
-        title: "Please log in",
-        description: "You need to be logged in to share.",
-      });
-      return;
-    }
     
     if (!summary) {
       toast({
@@ -172,10 +165,7 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
       return;
     }
     
-    setIsSharing(true);
-    
-    try {
-      const progressMessage = `🌟 My Weekly Progress Update!
+    const message = `🌟 My Weekly Progress Update!
 
 💪 ${stats.workoutDays} workout days this week
 🌬️ ${stats.breathingDays} days of breathing practice  
@@ -184,7 +174,24 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
 🔥 ${stats.currentStreak} day streak!
 
 Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts! 💕`;
-      
+    
+    setPreviewMessage(message);
+    setShowSharePreview(true);
+  };
+
+  const handleConfirmShare = async () => {
+    if (!userId || !previewMessage) {
+      toast({
+        variant: "destructive",
+        title: "Please log in",
+        description: "You need to be logged in to share.",
+      });
+      return;
+    }
+    
+    setIsSharing(true);
+    
+    try {
       const response = await fetch("/api/community/posts/text", {
         method: "POST",
         headers: {
@@ -193,7 +200,7 @@ Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts!
         credentials: "include",
         body: JSON.stringify({
           userId: String(userId),
-          content: progressMessage,
+          content: previewMessage,
           category: "wins",
         }),
       });
@@ -208,6 +215,7 @@ Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts!
       });
       
       queryClient.invalidateQueries({ queryKey: ["/api/community/posts"] });
+      setShowSharePreview(false);
     } catch (error) {
       console.error("Share error:", error);
       toast({
@@ -404,20 +412,45 @@ Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts!
               />
             </div>
 
-            <Button
-              type="button"
-              onClick={(e) => handleShareToCommunity(e)}
-              disabled={isSharing}
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
-              data-testid="button-share-community"
-            >
-              {isSharing ? (
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              ) : (
+            {!showSharePreview ? (
+              <Button
+                type="button"
+                onClick={(e) => handleShowSharePreview(e)}
+                className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+                data-testid="button-share-community"
+              >
                 <Users className="h-5 w-5 mr-2" />
-              )}
-              {isSharing ? "Sharing..." : "Share to Community"}
-            </Button>
+                Share to Community
+              </Button>
+            ) : (
+              <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
+                <p className="text-sm font-semibold text-pink-700 mb-2">Preview - This will be posted:</p>
+                <div className="bg-white rounded-lg p-3 mb-3 text-sm text-gray-700 whitespace-pre-line border border-pink-100">
+                  {previewMessage}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowSharePreview(false)}
+                    className="flex-1 border-gray-200"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleConfirmShare}
+                    disabled={isSharing}
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+                  >
+                    {isSharing ? (
+                      <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                    ) : null}
+                    {isSharing ? "Posting..." : "Confirm & Post"}
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         )}
       </Card>
