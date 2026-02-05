@@ -1155,7 +1155,7 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
     <>
       {/* Full-screen overlay */}
       <div 
-        className="fixed inset-0 z-50 bg-white animate-in fade-in duration-200 lg:bg-black/30"
+        className="fixed inset-0 z-50 bg-white lg:bg-black/30"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}

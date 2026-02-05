@@ -184,8 +184,27 @@ export default function DailyCheckinModal({
     });
   };
 
-  const handleShareToCommunity = async () => {
-    if (!savedData || !userId) return;
+  const handleShareToCommunity = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!savedData) {
+      toast({
+        title: "Nothing to share yet",
+        description: "Complete your check-in first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!userId) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to share.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsSharing(true);
     
@@ -283,7 +302,8 @@ export default function DailyCheckinModal({
                   <br />Build momentum by celebrating together 💪
                 </p>
                 <Button
-                  onClick={handleShareToCommunity}
+                  type="button"
+                  onClick={(e) => handleShareToCommunity(e)}
                   disabled={isSharing}
                   className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg"
                   data-testid="button-share-community"
