@@ -227,7 +227,7 @@ export default function DailyCheckinModal({
         body: JSON.stringify({
           userId,
           content: progressMessage,
-          category: 'progress',
+          category: 'wins',
         }),
         credentials: 'include',
       });
