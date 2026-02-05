@@ -1152,68 +1152,41 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
   }
 
   return (
-    <div 
-      className="fixed top-16 left-0 right-0 bottom-0 z-50 bg-white animate-in slide-in-from-top-4 fade-in duration-300" 
-      data-testid="page-profile-settings"
-    >
-      <div className="w-full h-full overflow-y-auto">
-        {/* Menu Items */}
-        <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-6">
-          <div className="flex flex-col space-y-3">
-            {/* Profile */}
-            <div className="flex justify-start">
+    <>
+      {/* Backdrop for mobile - click to close */}
+      <div 
+        className="fixed inset-0 z-40 bg-black/20 lg:hidden"
+        onClick={onClose}
+      />
+      
+      <div 
+        className="fixed z-50 bg-white shadow-xl border border-gray-200 
+          top-16 left-0 right-0 bottom-0 
+          lg:top-16 lg:right-4 lg:left-auto lg:bottom-auto lg:w-72 lg:rounded-xl lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto" 
+        data-testid="page-profile-settings"
+      >
+        <div className="w-full h-full overflow-y-auto lg:overflow-visible">
+          {/* Menu Items */}
+          <div className="px-4 pt-4 pb-6">
+            <div className="flex flex-col space-y-1">
+              {/* Profile */}
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '80ms' }}
+                className="flex items-center space-x-3 hover:bg-pink-50 py-3 px-3 rounded-xl transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentView('profile');
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                  <User className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Profile</span>
-                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                  <ChevronRight className="w-4 h-4 text-pink-500" />
-                </div>
+                <span className="text-base font-medium text-gray-900">Profile</span>
+                <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
               </button>
-            </div>
 
-            {/* Divider */}
-            <div className="flex justify-start my-2 pl-3">
-              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
-            </div>
-
-            {/* My Courses */}
-            <div className="flex justify-start">
+              {/* My Progress Photos */}
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '160ms' }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClose();
-                  setLocation("/my-courses");
-                }}
-                data-testid="button-my-courses"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                  <GraduationCap className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">My Courses</span>
-                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                  <ChevronRight className="w-4 h-4 text-pink-500" />
-                </div>
-              </button>
-            </div>
-
-            {/* My Progress Photos */}
-            <div className="flex justify-start">
-              <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '220ms' }}
+                className="flex items-center space-x-3 hover:bg-pink-50 py-3 px-3 rounded-xl transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   onClose();
@@ -1221,245 +1194,73 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
                 }}
                 data-testid="button-my-progress-photos"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                  <Camera className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
+                  <Camera className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">My Progress Photos</span>
-                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                  <ChevronRight className="w-4 h-4 text-pink-500" />
-                </div>
+                <span className="text-base font-medium text-gray-900">My Progress Photos</span>
+                <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
               </button>
-            </div>
 
-            {/* Divider */}
-            <div className="flex justify-start my-2 pl-3">
-              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
-            </div>
+              {/* Divider */}
+              <div className="my-2 mx-3">
+                <div className="h-px bg-gray-200"></div>
+              </div>
 
-            {/* Community Feed */}
-            <div className="flex justify-start">
+              {/* Support */}
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '240ms' }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClose();
-                  setLocation("/community");
-                }}
-                data-testid="button-community-feed"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                  <MessageCircle className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Community Feed</span>
-                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                  <ChevronRight className="w-4 h-4 text-pink-500" />
-                </div>
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="flex justify-start my-2 pl-3">
-              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
-            </div>
-
-            {/* Support */}
-            <div className="flex justify-start">
-              <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '400ms' }}
+                className="flex items-center space-x-3 hover:bg-pink-50 py-3 px-3 rounded-xl transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentView('support');
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                  <HelpCircle className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center">
+                  <HelpCircle className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Support</span>
-                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                  <ChevronRight className="w-4 h-4 text-pink-500" />
-                </div>
+                <span className="text-base font-medium text-gray-900">Support</span>
+                <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
               </button>
-            </div>
 
-            {/* Divider */}
-            <div className="flex justify-start my-2 pl-3">
-              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
-            </div>
-
-            {/* How It Works */}
-            {onShowOnboarding && (
-              <div className="flex justify-start">
+              {/* How It Works */}
+              {onShowOnboarding && (
                 <button 
-                  className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                  style={{ animationDelay: '440ms' }}
+                  className="flex items-center space-x-3 hover:bg-pink-50 py-3 px-3 rounded-xl transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     onClose();
-                    setTimeout(() => onShowOnboarding(), 300);
+                    setTimeout(() => onShowOnboarding(), 100);
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                  <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                    <Sparkles className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                  <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-white" />
                   </div>
-                  <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">How It Works</span>
-                  <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                    <ChevronRight className="w-4 h-4 text-pink-500" />
-                  </div>
+                  <span className="text-base font-medium text-gray-900">How It Works</span>
+                  <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
                 </button>
+              )}
+
+              {/* Divider */}
+              <div className="my-2 mx-3">
+                <div className="h-px bg-gray-200"></div>
               </div>
-            )}
 
-            {/* Divider */}
-            <div className="flex justify-start my-2 pl-3">
-              <div className="w-40 h-px bg-gradient-to-r from-pink-300 via-pink-300 to-transparent shadow-sm"></div>
-            </div>
-
-            {/* Logout */}
-            <div className="flex justify-start">
+              {/* Logout */}
               <button 
-                className="relative inline-flex items-center space-x-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:shadow-lg hover:shadow-pink-200/50 hover:border hover:border-pink-300 border border-transparent transition-all duration-300 group py-3 pl-3 pr-4 rounded-2xl animate-in scale-in-95 fade-in duration-400 overflow-hidden"
-                style={{ animationDelay: '520ms' }}
+                className="flex items-center space-x-3 hover:bg-pink-50 py-3 px-3 rounded-xl transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLogout();
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 opacity-0 group-hover:opacity-10 group-hover:animate-in group-hover:slide-in-from-top-2 transition-all duration-300 rounded-2xl"></div>
-                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pink-300 relative z-10">
-                  <LogOut className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full flex items-center justify-center">
+                  <LogOut className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-base font-medium text-gray-900 group-hover:text-pink-600 group-hover:translate-x-2 transition-all duration-300 relative z-10">Logout</span>
-                <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300 ml-2">
-                  <ChevronRight className="w-4 h-4 text-pink-500" />
-                </div>
+                <span className="text-base font-medium text-gray-900">Logout</span>
               </button>
             </div>
           </div>
         </div>
-
-        {/* Click outside area to close */}
-        <div 
-          className="absolute inset-0 -z-10" 
-          onClick={onClose}
-        ></div>
       </div>
-
-      {/* Password Change Dialog */}
-      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent className="max-w-sm !rounded-3xl sm:!rounded-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-pink-400 to-rose-500 rounded-xl flex items-center justify-center">
-                <Lock className="w-5 h-5 text-white" />
-              </div>
-              Change Password
-            </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              Enter your current password and choose a new one
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
-              <div className="relative">
-                <Input
-                  id="currentPassword"
-                  type={showCurrentPassword ? "text" : "password"}
-                  placeholder="Enter current password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
-              <div className="relative">
-                <Input
-                  id="newPassword"
-                  type={showNewPassword ? "text" : "password"}
-                  placeholder="Enter new password (min 8 chars)"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm new password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex gap-3 pt-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowPasswordDialog(false);
-                  setCurrentPassword('');
-                  setNewPassword('');
-                  setConfirmPassword('');
-                }}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleChangePassword}
-                disabled={changePasswordMutation.isPending}
-                className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
-              >
-                {changePasswordMutation.isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Changing...
-                  </>
-                ) : (
-                  "Change Password"
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+    </>
   );
 }
