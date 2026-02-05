@@ -150,15 +150,32 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
     });
   };
 
-  const handleShareToCommunity = async () => {
-    if (!userId || !summary) return;
+  const handleShareToCommunity = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        title: "Please log in",
+        description: "You need to be logged in to share.",
+      });
+      return;
+    }
+    
+    if (!summary) {
+      toast({
+        variant: "destructive",
+        title: "No data to share",
+        description: "Complete a check-in first.",
+      });
+      return;
+    }
     
     setIsSharing(true);
     
     try {
-      // Build a nice progress message for the community
-      const progressMessage = `
-🌟 My Weekly Progress Update!
+      const progressMessage = `🌟 My Weekly Progress Update!
 
 💪 ${stats.workoutDays} workout days this week
 🌬️ ${stats.breathingDays} days of breathing practice  
@@ -166,25 +183,35 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
 🏃 ${stats.avgCardioMinutes} min cardio on average
 🔥 ${stats.currentStreak} day streak!
 
-Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
-      `.trim();
+Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts! 💕`;
       
-      await apiRequest("POST", "/api/community/posts/text", {
-        userId,
-        content: progressMessage,
-        category: "progress",
-        weekNumber: summary.programWeek || 1,
-        isSensitiveContent: false,
+      const response = await fetch("/api/community/posts/text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          userId: String(userId),
+          content: progressMessage,
+          category: "progress",
+          weekNumber: summary.programWeek || 1,
+          isSensitiveContent: false,
+        }),
       });
+      
+      if (!response.ok) {
+        throw new Error("Failed to share");
+      }
       
       toast({
         title: "Shared to Community! 🎉",
         description: "Your progress has been posted. Other mamas can now celebrate with you!",
       });
       
-      // Invalidate community posts cache
       queryClient.invalidateQueries({ queryKey: ["/api/community/posts"] });
     } catch (error) {
+      console.error("Share error:", error);
       toast({
         variant: "destructive",
         title: "Sharing failed",
@@ -303,7 +330,7 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
               </p>
             </div>
 
-            <div className="flex justify-between gap-1">
+            <div className="grid grid-cols-7 gap-1">
               {weekDays.map((day, index) => {
                 const checkin = getCheckinForDay(index);
                 const hasActivity = checkin && (
@@ -320,14 +347,14 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
                 return (
                   <div 
                     key={day}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg flex-1 ${
+                    className={`flex flex-col items-center gap-1 p-1.5 rounded-lg min-w-0 ${
                       isToday ? 'bg-pink-100 border border-pink-200' : ''
                     }`}
                   >
                     <span className={`text-xs font-medium ${isToday ? 'text-pink-600' : 'text-gray-500'}`}>
                       {day}
                     </span>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm ${
                       hasActivity 
                         ? 'bg-gradient-to-br from-pink-500 to-rose-500 text-white' 
                         : daySchedule?.type === 'workout'
@@ -338,7 +365,7 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
                     }`}>
                       {hasActivity ? '✓' : daySchedule?.type === 'workout' ? 'C' : daySchedule?.type === 'cardio' ? '🏃' : '💤'}
                     </div>
-                    <span className="text-[10px] text-gray-400">
+                    <span className="text-[9px] text-gray-400 truncate">
                       {daySchedule?.type === 'workout' ? 'Core' : daySchedule?.type === 'cardio' ? 'Cardio' : 'Rest'}
                     </span>
                   </div>
@@ -380,7 +407,8 @@ Week ${summary.programWeek} of my Heal Your Core journey. Every day counts! 💕
             </div>
 
             <Button
-              onClick={handleShareToCommunity}
+              type="button"
+              onClick={(e) => handleShareToCommunity(e)}
               disabled={isSharing}
               className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
               data-testid="button-share-community"
