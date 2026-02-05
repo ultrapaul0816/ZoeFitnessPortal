@@ -1153,16 +1153,17 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
 
   return (
     <>
-      {/* Backdrop for mobile - click to close */}
+      {/* Backdrop - click to close */}
       <div 
-        className="fixed inset-0 z-40 bg-black/20 lg:hidden"
+        className="fixed inset-0 z-40 bg-black/30 animate-in fade-in duration-200"
         onClick={onClose}
       />
       
       <div 
-        className="fixed z-50 bg-white shadow-xl border border-gray-200 
-          top-16 left-0 right-0 bottom-0 
-          lg:top-16 lg:right-4 lg:left-auto lg:bottom-auto lg:w-72 lg:rounded-xl lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto" 
+        className="fixed z-50 bg-white shadow-xl border-l border-gray-200 
+          top-16 right-0 bottom-0 w-[280px] max-w-[85vw]
+          animate-in slide-in-from-right duration-200
+          lg:top-16 lg:right-4 lg:bottom-auto lg:w-72 lg:rounded-xl lg:max-h-[calc(100vh-5rem)] lg:border lg:slide-in-from-top-2" 
         data-testid="page-profile-settings"
       >
         <div className="w-full h-full overflow-y-auto lg:overflow-visible">

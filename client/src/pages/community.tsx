@@ -578,75 +578,52 @@ export default function Community() {
 
   const handleShareToInstagram = async (post: EnrichedPost) => {
     try {
-      const canvas = document.createElement("canvas");
-      canvas.width = 1080;
-      canvas.height = 1080;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, 1080, 1080);
-
-      if (post.imageUrls && post.imageUrls.length > 0) {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = post.imageUrls[0]; // Use first image for Instagram share
-        await new Promise((resolve) => {
-          img.onload = resolve;
-        });
-        
-        const aspectRatio = img.width / img.height;
-        let drawWidth = 1080;
-        let drawHeight = 1080;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (aspectRatio > 1) {
-          drawHeight = 1080 / aspectRatio;
-          offsetY = (1080 - drawHeight) / 2;
-        } else {
-          drawWidth = 1080 * aspectRatio;
-          offsetX = (1080 - drawWidth) / 2;
-        }
-
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-      }
-
-      ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-      ctx.fillRect(0, 900, 1080, 180);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 36px Inter";
-      ctx.fillText(`${post.user.firstName} ${post.user.lastName}`, 40, 960);
+      const shareText = post.content 
+        ? `${post.content.slice(0, 100)}${post.content.length > 100 ? '...' : ''}\n\n💪 Shared via Studio Bloom #StudioBloom #PostpartumFitness`
+        : `Check out this post from ${post.user.firstName}! 💪\n\n#StudioBloom #PostpartumFitness`;
       
-      if (post.weekNumber) {
-        ctx.font = "24px Inter";
-        ctx.fillText(`Week ${post.weekNumber}`, 40, 1000);
-      }
-
-      ctx.font = "28px Inter";
-      ctx.fillText("Stronger with Zoe", 40, 1050);
-
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `swz-post-${Date.now()}.png`;
-          a.click();
-          URL.revokeObjectURL(url);
-          toast({
-            title: "Downloaded!",
-            description: "Share your image on Instagram",
-          });
+      if (navigator.share) {
+        const shareData: ShareData = {
+          title: `${post.user.firstName}'s Post`,
+          text: shareText,
+        };
+        
+        if (post.imageUrls && post.imageUrls.length > 0) {
+          try {
+            const response = await fetch(post.imageUrls[0]);
+            const blob = await response.blob();
+            const file = new File([blob], 'post-image.jpg', { type: 'image/jpeg' });
+            
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              shareData.files = [file];
+            }
+          } catch (imgError) {
+            console.log('Could not include image in share');
+          }
         }
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to generate image",
-        variant: "destructive",
-      });
+        
+        await navigator.share(shareData);
+        toast({
+          title: "Shared!",
+          description: "Post shared successfully",
+        });
+      } else {
+        await navigator.clipboard.writeText(shareText);
+        toast({
+          title: "Copied to clipboard!",
+          description: "Share text copied. Paste it to share!",
+        });
+      }
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        await navigator.clipboard.writeText(
+          post.content || `Check out this post from ${post.user.firstName}! 💪 #StudioBloom`
+        );
+        toast({
+          title: "Copied to clipboard!",
+          description: "Share text copied. Paste it to share!",
+        });
+      }
     }
   };
 
