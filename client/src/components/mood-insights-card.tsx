@@ -191,8 +191,21 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false, 
             <p className="text-xs text-gray-500 mb-2 font-medium">Last 7 Days</p>
             <div className="flex gap-2 justify-between">
               {Array.from({ length: 7 }).map((_, i) => {
-                const recentMood = stats.recentMoods?.[i];
-                const dayLabel = new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short' });
+                // i=0 is 6 days ago, i=6 is today (rightmost)
+                const daysAgo = 6 - i;
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() - daysAgo);
+                const targetDateStr = targetDate.toISOString().split('T')[0];
+                
+                // Find mood data for this specific date
+                const recentMood = stats.recentMoods?.find(m => {
+                  const moodDate = new Date(m.date).toISOString().split('T')[0];
+                  return moodDate === targetDateStr;
+                });
+                
+                const dayLabel = targetDate.toLocaleDateString('en-US', { weekday: 'short' });
+                const isToday = daysAgo === 0;
+                
                 return (
                   <div key={i} className="flex flex-col items-center gap-1">
                     <div 
@@ -200,15 +213,17 @@ export default function MoodInsightsCard({ userId: propUserId, compact = false, 
                         recentMood?.mood 
                           ? 'bg-white border-2 border-violet-200 shadow-sm' 
                           : 'bg-gray-100 text-gray-300'
-                      }`}
+                      } ${isToday ? 'ring-2 ring-pink-300 ring-offset-1' : ''}`}
                       title={recentMood?.mood ? `${recentMood.mood}` : 'No check-in'}
                     >
                       {recentMood?.mood ? moodEmojis[recentMood.mood] || '🙂' : '·'}
                     </div>
-                    <span className="text-[10px] text-gray-400">{dayLabel.charAt(0)}</span>
+                    <span className={`text-[10px] ${isToday ? 'text-pink-500 font-medium' : 'text-gray-400'}`}>
+                      {dayLabel.charAt(0)}
+                    </span>
                   </div>
                 );
-              }).reverse()}
+              })}
             </div>
           </div>
         )}
