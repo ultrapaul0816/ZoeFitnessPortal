@@ -711,7 +711,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const baseUrl = process.env.REPLIT_DEV_DOMAIN 
         ? `https://${process.env.REPLIT_DEV_DOMAIN}`
         : process.env.BASE_URL || 'http://localhost:5000';
-      const magicLinkUrl = `${baseUrl}/auth/magic-link/${token}`;
+      const magicLinkUrl = `${baseUrl}/api/auth/magic-link/${token}`;
       
       // Send magic link email
       await emailService.sendMagicLinkEmail(
