@@ -17,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   Heart, 
   MessageCircle, 
-  Share2, 
   MoreVertical, 
   Crown, 
   Camera, 
@@ -576,56 +575,6 @@ export default function Community() {
     likePostMutation.mutate({ postId, isLiked });
   };
 
-  const handleShareToInstagram = async (post: EnrichedPost) => {
-    try {
-      const shareText = post.content 
-        ? `${post.content.slice(0, 100)}${post.content.length > 100 ? '...' : ''}\n\n💪 Shared via Studio Bloom #StudioBloom #PostpartumFitness`
-        : `Check out this post from ${post.user.firstName}! 💪\n\n#StudioBloom #PostpartumFitness`;
-      
-      if (navigator.share) {
-        const shareData: ShareData = {
-          title: `${post.user.firstName}'s Post`,
-          text: shareText,
-        };
-        
-        if (post.imageUrls && post.imageUrls.length > 0) {
-          try {
-            const response = await fetch(post.imageUrls[0]);
-            const blob = await response.blob();
-            const file = new File([blob], 'post-image.jpg', { type: 'image/jpeg' });
-            
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              shareData.files = [file];
-            }
-          } catch (imgError) {
-            console.log('Could not include image in share');
-          }
-        }
-        
-        await navigator.share(shareData);
-        toast({
-          title: "Shared!",
-          description: "Post shared successfully",
-        });
-      } else {
-        await navigator.clipboard.writeText(shareText);
-        toast({
-          title: "Copied to clipboard!",
-          description: "Share text copied. Paste it to share!",
-        });
-      }
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
-        await navigator.clipboard.writeText(
-          post.content || `Check out this post from ${post.user.firstName}! 💪 #StudioBloom`
-        );
-        toast({
-          title: "Copied to clipboard!",
-          description: "Share text copied. Paste it to share!",
-        });
-      }
-    }
-  };
 
   const toggleSensitiveContent = (postId: string) => {
     setShowSensitiveContent(prev => {
@@ -782,7 +731,6 @@ export default function Community() {
                   onLike={() => handleLikePost(post.id, post.isLikedByUser || false)}
                   onDelete={() => deletePostMutation.mutate(post.id)}
                   onReport={() => reportPostMutation.mutate(post.id)}
-                  onShare={() => handleShareToInstagram(post)}
                   onShowComments={() => setShowComments(post.id)}
                   onShowLikers={() => setShowLikers(post.id)}
                   showSensitive={showSensitiveContent.has(post.id)}
@@ -1038,7 +986,6 @@ function PostCard({
   onLike,
   onDelete,
   onReport,
-  onShare,
   onShowComments,
   onShowLikers,
   showSensitive,
@@ -1049,7 +996,6 @@ function PostCard({
   onLike: () => void;
   onDelete: () => void;
   onReport: () => void;
-  onShare: () => void;
   onShowComments: () => void;
   onShowLikers: () => void;
   showSensitive: boolean;
@@ -1189,17 +1135,6 @@ function PostCard({
                 {post.commentCount}
               </span>
             )}
-          </button>
-
-          <button
-            onClick={onShare}
-            className="flex items-center gap-1 group ml-auto"
-            data-testid="button-share-instagram"
-          >
-            <Share2 className="w-6 h-6 text-gray-600 group-hover:text-pink-500 transition-colors" />
-            <span className="text-sm text-gray-600 group-hover:text-pink-500">
-              Share to Instagram
-            </span>
           </button>
         </div>
       </div>
