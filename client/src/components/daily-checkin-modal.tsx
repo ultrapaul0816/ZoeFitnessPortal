@@ -219,14 +219,16 @@ export default function DailyCheckinModal({
       
       const progressMessage = `✨ My Check-in for ${today} ✨\n\n${wins.length > 0 ? wins.join('\n') : 'Taking it easy today 💗'}\n\nEvery day counts! 💕`;
       
-      const formData = new FormData();
-      formData.append('userId', userId);
-      formData.append('content', progressMessage);
-      formData.append('category', 'progress');
-      
-      const response = await fetch('/api/community/posts', {
+      const response = await fetch('/api/community/posts/text', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          content: progressMessage,
+          category: 'progress',
+        }),
         credentials: 'include',
       });
       
