@@ -1153,29 +1153,28 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
 
   return (
     <>
-      {/* Backdrop - click to close */}
+      {/* Full-screen overlay */}
       <div 
-        className="fixed inset-0 z-40 bg-black/30 animate-in fade-in duration-200"
-        onClick={onClose}
-      />
-      
-      <div 
-        className="fixed z-50 bg-white shadow-xl border-l border-gray-200 
-          top-16 right-0 bottom-0 w-[280px] max-w-[85vw]
-          animate-in slide-in-from-right duration-200
-          lg:top-16 lg:right-4 lg:bottom-auto lg:w-72 lg:rounded-xl lg:max-h-[calc(100vh-5rem)] lg:border lg:slide-in-from-top-2" 
+        className="fixed inset-0 z-50 bg-white animate-in fade-in duration-200 lg:bg-black/30"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
         data-testid="page-profile-settings"
       >
-        <div className="w-full h-full overflow-y-auto lg:overflow-visible">
+        {/* Menu container - full screen on mobile, dropdown on desktop */}
+        <div 
+          className="w-full h-full bg-white overflow-y-auto
+            lg:absolute lg:top-16 lg:right-4 lg:w-72 lg:h-auto lg:max-h-[calc(100vh-5rem)] lg:rounded-xl lg:shadow-xl lg:border lg:animate-in lg:slide-in-from-top-2"
+        >
           {/* Header with close button */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <span className="text-base font-semibold text-gray-900">Menu</span>
+          <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+            <span className="text-lg font-semibold text-gray-900">Menu</span>
             <button 
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               aria-label="Close menu"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-6 h-6 text-gray-600" />
             </button>
           </div>
           
