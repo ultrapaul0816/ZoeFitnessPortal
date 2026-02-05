@@ -21,7 +21,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle, Target, Clock, Dumbbell, Play, Camera, MessageCircle, GraduationCap, Lock, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
+import { ChevronDown, Info, Globe, BookOpen, CreditCard, User, LogOut, ChevronRight, ArrowRight, ArrowLeft, Mail, HelpCircle, Copy, CheckCircle2, Circle, Target, Clock, Dumbbell, Play, Camera, MessageCircle, GraduationCap, Lock, Eye, EyeOff, Loader2, Sparkles, X } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -1167,8 +1167,20 @@ export default function ProfileSettings({ isOpen, onClose, user, onUserUpdate, i
         data-testid="page-profile-settings"
       >
         <div className="w-full h-full overflow-y-auto lg:overflow-visible">
+          {/* Header with close button */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+            <span className="text-base font-semibold text-gray-900">Menu</span>
+            <button 
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+          
           {/* Menu Items */}
-          <div className="px-4 pt-4 pb-6">
+          <div className="px-4 pt-3 pb-6">
             <div className="flex flex-col space-y-1">
               {/* Profile */}
               <button 
