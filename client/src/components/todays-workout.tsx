@@ -1034,28 +1034,23 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                 </div>
               )}
 
-              {/* PART 1: Breathing/Healing Section - START HERE */}
-              <div className="relative">
-                <Badge className="absolute -top-2 left-3 bg-green-500 text-white text-xs px-2 py-0.5 z-10">
-                  START HERE
-                </Badge>
-                <div className="bg-gradient-to-r from-pink-100 to-rose-100 rounded-xl p-4 border-2 border-pink-300">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold">1</div>
-                    <h5 className="font-bold text-pink-700 uppercase tracking-wide text-sm">
-                      {currentProgram.part1.title}
-                    </h5>
-                  </div>
-                  <p className="text-xs text-pink-600 mb-3 italic">
-                    Always begin with your healing breath work before exercises
-                  </p>
-                  {currentProgram.part1.exercises.map((breathExercise, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2">
-                      <span className="text-sm font-medium text-gray-700">{breathExercise.name}</span>
-                      <span className="text-sm font-bold text-pink-600">{breathExercise.reps}</span>
-                    </div>
-                  ))}
+              {/* PART 1: Breathing/Healing Section */}
+              <div className="bg-white rounded-xl p-4 border border-gray-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold">1</div>
+                  <h5 className="font-semibold text-gray-700 uppercase tracking-wide text-sm">
+                    {currentProgram.part1.title}
+                  </h5>
                 </div>
+                <p className="text-xs text-gray-500 mb-3">
+                  Begin with healing breath work before exercises
+                </p>
+                {currentProgram.part1.exercises.map((breathExercise, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
+                    <span className="text-sm font-medium text-gray-700">{breathExercise.name}</span>
+                    <span className="text-sm font-bold text-pink-600">{breathExercise.reps}</span>
+                  </div>
+                ))}
               </div>
 
               {/* PART 2: Main Workout Section */}
@@ -1081,18 +1076,10 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
                   </div>
                 </div>
                 
-                {/* 3 Rounds Instruction - Clear and simple */}
-                <div className="bg-gradient-to-r from-pink-100 to-amber-50 border-2 border-pink-200 rounded-xl px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
-                      3×
-                    </div>
-                    <div>
-                      <p className="font-semibold text-pink-700">Do all {exercises.length} exercises × 3 rounds</p>
-                      <p className="text-sm text-gray-600">Complete all exercises, rest 30-60 seconds, then repeat 2 more times</p>
-                    </div>
-                  </div>
-                </div>
+                {/* 3 Rounds Instruction - Minimal */}
+                <p className="text-sm text-gray-500 px-1">
+                  <span className="font-medium text-gray-700">3 rounds</span> — complete all exercises, rest 30-60 sec, repeat
+                </p>
 
                 {/* Spotify Workout Music Widget */}
                 <SpotifyWidget currentWeek={progress.currentWeek} />
