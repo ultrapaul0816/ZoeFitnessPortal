@@ -4105,7 +4105,7 @@ class DatabaseStorage implements IStorage {
       energyLevel: c.energyLevel,
     }));
 
-    // Calculate current streak (consecutive days with at least one activity)
+    // Calculate current streak (consecutive days with any check-in activity including mood)
     let currentStreak = 0;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -4121,9 +4121,17 @@ class DatabaseStorage implements IStorage {
         return cDate.getTime() === checkDate.getTime();
       });
       
-      if (dayCheckin && (dayCheckin.workoutCompleted || dayCheckin.breathingPractice || 
-          (dayCheckin.waterGlasses && dayCheckin.waterGlasses > 0) || 
-          (dayCheckin.cardioMinutes && dayCheckin.cardioMinutes > 0))) {
+      // Count a day if there's any check-in activity: mood, energy, workout, breathing, water, or cardio
+      const hasActivity = dayCheckin && (
+        dayCheckin.mood || 
+        dayCheckin.energyLevel ||
+        dayCheckin.workoutCompleted || 
+        dayCheckin.breathingPractice || 
+        (dayCheckin.waterGlasses && dayCheckin.waterGlasses > 0) || 
+        (dayCheckin.cardioMinutes && dayCheckin.cardioMinutes > 0)
+      );
+      
+      if (hasActivity) {
         currentStreak++;
       } else if (i > 0) {
         break;
