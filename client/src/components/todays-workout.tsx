@@ -1058,19 +1058,19 @@ export default function TodaysWorkout({ userId, onStartWorkout, isFirstLogin = f
 
               {/* PART 2: Main Workout Section */}
               <div className="space-y-3">
-                {/* Part 2 Header */}
-                <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-t-xl p-3">
+                {/* Part 2 Header - Subtle section divider */}
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold">2</div>
-                      <h5 className="font-bold text-white uppercase tracking-wide text-sm">
+                      <div className="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">2</div>
+                      <h5 className="font-semibold text-gray-700 uppercase tracking-wide text-sm">
                         Main Workout (3 Rounds)
                       </h5>
                     </div>
                     {currentProgram.part2.playlistUrl && (
                       <PlayAllButton 
                         url={currentProgram.part2.playlistUrl}
-                        colorClass="bg-white/20 hover:bg-white/30"
+                        colorClass="bg-pink-100 hover:bg-pink-200 text-pink-600"
                       />
                     )}
                   </div>

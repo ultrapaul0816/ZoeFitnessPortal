@@ -906,18 +906,18 @@ export default function Dashboard() {
             {hasWorkoutAccess && (
               <section className="mb-8">
                 <Card className="bg-white border-2 border-pink-100 shadow-lg rounded-2xl overflow-hidden">
-                  {/* Header */}
-                  <div className="bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-3 lg:px-6 lg:py-4">
+                  {/* Header - Subtle, not competing with Today's Workout */}
+                  <div className="bg-gradient-to-r from-gray-50 to-pink-50 border-b border-pink-100 px-4 py-3 lg:px-6 lg:py-4">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-lg lg:text-xl font-bold text-white flex items-center gap-2">
-                        <Dumbbell className="w-5 h-5 lg:w-6 lg:h-6" />
+                      <h2 className="text-lg lg:text-xl font-semibold text-gray-800 flex items-center gap-2">
+                        <Dumbbell className="w-5 h-5 lg:w-6 lg:h-6 text-pink-500" />
                         Heal Your Core
                       </h2>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setLocation('/heal-your-core')}
-                        className="text-white hover:bg-white/20 text-xs lg:text-sm font-medium px-3 py-1.5 h-auto"
+                        className="text-pink-600 hover:bg-pink-100 text-xs lg:text-sm font-medium px-3 py-1.5 h-auto"
                         data-testid="button-explore-full-program"
                       >
                         <BookOpen className="w-3.5 h-3.5 lg:w-4 lg:h-4 mr-1.5" />
