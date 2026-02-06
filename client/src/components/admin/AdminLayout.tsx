@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   LogOut,
   Menu,
   X,
@@ -27,6 +28,7 @@ import {
   Zap,
   Eye,
   Video,
+  HeartHandshake,
 } from "lucide-react";
 
 interface NavItem {
@@ -62,14 +64,36 @@ const navItems: NavItem[] = [
   { id: "email-campaigns", label: "Email Campaigns", icon: Mail, section: "Marketing", path: "/admin-email-campaigns" },
   { id: "email-analytics", label: "Email Analytics", icon: BarChart3, section: "Marketing", path: "/admin-email-analytics" },
   { id: "automation", label: "Automation", icon: Zap, section: "Marketing", path: "/admin/automation" },
+  { id: "private-coaching", label: "Private Coaching", icon: HeartHandshake, section: "Coaching", path: "/admin/coaching", badge: "New" },
 ];
+
+const STORAGE_KEY = "admin-collapsed-sections";
+
+function getInitialCollapsedSections(): Record<string, boolean> {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return {};
+}
 
 export default function AdminLayout({ children, activeTab, onTabChange, onNavigate }: AdminLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(getInitialCollapsedSections);
   const [, setLocation] = useLocation();
   
   const navigate = onNavigate || setLocation;
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collapsedSections));
+    } catch {}
+  }, [collapsedSections]);
+
+  const toggleSection = useCallback((section: string) => {
+    setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  }, []);
 
   const handleNavClick = (item: NavItem) => {
     if (item.path) {
@@ -87,11 +111,19 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
     return acc;
   }, {} as Record<string, NavItem[]>);
 
-  const sectionOrder = ["Main", "Members", "Content", "Insights", "Marketing"];
+  const sectionOrder = ["Main", "Members", "Content", "Insights", "Marketing", "Coaching"];
+
+  const sectionIcons: Record<string, React.ElementType> = {
+    Main: LayoutDashboard,
+    Members: Users,
+    Content: GraduationCap,
+    Insights: BarChart3,
+    Marketing: Mail,
+    Coaching: HeartHandshake,
+  };
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-gradient-to-b from-white to-gray-50/50 dark:from-gray-950 dark:to-gray-900">
-      {/* Header */}
       <div className={cn(
         "flex items-center border-b border-gray-200/60 dark:border-gray-800 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm",
         isCollapsed ? "justify-center p-4" : "justify-between px-6 py-6"
@@ -117,101 +149,138 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
         </Button>
       </div>
 
-      {/* Navigation */}
-      <ScrollArea className="flex-1 py-6">
-        <nav className="space-y-8 px-4">
+      <ScrollArea className="flex-1 py-4">
+        <nav className="space-y-2 px-4">
           {sectionOrder.map((section) => {
             const items = groupedItems[section];
             if (!items) return null;
+            const isSectionCollapsed = collapsedSections[section] || false;
+            const SectionIcon = sectionIcons[section];
+            const hasActiveItem = items.some(item => activeTab === item.id);
             
             return (
               <div key={section}>
-                {!isCollapsed && (
-                  <div className="flex items-center gap-2 px-3 mb-4">
-                    <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] letter-spacing-wide">
+                {!isCollapsed ? (
+                  <button
+                    onClick={() => toggleSection(section)}
+                    className={cn(
+                      "w-full flex items-center gap-2 px-3 py-2 mb-1 rounded-xl transition-all duration-200 group",
+                      hasActiveItem && isSectionCollapsed
+                        ? "bg-pink-50 dark:bg-pink-900/20"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800/50"
+                    )}
+                  >
+                    <ChevronDown className={cn(
+                      "w-3.5 h-3.5 text-gray-400 transition-transform duration-200",
+                      isSectionCollapsed && "-rotate-90"
+                    )} />
+                    <p className={cn(
+                      "text-[10px] font-bold uppercase tracking-[0.15em] flex-1 text-left transition-colors",
+                      hasActiveItem && isSectionCollapsed
+                        ? "text-pink-600 dark:text-pink-400"
+                        : "text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300"
+                    )}>
                       {section}
                     </p>
-                    <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent dark:from-gray-800 dark:to-transparent" />
+                    {hasActiveItem && isSectionCollapsed && (
+                      <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse" />
+                    )}
+                  </button>
+                ) : (
+                  SectionIcon && (
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex justify-center py-2 mb-1">
+                            <div className="w-6 h-px bg-gray-200 dark:bg-gray-700" />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="font-medium bg-gray-900 text-white border-gray-700">
+                          {section}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )
+                )}
+                {(!isSectionCollapsed || isCollapsed) && (
+                  <div className={cn("space-y-1", !isCollapsed && "ml-1")}>
+                    {items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = activeTab === item.id;
+                      
+                      if (isCollapsed) {
+                        return (
+                          <TooltipProvider key={item.id} delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={() => handleNavClick(item)}
+                                  className={cn(
+                                    "w-full flex items-center justify-center p-3.5 rounded-2xl transition-all duration-300 relative group",
+                                    isActive
+                                      ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xl shadow-pink-500/40 dark:shadow-pink-900/40 scale-105"
+                                      : "text-gray-500 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 hover:shadow-md hover:scale-105"
+                                  )}
+                                  data-testid={`nav-${item.id}`}
+                                >
+                                  <Icon className="w-5 h-5" />
+                                  {item.badge && (
+                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-gray-950 animate-pulse" />
+                                  )}
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="font-medium bg-gray-900 text-white border-gray-700">
+                                {item.label}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => handleNavClick(item)}
+                          className={cn(
+                            "w-full flex items-center gap-3.5 px-4 py-2.5 rounded-2xl transition-all duration-300 text-left group relative overflow-hidden",
+                            isActive
+                              ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xl shadow-pink-500/30 dark:shadow-pink-900/40 scale-[1.02]"
+                              : "text-gray-700 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-800/80 hover:shadow-md hover:scale-[1.01]"
+                          )}
+                          data-testid={`nav-${item.id}`}
+                        >
+                          {!isActive && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-pink-500/5 to-pink-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                          )}
+                          <Icon className={cn(
+                            "w-5 h-5 transition-all duration-300 relative z-10",
+                            !isActive && "group-hover:scale-110 group-hover:text-pink-600"
+                          )} />
+                          <span className="text-sm font-semibold flex-1 relative z-10">{item.label}</span>
+                          {item.badge && (
+                            <Badge 
+                              variant="secondary" 
+                              className={cn(
+                                "text-[10px] px-2 py-0.5 h-5 font-bold relative z-10",
+                                isActive 
+                                  ? "bg-white/20 text-white border-white/30 shadow-inner" 
+                                  : "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800"
+                              )}
+                            >
+                              {item.badge}
+                            </Badge>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
-                <div className="space-y-1.5">
-                  {items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeTab === item.id;
-                    
-                    if (isCollapsed) {
-                      return (
-                        <TooltipProvider key={item.id} delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => handleNavClick(item)}
-                                className={cn(
-                                  "w-full flex items-center justify-center p-3.5 rounded-2xl transition-all duration-300 relative group",
-                                  isActive
-                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xl shadow-pink-500/40 dark:shadow-pink-900/40 scale-105"
-                                    : "text-gray-500 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 hover:shadow-md hover:scale-105"
-                                )}
-                                data-testid={`nav-${item.id}`}
-                              >
-                                <Icon className="w-5 h-5" />
-                                {item.badge && (
-                                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-gray-950 animate-pulse" />
-                                )}
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="right" className="font-medium bg-gray-900 text-white border-gray-700">
-                              {item.label}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      );
-                    }
-
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => handleNavClick(item)}
-                        className={cn(
-                          "w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-300 text-left group relative overflow-hidden",
-                          isActive
-                            ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xl shadow-pink-500/30 dark:shadow-pink-900/40 scale-[1.02]"
-                            : "text-gray-700 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-800/80 hover:shadow-md hover:scale-[1.01]"
-                        )}
-                        data-testid={`nav-${item.id}`}
-                      >
-                        {!isActive && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-pink-500/5 to-pink-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        )}
-                        <Icon className={cn(
-                          "w-5 h-5 transition-all duration-300 relative z-10",
-                          !isActive && "group-hover:scale-110 group-hover:text-pink-600"
-                        )} />
-                        <span className="text-sm font-semibold flex-1 relative z-10">{item.label}</span>
-                        {item.badge && (
-                          <Badge 
-                            variant="secondary" 
-                            className={cn(
-                              "text-[10px] px-2 py-0.5 h-5 font-bold relative z-10",
-                              isActive 
-                                ? "bg-white/20 text-white border-white/30 shadow-inner" 
-                                : "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800"
-                            )}
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
             );
           })}
         </nav>
       </ScrollArea>
 
-      {/* Footer */}
       <div className="border-t border-gray-200/60 dark:border-gray-800 p-4 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm">
         {isCollapsed ? (
           <TooltipProvider delayDuration={0}>
@@ -247,7 +316,6 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Desktop Sidebar */}
       <div
         className={cn(
           "fixed top-0 left-0 z-40 h-screen bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 hidden lg:block shadow-sm",
@@ -257,7 +325,6 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
         <SidebarContent />
       </div>
 
-      {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-lg border-b border-gray-200/60 dark:border-gray-800 shadow-lg">
         <div className="flex items-center justify-between px-5 h-16">
           <div className="flex items-center gap-3">
@@ -280,7 +347,6 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
         </div>
       </div>
 
-      {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
         <>
           <div
@@ -293,7 +359,6 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
         </>
       )}
 
-      {/* Main Content */}
       <main
         className={cn(
           "min-h-screen pt-16 lg:pt-0 transition-all duration-300 bg-gradient-to-br from-gray-50 via-white to-gray-50/50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900",

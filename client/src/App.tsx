@@ -44,6 +44,7 @@ const AdminMembers = lazy(() => import("@/pages/admin-members"));
 const AdminActive = lazy(() => import("@/pages/admin-active"));
 const AdminWhatsApp = lazy(() => import("@/pages/admin-whatsapp"));
 const AdminReports = lazy(() => import("@/pages/admin-reports"));
+const AdminCoaching = lazy(() => import("@/pages/admin-coaching"));
 
 // Loading component for lazy-loaded pages
 function PageLoader({ message }: { message: string }) {
@@ -96,6 +97,7 @@ function Router() {
       <Route path="/admin/active" component={() => <LazyRoute component={AdminActive} message="Loading..." />} />
       <Route path="/admin/whatsapp" component={() => <LazyRoute component={AdminWhatsApp} message="Loading..." />} />
       <Route path="/admin/reports" component={() => <LazyRoute component={AdminReports} message="Loading reports..." />} />
+      <Route path="/admin/coaching" component={() => <LazyRoute component={AdminCoaching} message="Loading coaching..." />} />
       <Route path="/heal-your-core" component={() => <LazyRoute component={HealYourCorePage} message="Loading your program..." />} />
       <Route path="/progress" component={() => <LazyRoute component={Progress} message="Loading progress tracker..." />} />
       <Route path="/my-library" component={() => <LazyRoute component={MyLibrary} message="Loading library..." />} />
