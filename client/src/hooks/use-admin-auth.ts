@@ -27,18 +27,18 @@ export function useAdminAuth(): AdminAuthState {
           } else if (!hasRedirected) {
             setHasRedirected(true);
             localStorage.removeItem("user");
-            setLocation("/dashboard");
+            setLocation("/admin/login");
           }
         } else if (!hasRedirected) {
           setHasRedirected(true);
           localStorage.removeItem("user");
-          setLocation("/");
+          setLocation("/admin/login");
         }
       } catch (error) {
         console.error("Admin session check failed:", error);
         if (!hasRedirected) {
           setHasRedirected(true);
-          setLocation("/");
+          setLocation("/admin/login");
         }
       } finally {
         setIsLoading(false);

@@ -22,6 +22,7 @@ const HealYourCorePage = lazy(() => import("@/pages/heal-your-core"));
 const Progress = lazy(() => import("@/pages/progress"));
 
 // Lazy load admin pages (rarely accessed by regular users)
+const AdminLogin = lazy(() => import("@/pages/admin-login"));
 const Admin = lazy(() => import("@/pages/admin"));
 const AdminAnalytics = lazy(() => import("@/pages/admin-analytics"));
 const AdminEmailCampaigns = lazy(() => import("@/pages/admin-email-campaigns"));
@@ -71,6 +72,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Login} />
       <Route path="/dashboard" component={() => <LazyRoute component={Dashboard} message="Loading dashboard..." />} />
+      <Route path="/admin/login" component={() => <LazyRoute component={AdminLogin} message="Loading admin login..." />} />
       <Route path="/admin" component={() => <LazyRoute component={Admin} message="Loading admin..." />} />
       <Route path="/admin/analytics" component={() => <LazyRoute component={AdminAnalytics} message="Loading analytics..." />} />
       <Route path="/admin-email-campaigns" component={() => <LazyRoute component={AdminEmailCampaigns} message="Loading..." />} />
