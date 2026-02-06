@@ -38,8 +38,10 @@ export function useServiceWorker() {
 
     registerSW();
 
+    const hadController = !!navigator.serviceWorker.controller;
     let refreshing = false;
     navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadController) return;
       if (!refreshing) {
         refreshing = true;
         window.location.reload();
