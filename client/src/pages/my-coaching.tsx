@@ -36,6 +36,7 @@ import {
   Wind,
   ExternalLink,
   Play,
+  CheckCircle,
 } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
@@ -403,6 +404,11 @@ export default function MyCoaching() {
     plan: (planData.nutritionPlan || []).find((n) => n.mealType === mealType),
   }));
 
+  const nutritionOverviewRow = (planData.nutritionPlan || []).find((n: any) => n.mealType === "overview");
+  const nutritionOverview = nutritionOverviewRow?.tips ? (() => {
+    try { return JSON.parse(nutritionOverviewRow.tips); } catch { return null; }
+  })() : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white pb-24">
       <div className="max-w-2xl mx-auto px-4 pt-6">
@@ -724,24 +730,93 @@ export default function MyCoaching() {
               </Card>
             ) : (
               <div className="space-y-6">
+                {nutritionOverview && (
+                  <div className="space-y-4">
+                    {nutritionOverview.dailyStructure && (
+                      <Card className="border-pink-200 bg-gradient-to-br from-pink-50 to-white">
+                        <CardContent className="pt-4 pb-4">
+                          {nutritionOverview.dailyStructure.overview && (
+                            <p className="text-sm text-gray-700 mb-3">{nutritionOverview.dailyStructure.overview}</p>
+                          )}
+                          <div className="grid grid-cols-2 gap-3">
+                            {nutritionOverview.dailyStructure.dailyCalorieTarget && (
+                              <div className="bg-white rounded-lg p-2.5 border border-pink-100">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Daily Target</p>
+                                <p className="text-lg font-bold text-pink-600">{nutritionOverview.dailyStructure.dailyCalorieTarget} cal</p>
+                              </div>
+                            )}
+                            {nutritionOverview.dailyStructure.macroSplit && (
+                              <div className="bg-white rounded-lg p-2.5 border border-pink-100">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Macro Split</p>
+                                <div className="flex gap-1.5 mt-1">
+                                  <span className="text-xs text-red-600 font-medium">P {nutritionOverview.dailyStructure.macroSplit.protein}</span>
+                                  <span className="text-xs text-amber-600 font-medium">C {nutritionOverview.dailyStructure.macroSplit.carbs}</span>
+                                  <span className="text-xs text-purple-600 font-medium">F {nutritionOverview.dailyStructure.macroSplit.fat}</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          {nutritionOverview.dailyStructure.hydration && (
+                            <div className="mt-3 bg-blue-50 rounded-lg p-2.5 border border-blue-100">
+                              <p className="text-xs font-semibold text-blue-700 mb-0.5">Hydration</p>
+                              <p className="text-xs text-blue-600">{nutritionOverview.dailyStructure.hydration}</p>
+                            </div>
+                          )}
+                          {nutritionOverview.dailyStructure.supplements?.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-xs font-semibold text-gray-700 mb-1.5">Recommended Supplements</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {nutritionOverview.dailyStructure.supplements.map((s: string, i: number) => (
+                                  <Badge key={i} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                    {s}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {nutritionOverview.coachNotes && (
+                      <div className="bg-pink-50 rounded-lg p-3 border border-pink-200">
+                        <p className="text-xs font-semibold text-pink-700 mb-1">From Coach Zoe</p>
+                        <p className="text-sm text-gray-700">{nutritionOverview.coachNotes}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {nutritionByMeal.map(({ mealType, plan }) => {
                   if (!plan) return null;
                   const options = Array.isArray(plan.options) ? plan.options : [];
+                  let parsedTips: any = null;
+                  if (plan.tips) {
+                    try { parsedTips = JSON.parse(plan.tips); } catch { parsedTips = { tips: plan.tips }; }
+                  }
 
                   return (
                     <div key={mealType}>
-                      <h3 className="text-lg font-bold text-gray-900 mb-3">
-                        {MEAL_TYPE_LABELS[mealType] || mealType}
-                      </h3>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {MEAL_TYPE_LABELS[mealType] || mealType}
+                        </h3>
+                        {parsedTips?.timing && (
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                            <Clock className="w-3 h-3 inline mr-1" />
+                            {parsedTips.timing}
+                          </span>
+                        )}
+                      </div>
 
-                      {plan.tips && (
-                        <div className="bg-pink-50 rounded-lg p-3 mb-3 border border-pink-100">
-                          <p className="text-sm text-pink-800">{plan.tips}</p>
+                      {parsedTips?.tips && (
+                        <div className="bg-pink-50 rounded-lg p-2.5 mb-3 border border-pink-100">
+                          <p className="text-xs text-pink-800">{parsedTips.tips}</p>
                         </div>
                       )}
 
                       <div className="space-y-2">
-                        {options.map((option, idx) => {
+                        {options.map((option: any, idx: number) => {
                           const mealKey = `${mealType}-${idx}`;
                           const isExpanded = expandedMeals.has(mealKey);
 
@@ -753,7 +828,12 @@ export default function MyCoaching() {
                               >
                                 <div className="flex items-start justify-between">
                                   <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-gray-900 text-sm">{option.name}</p>
+                                    <div className="flex items-center gap-2">
+                                      <p className="font-semibold text-gray-900 text-sm">{option.name}</p>
+                                      {option.prepTime && (
+                                        <span className="text-[10px] text-gray-400 shrink-0">{option.prepTime}</span>
+                                      )}
+                                    </div>
                                     {option.description && (
                                       <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
                                         {option.description}
@@ -797,7 +877,7 @@ export default function MyCoaching() {
                                     <div className="mt-2">
                                       <p className="text-xs font-semibold text-gray-700 mb-1">Ingredients</p>
                                       <ul className="text-xs text-gray-600 space-y-0.5">
-                                        {option.ingredients.map((ing, i) => (
+                                        {option.ingredients.map((ing: string, i: number) => (
                                           <li key={i} className="flex items-start gap-1">
                                             <span className="text-pink-400 mt-0.5">•</span>
                                             {ing}
@@ -806,11 +886,11 @@ export default function MyCoaching() {
                                       </ul>
                                     </div>
                                   )}
-                                  {option.instructions && (
+                                  {(option.quickInstructions || option.instructions) && (
                                     <div className="mt-2">
-                                      <p className="text-xs font-semibold text-gray-700 mb-1">Instructions</p>
+                                      <p className="text-xs font-semibold text-gray-700 mb-1">How to Make</p>
                                       <p className="text-xs text-gray-600 whitespace-pre-line">
-                                        {option.instructions}
+                                        {option.quickInstructions || option.instructions}
                                       </p>
                                     </div>
                                   )}
@@ -823,6 +903,37 @@ export default function MyCoaching() {
                     </div>
                   );
                 })}
+
+                {nutritionOverview?.weeklyPrepTips?.length > 0 && (
+                  <Card className="border-green-100 bg-green-50/50">
+                    <CardContent className="pt-4 pb-4">
+                      <h3 className="font-bold text-gray-900 text-sm mb-2">Weekly Meal Prep Tips</h3>
+                      <ul className="space-y-1.5">
+                        {nutritionOverview.weeklyPrepTips.map((tip: string, i: number) => (
+                          <li key={i} className="text-xs text-gray-700 flex items-start gap-2">
+                            <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 mt-0.5" />
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {nutritionOverview?.snackIdeas?.length > 0 && (
+                  <Card className="border-amber-100 bg-amber-50/50">
+                    <CardContent className="pt-4 pb-4">
+                      <h3 className="font-bold text-gray-900 text-sm mb-2">Quick Snack Ideas</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {nutritionOverview.snackIdeas.map((snack: string, i: number) => (
+                          <Badge key={i} variant="outline" className="text-xs bg-white text-amber-700 border-amber-200">
+                            {snack}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
           </TabsContent>
