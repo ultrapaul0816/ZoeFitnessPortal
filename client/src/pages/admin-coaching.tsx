@@ -33,6 +33,7 @@ import {
   Calendar,
   Brain,
   Eye,
+  ExternalLink,
 } from "lucide-react";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
@@ -180,6 +181,20 @@ export default function AdminCoaching() {
     },
     onError: (err: Error) => {
       toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const updateClientMutation = useMutation({
+    mutationFn: async ({ clientId, updates }: { clientId: string; updates: Record<string, any> }) => {
+      const res = await apiRequest("PATCH", `/api/admin/coaching/clients/${clientId}`, updates);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: "Client updated" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error updating client", description: err.message, variant: "destructive" });
     },
   });
 
@@ -538,18 +553,56 @@ export default function AdminCoaching() {
                         <span className="text-sm font-medium">{selectedClient.planDurationWeeks || 4} weeks</span>
                       </div>
                       <Separator />
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Start Date</span>
-                        <span className="text-sm font-medium">
-                          {selectedClient.startDate ? new Date(selectedClient.startDate).toLocaleDateString() : "Not set"}
-                        </span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">Purchase Date</span>
+                        <Input
+                          type="date"
+                          className="w-40 h-8 text-sm"
+                          value={selectedClient.purchaseDate ? new Date(selectedClient.purchaseDate).toISOString().split('T')[0] : ''}
+                          onChange={(e) => updateClientMutation.mutate({
+                            clientId: selectedClient.id,
+                            updates: { purchaseDate: e.target.value ? new Date(e.target.value).toISOString() : null }
+                          })}
+                        />
                       </div>
                       <Separator />
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">Form Submission Date</span>
+                        <Input
+                          type="date"
+                          className="w-40 h-8 text-sm"
+                          value={selectedClient.formSubmissionDate ? new Date(selectedClient.formSubmissionDate).toISOString().split('T')[0] : ''}
+                          onChange={(e) => updateClientMutation.mutate({
+                            clientId: selectedClient.id,
+                            updates: { formSubmissionDate: e.target.value ? new Date(e.target.value).toISOString() : null }
+                          })}
+                        />
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">Start Date</span>
+                        <Input
+                          type="date"
+                          className="w-40 h-8 text-sm"
+                          value={selectedClient.startDate ? new Date(selectedClient.startDate).toISOString().split('T')[0] : ''}
+                          onChange={(e) => updateClientMutation.mutate({
+                            clientId: selectedClient.id,
+                            updates: { startDate: e.target.value ? new Date(e.target.value).toISOString() : null }
+                          })}
+                        />
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-500">End Date</span>
-                        <span className="text-sm font-medium">
-                          {selectedClient.endDate ? new Date(selectedClient.endDate).toLocaleDateString() : "Not set"}
-                        </span>
+                        <Input
+                          type="date"
+                          className="w-40 h-8 text-sm"
+                          value={selectedClient.endDate ? new Date(selectedClient.endDate).toISOString().split('T')[0] : ''}
+                          onChange={(e) => updateClientMutation.mutate({
+                            clientId: selectedClient.id,
+                            updates: { endDate: e.target.value ? new Date(e.target.value).toISOString() : null }
+                          })}
+                        />
                       </div>
                       <Separator />
                       <div className="flex justify-between">
@@ -597,6 +650,113 @@ export default function AdminCoaching() {
                       )}
                     </CardContent>
                   </Card>
+
+                  <Card className="border-0 shadow-sm lg:col-span-2">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-base flex items-center gap-2">
+                          Pregnancy Information
+                          {selectedClient.isPregnant && (
+                            <Badge className="bg-pink-100 text-pink-700 border-pink-200 text-[10px]">
+                              {selectedClient.trimester ? `Trimester ${selectedClient.trimester}` : "Pregnant"}
+                            </Badge>
+                          )}
+                        </CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                          <Label className="text-xs text-gray-500">Pregnancy Status</Label>
+                          <Select
+                            value={selectedClient.isPregnant ? "yes" : "no"}
+                            onValueChange={(val) => updateClientMutation.mutate({
+                              clientId: selectedClient.id,
+                              updates: { isPregnant: val === "yes" }
+                            })}
+                          >
+                            <SelectTrigger className="mt-1 h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="no">Not Pregnant</SelectItem>
+                              <SelectItem value="yes">Pregnant</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-500">Trimester</Label>
+                          <Select
+                            value={selectedClient.trimester ? String(selectedClient.trimester) : "none"}
+                            onValueChange={(val) => updateClientMutation.mutate({
+                              clientId: selectedClient.id,
+                              updates: { trimester: val === "none" ? null : parseInt(val) }
+                            })}
+                          >
+                            <SelectTrigger className="mt-1 h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Not set</SelectItem>
+                              <SelectItem value="1">1st Trimester</SelectItem>
+                              <SelectItem value="2">2nd Trimester</SelectItem>
+                              <SelectItem value="3">3rd Trimester</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-500">Due Date</Label>
+                          <Input
+                            type="date"
+                            className="mt-1 h-9"
+                            value={selectedClient.dueDate ? new Date(selectedClient.dueDate).toISOString().split('T')[0] : ''}
+                            onChange={(e) => updateClientMutation.mutate({
+                              clientId: selectedClient.id,
+                              updates: { dueDate: e.target.value ? new Date(e.target.value).toISOString() : null }
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-500">Pregnancy Notes</Label>
+                          <Textarea
+                            className="mt-1 text-sm min-h-[36px]"
+                            rows={1}
+                            placeholder="Any pregnancy-related notes..."
+                            defaultValue={selectedClient.pregnancyNotes || ''}
+                            onBlur={(e) => {
+                              if (e.target.value !== (selectedClient.pregnancyNotes || '')) {
+                                updateClientMutation.mutate({
+                                  clientId: selectedClient.id,
+                                  updates: { pregnancyNotes: e.target.value || null }
+                                });
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdR8uE3rKSrYgqbmurRpG7D2k0UjQWAXCvEIltHsYsj0bsl0Q/viewform?usp=header"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-violet-50 text-violet-700 rounded-lg border border-violet-200 text-sm font-medium hover:bg-violet-100 transition"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Google Form
+                  </a>
+                  <a
+                    href="https://docs.google.com/spreadsheets/d/1Y-R6P46Id8iVsL25BIStetM_9HIfM4Ofez56sPUkIe4/edit?resourcekey=&gid=433692695#gid=433692695"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-200 text-sm font-medium hover:bg-emerald-100 transition"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Form Responses Sheet
+                  </a>
                 </div>
               </TabsContent>
 
