@@ -232,17 +232,19 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-indigo-600/20 border border-indigo-500/30 mb-4">
-            <Shield className="w-7 h-7 text-indigo-400" />
-          </div>
-          <h1 className="text-2xl font-semibold text-white">Admin Portal</h1>
-          <p className="text-slate-400 text-sm mt-1">Secure administration access</p>
+          <img
+            src="/assets/logo.png"
+            alt="Stronger With Zoe"
+            className="h-16 w-auto mx-auto mb-4"
+          />
+          <h1 className="text-2xl font-semibold text-gray-900">Admin Portal</h1>
+          <p className="text-gray-500 text-sm mt-1">Secure administration access</p>
         </div>
 
-        <Card className="border-slate-700/50 bg-white shadow-2xl">
+        <Card className="border-gray-200 bg-white shadow-lg">
           <CardContent className="p-6">
             {view === 'credentials' && (
               <>
@@ -542,7 +544,7 @@ export default function AdminLogin() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-slate-500 text-xs mt-6">
+        <p className="text-center text-gray-400 text-xs mt-6">
           Protected area. Authorized personnel only.
         </p>
       </div>
