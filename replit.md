@@ -47,6 +47,9 @@ Razorpay webhook at `/api/webhooks/razorpay` processes WhatsApp community paymen
 ## System Reports
 Admin reports page at `/admin/reports` provides a system usage summary including user stats, enrollments, workout completions, community engagement, and WhatsApp requests. Reports are exportable as CSV files.
 
+## Private 1:1 Coaching
+The platform supports a private coaching program with personalized AI-generated plans. Database tables: `coaching_clients`, `coaching_workout_plans`, `coaching_nutrition_plans`, `coaching_tips`, `direct_messages`, `coaching_checkins`. Admin enrollment flow: Google Form submission → Payment confirmation → Admin enrolls client → Thank you email sent → AI generates 4-week workout plan (4 workout days, 2 cardio, 1 rest per week) and nutrition plan (5 options each for breakfast, lunch, snack, dinner) using OpenAI GPT-4o → Admin reviews/approves → Client status becomes active. Client statuses: pending → pending_plan → active → completed/paused/cancelled. Client-facing page at `/my-coaching` with 4 tabs: Workouts (week/day view with exercises), Nutrition (meal options with macros), Messages (DM chat with coach Zoe), Check-in (daily mood/energy/sleep/water/workout/meals/weight tracking). Admin coaching management at `/admin/coaching` in the Coaching sidebar section.
+
 # External Dependencies
 -   **Database**: PostgreSQL
 -   **Deployment**: Replit
