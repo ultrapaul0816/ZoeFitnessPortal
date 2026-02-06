@@ -7890,6 +7890,104 @@ PREGNANCY NUTRITION (if client is pregnant):
     }
   });
 
+  app.get("/api/coaching/workout-completions", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const weekNumber = req.query.week ? parseInt(req.query.week as string) : undefined;
+      const dayNumber = req.query.day ? parseInt(req.query.day as string) : undefined;
+
+      const completions = await storage.getCoachingWorkoutCompletions(client.id, weekNumber, dayNumber);
+      res.json(completions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch workout completions" });
+    }
+  });
+
+  app.post("/api/coaching/workout-completions", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const { planId, weekNumber, dayNumber, sectionIndex, exerciseIndex, exerciseName, completed, skipped } = req.body;
+      if (!planId || weekNumber === undefined || dayNumber === undefined || sectionIndex === undefined || exerciseIndex === undefined) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const result = await storage.upsertCoachingWorkoutCompletion({
+        clientId: client.id,
+        userId: user.id,
+        planId,
+        weekNumber,
+        dayNumber,
+        sectionIndex,
+        exerciseIndex,
+        exerciseName: exerciseName || "Unknown",
+        completed: completed || false,
+        skipped: skipped || false,
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save workout completion" });
+    }
+  });
+
+  app.post("/api/coaching/workout-completions/bulk", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const { completions } = req.body;
+      if (!Array.isArray(completions)) {
+        return res.status(400).json({ message: "completions must be an array" });
+      }
+
+      const mapped = completions.map((c: any) => ({
+        clientId: client.id,
+        userId: user.id,
+        planId: c.planId,
+        weekNumber: c.weekNumber,
+        dayNumber: c.dayNumber,
+        sectionIndex: c.sectionIndex,
+        exerciseIndex: c.exerciseIndex,
+        exerciseName: c.exerciseName || "Unknown",
+        completed: c.completed || false,
+        skipped: c.skipped || false,
+      }));
+
+      const results = await storage.bulkUpsertCoachingWorkoutCompletions(mapped);
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save workout completions" });
+    }
+  });
+
+  app.get("/api/admin/coaching/:clientId/workout-completions", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const { clientId } = req.params;
+      const weekNumber = req.query.week ? parseInt(req.query.week as string) : undefined;
+
+      const completions = await storage.getCoachingWorkoutCompletions(clientId, weekNumber);
+      res.json(completions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch workout completions" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

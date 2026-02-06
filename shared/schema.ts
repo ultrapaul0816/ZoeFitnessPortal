@@ -1076,6 +1076,29 @@ export const coachingCheckins = pgTable("coaching_checkins", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const coachingWorkoutCompletions = pgTable("coaching_workout_completions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: varchar("client_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  planId: varchar("plan_id").notNull(),
+  weekNumber: integer("week_number").notNull(),
+  dayNumber: integer("day_number").notNull(),
+  sectionIndex: integer("section_index").notNull(),
+  exerciseIndex: integer("exercise_index").notNull(),
+  exerciseName: text("exercise_name").notNull(),
+  completed: boolean("completed").default(false),
+  skipped: boolean("skipped").default(false),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export type CoachingWorkoutCompletion = typeof coachingWorkoutCompletions.$inferSelect;
+export type InsertCoachingWorkoutCompletion = z.infer<typeof insertCoachingWorkoutCompletionSchema>;
+export const insertCoachingWorkoutCompletionSchema = createInsertSchema(coachingWorkoutCompletions).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertEducationalTopicSchema = createInsertSchema(educationalTopics).omit({
   id: true,
   createdAt: true,

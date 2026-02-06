@@ -69,6 +69,8 @@ import {
   type InsertDirectMessage,
   type CoachingCheckin,
   type InsertCoachingCheckin,
+  type CoachingWorkoutCompletion,
+  type InsertCoachingWorkoutCompletion,
 } from "@shared/schema";
 import {
   users,
@@ -117,6 +119,7 @@ import {
   coachingTips,
   directMessages,
   coachingCheckins,
+  coachingWorkoutCompletions,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -603,6 +606,11 @@ export interface IStorage {
   // Coaching Check-ins
   getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]>;
   createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin>;
+
+  // Coaching Workout Completions
+  getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]>;
+  upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion>;
+  bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -2438,6 +2446,9 @@ export class MemStorage implements IStorage {
   async getUnreadMessageCount(clientId: string, receiverId: string): Promise<number> { return 0; }
   async getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]> { return []; }
   async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> { throw new Error("Not implemented"); }
+  async getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]> { return []; }
+  async upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion> { throw new Error("Not implemented"); }
+  async bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]> { return []; }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -5629,6 +5640,57 @@ class DatabaseStorage implements IStorage {
   async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> {
     const [created] = await this.db.insert(coachingCheckins).values(checkin).returning();
     return created;
+  }
+
+  async getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]> {
+    let conditions = [eq(coachingWorkoutCompletions.clientId, clientId)];
+    if (weekNumber !== undefined) {
+      conditions.push(eq(coachingWorkoutCompletions.weekNumber, weekNumber));
+    }
+    if (dayNumber !== undefined) {
+      conditions.push(eq(coachingWorkoutCompletions.dayNumber, dayNumber));
+    }
+    return this.db.select().from(coachingWorkoutCompletions)
+      .where(and(...conditions))
+      .orderBy(asc(coachingWorkoutCompletions.sectionIndex), asc(coachingWorkoutCompletions.exerciseIndex));
+  }
+
+  async upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion> {
+    const existing = await this.db.select().from(coachingWorkoutCompletions)
+      .where(and(
+        eq(coachingWorkoutCompletions.clientId, completion.clientId),
+        eq(coachingWorkoutCompletions.planId, completion.planId),
+        eq(coachingWorkoutCompletions.sectionIndex, completion.sectionIndex),
+        eq(coachingWorkoutCompletions.exerciseIndex, completion.exerciseIndex)
+      ))
+      .limit(1);
+
+    if (existing.length > 0) {
+      const [updated] = await this.db.update(coachingWorkoutCompletions)
+        .set({
+          completed: completion.completed,
+          skipped: completion.skipped,
+          completedAt: completion.completed ? new Date() : null,
+        })
+        .where(eq(coachingWorkoutCompletions.id, existing[0].id))
+        .returning();
+      return updated;
+    }
+
+    const [created] = await this.db.insert(coachingWorkoutCompletions).values({
+      ...completion,
+      completedAt: completion.completed ? new Date() : null,
+    }).returning();
+    return created;
+  }
+
+  async bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]> {
+    const results: CoachingWorkoutCompletion[] = [];
+    for (const completion of completions) {
+      const result = await this.upsertCoachingWorkoutCompletion(completion);
+      results.push(result);
+    }
+    return results;
   }
 }
 
