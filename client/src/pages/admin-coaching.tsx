@@ -101,6 +101,17 @@ export default function AdminCoaching() {
     enabled: !!selectedClientId,
   });
 
+  const { data: clientCompletions = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/coaching", selectedClientId, "workout-completions"],
+    queryFn: async () => {
+      if (!selectedClientId) return [];
+      const res = await fetch(`/api/admin/coaching/${selectedClientId}/workout-completions`, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!selectedClientId,
+  });
+
   const createClientMutation = useMutation({
     mutationFn: async (data: { email: string; notes: string; paymentAmount: number }) => {
       const res = await apiRequest("POST", "/api/admin/coaching/clients", data);
@@ -790,9 +801,24 @@ export default function AdminCoaching() {
                             )}
                             {hasWeek && (
                               <div className="grid grid-cols-7 gap-2">
-                                {weekPlan.sort((a: any, b: any) => a.dayNumber - b.dayNumber).map((day: any) => (
+                                {weekPlan.sort((a: any, b: any) => a.dayNumber - b.dayNumber).map((day: any) => {
+                                  const dayCompletions = (clientCompletions as any[]).filter(
+                                    (c: any) => c.weekNumber === week && c.dayNumber === day.dayNumber && c.completed
+                                  );
+                                  const exercisesData = day.exercises as any;
+                                  let totalExercises = 0;
+                                  if (exercisesData?.sections) {
+                                    exercisesData.sections.forEach((s: any) => { totalExercises += (s.exercises?.length || 0); });
+                                  } else if (Array.isArray(exercisesData)) {
+                                    totalExercises = exercisesData.length;
+                                  }
+                                  const completedCount = dayCompletions.length;
+                                  const allDone = totalExercises > 0 && completedCount >= totalExercises;
+
+                                  return (
                                   <div key={day.id} className={cn(
-                                    "p-3 rounded-xl border text-center",
+                                    "p-3 rounded-xl border text-center relative",
+                                    allDone ? "bg-green-50 border-green-300 ring-1 ring-green-200" :
                                     day.dayType === "rest" ? "bg-gray-50 border-gray-200" :
                                     day.dayType === "cardio" ? "bg-blue-50 border-blue-200" :
                                     day.dayType === "active_recovery" ? "bg-amber-50 border-amber-200" :
@@ -805,9 +831,23 @@ export default function AdminCoaching() {
                                     <Badge variant="outline" className="text-[9px] mt-1.5">
                                       {day.dayType}
                                     </Badge>
+                                    {totalExercises > 0 && (
+                                      <div className="mt-1.5">
+                                        <div className="w-full bg-gray-200 rounded-full h-1">
+                                          <div
+                                            className={cn("h-1 rounded-full transition-all", allDone ? "bg-green-500" : "bg-pink-400")}
+                                            style={{ width: `${Math.min((completedCount / totalExercises) * 100, 100)}%` }}
+                                          />
+                                        </div>
+                                        <p className={cn("text-[9px] mt-0.5", allDone ? "text-green-600 font-semibold" : "text-gray-400")}>
+                                          {completedCount}/{totalExercises}
+                                        </p>
+                                      </div>
+                                    )}
                                     {day.isApproved && <CheckCircle2 className="w-3 h-3 text-green-500 mx-auto mt-1" />}
                                   </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             )}
                           </div>
