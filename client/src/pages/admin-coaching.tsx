@@ -69,6 +69,9 @@ export default function AdminCoaching() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showNewClientDialog, setShowNewClientDialog] = useState(false);
   const [newClientEmail, setNewClientEmail] = useState("");
+  const [newClientFirstName, setNewClientFirstName] = useState("");
+  const [newClientLastName, setNewClientLastName] = useState("");
+  const [newClientPhone, setNewClientPhone] = useState("");
   const [newClientNotes, setNewClientNotes] = useState("");
   const [newClientPaymentAmount, setNewClientPaymentAmount] = useState("5000");
   const [messageInput, setMessageInput] = useState("");
@@ -113,7 +116,7 @@ export default function AdminCoaching() {
   });
 
   const createClientMutation = useMutation({
-    mutationFn: async (data: { email: string; notes: string; paymentAmount: number }) => {
+    mutationFn: async (data: { email: string; firstName?: string; lastName?: string; phone?: string; notes: string; paymentAmount: number }) => {
       const res = await apiRequest("POST", "/api/admin/coaching/clients", data);
       return res.json();
     },
@@ -121,6 +124,9 @@ export default function AdminCoaching() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
       setShowNewClientDialog(false);
       setNewClientEmail("");
+      setNewClientFirstName("");
+      setNewClientLastName("");
+      setNewClientPhone("");
       setNewClientNotes("");
       toast({ title: "Client enrolled", description: "Thank you email will be sent to the client." });
     },
@@ -272,19 +278,45 @@ export default function AdminCoaching() {
                   New Client
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Enroll New Coaching Client</DialogTitle>
+                  <p className="text-sm text-gray-500 mt-1">If the email doesn't have an account yet, a new one will be created automatically.</p>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div>
-                    <Label>Client Email</Label>
+                    <Label>Client Email <span className="text-red-400">*</span></Label>
                     <Input 
                       placeholder="client@example.com" 
                       value={newClientEmail} 
                       onChange={e => setNewClientEmail(e.target.value)}
                     />
-                    <p className="text-xs text-gray-500 mt-1">The user must already have an account in the system.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>First Name</Label>
+                      <Input 
+                        placeholder="First name" 
+                        value={newClientFirstName} 
+                        onChange={e => setNewClientFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Last Name</Label>
+                      <Input 
+                        placeholder="Last name" 
+                        value={newClientLastName} 
+                        onChange={e => setNewClientLastName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Phone Number</Label>
+                    <Input 
+                      placeholder="+91 98765 43210" 
+                      value={newClientPhone} 
+                      onChange={e => setNewClientPhone(e.target.value)}
+                    />
                   </div>
                   <div>
                     <Label>Payment Amount (₹)</Label>
@@ -310,6 +342,9 @@ export default function AdminCoaching() {
                   <Button 
                     onClick={() => createClientMutation.mutate({ 
                       email: newClientEmail, 
+                      firstName: newClientFirstName || undefined,
+                      lastName: newClientLastName || undefined,
+                      phone: newClientPhone || undefined,
                       notes: newClientNotes, 
                       paymentAmount: parseInt(newClientPaymentAmount) * 100 
                     })}

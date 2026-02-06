@@ -7092,11 +7092,26 @@ Keep it to 2-4 sentences, warm and encouraging.`;
   // Create new coaching client (admin enrolls user)
   app.post("/api/admin/coaching/clients", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
-      const { email, notes, paymentAmount } = req.body;
+      const { email, firstName, lastName, phone, notes, paymentAmount } = req.body;
       if (!email) return res.status(400).json({ message: "Email is required" });
 
-      const user = await storage.getUserByEmail(email.toLowerCase().trim());
-      if (!user) return res.status(404).json({ message: "No user found with this email. They must have an account first." });
+      let user = await storage.getUserByEmail(email.toLowerCase().trim());
+      if (!user) {
+        if (!firstName || !lastName) {
+          return res.status(400).json({ message: "First name and last name are required for new clients without an existing account." });
+        }
+        user = await storage.createUser({
+          email: email.toLowerCase().trim(),
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          phone: phone?.trim() || null,
+          password: "",
+          isAdmin: false,
+          hasAcceptedTerms: true,
+          hasAcceptedHealthDisclaimer: true,
+        } as any);
+        console.log(`[Coaching] Auto-created user account for ${email}: ${user.id}`);
+      }
 
       const existing = await storage.getCoachingClientByUserId(user.id);
       if (existing && (existing.status === "active" || existing.status === "pending" || existing.status === "pending_plan")) {
