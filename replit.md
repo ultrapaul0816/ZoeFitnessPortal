@@ -50,6 +50,15 @@ Admin reports page at `/admin/reports` provides a system usage summary including
 ## Private 1:1 Coaching
 The platform supports a private coaching program with personalized AI-generated plans. Database tables: `coaching_clients`, `coaching_workout_plans`, `coaching_nutrition_plans`, `coaching_tips`, `direct_messages`, `coaching_checkins`. Admin enrollment flow: Google Form submission → Payment confirmation → Admin enrolls client → Thank you email sent → AI generates 4-week workout plan (4 workout days, 2 cardio, 1 rest per week) and nutrition plan (5 options each for breakfast, lunch, snack, dinner) using OpenAI GPT-4o → Admin reviews/approves → Client status becomes active. Client statuses: pending → pending_plan → active → completed/paused/cancelled. Client-facing page at `/my-coaching` with 4 tabs: Workouts (week/day view with exercises), Nutrition (meal options with macros), Messages (DM chat with coach Zoe), Check-in (daily mood/energy/sleep/water/workout/meals/weight tracking). Admin coaching management at `/admin/coaching` in the Coaching sidebar section.
 
+### Client Date Tracking
+Each coaching client has 4 separate dates: `purchaseDate` (when payment was made), `formSubmissionDate` (when Google Form was submitted), `startDate` (admin-set program start), `endDate` (admin-set program end). All dates are editable by the admin in the client overview tab.
+
+### Pregnancy Tracking
+Coaching clients can be tagged with pregnancy status. Fields: `isPregnant` (boolean), `trimester` (1-3), `dueDate`, `pregnancyNotes`. Admin can set/update/remove pregnancy info. AI workout and nutrition generation prompts include trimester-specific safety rules (exercise modifications, food restrictions, calorie adjustments) when a client is marked as pregnant.
+
+### Admin Quick Links
+Google Form URL and Google Sheet responses link are displayed as quick-access buttons in the admin coaching overview tab.
+
 # External Dependencies
 -   **Database**: PostgreSQL
 -   **Deployment**: Replit

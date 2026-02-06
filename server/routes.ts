@@ -7276,6 +7276,9 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+      const pregnancyInfo = client.isPregnant
+        ? `PREGNANT CLIENT - Trimester: ${client.trimester || "unknown"}, Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
+        : "";
 
       const workoutResponse = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -7457,11 +7460,20 @@ EXERCISE SELECTION:
 PROGRESSION:
 - Week ${weekNumber} should be ${weekNumber === 1 ? "introductory and foundational - lighter weights, fewer rounds, focus on form" : weekNumber === 2 ? "building on week 1 with moderate progression - slightly more rounds or reps" : weekNumber === 3 ? "challenging with increased intensity - heavier weights, more complex movements" : "peak week with the most advanced variations and highest volume"}
 - Focus on postpartum-safe exercises (pelvic floor awareness, core rehabilitation, functional movements)
-- Always include breathing cues in notes where relevant`
+- Always include breathing cues in notes where relevant
+
+PREGNANCY SAFETY (if client is pregnant):
+- AVOID: heavy lifting, exercises lying flat on back (after 1st trimester), high-impact jumping, deep twists, exercises that increase intra-abdominal pressure
+- MODIFY: reduce intensity, use lighter weights, avoid supine positions, focus on stability and mobility
+- INCLUDE: pelvic floor exercises, modified planks (incline), side-lying exercises, seated upper body work, prenatal-safe stretches
+- Trimester 1: generally safe with modifications, avoid overheating
+- Trimester 2: avoid supine exercises, reduce range of motion as needed
+- Trimester 3: focus on mobility, breathing, gentle strength maintenance, birth preparation movements
+- Always add safety notes for pregnant clients in exercise notes`
           },
           {
             role: "user",
-            content: `Create Week ${weekNumber} workout plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}\n${previousWeekSummary}`
+            content: `Create Week ${weekNumber} workout plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}\n${previousWeekSummary}${pregnancyInfo ? `\n\n⚠️ ${pregnancyInfo}` : ""}`
           }
         ],
         response_format: { type: "json_object" },
@@ -7553,6 +7565,9 @@ PROGRESSION:
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+      const pregnancyInfoNutrition = client.isPregnant
+        ? `PREGNANT CLIENT - Trimester: ${client.trimester || "unknown"}, Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
+        : "";
 
       const nutritionResponse = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -7616,11 +7631,18 @@ Rules:
 - Focus on nutrient-dense, postpartum-friendly foods that support recovery and energy
 - Include iron-rich foods, calcium sources, and foods that support lactation if relevant
 - Keep meals practical, quick to prepare, and family-friendly for busy new mothers
-- Adjust calorie targets based on activity level, breastfeeding status, and goals`
+- Adjust calorie targets based on activity level, breastfeeding status, and goals
+
+PREGNANCY NUTRITION (if client is pregnant):
+- Increase calorie target by 300-500 cal/day depending on trimester
+- Emphasize: folate-rich foods, iron, calcium, DHA/omega-3, choline, vitamin D
+- AVOID: raw/undercooked meats, unpasteurized dairy, high-mercury fish, excess caffeine, alcohol
+- Include: prenatal vitamin in supplements, extra hydration recommendations
+- Trimester-specific: adjust portions and food choices based on common trimester needs and comfort`
           },
           {
             role: "user",
-            content: `Create a nutrition plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}`
+            content: `Create a nutrition plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}${pregnancyInfoNutrition ? `\n\n⚠️ ${pregnancyInfoNutrition}` : ""}`
           }
         ],
         response_format: { type: "json_object" },
