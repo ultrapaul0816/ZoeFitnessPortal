@@ -4090,22 +4090,9 @@ RESPONSE GUIDELINES:
 
       const userData = adminCreateUserSchema.parse(requestData);
 
-      // Generate a strong password if none provided
-      const plainPassword = req.body.password || generateStrongPassword(12);
-
-      // Validate password strength if manually provided
-      if (req.body.password) {
-        try {
-          passwordSchema.parse(plainPassword);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            return res.status(400).json({
-              message: "Password does not meet security requirements",
-              errors: error.errors,
-            });
-          }
-        }
-      }
+      const firstName = userData.firstName.trim();
+      const simpleName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+      const plainPassword = req.body.password || `${simpleName}123`;
       
       // Hash the password before storing
       const hashedPassword = await bcrypt.hash(plainPassword, 10);
@@ -4750,21 +4737,13 @@ RESPONSE GUIDELINES:
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Use manual password if provided, otherwise generate random password
-      const plainPassword = manualPassword || generateStrongPassword(12);
-
-      // Validate password strength if manually provided
+      let plainPassword: string;
       if (manualPassword) {
-        try {
-          passwordSchema.parse(plainPassword);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            return res.status(400).json({
-              message: "Password does not meet security requirements",
-              errors: error.errors,
-            });
-          }
-        }
+        plainPassword = manualPassword;
+      } else {
+        const name = (user.firstName || 'User').trim();
+        const simpleName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+        plainPassword = `${simpleName}123`;
       }
 
       // Hash the password before storing
@@ -6637,9 +6616,9 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         userId = existingUser.id;
         console.log("Existing user found for Shopify order:", email);
       } else {
-        // Create new user
         isNewUser = true;
-        password = generatePassword();
+        const simpleName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+        password = `${simpleName}123`;
         const hashedPassword = await bcrypt.hash(password, 10);
         
         const now = new Date();
