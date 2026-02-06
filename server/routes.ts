@@ -7262,6 +7262,11 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         ? `Previous week plan: ${previousWeekPlans.map(p => `Day ${p.dayNumber}: ${p.dayType} - ${p.title}`).join(", ")}`
         : "";
 
+      const allExercises = await storage.getExercises();
+      const exerciseLibraryStr = allExercises.map(ex =>
+        `${ex.name} | ${ex.category} | ${ex.difficulty} | ${ex.id} | ${ex.videoUrl || "no-video"}`
+      ).join("\n");
+
       const openai = new OpenAI({
         baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
         apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -7277,33 +7282,182 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         messages: [
           {
             role: "system",
-            content: `You are Zoe, an expert postnatal fitness coach. Create a personalized 1-week workout plan for Week ${weekNumber} of a 4-week program.
+            content: `You are Zoe, an expert postnatal fitness coach known for structured, professional workout plans. Create a personalized 1-week workout plan for Week ${weekNumber} of a 4-week program.
+
+You have access to an EXERCISE LIBRARY below. When selecting exercises, PREFER exercises from this library and include their exerciseId and videoUrl. If an exercise you want to prescribe is NOT in the library, set exerciseId and videoUrl to null.
+
+EXERCISE LIBRARY:
+${exerciseLibraryStr}
 
 IMPORTANT: Return a JSON object with exactly this structure:
 {
   "days": [
     {
       "dayNumber": 1,
-      "dayType": "workout",
+      "dayType": "upper_body_strength",
       "title": "Upper Body Strength",
-      "description": "Focus on shoulders and arms",
-      "exercises": [
-        {"name": "Wall Push-ups", "sets": 3, "reps": "10-12", "duration": null, "restSeconds": 30, "notes": "Keep core engaged"}
+      "description": "Focus on shoulders, back, and arms with progressive overload",
+      "coachNotes": "Focus on form over speed. Rest as needed between rounds.",
+      "sections": [
+        {
+          "name": "Warmup",
+          "type": "warmup",
+          "duration": "5 minutes",
+          "rounds": 1,
+          "restBetweenRounds": null,
+          "exercises": [
+            {
+              "name": "Warmup Flow",
+              "exerciseId": null,
+              "videoUrl": null,
+              "sets": 1,
+              "reps": null,
+              "duration": "5 minutes",
+              "restAfter": null,
+              "notes": "Gentle full-body warm-up: arm circles, cat-cow, hip circles"
+            }
+          ]
+        },
+        {
+          "name": "Activation Sequence",
+          "type": "activation",
+          "duration": null,
+          "rounds": 3,
+          "restBetweenRounds": "15 seconds",
+          "exercises": [
+            {
+              "name": "Band Lat Pulldowns",
+              "exerciseId": "use-id-from-library-if-available",
+              "videoUrl": "use-url-from-library-if-available",
+              "sets": 1,
+              "reps": "20",
+              "duration": null,
+              "restAfter": null,
+              "notes": "Use mini band, controlled movement"
+            }
+          ]
+        },
+        {
+          "name": "Workout Part 1",
+          "type": "main",
+          "duration": null,
+          "rounds": 3,
+          "restBetweenRounds": "60 seconds",
+          "exercises": [
+            {
+              "name": "Assisted Band Pullups",
+              "exerciseId": null,
+              "videoUrl": null,
+              "sets": 4,
+              "reps": "6-8",
+              "duration": null,
+              "restAfter": "60 seconds",
+              "notes": "Focus on controlled negative"
+            }
+          ]
+        },
+        {
+          "name": "Workout Part 2 - Circuit",
+          "type": "circuit",
+          "duration": null,
+          "rounds": 4,
+          "restBetweenRounds": "90 seconds",
+          "exercises": []
+        },
+        {
+          "name": "Finisher - EMOM 8 min",
+          "type": "finisher",
+          "duration": "8 minutes",
+          "rounds": null,
+          "restBetweenRounds": null,
+          "format": "45 secs work / 15 secs rest",
+          "exercises": []
+        },
+        {
+          "name": "Stretch",
+          "type": "stretch",
+          "duration": "2 minutes",
+          "rounds": 1,
+          "restBetweenRounds": null,
+          "exercises": [
+            {
+              "name": "Camel Pose",
+              "exerciseId": null,
+              "videoUrl": null,
+              "sets": 1,
+              "reps": null,
+              "duration": "1 minute",
+              "restAfter": null,
+              "notes": "Hold and breathe"
+            }
+          ]
+        },
+        {
+          "name": "Cooldown",
+          "type": "cooldown",
+          "duration": "5 minutes",
+          "rounds": 1,
+          "restBetweenRounds": null,
+          "exercises": [
+            {
+              "name": "Cooldown Flow",
+              "exerciseId": null,
+              "videoUrl": null,
+              "sets": 1,
+              "reps": null,
+              "duration": "5 minutes",
+              "restAfter": null,
+              "notes": "Gentle stretching and deep breathing"
+            }
+          ]
+        }
       ],
-      "coachNotes": "Take it easy today"
+      "equipmentNeeded": ["Dumbbells (4kg recommended)", "Mini resistance bands"],
+      "estimatedDuration": "45 minutes",
+      "difficultyLevel": "intermediate"
     }
   ]
 }
 
-Rules:
+RULES:
 - "days" must be an array of exactly 7 objects (dayNumber 1=Monday through 7=Sunday)
-- "dayType" must be one of: "workout", "cardio", "rest", "active_recovery"
-- Decide the mix of workout/cardio/rest/active_recovery days based on the client's fitness level and goals. Fitter clients can have more workout days and fewer rest days. Less fit or early postpartum clients need more rest.
-- Each workout day must have an "exercises" array with at least 3 exercises
-- Rest and active_recovery days can have an empty exercises array or light movements
-- Week ${weekNumber} should be ${weekNumber === 1 ? "introductory and foundational" : weekNumber === 2 ? "building on week 1 with moderate progression" : weekNumber === 3 ? "challenging with increased intensity" : "peak week with the most advanced variations"}
-- Focus on postpartum-safe exercises (pelvic floor, core rehabilitation, functional movements)
-- Each exercise needs: name, sets (number), reps (string), duration (string or null), restSeconds (number), notes (string)`
+- "dayType" must be one of: "upper_body_strength", "lower_body_core", "full_body_strength", "cardio", "conditioning", "active_recovery", "rest", "sport_active_play"
+- Decide the mix based on the client's fitness level and goals. A typical week: 3-4 strength days, 1 cardio day, 1-2 rest/active recovery days, 1 sport/play day.
+
+SECTION RULES FOR STRENGTH DAYS (upper_body_strength, lower_body_core, full_body_strength):
+- Must include ALL 7 section types: warmup, activation, main, circuit, finisher, stretch, cooldown
+- "warmup": 5 min warmup flow
+- "activation": 2-3 activation exercises using bands, 3 rounds
+- "main": 1-2 compound/heavy movements, 3-4 sets each
+- "circuit": 4-5 exercises performed in a circuit for 3-4 rounds
+- "finisher": EMOM or timed interval work, 6-10 minutes. Include a "format" field like "45 secs work / 15 secs rest"
+- "stretch": 1-2 targeted stretches, 1 minute each
+- "cooldown": 5 min cooldown flow
+
+SECTION RULES FOR CARDIO DAYS:
+- Include: warmup, main (30 min cardio options - brisk walking, running intervals, etc.), stretch, cooldown
+- Keep it simple, 3-4 sections total
+
+SECTION RULES FOR CONDITIONING DAYS:
+- Include: warmup, activation, circuit (high-intensity circuit, 4-5 rounds), stretch, cooldown
+
+SECTION RULES FOR REST / ACTIVE RECOVERY DAYS:
+- Include: warmup (gentle movement), stretch, cooldown only
+- Keep sections minimal, focus on mobility and recovery
+
+SECTION RULES FOR SPORT & ACTIVE PLAY:
+- Include a simple structure with warmup, main (choose a sport or activity), cooldown
+
+EXERCISE SELECTION:
+- When an exercise matches one in the EXERCISE LIBRARY above, use the exact exerciseId and videoUrl from the library
+- For exercises not in the library, set exerciseId to null and videoUrl to null
+- For warmup/cooldown flows, exerciseId and videoUrl can be null
+- Each exercise object must have: name, exerciseId, videoUrl, sets, reps, duration, restAfter, notes
+
+PROGRESSION:
+- Week ${weekNumber} should be ${weekNumber === 1 ? "introductory and foundational - lighter weights, fewer rounds, focus on form" : weekNumber === 2 ? "building on week 1 with moderate progression - slightly more rounds or reps" : weekNumber === 3 ? "challenging with increased intensity - heavier weights, more complex movements" : "peak week with the most advanced variations and highest volume"}
+- Focus on postpartum-safe exercises (pelvic floor awareness, core rehabilitation, functional movements)
+- Always include breathing cues in notes where relevant`
           },
           {
             role: "user",
@@ -7339,6 +7493,14 @@ Rules:
           console.log("[Coaching] Skipping invalid day:", JSON.stringify(day).substring(0, 100));
           continue;
         }
+
+        const structuredExercises = {
+          sections: Array.isArray(day.sections) ? day.sections : [],
+          equipmentNeeded: Array.isArray(day.equipmentNeeded) ? day.equipmentNeeded : [],
+          estimatedDuration: day.estimatedDuration || "45 minutes",
+          difficultyLevel: day.difficultyLevel || "intermediate",
+        };
+
         await storage.createCoachingWorkoutPlan({
           clientId: client.id,
           weekNumber: weekNumber,
@@ -7346,7 +7508,7 @@ Rules:
           dayType: day.dayType,
           title: day.title,
           description: day.description || "",
-          exercises: Array.isArray(day.exercises) ? day.exercises : [],
+          exercises: structuredExercises,
           coachNotes: day.coachNotes || "",
           isApproved: false,
           isAiGenerated: true,
@@ -7397,28 +7559,64 @@ Rules:
         messages: [
           {
             role: "system",
-            content: `You are Zoe, an expert postnatal nutrition coach. Create a personalized nutrition plan.
+            content: `You are Zoe, an expert postnatal nutrition coach. Create a personalized, practical nutrition plan that's easy for busy new mothers to follow.
 
 IMPORTANT: Return a JSON object with exactly this structure:
 {
+  "dailyStructure": {
+    "overview": "Brief overview of the nutrition approach tailored to this client",
+    "dailyCalorieTarget": 2000,
+    "macroSplit": {"protein": "30%", "carbs": "40%", "fat": "30%"},
+    "hydration": "Aim for 2.5-3L of water daily. If breastfeeding, add an extra 500ml.",
+    "supplements": ["Postnatal multivitamin", "Omega-3 (if not eating fish 2x/week)", "Vitamin D"]
+  },
   "meals": [
     {
       "mealType": "breakfast",
+      "timing": "Within 1 hour of waking",
       "options": [
-        {"name": "Overnight Oats", "description": "Creamy oats with berries", "calories": 350, "protein": 15, "carbs": 45, "fat": 12, "ingredients": ["oats", "milk", "berries", "honey"], "instructions": "Mix oats with milk, refrigerate overnight, top with berries"}
+        {
+          "name": "Power Oats Bowl",
+          "description": "Oats topped with banana, nut butter, and seeds",
+          "prepTime": "5 min",
+          "calories": 400,
+          "protein": 15,
+          "carbs": 55,
+          "fat": 14,
+          "ingredients": ["rolled oats", "banana", "almond butter", "chia seeds", "milk"],
+          "quickInstructions": "Cook oats, top with sliced banana, 1 tbsp almond butter, sprinkle chia seeds"
+        }
       ],
-      "tips": "Eat within an hour of waking"
+      "tips": "Include protein at every breakfast to stabilize energy"
     }
-  ]
+  ],
+  "weeklyPrepTips": [
+    "Batch cook grains (rice, quinoa) on Sunday for the week",
+    "Pre-chop veggies and store in containers",
+    "Make overnight oats x3 on Sunday evening"
+  ],
+  "snackIdeas": [
+    "Apple slices with almond butter",
+    "Greek yogurt with berries",
+    "Handful of trail mix",
+    "Hummus with veggie sticks",
+    "Energy balls (make a batch on weekends)"
+  ],
+  "coachNotes": "Focus on eating enough rather than restricting. Your body needs fuel to recover and care for your baby."
 }
 
 Rules:
+- "dailyStructure" must include overview, dailyCalorieTarget (number), macroSplit (object with protein/carbs/fat percentages), hydration (string), supplements (string array)
 - "meals" must be an array of exactly 4 objects with mealType: "breakfast", "lunch", "snack", "dinner"
-- Each mealType must have exactly 5 options in the "options" array
-- Each option needs: name (string), description (string), calories (number), protein (number in grams), carbs (number in grams), fat (number in grams), ingredients (string array), instructions (string)
+- Each mealType must have a "timing" field (string) and exactly 3 options in the "options" array
+- Each option needs: name (string), description (string), prepTime (string), calories (number), protein (number in grams), carbs (number in grams), fat (number in grams), ingredients (string array), quickInstructions (string)
+- "weeklyPrepTips" must be an array of 4-6 practical meal prep tips
+- "snackIdeas" must be an array of 5-8 quick snack ideas
+- "coachNotes" must be a personalized encouragement string
 - Focus on nutrient-dense, postpartum-friendly foods that support recovery and energy
 - Include iron-rich foods, calcium sources, and foods that support lactation if relevant
-- Keep meals practical and easy to prepare for busy new mothers`
+- Keep meals practical, quick to prepare, and family-friendly for busy new mothers
+- Adjust calorie targets based on activity level, breastfeeding status, and goals`
           },
           {
             role: "user",
@@ -7446,6 +7644,23 @@ Rules:
         }
       }
 
+      const overviewData = {
+        dailyStructure: nutritionData.dailyStructure || null,
+        weeklyPrepTips: nutritionData.weeklyPrepTips || [],
+        snackIdeas: nutritionData.snackIdeas || [],
+        coachNotes: nutritionData.coachNotes || "",
+      };
+
+      await storage.createCoachingNutritionPlan({
+        clientId: client.id,
+        mealType: "overview",
+        options: [],
+        tips: JSON.stringify(overviewData),
+        isApproved: false,
+        isAiGenerated: true,
+        orderIndex: -1,
+      } as any);
+
       const mealOrder: Record<string, number> = { breakfast: 0, lunch: 1, snack: 2, dinner: 3 };
       let savedCount = 0;
 
@@ -7454,11 +7669,17 @@ Rules:
           console.log("[Coaching] Skipping invalid meal:", JSON.stringify(meal).substring(0, 100));
           continue;
         }
+
+        const mealTips = {
+          timing: meal.timing || "",
+          tips: meal.tips || "",
+        };
+
         await storage.createCoachingNutritionPlan({
           clientId: client.id,
           mealType: meal.mealType,
           options: meal.options,
-          tips: meal.tips || "",
+          tips: JSON.stringify(mealTips),
           isApproved: false,
           isAiGenerated: true,
           orderIndex: mealOrder[meal.mealType] ?? savedCount,
