@@ -54,10 +54,7 @@ The platform supports a private coaching program with personalized AI-generated 
 Each coaching client has 4 separate dates: `purchaseDate` (when payment was made), `formSubmissionDate` (when Google Form was submitted), `startDate` (admin-set program start), `endDate` (admin-set program end). All dates are editable by the admin in the client overview tab.
 
 ### Pregnancy Tracking
-Coaching clients can be tagged with pregnancy status. Fields: `isPregnant` (boolean), `trimester` (1-3), `dueDate`, `pregnancyNotes`. Admin can set/update/remove pregnancy info. AI workout and nutrition generation prompts include trimester-specific safety rules (exercise modifications, food restrictions, calorie adjustments) when a client is marked as pregnant.
-
-### Admin Quick Links
-Google Form URL and Google Sheet responses link are displayed as quick-access buttons in the admin coaching overview tab.
+Coaching clients can be tagged with pregnancy status. Fields: `isPregnant` (boolean), `dueDate`, `pregnancyNotes`. Trimester is auto-calculated from due date (weeks 1-12 = 1st, 13-26 = 2nd, 27-40 = 3rd). Admin can set/update/remove pregnancy info. AI workout and nutrition generation prompts include trimester-specific safety rules (exercise modifications, food restrictions, calorie adjustments) when a client is marked as pregnant.
 
 # External Dependencies
 -   **Database**: PostgreSQL

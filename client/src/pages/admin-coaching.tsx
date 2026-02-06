@@ -33,7 +33,6 @@ import {
   Calendar,
   Brain,
   Eye,
-  ExternalLink,
 } from "lucide-react";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
@@ -658,14 +657,18 @@ export default function AdminCoaching() {
                           Pregnancy Information
                           {selectedClient.isPregnant && (
                             <Badge className="bg-pink-100 text-pink-700 border-pink-200 text-[10px]">
-                              {selectedClient.trimester ? `Trimester ${selectedClient.trimester}` : "Pregnant"}
+                              {selectedClient.dueDate ? (() => {
+                                const daysLeft = Math.max(0, Math.ceil((new Date(selectedClient.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
+                                const weeksPregnant = Math.max(0, Math.floor((280 - daysLeft) / 7));
+                                return `Trimester ${weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3}`;
+                              })() : "Pregnant"}
                             </Badge>
                           )}
                         </CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                           <Label className="text-xs text-gray-500">Pregnancy Status</Label>
                           <Select
@@ -685,26 +688,6 @@ export default function AdminCoaching() {
                           </Select>
                         </div>
                         <div>
-                          <Label className="text-xs text-gray-500">Trimester</Label>
-                          <Select
-                            value={selectedClient.trimester ? String(selectedClient.trimester) : "none"}
-                            onValueChange={(val) => updateClientMutation.mutate({
-                              clientId: selectedClient.id,
-                              updates: { trimester: val === "none" ? null : parseInt(val) }
-                            })}
-                          >
-                            <SelectTrigger className="mt-1 h-9">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">Not set</SelectItem>
-                              <SelectItem value="1">1st Trimester</SelectItem>
-                              <SelectItem value="2">2nd Trimester</SelectItem>
-                              <SelectItem value="3">3rd Trimester</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
                           <Label className="text-xs text-gray-500">Due Date</Label>
                           <Input
                             type="date"
@@ -717,6 +700,34 @@ export default function AdminCoaching() {
                           />
                         </div>
                         <div>
+                          <Label className="text-xs text-gray-500">Auto-Calculated Trimester</Label>
+                          <div className="mt-1 h-9 flex items-center">
+                            {selectedClient.isPregnant && selectedClient.dueDate ? (() => {
+                              const now = new Date();
+                              const due = new Date(selectedClient.dueDate);
+                              const totalDays = 280;
+                              const daysLeft = Math.max(0, Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+                              const weeksPregnant = Math.max(0, Math.floor((totalDays - daysLeft) / 7));
+                              const trimester = weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3;
+                              const trimesterColors = { 1: "bg-blue-100 text-blue-700", 2: "bg-amber-100 text-amber-700", 3: "bg-pink-100 text-pink-700" };
+                              return (
+                                <div className="flex items-center gap-2">
+                                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${trimesterColors[trimester as 1|2|3]}`}>
+                                    Trimester {trimester}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    Week {weeksPregnant} · {Math.ceil(daysLeft / 7)}w remaining
+                                  </span>
+                                </div>
+                              );
+                            })() : (
+                              <span className="text-xs text-gray-400">
+                                {selectedClient.isPregnant ? "Set due date to calculate" : "Not pregnant"}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="lg:col-span-3">
                           <Label className="text-xs text-gray-500">Pregnancy Notes</Label>
                           <Textarea
                             className="mt-1 text-sm min-h-[36px]"
@@ -738,26 +749,6 @@ export default function AdminCoaching() {
                   </Card>
                 </div>
 
-                <div className="mt-6 flex gap-3">
-                  <a
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSdR8uE3rKSrYgqbmurRpG7D2k0UjQWAXCvEIltHsYsj0bsl0Q/viewform?usp=header"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-violet-50 text-violet-700 rounded-lg border border-violet-200 text-sm font-medium hover:bg-violet-100 transition"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Google Form
-                  </a>
-                  <a
-                    href="https://docs.google.com/spreadsheets/d/1Y-R6P46Id8iVsL25BIStetM_9HIfM4Ofez56sPUkIe4/edit?resourcekey=&gid=433692695#gid=433692695"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-200 text-sm font-medium hover:bg-emerald-100 transition"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Form Responses Sheet
-                  </a>
-                </div>
               </TabsContent>
 
               <TabsContent value="workout" className="mt-6">

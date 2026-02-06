@@ -7276,8 +7276,15 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+      let calculatedTrimester: number | null = null;
+      let weeksPregnant: number | null = null;
+      if (client.isPregnant && client.dueDate) {
+        const daysLeft = Math.max(0, Math.ceil((new Date(client.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+        weeksPregnant = Math.max(0, Math.floor((280 - daysLeft) / 7));
+        calculatedTrimester = weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3;
+      }
       const pregnancyInfo = client.isPregnant
-        ? `PREGNANT CLIENT - Trimester: ${client.trimester || "unknown"}, Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
+        ? `PREGNANT CLIENT - Trimester: ${calculatedTrimester || "unknown"} (Week ${weeksPregnant || "unknown"}), Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
         : "";
 
       const workoutResponse = await openai.chat.completions.create({
@@ -7565,8 +7572,15 @@ PREGNANCY SAFETY (if client is pregnant):
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+      let calcTrimesterNutrition: number | null = null;
+      let weeksPregnantNutrition: number | null = null;
+      if (client.isPregnant && client.dueDate) {
+        const daysLeft = Math.max(0, Math.ceil((new Date(client.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+        weeksPregnantNutrition = Math.max(0, Math.floor((280 - daysLeft) / 7));
+        calcTrimesterNutrition = weeksPregnantNutrition <= 12 ? 1 : weeksPregnantNutrition <= 26 ? 2 : 3;
+      }
       const pregnancyInfoNutrition = client.isPregnant
-        ? `PREGNANT CLIENT - Trimester: ${client.trimester || "unknown"}, Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
+        ? `PREGNANT CLIENT - Trimester: ${calcTrimesterNutrition || "unknown"} (Week ${weeksPregnantNutrition || "unknown"}), Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
         : "";
 
       const nutritionResponse = await openai.chat.completions.create({
