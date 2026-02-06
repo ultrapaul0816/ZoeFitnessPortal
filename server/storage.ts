@@ -515,6 +515,42 @@ export interface IStorage {
   getWhatsappRequests(status?: string): Promise<WhatsappRequest[]>;
   updateWhatsappRequest(id: string, updates: Partial<WhatsappRequest>): Promise<WhatsappRequest | undefined>;
   getWhatsappRequestByPaymentId(paymentId: string): Promise<WhatsappRequest | undefined>;
+
+  getSystemReport(): Promise<{
+    userSummary: {
+      total: number;
+      active: number;
+      expired: number;
+      expiringIn30Days: number;
+      newThisMonth: number;
+      withWhatsApp: number;
+      byCountry: { country: string; count: number }[];
+    };
+    enrollmentSummary: {
+      total: number;
+      active: number;
+      expired: number;
+    };
+    workoutSummary: {
+      totalCompletions: number;
+      avgPerUser: number;
+      thisWeek: number;
+      thisMonth: number;
+    };
+    communitySummary: {
+      totalPosts: number;
+      totalLikes: number;
+      totalComments: number;
+      postsThisMonth: number;
+    };
+    whatsappSummary: {
+      totalRequests: number;
+      pending: number;
+      completed: number;
+      rejected: number;
+    };
+    generatedAt: string;
+  }>;
 }
 
 export class MemStorage implements IStorage {
@@ -2314,6 +2350,17 @@ export class MemStorage implements IStorage {
 
   async getWhatsappRequestByPaymentId(paymentId: string): Promise<WhatsappRequest | undefined> {
     return undefined;
+  }
+
+  async getSystemReport() {
+    return {
+      userSummary: { total: 0, active: 0, expired: 0, expiringIn30Days: 0, newThisMonth: 0, withWhatsApp: 0, byCountry: [] },
+      enrollmentSummary: { total: 0, active: 0, expired: 0 },
+      workoutSummary: { totalCompletions: 0, avgPerUser: 0, thisWeek: 0, thisMonth: 0 },
+      communitySummary: { totalPosts: 0, totalLikes: 0, totalComments: 0, postsThisMonth: 0 },
+      whatsappSummary: { totalRequests: 0, pending: 0, completed: 0, rejected: 0 },
+      generatedAt: new Date().toISOString(),
+    };
   }
 }
 
@@ -5256,6 +5303,95 @@ class DatabaseStorage implements IStorage {
   async getWhatsappRequestByPaymentId(paymentId: string): Promise<WhatsappRequest | undefined> {
     const result = await this.db.select().from(whatsappRequests).where(eq(whatsappRequests.paymentId, paymentId));
     return result[0];
+  }
+
+  async getSystemReport() {
+    const allUsers = await this.getAllUsers();
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const nonAdminUsers = allUsers.filter(u => !u.isAdmin);
+    const active = nonAdminUsers.filter(u => u.validUntil && new Date(u.validUntil) > now).length;
+    const expired = nonAdminUsers.filter(u => u.validUntil && new Date(u.validUntil) <= now).length;
+    const expiringIn30Days = nonAdminUsers.filter(u => u.validUntil && new Date(u.validUntil) > now && new Date(u.validUntil) <= thirtyDaysFromNow).length;
+    const newThisMonth = nonAdminUsers.filter(u => u.createdAt && new Date(u.createdAt) >= startOfMonth).length;
+    const withWhatsApp = nonAdminUsers.filter(u => u.hasWhatsAppSupport).length;
+
+    const countryMap: Record<string, number> = {};
+    nonAdminUsers.forEach(u => {
+      const country = u.country || "Unknown";
+      countryMap[country] = (countryMap[country] || 0) + 1;
+    });
+    const byCountry = Object.entries(countryMap).map(([country, count]) => ({ country, count })).sort((a, b) => b.count - a.count);
+
+    const [enrollmentResults] = await this.db.select({
+      total: sql<number>`COUNT(*)::int`,
+      active: sql<number>`COUNT(*) FILTER (WHERE ${memberPrograms.isActive} = true)::int`,
+      expired: sql<number>`COUNT(*) FILTER (WHERE ${memberPrograms.isActive} = false)::int`,
+    }).from(memberPrograms);
+
+    const [totalCompResult] = await this.db.select({ count: sql<number>`COUNT(*)::int` }).from(workoutCompletions);
+    const [weekCompResult] = await this.db.select({ count: sql<number>`COUNT(*)::int` }).from(workoutCompletions).where(gte(workoutCompletions.completedAt, startOfWeek));
+    const [monthCompResult] = await this.db.select({ count: sql<number>`COUNT(*)::int` }).from(workoutCompletions).where(gte(workoutCompletions.completedAt, startOfMonth));
+
+    const totalCompletions = totalCompResult?.count || 0;
+    const uniqueUsersWithWorkouts = new Set(allUsers.map(u => u.id)).size;
+    const avgPerUser = uniqueUsersWithWorkouts > 0 ? Math.round((totalCompletions / nonAdminUsers.length) * 10) / 10 : 0;
+
+    const [postsResult] = await this.db.select({ count: sql<number>`COUNT(*)::int` }).from(communityPosts);
+    const [likesResult] = await this.db.select({ count: sql<number>`COUNT(*)::int` }).from(postLikes);
+    const [commentsResult] = await this.db.select({ count: sql<number>`COUNT(*)::int` }).from(postComments);
+    const [postsMonthResult] = await this.db.select({ count: sql<number>`COUNT(*)::int` }).from(communityPosts).where(gte(communityPosts.createdAt, startOfMonth));
+
+    const waRequests = await this.db.select({
+      count: sql<number>`COUNT(*)::int`,
+      status: whatsappRequests.status,
+    }).from(whatsappRequests).groupBy(whatsappRequests.status);
+
+    const waTotal = waRequests.reduce((sum, r) => sum + r.count, 0);
+    const waPending = waRequests.find(r => r.status === "pending")?.count || 0;
+    const waCompleted = waRequests.find(r => r.status === "completed")?.count || 0;
+    const waRejected = waRequests.find(r => r.status === "rejected")?.count || 0;
+
+    return {
+      userSummary: {
+        total: nonAdminUsers.length,
+        active,
+        expired,
+        expiringIn30Days,
+        newThisMonth,
+        withWhatsApp,
+        byCountry,
+      },
+      enrollmentSummary: {
+        total: enrollmentResults?.total || 0,
+        active: enrollmentResults?.active || 0,
+        expired: enrollmentResults?.expired || 0,
+      },
+      workoutSummary: {
+        totalCompletions,
+        avgPerUser,
+        thisWeek: weekCompResult?.count || 0,
+        thisMonth: monthCompResult?.count || 0,
+      },
+      communitySummary: {
+        totalPosts: postsResult?.count || 0,
+        totalLikes: likesResult?.count || 0,
+        totalComments: commentsResult?.count || 0,
+        postsThisMonth: postsMonthResult?.count || 0,
+      },
+      whatsappSummary: {
+        totalRequests: waTotal,
+        pending: waPending,
+        completed: waCompleted,
+        rejected: waRejected,
+      },
+      generatedAt: new Date().toISOString(),
+    };
   }
 }
 

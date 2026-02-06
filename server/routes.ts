@@ -6854,6 +6854,17 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // ==================== SYSTEM REPORTS ====================
+  app.get("/api/admin/reports/system", requireAdmin, async (req, res) => {
+    try {
+      const report = await storage.getSystemReport();
+      res.json(report);
+    } catch (error) {
+      console.error("System report error:", error);
+      res.status(500).json({ message: "Failed to generate report" });
+    }
+  });
+
   // ==================== RAZORPAY WEBHOOK ====================
   
   // Verify Razorpay webhook signature
