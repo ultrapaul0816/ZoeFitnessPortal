@@ -7250,7 +7250,10 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       await storage.deleteCoachingWorkoutPlans(client.id);
       await storage.deleteCoachingNutritionPlans(client.id);
 
-      const openai = new OpenAI();
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
 
       const formDataStr = client.formData ? JSON.stringify(client.formData) : "No form data available";
       const healthNotesStr = client.healthNotes || "No specific health notes";
