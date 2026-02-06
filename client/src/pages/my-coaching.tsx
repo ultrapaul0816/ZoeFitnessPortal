@@ -31,6 +31,11 @@ import {
   Plus,
   Minus,
   Heart,
+  RefreshCw,
+  Timer,
+  Wind,
+  ExternalLink,
+  Play,
 } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
@@ -131,6 +136,21 @@ const DAY_TYPE_COLORS: Record<string, string> = {
   cardio: "bg-blue-100 text-blue-700 border-blue-200",
   rest: "bg-green-100 text-green-700 border-green-200",
   active_recovery: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  upper_body_strength: "bg-pink-100 text-pink-700 border-pink-200",
+  lower_body_core: "bg-purple-100 text-purple-700 border-purple-200",
+  full_body_strength: "bg-rose-100 text-rose-700 border-rose-200",
+  conditioning: "bg-orange-100 text-orange-700 border-orange-200",
+  sport_active_play: "bg-teal-100 text-teal-700 border-teal-200",
+};
+
+const SECTION_TYPE_CONFIG: Record<string, { bg: string; border: string; text: string; icon: typeof Flame }> = {
+  warmup: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700", icon: Flame },
+  activation: { bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-700", icon: Zap },
+  main: { bg: "bg-pink-50", border: "border-pink-200", text: "text-pink-700", icon: Dumbbell },
+  circuit: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-700", icon: RefreshCw },
+  finisher: { bg: "bg-rose-50", border: "border-rose-200", text: "text-rose-700", icon: Timer },
+  stretch: { bg: "bg-green-50", border: "border-green-200", text: "text-green-700", icon: Wind },
+  cooldown: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700", icon: Wind },
 };
 
 const MOOD_OPTIONS = [
@@ -466,7 +486,9 @@ export default function MyCoaching() {
                 {weekWorkouts.map((workout) => {
                   const dayKey = `${workout.weekNumber}-${workout.dayNumber}`;
                   const isExpanded = expandedDays.has(dayKey);
-                  const exercises = Array.isArray(workout.exercises) ? workout.exercises : [];
+                  const exercisesData = workout.exercises as any;
+                  const isStructured = exercisesData && !Array.isArray(exercisesData) && exercisesData.sections;
+                  const legacyExercises: Exercise[] = Array.isArray(exercisesData) ? exercisesData : [];
 
                   return (
                     <Card key={workout.id} className="border-pink-100 overflow-hidden">
@@ -483,7 +505,7 @@ export default function MyCoaching() {
                               variant="outline"
                               className={`text-xs ${DAY_TYPE_COLORS[workout.dayType] || "bg-gray-100 text-gray-700"}`}
                             >
-                              {workout.dayType.replace("_", " ")}
+                              {workout.dayType.replace(/_/g, " ")}
                             </Badge>
                           </div>
                           <p className="text-sm text-gray-600 truncate">{workout.title}</p>
@@ -501,9 +523,143 @@ export default function MyCoaching() {
                             <p className="text-sm text-gray-600 mt-3 mb-3">{workout.description}</p>
                           )}
 
-                          {exercises.length > 0 && (
+                          {isStructured ? (
+                            <>
+                              <div className="flex flex-wrap items-center gap-2 mt-3 mb-3">
+                                {exercisesData.estimatedDuration && (
+                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                    <Clock className="w-3 h-3 mr-1" />
+                                    {exercisesData.estimatedDuration}
+                                  </Badge>
+                                )}
+                                {exercisesData.difficultyLevel && (
+                                  <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                    <Zap className="w-3 h-3 mr-1" />
+                                    {exercisesData.difficultyLevel}
+                                  </Badge>
+                                )}
+                              </div>
+
+                              {exercisesData.equipmentNeeded && exercisesData.equipmentNeeded.length > 0 && (
+                                <div className="mb-3">
+                                  <p className="text-xs font-semibold text-gray-500 mb-1.5">Equipment needed</p>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {exercisesData.equipmentNeeded.map((item: string, idx: number) => (
+                                      <Badge key={idx} variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-200">
+                                        {item}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="space-y-3">
+                                {exercisesData.sections.map((section: any, sIdx: number) => {
+                                  const config = SECTION_TYPE_CONFIG[section.type] || SECTION_TYPE_CONFIG.main;
+                                  const SectionIcon = config.icon;
+                                  const sectionKey = `${dayKey}-section-${sIdx}`;
+                                  const isSectionExpanded = expandedDays.has(sectionKey);
+
+                                  return (
+                                    <div key={sIdx} className={`rounded-lg border ${config.border} overflow-hidden`}>
+                                      <button
+                                        className={`w-full text-left px-3 py-2.5 flex items-center justify-between ${config.bg}`}
+                                        onClick={(e) => { e.stopPropagation(); toggleDay(sectionKey); }}
+                                      >
+                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                          <SectionIcon className={`w-4 h-4 ${config.text} shrink-0`} />
+                                          <span className={`font-semibold text-sm ${config.text}`}>
+                                            {section.name}
+                                          </span>
+                                          {section.rounds > 1 && (
+                                            <Badge variant="outline" className={`text-xs ${config.text} ${config.border}`}>
+                                              x{section.rounds} rounds
+                                            </Badge>
+                                          )}
+                                          {section.duration && (
+                                            <span className="text-xs text-gray-500 ml-auto mr-2 shrink-0">
+                                              {section.duration}
+                                            </span>
+                                          )}
+                                        </div>
+                                        {isSectionExpanded ? (
+                                          <ChevronUp className="w-4 h-4 text-gray-400 shrink-0" />
+                                        ) : (
+                                          <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+                                        )}
+                                      </button>
+
+                                      {isSectionExpanded && (
+                                        <div className="px-3 py-2 space-y-2 bg-white">
+                                          {section.type === "finisher" && section.format && (
+                                            <div className="text-xs text-rose-600 font-medium bg-rose-50 px-2 py-1 rounded">
+                                              {section.format}
+                                            </div>
+                                          )}
+                                          {section.restBetweenRounds && (
+                                            <p className="text-xs text-gray-500">
+                                              Rest between rounds: {section.restBetweenRounds}
+                                            </p>
+                                          )}
+
+                                          {section.exercises && section.exercises.map((ex: any, eIdx: number) => (
+                                            <div
+                                              key={eIdx}
+                                              className="bg-gray-50/80 rounded-lg p-3 border border-gray-100"
+                                            >
+                                              <div className="flex items-start justify-between gap-2">
+                                                <p className="font-medium text-gray-900 text-sm">{ex.name}</p>
+                                                {ex.videoUrl && (
+                                                  <a
+                                                    href={ex.videoUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="shrink-0 flex items-center gap-1 text-xs text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 px-2 py-1 rounded-full transition-colors"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                  >
+                                                    <Play className="w-3 h-3" />
+                                                    Video
+                                                  </a>
+                                                )}
+                                              </div>
+                                              <div className="flex flex-wrap gap-2 mt-1.5">
+                                                {ex.sets && (
+                                                  <span className="text-xs text-pink-700 bg-pink-100 px-2 py-0.5 rounded">
+                                                    {ex.sets} {ex.sets === 1 ? "set" : "sets"}
+                                                  </span>
+                                                )}
+                                                {ex.reps && (
+                                                  <span className="text-xs text-pink-700 bg-pink-100 px-2 py-0.5 rounded">
+                                                    {ex.reps} reps
+                                                  </span>
+                                                )}
+                                                {ex.duration && (
+                                                  <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
+                                                    <Clock className="w-3 h-3 inline mr-0.5" />
+                                                    {ex.duration}
+                                                  </span>
+                                                )}
+                                                {ex.restAfter && (
+                                                  <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                                                    Rest: {ex.restAfter}
+                                                  </span>
+                                                )}
+                                              </div>
+                                              {ex.notes && (
+                                                <p className="text-xs text-gray-500 mt-1.5 italic">{ex.notes}</p>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </>
+                          ) : legacyExercises.length > 0 ? (
                             <div className="space-y-2 mt-3">
-                              {exercises.map((ex, idx) => (
+                              {legacyExercises.map((ex, idx) => (
                                 <div
                                   key={idx}
                                   className="bg-pink-50/50 rounded-lg p-3 border border-pink-100/50"
@@ -538,7 +694,7 @@ export default function MyCoaching() {
                                 </div>
                               ))}
                             </div>
-                          )}
+                          ) : null}
 
                           {workout.coachNotes && (
                             <div className="mt-3 bg-pink-50 rounded-lg p-3 border border-pink-200">
