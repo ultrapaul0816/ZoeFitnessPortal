@@ -132,19 +132,38 @@ export default function AdminCoaching() {
     },
   });
 
-  const generatePlanMutation = useMutation({
+  const [generatingWeek, setGeneratingWeek] = useState<number | null>(null);
+
+  const generateWorkoutMutation = useMutation({
+    mutationFn: async ({ clientId, weekNumber }: { clientId: string; weekNumber: number }) => {
+      setGeneratingWeek(weekNumber);
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-workout`, { weekNumber });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setGeneratingWeek(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "workout-plan"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: `Week ${data.weekNumber || ""} workout generated`, description: `${data.savedDays} days created. Review the plan below.` });
+    },
+    onError: (err: Error) => {
+      setGeneratingWeek(null);
+      toast({ title: "Error generating workout", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const generateNutritionMutation = useMutation({
     mutationFn: async (clientId: string) => {
-      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-plan`);
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-nutrition`);
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "workout-plan"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "nutrition-plan"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
-      toast({ title: "Plan generated", description: "AI has created a workout and nutrition plan. Please review it." });
+      toast({ title: "Nutrition plan generated", description: "Review the meal options below." });
     },
     onError: (err: Error) => {
-      toast({ title: "Error generating plan", description: err.message, variant: "destructive" });
+      toast({ title: "Error generating nutrition plan", description: err.message, variant: "destructive" });
     },
   });
 
@@ -421,14 +440,25 @@ export default function AdminCoaching() {
               </div>
               <div className="flex gap-2">
                 {(selectedClient.status === "pending" || selectedClient.status === "pending_plan") && (
-                  <Button 
-                    onClick={() => generatePlanMutation.mutate(selectedClient.id)}
-                    disabled={generatePlanMutation.isPending}
-                    className="bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg"
+                  <Select
+                    onValueChange={(week) => generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: parseInt(week) })}
+                    disabled={generateWorkoutMutation.isPending}
                   >
-                    <Brain className="w-4 h-4 mr-2" />
-                    {generatePlanMutation.isPending ? "Generating..." : "Generate AI Plan"}
-                  </Button>
+                    <SelectTrigger className="w-[200px] bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-lg">
+                      <Brain className="w-4 h-4 mr-2" />
+                      {generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : "Generate Workout"}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4].map(week => {
+                        const hasWeek = (clientWorkoutPlan as any[]).some(p => p.weekNumber === week);
+                        return (
+                          <SelectItem key={week} value={String(week)}>
+                            Week {week} {hasWeek ? "(regenerate)" : ""}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 )}
                 {selectedClient.status === "pending_plan" && (
                   <Button 
@@ -573,42 +603,48 @@ export default function AdminCoaching() {
               <TabsContent value="workout" className="mt-6">
                 <Card className="border-0 shadow-sm">
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">4-Week Workout Plan</CardTitle>
-                      {selectedClient.status === "pending" || selectedClient.status === "pending_plan" ? (
-                        <Button
-                          size="sm"
-                          onClick={() => generatePlanMutation.mutate(selectedClient.id)}
-                          disabled={generatePlanMutation.isPending}
-                          className="bg-gradient-to-r from-violet-500 to-purple-500 text-white"
-                        >
-                          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                          {generatePlanMutation.isPending ? "Generating..." : "Generate with AI"}
-                        </Button>
-                      ) : null}
-                    </div>
+                    <CardTitle className="text-base">4-Week Workout Plan</CardTitle>
+                    <p className="text-sm text-gray-500 mt-1">Generate one week at a time. Each week builds on the previous one.</p>
                   </CardHeader>
                   <CardContent>
-                    {(clientWorkoutPlan as any[]).length === 0 ? (
-                      <div className="text-center py-12">
-                        <Dumbbell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500 font-medium">No workout plan generated yet</p>
-                        <p className="text-gray-400 text-sm mt-1">Use the AI generator or manually create a plan</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-6">
-                        {[1, 2, 3, 4].map(week => {
-                          const weekPlan = (clientWorkoutPlan as any[]).filter(p => p.weekNumber === week);
-                          if (weekPlan.length === 0) return null;
-                          return (
-                            <div key={week}>
-                              <h3 className="font-semibold text-gray-900 mb-3">Week {week}</h3>
+                    <div className="space-y-6">
+                      {[1, 2, 3, 4].map(week => {
+                        const weekPlan = (clientWorkoutPlan as any[]).filter(p => p.weekNumber === week);
+                        const hasWeek = weekPlan.length > 0;
+                        const isGenerating = generateWorkoutMutation.isPending && generatingWeek === week;
+                        const previousWeekExists = week === 1 || (clientWorkoutPlan as any[]).some(p => p.weekNumber === week - 1);
+                        return (
+                          <div key={week} className={cn("rounded-xl border p-4", hasWeek ? "border-gray-200" : "border-dashed border-gray-300")}>
+                            <div className="flex items-center justify-between mb-3">
+                              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                                Week {week}
+                                {hasWeek && <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">{weekPlan.length} days</Badge>}
+                                {!hasWeek && <Badge variant="outline" className="text-[10px] bg-gray-50 text-gray-400">Not generated</Badge>}
+                              </h3>
+                              <Button
+                                size="sm"
+                                variant={hasWeek ? "outline" : "default"}
+                                onClick={() => generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: week })}
+                                disabled={generateWorkoutMutation.isPending || !previousWeekExists}
+                                className={cn(
+                                  hasWeek ? "" : "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                                )}
+                              >
+                                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                                {isGenerating ? "Generating..." : hasWeek ? "Regenerate" : "Generate"}
+                              </Button>
+                            </div>
+                            {!previousWeekExists && !hasWeek && (
+                              <p className="text-xs text-gray-400 italic">Generate Week {week - 1} first</p>
+                            )}
+                            {hasWeek && (
                               <div className="grid grid-cols-7 gap-2">
                                 {weekPlan.sort((a: any, b: any) => a.dayNumber - b.dayNumber).map((day: any) => (
                                   <div key={day.id} className={cn(
                                     "p-3 rounded-xl border text-center",
                                     day.dayType === "rest" ? "bg-gray-50 border-gray-200" :
                                     day.dayType === "cardio" ? "bg-blue-50 border-blue-200" :
+                                    day.dayType === "active_recovery" ? "bg-amber-50 border-amber-200" :
                                     "bg-pink-50 border-pink-200"
                                   )}>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase">
@@ -622,11 +658,11 @@ export default function AdminCoaching() {
                                   </div>
                                 ))}
                               </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -634,14 +670,28 @@ export default function AdminCoaching() {
               <TabsContent value="nutrition" className="mt-6">
                 <Card className="border-0 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="text-base">Nutrition Plan</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">Nutrition Plan</CardTitle>
+                      <Button
+                        size="sm"
+                        variant={(clientNutritionPlan as any[]).length > 0 ? "outline" : "default"}
+                        onClick={() => generateNutritionMutation.mutate(selectedClient.id)}
+                        disabled={generateNutritionMutation.isPending}
+                        className={cn(
+                          (clientNutritionPlan as any[]).length > 0 ? "" : "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                        )}
+                      >
+                        <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                        {generateNutritionMutation.isPending ? "Generating..." : (clientNutritionPlan as any[]).length > 0 ? "Regenerate" : "Generate"}
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     {(clientNutritionPlan as any[]).length === 0 ? (
                       <div className="text-center py-12">
                         <UtensilsCrossed className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-gray-500 font-medium">No nutrition plan generated yet</p>
-                        <p className="text-gray-400 text-sm mt-1">The nutrition plan is generated alongside the workout plan</p>
+                        <p className="text-gray-400 text-sm mt-1">Click Generate above to create a personalized nutrition plan</p>
                       </div>
                     ) : (
                       <div className="space-y-6">
