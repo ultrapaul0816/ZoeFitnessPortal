@@ -7277,7 +7277,19 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       });
 
       const workoutData = JSON.parse(workoutResponse.choices[0].message.content || "{}");
-      const workoutPlans = workoutData.plan || workoutData.workouts || workoutData.days || [];
+      console.log("[Coaching] Workout AI response keys:", Object.keys(workoutData));
+      let workoutPlans: any[] = [];
+      if (Array.isArray(workoutData)) {
+        workoutPlans = workoutData;
+      } else {
+        for (const key of Object.keys(workoutData)) {
+          if (Array.isArray(workoutData[key])) {
+            workoutPlans = workoutData[key];
+            console.log(`[Coaching] Found workout array under key "${key}" with ${workoutPlans.length} items`);
+            break;
+          }
+        }
+      }
 
       for (const day of workoutPlans) {
         await storage.createCoachingWorkoutPlan({
@@ -7313,7 +7325,19 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       });
 
       const nutritionData = JSON.parse(nutritionResponse.choices[0].message.content || "{}");
-      const meals = nutritionData.meals || nutritionData.nutrition || [];
+      console.log("[Coaching] Nutrition AI response keys:", Object.keys(nutritionData));
+      let meals: any[] = [];
+      if (Array.isArray(nutritionData)) {
+        meals = nutritionData;
+      } else {
+        for (const key of Object.keys(nutritionData)) {
+          if (Array.isArray(nutritionData[key])) {
+            meals = nutritionData[key];
+            console.log(`[Coaching] Found nutrition array under key "${key}" with ${meals.length} items`);
+            break;
+          }
+        }
+      }
       const mealOrder = { breakfast: 0, lunch: 1, snack: 2, dinner: 3 };
 
       for (const meal of meals) {
