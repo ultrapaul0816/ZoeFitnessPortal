@@ -582,6 +582,7 @@ export interface IStorage {
   createCoachingWorkoutPlan(plan: InsertCoachingWorkoutPlan): Promise<CoachingWorkoutPlan>;
   updateCoachingWorkoutPlan(id: string, updates: Partial<CoachingWorkoutPlan>): Promise<CoachingWorkoutPlan | undefined>;
   deleteCoachingWorkoutPlans(clientId: string): Promise<void>;
+  deleteCoachingWorkoutPlan(id: string): Promise<void>;
   
   // Coaching Nutrition Plans
   getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]>;
@@ -2424,6 +2425,7 @@ export class MemStorage implements IStorage {
   async createCoachingWorkoutPlan(plan: InsertCoachingWorkoutPlan): Promise<CoachingWorkoutPlan> { throw new Error("Not implemented"); }
   async updateCoachingWorkoutPlan(id: string, updates: Partial<CoachingWorkoutPlan>): Promise<CoachingWorkoutPlan | undefined> { return undefined; }
   async deleteCoachingWorkoutPlans(clientId: string): Promise<void> {}
+  async deleteCoachingWorkoutPlan(id: string): Promise<void> {}
   async getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]> { return []; }
   async createCoachingNutritionPlan(plan: InsertCoachingNutritionPlan): Promise<CoachingNutritionPlan> { throw new Error("Not implemented"); }
   async updateCoachingNutritionPlan(id: string, updates: Partial<CoachingNutritionPlan>): Promise<CoachingNutritionPlan | undefined> { return undefined; }
@@ -5554,6 +5556,10 @@ class DatabaseStorage implements IStorage {
 
   async deleteCoachingWorkoutPlans(clientId: string): Promise<void> {
     await this.db.delete(coachingWorkoutPlans).where(eq(coachingWorkoutPlans.clientId, clientId));
+  }
+
+  async deleteCoachingWorkoutPlan(id: string): Promise<void> {
+    await this.db.delete(coachingWorkoutPlans).where(eq(coachingWorkoutPlans.id, id));
   }
 
   async getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]> {

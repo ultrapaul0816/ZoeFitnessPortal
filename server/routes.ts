@@ -7237,8 +7237,8 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
-  // Generate AI plan for a coaching client
-  app.post("/api/admin/coaching/clients/:clientId/generate-plan", requireAdmin, adminOperationLimiter, async (req, res) => {
+  // Generate AI workout plan for a specific week
+  app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       const client = await storage.getCoachingClient(req.params.clientId);
       if (!client) return res.status(404).json({ message: "Client not found" });
@@ -7246,8 +7246,140 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const user = await storage.getUser(client.userId);
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      // Clear existing plans
-      await storage.deleteCoachingWorkoutPlans(client.id);
+      const weekNumber = parseInt(req.body.weekNumber) || 1;
+      if (weekNumber < 1 || weekNumber > 4) return res.status(400).json({ message: "Week number must be between 1 and 4" });
+
+      const existingPlans = await storage.getCoachingWorkoutPlans(client.id);
+      const existingForWeek = existingPlans.filter(p => p.weekNumber === weekNumber);
+      if (existingForWeek.length > 0) {
+        for (const plan of existingForWeek) {
+          await storage.deleteCoachingWorkoutPlan(plan.id);
+        }
+      }
+
+      const previousWeekPlans = existingPlans.filter(p => p.weekNumber === weekNumber - 1);
+      const previousWeekSummary = previousWeekPlans.length > 0
+        ? `Previous week plan: ${previousWeekPlans.map(p => `Day ${p.dayNumber}: ${p.dayType} - ${p.title}`).join(", ")}`
+        : "";
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const formDataStr = client.formData ? JSON.stringify(client.formData) : "No form data available";
+      const healthNotesStr = client.healthNotes || "No specific health notes";
+      const notesStr = client.notes || "";
+      const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+
+      const workoutResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert postnatal fitness coach. Create a personalized 1-week workout plan for Week ${weekNumber} of a 4-week program.
+
+IMPORTANT: Return a JSON object with exactly this structure:
+{
+  "days": [
+    {
+      "dayNumber": 1,
+      "dayType": "workout",
+      "title": "Upper Body Strength",
+      "description": "Focus on shoulders and arms",
+      "exercises": [
+        {"name": "Wall Push-ups", "sets": 3, "reps": "10-12", "duration": null, "restSeconds": 30, "notes": "Keep core engaged"}
+      ],
+      "coachNotes": "Take it easy today"
+    }
+  ]
+}
+
+Rules:
+- "days" must be an array of exactly 7 objects (dayNumber 1=Monday through 7=Sunday)
+- "dayType" must be one of: "workout", "cardio", "rest", "active_recovery"
+- Decide the mix of workout/cardio/rest/active_recovery days based on the client's fitness level and goals. Fitter clients can have more workout days and fewer rest days. Less fit or early postpartum clients need more rest.
+- Each workout day must have an "exercises" array with at least 3 exercises
+- Rest and active_recovery days can have an empty exercises array or light movements
+- Week ${weekNumber} should be ${weekNumber === 1 ? "introductory and foundational" : weekNumber === 2 ? "building on week 1 with moderate progression" : weekNumber === 3 ? "challenging with increased intensity" : "peak week with the most advanced variations"}
+- Focus on postpartum-safe exercises (pelvic floor, core rehabilitation, functional movements)
+- Each exercise needs: name, sets (number), reps (string), duration (string or null), restSeconds (number), notes (string)`
+          },
+          {
+            role: "user",
+            content: `Create Week ${weekNumber} workout plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}\n${previousWeekSummary}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+      });
+
+      const workoutData = JSON.parse(workoutResponse.choices[0].message.content || "{}");
+      console.log("[Coaching] Workout Week", weekNumber, "AI response keys:", Object.keys(workoutData));
+
+      let workoutDays: any[] = [];
+      if (Array.isArray(workoutData)) {
+        workoutDays = workoutData;
+      } else if (workoutData.days && Array.isArray(workoutData.days)) {
+        workoutDays = workoutData.days;
+      } else {
+        for (const key of Object.keys(workoutData)) {
+          if (Array.isArray(workoutData[key]) && workoutData[key].length > 0 && workoutData[key][0].dayNumber !== undefined) {
+            workoutDays = workoutData[key];
+            break;
+          }
+        }
+      }
+
+      console.log(`[Coaching] Found ${workoutDays.length} workout days for week ${weekNumber}`);
+
+      let savedCount = 0;
+      for (const day of workoutDays) {
+        if (!day.dayNumber || !day.dayType || !day.title) {
+          console.log("[Coaching] Skipping invalid day:", JSON.stringify(day).substring(0, 100));
+          continue;
+        }
+        await storage.createCoachingWorkoutPlan({
+          clientId: client.id,
+          weekNumber: weekNumber,
+          dayNumber: typeof day.dayNumber === "number" ? day.dayNumber : parseInt(day.dayNumber) || 1,
+          dayType: day.dayType,
+          title: day.title,
+          description: day.description || "",
+          exercises: Array.isArray(day.exercises) ? day.exercises : [],
+          coachNotes: day.coachNotes || "",
+          isApproved: false,
+          isAiGenerated: true,
+          orderIndex: (weekNumber - 1) * 7 + (typeof day.dayNumber === "number" ? day.dayNumber : parseInt(day.dayNumber) || 1),
+        } as any);
+        savedCount++;
+      }
+
+      if (savedCount === 0) {
+        console.error("[Coaching] No valid workout days found in AI response:", JSON.stringify(workoutData).substring(0, 500));
+        return res.status(500).json({ message: "AI generated an invalid workout plan. Please try again." });
+      }
+
+      if (client.status === "pending") {
+        await storage.updateCoachingClient(client.id, { status: "pending_plan" });
+      }
+
+      res.json({ message: `Week ${weekNumber} workout plan generated`, savedDays: savedCount });
+    } catch (error) {
+      console.error("Error generating workout plan:", error);
+      res.status(500).json({ message: "Failed to generate workout plan. Please try again." });
+    }
+  });
+
+  // Generate AI nutrition plan for a coaching client
+  app.post("/api/admin/coaching/clients/:clientId/generate-nutrition", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
       await storage.deleteCoachingNutritionPlans(client.id);
 
       const openai = new OpenAI({
@@ -7257,67 +7389,40 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
       const formDataStr = client.formData ? JSON.stringify(client.formData) : "No form data available";
       const healthNotesStr = client.healthNotes || "No specific health notes";
+      const notesStr = client.notes || "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
 
-      // Generate workout plan
-      const workoutResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert postnatal fitness coach. Create a personalized 4-week workout plan. Return ONLY valid JSON array with objects for each day. Each object: { "weekNumber": 1-4, "dayNumber": 1-7 (1=Monday), "dayType": "workout"|"cardio"|"rest"|"active_recovery", "title": "short title", "description": "brief description", "exercises": [{"name": "exercise name", "sets": 3, "reps": "12", "duration": "30 seconds", "restSeconds": 30, "notes": "form tip"}], "coachNotes": "personalized advice" }. Include 4 workout days, 2 cardio days, 1 rest day per week. Make it progressive across weeks. Focus on postpartum-safe exercises.`
-          },
-          {
-            role: "user",
-            content: `Create a 4-week workout plan for this client:\n${userInfo}\nForm responses: ${formDataStr}\nHealth notes: ${healthNotesStr}`
-          }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.7,
-      });
-
-      const workoutData = JSON.parse(workoutResponse.choices[0].message.content || "{}");
-      console.log("[Coaching] Workout AI response keys:", Object.keys(workoutData));
-      let workoutPlans: any[] = [];
-      if (Array.isArray(workoutData)) {
-        workoutPlans = workoutData;
-      } else {
-        for (const key of Object.keys(workoutData)) {
-          if (Array.isArray(workoutData[key])) {
-            workoutPlans = workoutData[key];
-            console.log(`[Coaching] Found workout array under key "${key}" with ${workoutPlans.length} items`);
-            break;
-          }
-        }
-      }
-
-      for (const day of workoutPlans) {
-        await storage.createCoachingWorkoutPlan({
-          clientId: client.id,
-          weekNumber: day.weekNumber,
-          dayNumber: day.dayNumber,
-          dayType: day.dayType,
-          title: day.title,
-          description: day.description || "",
-          exercises: day.exercises || [],
-          coachNotes: day.coachNotes || "",
-          isApproved: false,
-          isAiGenerated: true,
-          orderIndex: (day.weekNumber - 1) * 7 + day.dayNumber,
-        } as any);
-      }
-
-      // Generate nutrition plan
       const nutritionResponse = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           {
             role: "system",
-            content: `You are Zoe, an expert postnatal nutrition coach. Create a personalized nutrition plan with 5 meal options each for breakfast, lunch, snack, and dinner. Return ONLY valid JSON object: { "meals": [{ "mealType": "breakfast"|"lunch"|"snack"|"dinner", "options": [{"name": "meal name", "description": "brief description", "calories": 350, "protein": 25, "carbs": 40, "fat": 12, "ingredients": ["item1", "item2"], "instructions": "how to prepare"}], "tips": "meal-specific advice" }] }. Focus on nutrient-dense, postpartum-friendly foods that support recovery and energy.`
+            content: `You are Zoe, an expert postnatal nutrition coach. Create a personalized nutrition plan.
+
+IMPORTANT: Return a JSON object with exactly this structure:
+{
+  "meals": [
+    {
+      "mealType": "breakfast",
+      "options": [
+        {"name": "Overnight Oats", "description": "Creamy oats with berries", "calories": 350, "protein": 15, "carbs": 45, "fat": 12, "ingredients": ["oats", "milk", "berries", "honey"], "instructions": "Mix oats with milk, refrigerate overnight, top with berries"}
+      ],
+      "tips": "Eat within an hour of waking"
+    }
+  ]
+}
+
+Rules:
+- "meals" must be an array of exactly 4 objects with mealType: "breakfast", "lunch", "snack", "dinner"
+- Each mealType must have exactly 5 options in the "options" array
+- Each option needs: name (string), description (string), calories (number), protein (number in grams), carbs (number in grams), fat (number in grams), ingredients (string array), instructions (string)
+- Focus on nutrient-dense, postpartum-friendly foods that support recovery and energy
+- Include iron-rich foods, calcium sources, and foods that support lactation if relevant
+- Keep meals practical and easy to prepare for busy new mothers`
           },
           {
             role: "user",
-            content: `Create a nutrition plan for this client:\n${userInfo}\nForm responses: ${formDataStr}\nHealth notes: ${healthNotesStr}`
+            content: `Create a nutrition plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}`
           }
         ],
         response_format: { type: "json_object" },
@@ -7326,39 +7431,54 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
       const nutritionData = JSON.parse(nutritionResponse.choices[0].message.content || "{}");
       console.log("[Coaching] Nutrition AI response keys:", Object.keys(nutritionData));
+
       let meals: any[] = [];
       if (Array.isArray(nutritionData)) {
         meals = nutritionData;
+      } else if (nutritionData.meals && Array.isArray(nutritionData.meals)) {
+        meals = nutritionData.meals;
       } else {
         for (const key of Object.keys(nutritionData)) {
-          if (Array.isArray(nutritionData[key])) {
+          if (Array.isArray(nutritionData[key]) && nutritionData[key].length > 0 && nutritionData[key][0].mealType) {
             meals = nutritionData[key];
-            console.log(`[Coaching] Found nutrition array under key "${key}" with ${meals.length} items`);
             break;
           }
         }
       }
-      const mealOrder = { breakfast: 0, lunch: 1, snack: 2, dinner: 3 };
+
+      const mealOrder: Record<string, number> = { breakfast: 0, lunch: 1, snack: 2, dinner: 3 };
+      let savedCount = 0;
 
       for (const meal of meals) {
+        if (!meal.mealType || !Array.isArray(meal.options)) {
+          console.log("[Coaching] Skipping invalid meal:", JSON.stringify(meal).substring(0, 100));
+          continue;
+        }
         await storage.createCoachingNutritionPlan({
           clientId: client.id,
           mealType: meal.mealType,
-          options: meal.options || [],
+          options: meal.options,
           tips: meal.tips || "",
           isApproved: false,
           isAiGenerated: true,
-          orderIndex: mealOrder[meal.mealType as keyof typeof mealOrder] || 0,
+          orderIndex: mealOrder[meal.mealType] ?? savedCount,
         } as any);
+        savedCount++;
       }
 
-      // Update client status
-      await storage.updateCoachingClient(client.id, { status: "pending_plan" });
+      if (savedCount === 0) {
+        console.error("[Coaching] No valid meals found in AI response:", JSON.stringify(nutritionData).substring(0, 500));
+        return res.status(500).json({ message: "AI generated an invalid nutrition plan. Please try again." });
+      }
 
-      res.json({ message: "Plan generated successfully", workoutDays: workoutPlans.length, mealTypes: meals.length });
+      if (client.status === "pending") {
+        await storage.updateCoachingClient(client.id, { status: "pending_plan" });
+      }
+
+      res.json({ message: "Nutrition plan generated", savedMeals: savedCount });
     } catch (error) {
-      console.error("Error generating plan:", error);
-      res.status(500).json({ message: "Failed to generate plan. Please try again." });
+      console.error("Error generating nutrition plan:", error);
+      res.status(500).json({ message: "Failed to generate nutrition plan. Please try again." });
     }
   });
 
