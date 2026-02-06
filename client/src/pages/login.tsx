@@ -393,46 +393,34 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-rose-50 via-pink-50 to-fuchsia-50 relative overflow-hidden">
-      {/* Decorative floating shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-pink-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-        <div className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-br from-fuchsia-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
-        <div className="absolute bottom-32 left-1/4 w-56 h-56 bg-gradient-to-br from-rose-200/30 to-pink-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-gradient-to-br from-pink-200/20 to-fuchsia-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '0.5s' }}></div>
-        {/* Subtle sparkle dots */}
-        <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-pink-400/40 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
-        <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-rose-400/40 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-fuchsia-400/40 rounded-full animate-ping" style={{ animationDuration: '3.5s', animationDelay: '2s' }}></div>
-      </div>
-
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-rose-50 via-pink-50 to-fuchsia-50">
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center p-4 relative z-10">
+      <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <Card className="rounded-3xl shadow-2xl border-0 bg-white/95 backdrop-blur-sm animate-in zoom-in-95 fade-in duration-500">
+          <Card className="rounded-3xl shadow-2xl border-0 bg-white/95">
             <CardContent className="p-8 sm:p-10">
               {/* Logo and Header */}
               <div className="text-center mb-8">
-                <div className="w-28 h-20 mx-auto mb-5 flex items-center justify-center animate-in zoom-in-95 fade-in duration-500">
+                <div className="w-28 h-20 mx-auto mb-5 flex items-center justify-center">
                   <img 
                     src="/assets/logo.png" 
                     alt="Stronger With Zoe" 
-                    className="w-full h-full object-contain drop-shadow-sm hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-contain drop-shadow-sm"
                     loading="eager"
                     width="112"
                     height="80"
                   />
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '100ms' }}>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
                   {greeting}, mama! 💕
                 </h1>
-                <p className="text-gray-600 text-base animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '150ms' }}>
+                <p className="text-gray-600 text-base">
                   Your 6-week core recovery journey awaits
                 </p>
               </div>
 
               {/* Rotating Testimonial */}
-              <div className="mb-6 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '200ms' }}>
+              <div className="mb-6">
                 <div className="bg-gradient-to-r from-pink-50/80 to-rose-50/80 border border-pink-100 rounded-xl p-4 relative overflow-hidden">
                   <div className="absolute top-2 left-3 text-pink-300 text-2xl">"</div>
                   <div className="transition-all duration-500 ease-in-out">
@@ -465,7 +453,7 @@ export default function Login() {
               {/* Login Form */}
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                  <div className="animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '250ms' }}>
+                  <div>
                     <FormField
                       control={form.control}
                       name="email"
@@ -488,7 +476,7 @@ export default function Login() {
                     />
                   </div>
                   
-                  <div className="animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '300ms' }}>
+                  <div>
                     <FormField
                       control={form.control}
                       name="password"
@@ -527,7 +515,7 @@ export default function Login() {
                   </div>
 
                   {/* Remember Me */}
-                  <div className="flex items-center justify-between animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '350ms' }}>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Checkbox 
                         id="remember-me"
@@ -626,7 +614,7 @@ export default function Login() {
                     </div>
                   )}
 
-                  <div className="animate-in slide-in-from-bottom-3 fade-in duration-500 pt-1" style={{ animationDelay: '400ms' }}>
+                  <div className="pt-1">
                     <Button
                       type="submit"
                       className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
@@ -650,7 +638,7 @@ export default function Login() {
               </Form>
 
               {/* Divider */}
-              <div className="mt-5 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '450ms' }}>
+              <div className="mt-5">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-200"></div>
@@ -662,7 +650,7 @@ export default function Login() {
               </div>
 
               {/* Alternative login options */}
-              <div className="mt-5 space-y-3 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '500ms' }}>
+              <div className="mt-5 space-y-3">
                 {/* Magic Link - Primary alternative (most convenient) */}
                 <Button
                   type="button"
@@ -693,12 +681,12 @@ export default function Login() {
               </div>
 
               {/* Security Badge */}
-              <div className="mt-6 flex items-center justify-center gap-2 text-gray-400 animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '550ms' }}>
+              <div className="mt-6 flex items-center justify-center gap-2 text-gray-400">
                 <ShieldCheck className="w-4 h-4 text-green-500" />
                 <span className="text-xs">Your data is protected & secure</span>
               </div>
 
-              <div className="mt-4 text-center animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '600ms' }}>
+              <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600 leading-relaxed">
                   Need access?{" "}
                   <a
@@ -718,7 +706,7 @@ export default function Login() {
       </div>
 
       {/* Professional Footer */}
-      <footer className="relative z-10 py-6 text-center animate-in slide-in-from-bottom-3 fade-in duration-500" style={{ animationDelay: '700ms' }}>
+      <footer className="py-6 text-center">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs text-gray-500">
           <span>© 2024 Stronger With Zoe. All rights reserved.</span>
           <div className="flex items-center gap-4">
