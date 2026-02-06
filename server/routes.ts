@@ -7107,8 +7107,8 @@ Keep it to 2-4 sentences, warm and encouraging.`;
           phone: phone?.trim() || null,
           password: "",
           isAdmin: false,
-          hasAcceptedTerms: true,
-          hasAcceptedHealthDisclaimer: true,
+          termsAccepted: true,
+          disclaimerAccepted: true,
         } as any);
         console.log(`[Coaching] Auto-created user account for ${email}: ${user.id}`);
       }
