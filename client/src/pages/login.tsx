@@ -450,9 +450,48 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Login Form */}
+              {/* Primary: Magic Link */}
+              <div className="space-y-4">
+                <Button
+                  type="button"
+                  onClick={handleMagicLinkOpen}
+                  className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center space-x-2 group"
+                  data-testid="button-login-magic"
+                >
+                  <Wand2 className="w-4 h-4" />
+                  <span>Sign In with Magic Link</span>
+                </Button>
+                <p className="text-xs text-gray-400 text-center">
+                  We'll email you a link — just click to sign in, no password needed
+                </p>
+
+                <Button
+                  type="button"
+                  onClick={handleForgotPasswordOpen}
+                  variant="outline"
+                  className="w-full h-11 border-2 border-pink-200 text-pink-500 hover:bg-pink-50 hover:border-pink-300 font-medium rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center space-x-2 group"
+                  data-testid="button-login-otp"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>Sign In with Email Code</span>
+                </Button>
+              </div>
+
+              {/* Divider */}
+              <div className="mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-gray-400 font-medium">or use password</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Secondary: Password Form */}
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="mt-5 space-y-4">
                   <div>
                     <FormField
                       control={form.control}
@@ -466,7 +505,7 @@ export default function Login() {
                               placeholder="your@email.com"
                               autoComplete="email"
                               data-testid="input-email"
-                              className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400 hover:border-gray-300"
+                              className="h-11 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400 hover:border-gray-300"
                               {...field}
                             />
                           </FormControl>
@@ -490,7 +529,7 @@ export default function Login() {
                                 placeholder="••••••••"
                                 autoComplete="current-password"
                                 data-testid="input-password"
-                                className="h-12 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400 pr-12 hover:border-gray-300"
+                                className="h-11 border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-200 bg-white text-gray-800 placeholder:text-gray-400 pr-12 hover:border-gray-300"
                                 {...field}
                               />
                               <button
@@ -514,7 +553,6 @@ export default function Login() {
                     />
                   </div>
 
-                  {/* Remember Me */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Checkbox 
@@ -541,10 +579,8 @@ export default function Login() {
                     </button>
                   </div>
 
-                  {/* Terms and Disclaimer Section - Only shown when needed */}
                   {showTermsAndDisclaimer && (
-                    <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 space-y-4">
-                      {/* Terms Content */}
+                    <div className="space-y-4">
                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 mt-1">
@@ -559,7 +595,6 @@ export default function Login() {
                         </div>
                       </div>
 
-                      {/* Terms Checkbox */}
                       <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
                         <div className="flex-shrink-0 mt-1">
                           <Checkbox 
@@ -578,7 +613,6 @@ export default function Login() {
                         </label>
                       </div>
 
-                      {/* Disclaimer Content */}
                       <div className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-xl p-4">
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 mt-1">
@@ -593,7 +627,6 @@ export default function Login() {
                         </div>
                       </div>
 
-                      {/* Disclaimer Checkbox */}
                       <div className="flex items-start space-x-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
                         <div className="flex-shrink-0 mt-1">
                           <Checkbox 
@@ -614,71 +647,27 @@ export default function Login() {
                     </div>
                   )}
 
-                  <div className="pt-1">
-                    <Button
-                      type="submit"
-                      className="w-full h-12 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
-                      disabled={loginMutation.isPending || (showTermsAndDisclaimer && (!termsAccepted || !disclaimerAccepted))}
-                      data-testid="button-signin"
-                    >
-                      {loginMutation.isPending ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          <span>Signing you in...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                          <span>Sign In with Password</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    className="w-full h-11 border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 font-medium rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
+                    disabled={loginMutation.isPending || (showTermsAndDisclaimer && (!termsAccepted || !disclaimerAccepted))}
+                    data-testid="button-signin"
+                  >
+                    {loginMutation.isPending ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                        <span>Signing you in...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-4 h-4" />
+                        <span>Sign In with Password</span>
+                      </>
+                    )}
+                  </Button>
                 </form>
               </Form>
-
-              {/* Divider */}
-              <div className="mt-5">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white text-gray-400 font-medium">or</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Alternative login options */}
-              <div className="mt-5 space-y-3">
-                {/* Magic Link - Primary alternative (most convenient) */}
-                <Button
-                  type="button"
-                  onClick={handleMagicLinkOpen}
-                  variant="outline"
-                  className="w-full h-12 border-2 border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group"
-                  data-testid="button-login-magic"
-                >
-                  <Wand2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  <span>Magic Link (One Click)</span>
-                </Button>
-                
-                {/* Email Code - Secondary option */}
-                <Button
-                  type="button"
-                  onClick={handleForgotPasswordOpen}
-                  variant="outline"
-                  className="w-full h-11 border-2 border-pink-200 text-pink-500 hover:bg-pink-50 hover:border-pink-300 font-medium rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center space-x-2 group"
-                  data-testid="button-login-otp"
-                >
-                  <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  <span>Sign In with Email Code</span>
-                </Button>
-                
-                <p className="text-xs text-gray-400 text-center">
-                  No password needed - we'll email you a secure login
-                </p>
-              </div>
 
               {/* Security Badge */}
               <div className="mt-6 flex items-center justify-center gap-2 text-gray-400">
