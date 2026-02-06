@@ -695,26 +695,76 @@ export default function AdminCoaching() {
                       </div>
                     ) : (
                       <div className="space-y-6">
+                        {(() => {
+                          const overviewRow = (clientNutritionPlan as any[]).find(p => p.mealType === "overview");
+                          let overview: any = null;
+                          if (overviewRow?.tips) {
+                            try { overview = JSON.parse(overviewRow.tips); } catch {}
+                          }
+                          return overview ? (
+                            <div className="p-4 rounded-xl bg-gradient-to-br from-violet-50 to-white border border-violet-200">
+                              {overview.dailyStructure?.overview && (
+                                <p className="text-sm text-gray-700 mb-3">{overview.dailyStructure.overview}</p>
+                              )}
+                              <div className="flex gap-4 flex-wrap">
+                                {overview.dailyStructure?.dailyCalorieTarget && (
+                                  <div className="text-sm"><span className="font-semibold text-violet-700">{overview.dailyStructure.dailyCalorieTarget} cal</span> daily target</div>
+                                )}
+                                {overview.dailyStructure?.macroSplit && (
+                                  <div className="text-sm">
+                                    P: {overview.dailyStructure.macroSplit.protein} | C: {overview.dailyStructure.macroSplit.carbs} | F: {overview.dailyStructure.macroSplit.fat}
+                                  </div>
+                                )}
+                              </div>
+                              {overview.coachNotes && (
+                                <p className="text-xs text-gray-500 mt-2 italic">{overview.coachNotes}</p>
+                              )}
+                            </div>
+                          ) : null;
+                        })()}
                         {["breakfast", "lunch", "snack", "dinner"].map(mealType => {
                           const mealPlan = (clientNutritionPlan as any[]).find(p => p.mealType === mealType);
                           if (!mealPlan) return null;
                           const options = mealPlan.options || [];
+                          let parsedTips: any = null;
+                          if (mealPlan.tips) {
+                            try { parsedTips = JSON.parse(mealPlan.tips); } catch { parsedTips = { tips: mealPlan.tips }; }
+                          }
                           return (
                             <div key={mealType}>
-                              <h3 className="font-semibold text-gray-900 capitalize mb-3">{mealType}</h3>
+                              <div className="flex items-center gap-2 mb-3">
+                                <h3 className="font-semibold text-gray-900 capitalize">{mealType}</h3>
+                                {parsedTips?.timing && (
+                                  <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{parsedTips.timing}</span>
+                                )}
+                              </div>
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {(options as any[]).map((opt: any, i: number) => (
                                   <div key={i} className="p-3 rounded-xl bg-gray-50 border border-gray-200">
-                                    <p className="font-medium text-sm text-gray-900">{opt.name}</p>
+                                    <div className="flex items-center justify-between">
+                                      <p className="font-medium text-sm text-gray-900">{opt.name}</p>
+                                      {opt.prepTime && <span className="text-[10px] text-gray-400">{opt.prepTime}</span>}
+                                    </div>
                                     <p className="text-xs text-gray-500 mt-1">{opt.description}</p>
-                                    {opt.calories && (
-                                      <p className="text-[10px] text-gray-400 mt-2">{opt.calories} cal</p>
-                                    )}
+                                    <div className="flex gap-2 mt-2 flex-wrap">
+                                      {opt.calories && (
+                                        <span className="text-[10px] text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">{opt.calories} cal</span>
+                                      )}
+                                      {opt.protein && (
+                                        <span className="text-[10px] text-red-600 bg-red-50 px-1.5 py-0.5 rounded">{opt.protein}g P</span>
+                                      )}
+                                      {opt.carbs && (
+                                        <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">{opt.carbs}g C</span>
+                                      )}
+                                      {opt.fat && (
+                                        <span className="text-[10px] text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">{opt.fat}g F</span>
+                                      )}
+                                    </div>
                                   </div>
                                 ))}
                               </div>
-                              {mealPlan.tips && (
-                                <p className="text-xs text-gray-500 mt-2 italic">Tip: {mealPlan.tips}</p>
+                              {parsedTips?.tips && (
+                                <p className="text-xs text-gray-500 mt-2 italic">Tip: {parsedTips.tips}</p>
                               )}
                             </div>
                           );
