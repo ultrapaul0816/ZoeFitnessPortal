@@ -45,6 +45,7 @@ const AdminActive = lazy(() => import("@/pages/admin-active"));
 const AdminWhatsApp = lazy(() => import("@/pages/admin-whatsapp"));
 const AdminReports = lazy(() => import("@/pages/admin-reports"));
 const AdminCoaching = lazy(() => import("@/pages/admin-coaching"));
+const MyCoaching = lazy(() => import("@/pages/my-coaching"));
 
 // Loading component for lazy-loaded pages
 function PageLoader({ message }: { message: string }) {
@@ -105,6 +106,7 @@ function Router() {
       <Route path="/my-progress-photos" component={() => <LazyRoute component={ProgressPhotos} message="Loading photos..." />} />
       <Route path="/prenatal-strength" component={() => <LazyRoute component={PrenatalStrength} message="Loading..." />} />
       <Route path="/courses/:courseId" component={() => <LazyRoute component={CourseViewer} message="Loading course..." />} />
+      <Route path="/my-coaching" component={() => <LazyRoute component={MyCoaching} message="Loading coaching..." />} />
       <Route path="/community" component={Community} />
       <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
