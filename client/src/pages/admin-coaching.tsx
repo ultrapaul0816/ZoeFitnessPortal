@@ -444,7 +444,7 @@ export default function AdminCoaching() {
                     onValueChange={(week) => generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: parseInt(week) })}
                     disabled={generateWorkoutMutation.isPending}
                   >
-                    <SelectTrigger className="w-[200px] bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-lg">
+                    <SelectTrigger className="w-[200px] bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-lg [&>span]:text-white">
                       <Brain className="w-4 h-4 mr-2" />
                       {generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : "Generate Workout"}
                     </SelectTrigger>
