@@ -975,6 +975,101 @@ export const insertWhatsappRequestSchema = createInsertSchema(whatsappRequests).
   completedAt: true,
 });
 
+// ============================================================================
+// PRIVATE COACHING SYSTEM
+// 1:1 private coaching program with custom workout/nutrition plans
+// ============================================================================
+
+export const coachingClients = pgTable("coaching_clients", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  status: text("status").default("pending"),
+  formData: jsonb("form_data"),
+  healthNotes: text("health_notes"),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  planDurationWeeks: integer("plan_duration_weeks").default(4),
+  paymentAmount: integer("payment_amount"),
+  paymentStatus: text("payment_status").default("pending"),
+  paymentId: text("payment_id"),
+  credentialsSentAt: timestamp("credentials_sent_at"),
+  thankYouSentAt: timestamp("thank_you_sent_at"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+export const coachingWorkoutPlans = pgTable("coaching_workout_plans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: varchar("client_id").notNull(),
+  weekNumber: integer("week_number").notNull(),
+  dayNumber: integer("day_number").notNull(),
+  dayType: text("day_type").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  exercises: jsonb("exercises"),
+  coachNotes: text("coach_notes"),
+  isApproved: boolean("is_approved").default(false),
+  isAiGenerated: boolean("is_ai_generated").default(false),
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+export const coachingNutritionPlans = pgTable("coaching_nutrition_plans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: varchar("client_id").notNull(),
+  mealType: text("meal_type").notNull(),
+  options: jsonb("options").notNull(),
+  tips: text("tips"),
+  isApproved: boolean("is_approved").default(false),
+  isAiGenerated: boolean("is_ai_generated").default(false),
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+export const coachingTips = pgTable("coaching_tips", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: varchar("client_id").notNull(),
+  category: text("category").notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  isAiGenerated: boolean("is_ai_generated").default(false),
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const directMessages = pgTable("direct_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  senderId: varchar("sender_id").notNull(),
+  receiverId: varchar("receiver_id").notNull(),
+  clientId: varchar("client_id").notNull(),
+  content: text("content").notNull(),
+  messageType: text("message_type").default("text"),
+  metadata: jsonb("metadata"),
+  isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
+export const coachingCheckins = pgTable("coaching_checkins", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: varchar("client_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  date: timestamp("date").notNull(),
+  mood: text("mood"),
+  energyLevel: integer("energy_level"),
+  sleepHours: integer("sleep_hours"),
+  waterGlasses: integer("water_glasses").default(0),
+  workoutCompleted: boolean("workout_completed").default(false),
+  workoutNotes: text("workout_notes"),
+  mealsLogged: jsonb("meals_logged"),
+  weight: text("weight"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 export const insertEducationalTopicSchema = createInsertSchema(educationalTopics).omit({
   id: true,
   createdAt: true,
@@ -1196,6 +1291,61 @@ export type RenewalEmailLog = typeof renewalEmailLogs.$inferSelect;
 export type InsertRenewalEmailLog = z.infer<typeof insertRenewalEmailLogSchema>;
 export type WhatsappRequest = typeof whatsappRequests.$inferSelect;
 export type InsertWhatsappRequest = z.infer<typeof insertWhatsappRequestSchema>;
+
+export const insertCoachingClientSchema = createInsertSchema(coachingClients).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  status: z.enum(['pending', 'pending_plan', 'active', 'paused', 'completed', 'cancelled']).default('pending'),
+  paymentStatus: z.enum(['pending', 'completed', 'refunded']).default('pending'),
+});
+
+export const insertCoachingWorkoutPlanSchema = createInsertSchema(coachingWorkoutPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCoachingNutritionPlanSchema = createInsertSchema(coachingNutritionPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCoachingTipSchema = createInsertSchema(coachingTips).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDirectMessageSchema = createInsertSchema(directMessages).omit({
+  id: true,
+  createdAt: true,
+  isRead: true,
+  readAt: true,
+});
+
+export const insertCoachingCheckinSchema = createInsertSchema(coachingCheckins).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  mood: z.enum(['great', 'good', 'okay', 'tired', 'struggling']).optional().nullable(),
+  energyLevel: z.number().int().min(1).max(5).optional().nullable(),
+});
+
+// Private Coaching types
+export type CoachingClient = typeof coachingClients.$inferSelect;
+export type InsertCoachingClient = z.infer<typeof insertCoachingClientSchema>;
+export type CoachingWorkoutPlan = typeof coachingWorkoutPlans.$inferSelect;
+export type InsertCoachingWorkoutPlan = z.infer<typeof insertCoachingWorkoutPlanSchema>;
+export type CoachingNutritionPlan = typeof coachingNutritionPlans.$inferSelect;
+export type InsertCoachingNutritionPlan = z.infer<typeof insertCoachingNutritionPlanSchema>;
+export type CoachingTip = typeof coachingTips.$inferSelect;
+export type InsertCoachingTip = z.infer<typeof insertCoachingTipSchema>;
+export type DirectMessage = typeof directMessages.$inferSelect;
+export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
+export type CoachingCheckin = typeof coachingCheckins.$inferSelect;
+export type InsertCoachingCheckin = z.infer<typeof insertCoachingCheckinSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
