@@ -18,7 +18,7 @@ The backend is an Express.js and TypeScript RESTful API with a modular structure
 PostgreSQL, accessed via Drizzle ORM, stores users, fitness programs, workouts, enrollments, community posts, notifications, and user personalization data.
 
 ## Authentication & Authorization
-Session-based authentication uses `express-session` with PostgreSQL for 30-day persistent sessions via secure HTTP-only cookies. Passwords are bcrypt-hashed. Role-based access control differentiates users and administrators. Mandatory acceptance of terms and health disclaimers is integrated, alongside rate limiting and robust input validation. A 6-digit OTP email login option is also available.
+Session-based authentication uses `express-session` with PostgreSQL for 30-day persistent sessions via secure HTTP-only cookies. Passwords are bcrypt-hashed. Role-based access control differentiates users and administrators. Mandatory acceptance of terms and health disclaimers is integrated, alongside rate limiting and robust input validation. A 6-digit OTP email login option is also available. **Separate login pages**: Members login at `/` (pink brand theme), Admins login at `/admin/login` (professional dark navy theme). Admin login rejects non-admin accounts.
 
 ## Core Features
 The application provides a 6-week program with detailed exercises, coach notes, and YouTube video integration. It includes a "What's Next Tab" with a PDF progress tracker, a modernized Nutrition section, and extensive profile personalization. Secure before/after photo uploads are handled via Cloudinary. An Instagram-style Community Feed supports photo uploads, filtering, likes, comments, and sharing.
@@ -40,6 +40,12 @@ A "Dual Check-in System" includes daily mood/energy check-ins and detailed worko
 
 ## User Activity Tracking
 The platform automatically tracks user activity for engagement analytics, including page views, feature usage, login frequency, and session activity. A dedicated "Activity & Engagement" card in the admin dashboard provides aggregated and individual user activity insights.
+
+## Payment & WhatsApp Integration
+Razorpay webhook at `/api/webhooks/razorpay` processes WhatsApp community payments (₹1000). The webhook verifies HMAC-SHA256 signatures, filters WhatsApp-specific payments, creates pending requests in the `whatsapp_requests` table, and sends admin email notifications (production only). Admin endpoints at `/api/admin/whatsapp-requests` allow viewing and completing/rejecting requests. Completing a request automatically enables WhatsApp support for the user.
+
+## System Reports
+Admin reports page at `/admin/reports` provides a system usage summary including user stats, enrollments, workout completions, community engagement, and WhatsApp requests. Reports are exportable as CSV files.
 
 # External Dependencies
 -   **Database**: PostgreSQL
