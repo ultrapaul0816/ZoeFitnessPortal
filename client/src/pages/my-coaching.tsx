@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
 import BottomNav from "@/components/bottom-nav";
 import {
   Dumbbell,
@@ -37,6 +39,7 @@ import {
   ExternalLink,
   Play,
   CheckCircle,
+  Circle,
 } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
@@ -275,6 +278,59 @@ export default function MyCoaching() {
     },
   });
 
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+
+  const getYouTubeId = (url: string) => {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    return match ? match[1] : null;
+  };
+
+  const { data: completionsData = [] } = useQuery<any[]>({
+    queryKey: ["/api/coaching/workout-completions", selectedWeek],
+    queryFn: async () => {
+      const res = await fetch(`/api/coaching/workout-completions?week=${selectedWeek}`, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!user && !!planData?.client,
+  });
+
+  const toggleCompletionMutation = useMutation({
+    mutationFn: async (data: { planId: string; weekNumber: number; dayNumber: number; sectionIndex: number; exerciseIndex: number; exerciseName: string; completed: boolean }) => {
+      await apiRequest("POST", "/api/coaching/workout-completions", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/coaching/workout-completions"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update exercise completion", variant: "destructive" });
+    },
+  });
+
+  const isExerciseCompleted = (planId: string, dayNumber: number, sectionIndex: number, exerciseIndex: number) => {
+    return completionsData.some(
+      (c: any) => c.planId === planId && c.dayNumber === dayNumber && c.sectionIndex === sectionIndex && c.exerciseIndex === exerciseIndex && c.completed
+    );
+  };
+
+  const getDayCompletionStats = (workout: WorkoutPlan) => {
+    const exercisesData = workout.exercises as any;
+    if (!exercisesData || !exercisesData.sections) return { total: 0, completed: 0 };
+    let total = 0;
+    let completed = 0;
+    exercisesData.sections.forEach((section: any, sIdx: number) => {
+      if (section.exercises) {
+        section.exercises.forEach((_: any, eIdx: number) => {
+          total++;
+          if (isExerciseCompleted(workout.id, workout.dayNumber, sIdx, eIdx)) {
+            completed++;
+          }
+        });
+      }
+    });
+    return { total, completed };
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -495,6 +551,9 @@ export default function MyCoaching() {
                   const exercisesData = workout.exercises as any;
                   const isStructured = exercisesData && !Array.isArray(exercisesData) && exercisesData.sections;
                   const legacyExercises: Exercise[] = Array.isArray(exercisesData) ? exercisesData : [];
+                  const dayStats = getDayCompletionStats(workout);
+                  const dayProgressPercent = dayStats.total > 0 ? Math.round((dayStats.completed / dayStats.total) * 100) : 0;
+                  const isDayComplete = dayStats.total > 0 && dayStats.completed === dayStats.total;
 
                   return (
                     <Card key={workout.id} className="border-pink-100 overflow-hidden">
@@ -513,6 +572,15 @@ export default function MyCoaching() {
                             >
                               {workout.dayType.replace(/_/g, " ")}
                             </Badge>
+                            {dayStats.total > 0 && (
+                              isDayComplete ? (
+                                <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
+                              ) : (
+                                <span className="text-xs text-gray-500 shrink-0">
+                                  {dayStats.completed}/{dayStats.total} done
+                                </span>
+                              )
+                            )}
                           </div>
                           <p className="text-sm text-gray-600 truncate">{workout.title}</p>
                         </div>
@@ -525,6 +593,16 @@ export default function MyCoaching() {
 
                       {isExpanded && (
                         <div className="px-4 pb-4 border-t border-pink-50">
+                          {dayStats.total > 0 && (
+                            <div className="mt-3 mb-3">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs text-gray-500">{dayStats.completed}/{dayStats.total} exercises completed</span>
+                                <span className="text-xs font-semibold text-pink-600">{dayProgressPercent}%</span>
+                              </div>
+                              <Progress value={dayProgressPercent} className="h-2 [&>div]:bg-pink-500" />
+                            </div>
+                          )}
+
                           {workout.description && (
                             <p className="text-sm text-gray-600 mt-3 mb-3">{workout.description}</p>
                           )}
@@ -608,54 +686,110 @@ export default function MyCoaching() {
                                             </p>
                                           )}
 
-                                          {section.exercises && section.exercises.map((ex: any, eIdx: number) => (
-                                            <div
-                                              key={eIdx}
-                                              className="bg-gray-50/80 rounded-lg p-3 border border-gray-100"
-                                            >
-                                              <div className="flex items-start justify-between gap-2">
-                                                <p className="font-medium text-gray-900 text-sm">{ex.name}</p>
-                                                {ex.videoUrl && (
-                                                  <a
-                                                    href={ex.videoUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="shrink-0 flex items-center gap-1 text-xs text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 px-2 py-1 rounded-full transition-colors"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                  >
-                                                    <Play className="w-3 h-3" />
-                                                    Video
-                                                  </a>
-                                                )}
+                                          {section.exercises && section.exercises.map((ex: any, eIdx: number) => {
+                                            const videoKey = `${sIdx}-${eIdx}`;
+                                            const youtubeId = ex.videoUrl ? getYouTubeId(ex.videoUrl) : null;
+                                            const exerciseCompleted = isExerciseCompleted(workout.id, workout.dayNumber, sIdx, eIdx);
+
+                                            return (
+                                              <div
+                                                key={eIdx}
+                                                className={`rounded-lg p-3 border ${exerciseCompleted ? 'bg-green-50/50 border-green-200' : 'bg-gray-50/80 border-gray-100'}`}
+                                              >
+                                                <div className="flex items-start gap-2">
+                                                  <div className="pt-0.5 shrink-0">
+                                                    <Checkbox
+                                                      checked={exerciseCompleted}
+                                                      onCheckedChange={(checked) => {
+                                                        toggleCompletionMutation.mutate({
+                                                          planId: workout.id,
+                                                          weekNumber: workout.weekNumber,
+                                                          dayNumber: workout.dayNumber,
+                                                          sectionIndex: sIdx,
+                                                          exerciseIndex: eIdx,
+                                                          exerciseName: ex.name,
+                                                          completed: !!checked,
+                                                        });
+                                                      }}
+                                                      className="border-pink-300 data-[state=checked]:bg-pink-500 data-[state=checked]:border-pink-500"
+                                                    />
+                                                  </div>
+                                                  <div className="flex-1 min-w-0">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                      <p className={`font-medium text-sm ${exerciseCompleted ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                                                        {ex.name}
+                                                      </p>
+                                                      {youtubeId && (
+                                                        <button
+                                                          onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setActiveVideo(activeVideo === videoKey ? null : videoKey);
+                                                          }}
+                                                          className="shrink-0 flex items-center gap-1 text-xs text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 px-2 py-1 rounded-full transition-colors"
+                                                        >
+                                                          <Play className="w-3 h-3" />
+                                                          {activeVideo === videoKey ? "Hide" : "Video"}
+                                                        </button>
+                                                      )}
+                                                      {ex.videoUrl && !youtubeId && (
+                                                        <a
+                                                          href={ex.videoUrl}
+                                                          target="_blank"
+                                                          rel="noopener noreferrer"
+                                                          className="shrink-0 flex items-center gap-1 text-xs text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 px-2 py-1 rounded-full transition-colors"
+                                                          onClick={(e) => e.stopPropagation()}
+                                                        >
+                                                          <ExternalLink className="w-3 h-3" />
+                                                          Video
+                                                        </a>
+                                                      )}
+                                                    </div>
+
+                                                    {activeVideo === videoKey && youtubeId && (
+                                                      <div className="mt-2 rounded-lg overflow-hidden border border-pink-200">
+                                                        <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                                                          <iframe
+                                                            className="absolute inset-0 w-full h-full"
+                                                            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1`}
+                                                            allow="autoplay; encrypted-media"
+                                                            allowFullScreen
+                                                            title={ex.name}
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                    )}
+
+                                                    <div className="flex flex-wrap gap-2 mt-1.5">
+                                                      {ex.sets && (
+                                                        <span className="text-xs text-pink-700 bg-pink-100 px-2 py-0.5 rounded">
+                                                          {ex.sets} {ex.sets === 1 ? "set" : "sets"}
+                                                        </span>
+                                                      )}
+                                                      {ex.reps && (
+                                                        <span className="text-xs text-pink-700 bg-pink-100 px-2 py-0.5 rounded">
+                                                          {ex.reps} reps
+                                                        </span>
+                                                      )}
+                                                      {ex.duration && (
+                                                        <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
+                                                          <Clock className="w-3 h-3 inline mr-0.5" />
+                                                          {ex.duration}
+                                                        </span>
+                                                      )}
+                                                      {ex.restAfter && (
+                                                        <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                                                          Rest: {ex.restAfter}
+                                                        </span>
+                                                      )}
+                                                    </div>
+                                                    {ex.notes && (
+                                                      <p className="text-xs text-gray-500 mt-1.5 italic">{ex.notes}</p>
+                                                    )}
+                                                  </div>
+                                                </div>
                                               </div>
-                                              <div className="flex flex-wrap gap-2 mt-1.5">
-                                                {ex.sets && (
-                                                  <span className="text-xs text-pink-700 bg-pink-100 px-2 py-0.5 rounded">
-                                                    {ex.sets} {ex.sets === 1 ? "set" : "sets"}
-                                                  </span>
-                                                )}
-                                                {ex.reps && (
-                                                  <span className="text-xs text-pink-700 bg-pink-100 px-2 py-0.5 rounded">
-                                                    {ex.reps} reps
-                                                  </span>
-                                                )}
-                                                {ex.duration && (
-                                                  <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
-                                                    <Clock className="w-3 h-3 inline mr-0.5" />
-                                                    {ex.duration}
-                                                  </span>
-                                                )}
-                                                {ex.restAfter && (
-                                                  <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
-                                                    Rest: {ex.restAfter}
-                                                  </span>
-                                                )}
-                                              </div>
-                                              {ex.notes && (
-                                                <p className="text-xs text-gray-500 mt-1.5 italic">{ex.notes}</p>
-                                              )}
-                                            </div>
-                                          ))}
+                                            );
+                                          })}
                                         </div>
                                       )}
                                     </div>
