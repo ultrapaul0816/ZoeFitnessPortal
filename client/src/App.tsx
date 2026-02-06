@@ -8,13 +8,13 @@ import { useActivityTracking } from "@/hooks/use-activity-tracking";
 import UpdatePrompt from "@/components/update-prompt";
 import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
+import Dashboard from "@/pages/dashboard";
+import Community from "@/pages/community";
+import MyCourses from "@/pages/my-courses";
+import Profile from "@/pages/profile";
 
-// Lazy load all heavy pages to improve initial load time
-const Dashboard = lazy(() => import("@/pages/dashboard"));
-const Community = lazy(() => import("@/pages/community"));
-const MyCourses = lazy(() => import("@/pages/my-courses"));
+// Lazy load secondary pages
 const MyLibrary = lazy(() => import("@/pages/my-library"));
-const Profile = lazy(() => import("@/pages/profile"));
 const ProgressPhotos = lazy(() => import("@/pages/progress-photos"));
 const CourseViewer = lazy(() => import("@/pages/course-viewer"));
 const PrenatalStrength = lazy(() => import("@/pages/prenatal-strength"));
@@ -72,7 +72,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Login} />
-      <Route path="/dashboard" component={() => <LazyRoute component={Dashboard} message="Loading dashboard..." />} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin/login" component={() => <LazyRoute component={AdminLogin} message="Loading admin login..." />} />
       <Route path="/admin" component={() => <LazyRoute component={Admin} message="Loading admin..." />} />
       <Route path="/admin/analytics" component={() => <LazyRoute component={AdminAnalytics} message="Loading analytics..." />} />
@@ -99,12 +99,12 @@ function Router() {
       <Route path="/heal-your-core" component={() => <LazyRoute component={HealYourCorePage} message="Loading your program..." />} />
       <Route path="/progress" component={() => <LazyRoute component={Progress} message="Loading progress tracker..." />} />
       <Route path="/my-library" component={() => <LazyRoute component={MyLibrary} message="Loading library..." />} />
-      <Route path="/my-courses" component={() => <LazyRoute component={MyCourses} message="Loading courses..." />} />
+      <Route path="/my-courses" component={MyCourses} />
       <Route path="/my-progress-photos" component={() => <LazyRoute component={ProgressPhotos} message="Loading photos..." />} />
       <Route path="/prenatal-strength" component={() => <LazyRoute component={PrenatalStrength} message="Loading..." />} />
       <Route path="/courses/:courseId" component={() => <LazyRoute component={CourseViewer} message="Loading course..." />} />
-      <Route path="/community" component={() => <LazyRoute component={Community} message="Loading community..." />} />
-      <Route path="/profile" component={() => <LazyRoute component={Profile} message="Loading profile..." />} />
+      <Route path="/community" component={Community} />
+      <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
   );
