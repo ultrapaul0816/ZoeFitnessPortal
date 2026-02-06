@@ -7074,6 +7074,418 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // ============================================================================
+  // PRIVATE COACHING API ROUTES
+  // ============================================================================
+
+  // Get all coaching clients (admin)
+  app.get("/api/admin/coaching/clients", requireAdmin, async (req, res) => {
+    try {
+      const clients = await storage.getCoachingClients();
+      res.json(clients);
+    } catch (error) {
+      console.error("Error fetching coaching clients:", error);
+      res.status(500).json({ message: "Failed to fetch coaching clients" });
+    }
+  });
+
+  // Create new coaching client (admin enrolls user)
+  app.post("/api/admin/coaching/clients", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const { email, notes, paymentAmount } = req.body;
+      if (!email) return res.status(400).json({ message: "Email is required" });
+
+      const user = await storage.getUserByEmail(email.toLowerCase().trim());
+      if (!user) return res.status(404).json({ message: "No user found with this email. They must have an account first." });
+
+      const existing = await storage.getCoachingClientByUserId(user.id);
+      if (existing && (existing.status === "active" || existing.status === "pending" || existing.status === "pending_plan")) {
+        return res.status(400).json({ message: "This user already has an active coaching enrollment." });
+      }
+
+      const nextMonday = new Date();
+      nextMonday.setDate(nextMonday.getDate() + ((8 - nextMonday.getDay()) % 7 || 7));
+      nextMonday.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(nextMonday);
+      endDate.setDate(endDate.getDate() + 28);
+
+      const client = await storage.createCoachingClient({
+        userId: user.id,
+        status: "pending",
+        notes: notes || null,
+        paymentAmount: paymentAmount || null,
+        paymentStatus: "completed",
+        startDate: nextMonday,
+        endDate: endDate,
+        planDurationWeeks: 4,
+      } as any);
+
+      // Send thank you email
+      try {
+        const { emailService } = await import("./email/service");
+        await emailService.sendEmail({
+          to: user.email,
+          subject: "Welcome to Private Coaching with Zoe!",
+          html: `
+            <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #ec4899; margin: 0;">Welcome to Private Coaching!</h1>
+              </div>
+              <p>Hi ${user.firstName},</p>
+              <p>Thank you for enrolling in Private Coaching with Zoe! Your payment has been received.</p>
+              <p>We're now putting together your personalized workout and nutrition plan. Please allow us a few days to formulate your custom plan.</p>
+              <p>You'll receive your login credentials on <strong>Saturday</strong>, and your program will officially start on <strong>Monday</strong>.</p>
+              <p>We're excited to work with you on your fitness journey!</p>
+              <p style="color: #666; margin-top: 30px;">Warm regards,<br>Zoe & Team</p>
+            </div>
+          `,
+        });
+        await storage.updateCoachingClient(client.id, { thankYouSentAt: new Date() } as any);
+      } catch (emailError) {
+        console.error("Failed to send thank you email:", emailError);
+      }
+
+      res.json(client);
+    } catch (error) {
+      console.error("Error creating coaching client:", error);
+      res.status(500).json({ message: "Failed to enroll coaching client" });
+    }
+  });
+
+  // Update coaching client status
+  app.patch("/api/admin/coaching/clients/:clientId", requireAdmin, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const updates = req.body;
+      const updated = await storage.updateCoachingClient(clientId, updates);
+      if (!updated) return res.status(404).json({ message: "Client not found" });
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating coaching client:", error);
+      res.status(500).json({ message: "Failed to update client" });
+    }
+  });
+
+  // Get workout plan for a client
+  app.get("/api/admin/coaching/clients/:clientId/workout-plan", requireAdmin, async (req, res) => {
+    try {
+      const plans = await storage.getCoachingWorkoutPlans(req.params.clientId);
+      res.json(plans);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch workout plan" });
+    }
+  });
+
+  // Get nutrition plan for a client
+  app.get("/api/admin/coaching/clients/:clientId/nutrition-plan", requireAdmin, async (req, res) => {
+    try {
+      const plans = await storage.getCoachingNutritionPlans(req.params.clientId);
+      res.json(plans);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch nutrition plan" });
+    }
+  });
+
+  // Get check-ins for a client
+  app.get("/api/admin/coaching/clients/:clientId/checkins", requireAdmin, async (req, res) => {
+    try {
+      const checkins = await storage.getCoachingCheckins(req.params.clientId);
+      res.json(checkins);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch check-ins" });
+    }
+  });
+
+  // Get messages for a client
+  app.get("/api/admin/coaching/clients/:clientId/messages", requireAdmin, async (req, res) => {
+    try {
+      const messages = await storage.getDirectMessages(req.params.clientId);
+      // Mark messages as read (admin is reading them)
+      const adminUser = (req as any).user;
+      if (adminUser) {
+        await storage.markMessagesAsRead(req.params.clientId, adminUser.id);
+      }
+      res.json(messages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // Send a message to a coaching client (admin sends)
+  app.post("/api/admin/coaching/messages", requireAdmin, async (req, res) => {
+    try {
+      const { clientId, content } = req.body;
+      if (!clientId || !content) return res.status(400).json({ message: "clientId and content required" });
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const adminUser = (req as any).user;
+      const message = await storage.createDirectMessage({
+        senderId: adminUser.id,
+        receiverId: client.userId,
+        clientId: clientId,
+        content: content.trim(),
+        messageType: "text",
+      });
+
+      res.json(message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // Generate AI plan for a coaching client
+  app.post("/api/admin/coaching/clients/:clientId/generate-plan", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Clear existing plans
+      await storage.deleteCoachingWorkoutPlans(client.id);
+      await storage.deleteCoachingNutritionPlans(client.id);
+
+      const openai = new OpenAI();
+
+      const formDataStr = client.formData ? JSON.stringify(client.formData) : "No form data available";
+      const healthNotesStr = client.healthNotes || "No specific health notes";
+      const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+
+      // Generate workout plan
+      const workoutResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert postnatal fitness coach. Create a personalized 4-week workout plan. Return ONLY valid JSON array with objects for each day. Each object: { "weekNumber": 1-4, "dayNumber": 1-7 (1=Monday), "dayType": "workout"|"cardio"|"rest"|"active_recovery", "title": "short title", "description": "brief description", "exercises": [{"name": "exercise name", "sets": 3, "reps": "12", "duration": "30 seconds", "restSeconds": 30, "notes": "form tip"}], "coachNotes": "personalized advice" }. Include 4 workout days, 2 cardio days, 1 rest day per week. Make it progressive across weeks. Focus on postpartum-safe exercises.`
+          },
+          {
+            role: "user",
+            content: `Create a 4-week workout plan for this client:\n${userInfo}\nForm responses: ${formDataStr}\nHealth notes: ${healthNotesStr}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+      });
+
+      const workoutData = JSON.parse(workoutResponse.choices[0].message.content || "{}");
+      const workoutPlans = workoutData.plan || workoutData.workouts || workoutData.days || [];
+
+      for (const day of workoutPlans) {
+        await storage.createCoachingWorkoutPlan({
+          clientId: client.id,
+          weekNumber: day.weekNumber,
+          dayNumber: day.dayNumber,
+          dayType: day.dayType,
+          title: day.title,
+          description: day.description || "",
+          exercises: day.exercises || [],
+          coachNotes: day.coachNotes || "",
+          isApproved: false,
+          isAiGenerated: true,
+          orderIndex: (day.weekNumber - 1) * 7 + day.dayNumber,
+        } as any);
+      }
+
+      // Generate nutrition plan
+      const nutritionResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert postnatal nutrition coach. Create a personalized nutrition plan with 5 meal options each for breakfast, lunch, snack, and dinner. Return ONLY valid JSON object: { "meals": [{ "mealType": "breakfast"|"lunch"|"snack"|"dinner", "options": [{"name": "meal name", "description": "brief description", "calories": 350, "protein": 25, "carbs": 40, "fat": 12, "ingredients": ["item1", "item2"], "instructions": "how to prepare"}], "tips": "meal-specific advice" }] }. Focus on nutrient-dense, postpartum-friendly foods that support recovery and energy.`
+          },
+          {
+            role: "user",
+            content: `Create a nutrition plan for this client:\n${userInfo}\nForm responses: ${formDataStr}\nHealth notes: ${healthNotesStr}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+      });
+
+      const nutritionData = JSON.parse(nutritionResponse.choices[0].message.content || "{}");
+      const meals = nutritionData.meals || nutritionData.nutrition || [];
+      const mealOrder = { breakfast: 0, lunch: 1, snack: 2, dinner: 3 };
+
+      for (const meal of meals) {
+        await storage.createCoachingNutritionPlan({
+          clientId: client.id,
+          mealType: meal.mealType,
+          options: meal.options || [],
+          tips: meal.tips || "",
+          isApproved: false,
+          isAiGenerated: true,
+          orderIndex: mealOrder[meal.mealType as keyof typeof mealOrder] || 0,
+        } as any);
+      }
+
+      // Update client status
+      await storage.updateCoachingClient(client.id, { status: "pending_plan" });
+
+      res.json({ message: "Plan generated successfully", workoutDays: workoutPlans.length, mealTypes: meals.length });
+    } catch (error) {
+      console.error("Error generating plan:", error);
+      res.status(500).json({ message: "Failed to generate plan. Please try again." });
+    }
+  });
+
+  // Approve plan for a coaching client
+  app.post("/api/admin/coaching/clients/:clientId/approve-plan", requireAdmin, async (req, res) => {
+    try {
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      // Mark all workout plans as approved
+      const workoutPlans = await storage.getCoachingWorkoutPlans(client.id);
+      for (const plan of workoutPlans) {
+        await storage.updateCoachingWorkoutPlan(plan.id, { isApproved: true });
+      }
+
+      // Mark all nutrition plans as approved
+      const nutritionPlans = await storage.getCoachingNutritionPlans(client.id);
+      for (const plan of nutritionPlans) {
+        await storage.updateCoachingNutritionPlan(plan.id, { isApproved: true });
+      }
+
+      // Update client status to active
+      await storage.updateCoachingClient(client.id, { status: "active" });
+
+      res.json({ message: "Plan approved and client is now active" });
+    } catch (error) {
+      console.error("Error approving plan:", error);
+      res.status(500).json({ message: "Failed to approve plan" });
+    }
+  });
+
+  // ============================================================================
+  // CLIENT-FACING COACHING ROUTES
+  // ============================================================================
+
+  // Get coaching data for logged-in user
+  app.get("/api/coaching/my-plan", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const workoutPlan = await storage.getCoachingWorkoutPlans(client.id);
+      const nutritionPlan = await storage.getCoachingNutritionPlans(client.id);
+      const tips = await storage.getCoachingTips(client.id);
+      const unreadMessages = await storage.getUnreadMessageCount(client.id, user.id);
+
+      res.json({
+        client: {
+          id: client.id,
+          status: client.status,
+          startDate: client.startDate,
+          endDate: client.endDate,
+          planDurationWeeks: client.planDurationWeeks,
+        },
+        workoutPlan: workoutPlan.filter(p => p.isApproved),
+        nutritionPlan: nutritionPlan.filter(p => p.isApproved),
+        tips,
+        unreadMessages,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch coaching plan" });
+    }
+  });
+
+  // Get messages for logged-in coaching client
+  app.get("/api/coaching/messages", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const messages = await storage.getDirectMessages(client.id);
+      await storage.markMessagesAsRead(client.id, user.id);
+
+      res.json(messages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // Send message from client to coach
+  app.post("/api/coaching/messages", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const { content } = req.body;
+      if (!content?.trim()) return res.status(400).json({ message: "Message content required" });
+
+      // Find admin user (Zoe) to set as receiver - use existing messages to find admin, or use a default
+      const existingMessages = await storage.getDirectMessages(client.id);
+      const adminMessage = existingMessages.find(m => m.senderId !== user.id);
+      const adminUserId = adminMessage?.senderId || "admin";
+
+      const message = await storage.createDirectMessage({
+        senderId: user.id,
+        receiverId: adminUserId,
+        clientId: client.id,
+        content: content.trim(),
+        messageType: "text",
+      });
+
+      res.json(message);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // Submit coaching check-in from client
+  app.post("/api/coaching/checkins", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const checkin = await storage.createCoachingCheckin({
+        clientId: client.id,
+        userId: user.id,
+        date: new Date(),
+        ...req.body,
+      });
+
+      res.json(checkin);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to submit check-in" });
+    }
+  });
+
+  // Get coaching check-ins for logged-in client
+  app.get("/api/coaching/checkins", async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const checkins = await storage.getCoachingCheckins(client.id);
+      res.json(checkins);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch check-ins" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

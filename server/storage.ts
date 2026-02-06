@@ -57,6 +57,18 @@ import {
   type MagicLink,
   type WhatsappRequest,
   type InsertWhatsappRequest,
+  type CoachingClient,
+  type InsertCoachingClient,
+  type CoachingWorkoutPlan,
+  type InsertCoachingWorkoutPlan,
+  type CoachingNutritionPlan,
+  type InsertCoachingNutritionPlan,
+  type CoachingTip,
+  type InsertCoachingTip,
+  type DirectMessage,
+  type InsertDirectMessage,
+  type CoachingCheckin,
+  type InsertCoachingCheckin,
 } from "@shared/schema";
 import {
   users,
@@ -99,6 +111,12 @@ import {
   skippedWeeks,
   courseEnrollments,
   whatsappRequests,
+  coachingClients,
+  coachingWorkoutPlans,
+  coachingNutritionPlans,
+  coachingTips,
+  directMessages,
+  coachingCheckins,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -551,6 +569,39 @@ export interface IStorage {
     };
     generatedAt: string;
   }>;
+
+  // Private Coaching
+  getCoachingClients(): Promise<any[]>;
+  getCoachingClient(id: string): Promise<CoachingClient | undefined>;
+  getCoachingClientByUserId(userId: string): Promise<CoachingClient | undefined>;
+  createCoachingClient(client: InsertCoachingClient): Promise<CoachingClient>;
+  updateCoachingClient(id: string, updates: Partial<CoachingClient>): Promise<CoachingClient | undefined>;
+  
+  // Coaching Workout Plans
+  getCoachingWorkoutPlans(clientId: string): Promise<CoachingWorkoutPlan[]>;
+  createCoachingWorkoutPlan(plan: InsertCoachingWorkoutPlan): Promise<CoachingWorkoutPlan>;
+  updateCoachingWorkoutPlan(id: string, updates: Partial<CoachingWorkoutPlan>): Promise<CoachingWorkoutPlan | undefined>;
+  deleteCoachingWorkoutPlans(clientId: string): Promise<void>;
+  
+  // Coaching Nutrition Plans
+  getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]>;
+  createCoachingNutritionPlan(plan: InsertCoachingNutritionPlan): Promise<CoachingNutritionPlan>;
+  updateCoachingNutritionPlan(id: string, updates: Partial<CoachingNutritionPlan>): Promise<CoachingNutritionPlan | undefined>;
+  deleteCoachingNutritionPlans(clientId: string): Promise<void>;
+  
+  // Coaching Tips
+  getCoachingTips(clientId: string): Promise<CoachingTip[]>;
+  createCoachingTip(tip: InsertCoachingTip): Promise<CoachingTip>;
+  
+  // Direct Messages
+  getDirectMessages(clientId: string): Promise<DirectMessage[]>;
+  createDirectMessage(message: InsertDirectMessage): Promise<DirectMessage>;
+  markMessagesAsRead(clientId: string, receiverId: string): Promise<void>;
+  getUnreadMessageCount(clientId: string, receiverId: string): Promise<number>;
+  
+  // Coaching Check-ins
+  getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]>;
+  createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin>;
 }
 
 export class MemStorage implements IStorage {
@@ -2362,6 +2413,29 @@ export class MemStorage implements IStorage {
       generatedAt: new Date().toISOString(),
     };
   }
+
+  // Private Coaching stubs
+  async getCoachingClients(): Promise<any[]> { return []; }
+  async getCoachingClient(id: string): Promise<CoachingClient | undefined> { return undefined; }
+  async getCoachingClientByUserId(userId: string): Promise<CoachingClient | undefined> { return undefined; }
+  async createCoachingClient(client: InsertCoachingClient): Promise<CoachingClient> { throw new Error("Not implemented"); }
+  async updateCoachingClient(id: string, updates: Partial<CoachingClient>): Promise<CoachingClient | undefined> { return undefined; }
+  async getCoachingWorkoutPlans(clientId: string): Promise<CoachingWorkoutPlan[]> { return []; }
+  async createCoachingWorkoutPlan(plan: InsertCoachingWorkoutPlan): Promise<CoachingWorkoutPlan> { throw new Error("Not implemented"); }
+  async updateCoachingWorkoutPlan(id: string, updates: Partial<CoachingWorkoutPlan>): Promise<CoachingWorkoutPlan | undefined> { return undefined; }
+  async deleteCoachingWorkoutPlans(clientId: string): Promise<void> {}
+  async getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]> { return []; }
+  async createCoachingNutritionPlan(plan: InsertCoachingNutritionPlan): Promise<CoachingNutritionPlan> { throw new Error("Not implemented"); }
+  async updateCoachingNutritionPlan(id: string, updates: Partial<CoachingNutritionPlan>): Promise<CoachingNutritionPlan | undefined> { return undefined; }
+  async deleteCoachingNutritionPlans(clientId: string): Promise<void> {}
+  async getCoachingTips(clientId: string): Promise<CoachingTip[]> { return []; }
+  async createCoachingTip(tip: InsertCoachingTip): Promise<CoachingTip> { throw new Error("Not implemented"); }
+  async getDirectMessages(clientId: string): Promise<DirectMessage[]> { return []; }
+  async createDirectMessage(message: InsertDirectMessage): Promise<DirectMessage> { throw new Error("Not implemented"); }
+  async markMessagesAsRead(clientId: string, receiverId: string): Promise<void> {}
+  async getUnreadMessageCount(clientId: string, receiverId: string): Promise<number> { return 0; }
+  async getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]> { return []; }
+  async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> { throw new Error("Not implemented"); }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -5392,6 +5466,163 @@ class DatabaseStorage implements IStorage {
       },
       generatedAt: new Date().toISOString(),
     };
+  }
+
+  // ============================================================================
+  // PRIVATE COACHING
+  // ============================================================================
+
+  async getCoachingClients(): Promise<any[]> {
+    const clients = await this.db.select().from(coachingClients).orderBy(sql`${coachingClients.createdAt} DESC`);
+    const result = [];
+    for (const client of clients) {
+      const [user] = await this.db.select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        phone: users.phone,
+        profilePictureUrl: users.profilePictureUrl,
+      }).from(users).where(eq(users.id, client.userId));
+      
+      const unreadCount = await this.db.select({ count: sql<number>`count(*)::int` })
+        .from(directMessages)
+        .where(sql`${directMessages.clientId} = ${client.id} AND ${directMessages.senderId} = ${client.userId} AND ${directMessages.isRead} = false`);
+      
+      const lastCheckin = await this.db.select({ date: coachingCheckins.date })
+        .from(coachingCheckins)
+        .where(eq(coachingCheckins.clientId, client.id))
+        .orderBy(sql`${coachingCheckins.date} DESC`)
+        .limit(1);
+      
+      if (user) {
+        result.push({
+          ...client,
+          user,
+          unreadMessages: unreadCount[0]?.count || 0,
+          lastCheckinDate: lastCheckin[0]?.date || null,
+        });
+      }
+    }
+    return result;
+  }
+
+  async getCoachingClient(id: string): Promise<CoachingClient | undefined> {
+    const [client] = await this.db.select().from(coachingClients).where(eq(coachingClients.id, id));
+    return client;
+  }
+
+  async getCoachingClientByUserId(userId: string): Promise<CoachingClient | undefined> {
+    const [client] = await this.db.select().from(coachingClients)
+      .where(eq(coachingClients.userId, userId))
+      .orderBy(sql`${coachingClients.createdAt} DESC`)
+      .limit(1);
+    return client;
+  }
+
+  async createCoachingClient(client: InsertCoachingClient): Promise<CoachingClient> {
+    const [created] = await this.db.insert(coachingClients).values(client).returning();
+    return created;
+  }
+
+  async updateCoachingClient(id: string, updates: Partial<CoachingClient>): Promise<CoachingClient | undefined> {
+    const [updated] = await this.db.update(coachingClients)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(coachingClients.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getCoachingWorkoutPlans(clientId: string): Promise<CoachingWorkoutPlan[]> {
+    return this.db.select().from(coachingWorkoutPlans)
+      .where(eq(coachingWorkoutPlans.clientId, clientId))
+      .orderBy(coachingWorkoutPlans.weekNumber, coachingWorkoutPlans.dayNumber);
+  }
+
+  async createCoachingWorkoutPlan(plan: InsertCoachingWorkoutPlan): Promise<CoachingWorkoutPlan> {
+    const [created] = await this.db.insert(coachingWorkoutPlans).values(plan).returning();
+    return created;
+  }
+
+  async updateCoachingWorkoutPlan(id: string, updates: Partial<CoachingWorkoutPlan>): Promise<CoachingWorkoutPlan | undefined> {
+    const [updated] = await this.db.update(coachingWorkoutPlans)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(coachingWorkoutPlans.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCoachingWorkoutPlans(clientId: string): Promise<void> {
+    await this.db.delete(coachingWorkoutPlans).where(eq(coachingWorkoutPlans.clientId, clientId));
+  }
+
+  async getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]> {
+    return this.db.select().from(coachingNutritionPlans)
+      .where(eq(coachingNutritionPlans.clientId, clientId))
+      .orderBy(coachingNutritionPlans.orderIndex);
+  }
+
+  async createCoachingNutritionPlan(plan: InsertCoachingNutritionPlan): Promise<CoachingNutritionPlan> {
+    const [created] = await this.db.insert(coachingNutritionPlans).values(plan).returning();
+    return created;
+  }
+
+  async updateCoachingNutritionPlan(id: string, updates: Partial<CoachingNutritionPlan>): Promise<CoachingNutritionPlan | undefined> {
+    const [updated] = await this.db.update(coachingNutritionPlans)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(coachingNutritionPlans.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCoachingNutritionPlans(clientId: string): Promise<void> {
+    await this.db.delete(coachingNutritionPlans).where(eq(coachingNutritionPlans.clientId, clientId));
+  }
+
+  async getCoachingTips(clientId: string): Promise<CoachingTip[]> {
+    return this.db.select().from(coachingTips)
+      .where(eq(coachingTips.clientId, clientId))
+      .orderBy(coachingTips.orderIndex);
+  }
+
+  async createCoachingTip(tip: InsertCoachingTip): Promise<CoachingTip> {
+    const [created] = await this.db.insert(coachingTips).values(tip).returning();
+    return created;
+  }
+
+  async getDirectMessages(clientId: string): Promise<DirectMessage[]> {
+    return this.db.select().from(directMessages)
+      .where(eq(directMessages.clientId, clientId))
+      .orderBy(directMessages.createdAt);
+  }
+
+  async createDirectMessage(message: InsertDirectMessage): Promise<DirectMessage> {
+    const [created] = await this.db.insert(directMessages).values(message).returning();
+    return created;
+  }
+
+  async markMessagesAsRead(clientId: string, receiverId: string): Promise<void> {
+    await this.db.update(directMessages)
+      .set({ isRead: true, readAt: new Date() })
+      .where(sql`${directMessages.clientId} = ${clientId} AND ${directMessages.receiverId} = ${receiverId} AND ${directMessages.isRead} = false`);
+  }
+
+  async getUnreadMessageCount(clientId: string, receiverId: string): Promise<number> {
+    const [result] = await this.db.select({ count: sql<number>`count(*)::int` })
+      .from(directMessages)
+      .where(sql`${directMessages.clientId} = ${clientId} AND ${directMessages.receiverId} = ${receiverId} AND ${directMessages.isRead} = false`);
+    return result?.count || 0;
+  }
+
+  async getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]> {
+    return this.db.select().from(coachingCheckins)
+      .where(eq(coachingCheckins.clientId, clientId))
+      .orderBy(sql`${coachingCheckins.date} DESC`);
+  }
+
+  async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> {
+    const [created] = await this.db.insert(coachingCheckins).values(checkin).returning();
+    return created;
   }
 }
 
