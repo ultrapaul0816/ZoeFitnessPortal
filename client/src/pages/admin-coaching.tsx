@@ -33,6 +33,11 @@ import {
   Calendar,
   Brain,
   Eye,
+  Trash2,
+  Edit3,
+  Save,
+  X,
+  ArrowUpDown,
 } from "lucide-react";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
@@ -76,6 +81,11 @@ export default function AdminCoaching() {
   const [newClientPaymentAmount, setNewClientPaymentAmount] = useState("5000");
   const [messageInput, setMessageInput] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
+  const [expandedAdminDay, setExpandedAdminDay] = useState<string | null>(null);
+  const [editingDayData, setEditingDayData] = useState<any>(null);
+  const [editingCoachNotes, setEditingCoachNotes] = useState<string>("");
+  const [exerciseSearchQuery, setExerciseSearchQuery] = useState("");
+  const [swapTarget, setSwapTarget] = useState<{ sectionIdx: number; exerciseIdx: number } | null>(null);
   const { toast } = useToast();
 
   const { data: clients = [], isLoading: isLoadingClients } = useQuery<CoachingClientWithUser[]>({
@@ -112,6 +122,11 @@ export default function AdminCoaching() {
       if (!res.ok) return [];
       return res.json();
     },
+    enabled: !!selectedClientId,
+  });
+
+  const { data: exerciseLibrary = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/exercises"],
     enabled: !!selectedClientId,
   });
 
@@ -222,6 +237,22 @@ export default function AdminCoaching() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Status updated" });
+    },
+  });
+
+  const saveWorkoutPlanMutation = useMutation({
+    mutationFn: async ({ planId, exercises, coachNotes }: { planId: string; exercises: any; coachNotes?: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/coaching/workout-plans/${planId}`, { exercises, coachNotes });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "workout-plan"] });
+      setExpandedAdminDay(null);
+      setEditingDayData(null);
+      toast({ title: "Workout updated", description: "Changes saved successfully." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error saving workout", description: err.message, variant: "destructive" });
     },
   });
 
@@ -801,7 +832,7 @@ export default function AdminCoaching() {
                 <Card className="border-0 shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-base">4-Week Workout Plan</CardTitle>
-                    <p className="text-sm text-gray-500 mt-1">Generate one week at a time. Each week builds on the previous one.</p>
+                    <p className="text-sm text-gray-500 mt-1">Generate one week at a time. Click a day card to view and edit exercises.</p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
@@ -835,55 +866,340 @@ export default function AdminCoaching() {
                               <p className="text-xs text-gray-400 italic">Generate Week {week - 1} first</p>
                             )}
                             {hasWeek && (
-                              <div className="grid grid-cols-7 gap-2">
-                                {weekPlan.sort((a: any, b: any) => a.dayNumber - b.dayNumber).map((day: any) => {
-                                  const dayCompletions = (clientCompletions as any[]).filter(
-                                    (c: any) => c.weekNumber === week && c.dayNumber === day.dayNumber && c.completed
-                                  );
-                                  const exercisesData = day.exercises as any;
-                                  let totalExercises = 0;
-                                  if (exercisesData?.sections) {
-                                    exercisesData.sections.forEach((s: any) => { totalExercises += (s.exercises?.length || 0); });
-                                  } else if (Array.isArray(exercisesData)) {
-                                    totalExercises = exercisesData.length;
-                                  }
-                                  const completedCount = dayCompletions.length;
-                                  const allDone = totalExercises > 0 && completedCount >= totalExercises;
+                              <>
+                                <div className="grid grid-cols-7 gap-2">
+                                  {weekPlan.sort((a: any, b: any) => a.dayNumber - b.dayNumber).map((day: any) => {
+                                    const dayKey = `${week}-${day.dayNumber}`;
+                                    const isExpanded = expandedAdminDay === dayKey;
+                                    const dayCompletions = (clientCompletions as any[]).filter(
+                                      (c: any) => c.weekNumber === week && c.dayNumber === day.dayNumber && c.completed
+                                    );
+                                    const exercisesData = day.exercises as any;
+                                    let totalExercises = 0;
+                                    if (exercisesData?.sections) {
+                                      exercisesData.sections.forEach((s: any) => { totalExercises += (s.exercises?.length || 0); });
+                                    } else if (Array.isArray(exercisesData)) {
+                                      totalExercises = exercisesData.length;
+                                    }
+                                    const completedCount = dayCompletions.length;
+                                    const allDone = totalExercises > 0 && completedCount >= totalExercises;
 
-                                  return (
-                                  <div key={day.id} className={cn(
-                                    "p-3 rounded-xl border text-center relative",
-                                    allDone ? "bg-green-50 border-green-300 ring-1 ring-green-200" :
-                                    day.dayType === "rest" ? "bg-gray-50 border-gray-200" :
-                                    day.dayType === "cardio" ? "bg-blue-50 border-blue-200" :
-                                    day.dayType === "active_recovery" ? "bg-amber-50 border-amber-200" :
-                                    "bg-pink-50 border-pink-200"
-                                  )}>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase">
-                                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][day.dayNumber - 1]}
-                                    </p>
-                                    <p className="text-xs font-medium mt-1 text-gray-700 truncate">{day.title}</p>
-                                    <Badge variant="outline" className="text-[9px] mt-1.5">
-                                      {day.dayType}
-                                    </Badge>
-                                    {totalExercises > 0 && (
-                                      <div className="mt-1.5">
-                                        <div className="w-full bg-gray-200 rounded-full h-1">
-                                          <div
-                                            className={cn("h-1 rounded-full transition-all", allDone ? "bg-green-500" : "bg-pink-400")}
-                                            style={{ width: `${Math.min((completedCount / totalExercises) * 100, 100)}%` }}
-                                          />
+                                    return (
+                                    <div
+                                      key={day.id}
+                                      className={cn(
+                                        "p-3 rounded-xl border text-center relative cursor-pointer transition-all hover:shadow-md",
+                                        isExpanded ? "ring-2 ring-rose-400" : "",
+                                        allDone ? "bg-green-50 border-green-300 ring-1 ring-green-200" :
+                                        day.dayType === "rest" ? "bg-gray-50 border-gray-200" :
+                                        day.dayType === "cardio" ? "bg-blue-50 border-blue-200" :
+                                        day.dayType === "active_recovery" ? "bg-amber-50 border-amber-200" :
+                                        "bg-pink-50 border-pink-200"
+                                      )}
+                                      onClick={() => {
+                                        if (isExpanded) {
+                                          setExpandedAdminDay(null);
+                                          setEditingDayData(null);
+                                          setSwapTarget(null);
+                                        } else {
+                                          const sections = exercisesData?.sections || [];
+                                          setExpandedAdminDay(dayKey);
+                                          setEditingDayData({
+                                            planId: day.id,
+                                            dayNumber: day.dayNumber,
+                                            weekNumber: week,
+                                            title: day.title,
+                                            dayType: day.dayType,
+                                            exercises: JSON.parse(JSON.stringify(exercisesData || { sections: [] })),
+                                          });
+                                          setEditingCoachNotes(day.coachNotes || "");
+                                          setSwapTarget(null);
+                                          setExerciseSearchQuery("");
+                                        }
+                                      }}
+                                    >
+                                      <p className="text-[10px] font-bold text-gray-400 uppercase">
+                                        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][day.dayNumber - 1]}
+                                      </p>
+                                      <p className="text-xs font-medium mt-1 text-gray-700 truncate">{day.title}</p>
+                                      <Badge variant="outline" className="text-[9px] mt-1.5">
+                                        {day.dayType}
+                                      </Badge>
+                                      {totalExercises > 0 && (
+                                        <div className="mt-1.5">
+                                          <div className="w-full bg-gray-200 rounded-full h-1">
+                                            <div
+                                              className={cn("h-1 rounded-full transition-all", allDone ? "bg-green-500" : "bg-pink-400")}
+                                              style={{ width: `${Math.min((completedCount / totalExercises) * 100, 100)}%` }}
+                                            />
+                                          </div>
+                                          <p className={cn("text-[9px] mt-0.5", allDone ? "text-green-600 font-semibold" : "text-gray-400")}>
+                                            {completedCount}/{totalExercises}
+                                          </p>
                                         </div>
-                                        <p className={cn("text-[9px] mt-0.5", allDone ? "text-green-600 font-semibold" : "text-gray-400")}>
-                                          {completedCount}/{totalExercises}
-                                        </p>
+                                      )}
+                                      {day.isApproved && <CheckCircle2 className="w-3 h-3 text-green-500 mx-auto mt-1" />}
+                                      <Edit3 className="w-3 h-3 text-gray-400 absolute top-1.5 right-1.5" />
+                                    </div>
+                                    );
+                                  })}
+                                </div>
+
+                                {expandedAdminDay?.startsWith(`${week}-`) && editingDayData && editingDayData.weekNumber === week && (
+                                  <div className="mt-4 rounded-xl border border-rose-200 bg-white p-5 space-y-5">
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <h4 className="font-semibold text-gray-900">
+                                          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][editingDayData.dayNumber - 1]} — {editingDayData.title}
+                                        </h4>
+                                        <p className="text-xs text-gray-500 mt-0.5">Edit exercises, sets, reps, and notes below</p>
                                       </div>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => { setExpandedAdminDay(null); setEditingDayData(null); setSwapTarget(null); }}
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+
+                                    <Separator />
+
+                                    {(editingDayData.exercises?.sections || []).map((section: any, sIdx: number) => (
+                                      <div key={sIdx} className="space-y-3">
+                                        <div className="flex items-center gap-2">
+                                          <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-xs">{section.name || section.type}</Badge>
+                                          {section.duration && <span className="text-xs text-gray-400">{section.duration}</span>}
+                                          {section.rounds && section.rounds > 1 && <span className="text-xs text-gray-400">× {section.rounds} rounds</span>}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                          {(section.exercises || []).map((ex: any, eIdx: number) => (
+                                            <div key={eIdx} className="grid grid-cols-12 gap-2 items-start p-3 rounded-lg border border-gray-100 bg-gray-50/50">
+                                              <div className="col-span-3">
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Exercise</Label>
+                                                <Input
+                                                  className="text-xs h-8"
+                                                  value={ex.name || ""}
+                                                  onChange={(e) => {
+                                                    const updated = { ...editingDayData };
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].name = e.target.value;
+                                                    setEditingDayData({ ...updated });
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="col-span-1">
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Sets</Label>
+                                                <Input
+                                                  className="text-xs h-8"
+                                                  type="number"
+                                                  value={ex.sets ?? ""}
+                                                  onChange={(e) => {
+                                                    const updated = { ...editingDayData };
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].sets = e.target.value ? parseInt(e.target.value) : null;
+                                                    setEditingDayData({ ...updated });
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="col-span-1">
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Reps</Label>
+                                                <Input
+                                                  className="text-xs h-8"
+                                                  value={ex.reps || ""}
+                                                  onChange={(e) => {
+                                                    const updated = { ...editingDayData };
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].reps = e.target.value || null;
+                                                    setEditingDayData({ ...updated });
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="col-span-2">
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Duration</Label>
+                                                <Input
+                                                  className="text-xs h-8"
+                                                  value={ex.duration || ""}
+                                                  onChange={(e) => {
+                                                    const updated = { ...editingDayData };
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].duration = e.target.value || null;
+                                                    setEditingDayData({ ...updated });
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="col-span-2">
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Rest</Label>
+                                                <Input
+                                                  className="text-xs h-8"
+                                                  value={ex.restAfter || ""}
+                                                  onChange={(e) => {
+                                                    const updated = { ...editingDayData };
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].restAfter = e.target.value || null;
+                                                    setEditingDayData({ ...updated });
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="col-span-2">
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Notes</Label>
+                                                <Input
+                                                  className="text-xs h-8"
+                                                  value={ex.notes || ""}
+                                                  onChange={(e) => {
+                                                    const updated = { ...editingDayData };
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].notes = e.target.value || null;
+                                                    setEditingDayData({ ...updated });
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="col-span-1 flex items-end gap-1 pb-0.5">
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  className="h-8 w-8 p-0 text-gray-400 hover:text-rose-500"
+                                                  title="Swap with library exercise"
+                                                  onClick={() => {
+                                                    setSwapTarget(swapTarget?.sectionIdx === sIdx && swapTarget?.exerciseIdx === eIdx ? null : { sectionIdx: sIdx, exerciseIdx: eIdx });
+                                                    setExerciseSearchQuery("");
+                                                  }}
+                                                >
+                                                  <ArrowUpDown className="w-3.5 h-3.5" />
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  className="h-8 w-8 p-0 text-gray-400 hover:text-red-500"
+                                                  title="Remove exercise"
+                                                  onClick={() => {
+                                                    const updated = { ...editingDayData };
+                                                    updated.exercises.sections[sIdx].exercises.splice(eIdx, 1);
+                                                    setEditingDayData({ ...updated });
+                                                  }}
+                                                >
+                                                  <Trash2 className="w-3.5 h-3.5" />
+                                                </Button>
+                                              </div>
+
+                                              {swapTarget?.sectionIdx === sIdx && swapTarget?.exerciseIdx === eIdx && (
+                                                <div className="col-span-12 mt-1 p-3 rounded-lg border border-rose-100 bg-rose-50/50">
+                                                  <div className="flex items-center gap-2 mb-2">
+                                                    <Search className="w-3.5 h-3.5 text-gray-400" />
+                                                    <Input
+                                                      className="text-xs h-8 flex-1"
+                                                      placeholder="Search exercise library..."
+                                                      value={exerciseSearchQuery}
+                                                      onChange={(e) => setExerciseSearchQuery(e.target.value)}
+                                                    />
+                                                    <Button size="sm" variant="ghost" className="h-8" onClick={() => setSwapTarget(null)}>
+                                                      <X className="w-3.5 h-3.5" />
+                                                    </Button>
+                                                  </div>
+                                                  <ScrollArea className="max-h-40">
+                                                    <div className="space-y-1">
+                                                      {exerciseLibrary
+                                                        .filter((libEx: any) => {
+                                                          if (!exerciseSearchQuery) return true;
+                                                          return libEx.name?.toLowerCase().includes(exerciseSearchQuery.toLowerCase());
+                                                        })
+                                                        .slice(0, 20)
+                                                        .map((libEx: any) => (
+                                                          <button
+                                                            key={libEx.id}
+                                                            className="w-full text-left px-3 py-1.5 rounded text-xs hover:bg-rose-100 transition-colors flex items-center justify-between"
+                                                            onClick={() => {
+                                                              const updated = { ...editingDayData };
+                                                              const target = updated.exercises.sections[sIdx].exercises[eIdx];
+                                                              target.name = libEx.name;
+                                                              target.exerciseId = libEx.id;
+                                                              target.videoUrl = libEx.videoUrl || null;
+                                                              setEditingDayData({ ...updated });
+                                                              setSwapTarget(null);
+                                                            }}
+                                                          >
+                                                            <span className="font-medium">{libEx.name}</span>
+                                                            <span className="text-gray-400">{libEx.category} · {libEx.difficulty}</span>
+                                                          </button>
+                                                        ))}
+                                                      {exerciseLibrary.filter((libEx: any) => !exerciseSearchQuery || libEx.name?.toLowerCase().includes(exerciseSearchQuery.toLowerCase())).length === 0 && (
+                                                        <p className="text-xs text-gray-400 px-3 py-2">No exercises found</p>
+                                                      )}
+                                                    </div>
+                                                  </ScrollArea>
+                                                </div>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="text-xs h-7 text-rose-600 border-rose-200 hover:bg-rose-50"
+                                          onClick={() => {
+                                            const updated = { ...editingDayData };
+                                            if (!updated.exercises.sections[sIdx].exercises) {
+                                              updated.exercises.sections[sIdx].exercises = [];
+                                            }
+                                            updated.exercises.sections[sIdx].exercises.push({
+                                              name: "",
+                                              exerciseId: null,
+                                              videoUrl: null,
+                                              sets: 1,
+                                              reps: null,
+                                              duration: null,
+                                              restAfter: null,
+                                              notes: null,
+                                            });
+                                            setEditingDayData({ ...updated });
+                                          }}
+                                        >
+                                          <Plus className="w-3 h-3 mr-1" /> Add Exercise
+                                        </Button>
+
+                                        {sIdx < (editingDayData.exercises?.sections || []).length - 1 && <Separator />}
+                                      </div>
+                                    ))}
+
+                                    {(editingDayData.exercises?.sections || []).length === 0 && (
+                                      <p className="text-xs text-gray-400 italic py-4 text-center">No sections found. This day may not have structured exercises.</p>
                                     )}
-                                    {day.isApproved && <CheckCircle2 className="w-3 h-3 text-green-500 mx-auto mt-1" />}
+
+                                    <Separator />
+
+                                    <div>
+                                      <Label className="text-xs text-gray-500 mb-1 block">Coach Notes</Label>
+                                      <Textarea
+                                        className="text-sm min-h-[60px]"
+                                        placeholder="Add notes for this day..."
+                                        value={editingCoachNotes}
+                                        onChange={(e) => setEditingCoachNotes(e.target.value)}
+                                      />
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-2 pt-2">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => { setExpandedAdminDay(null); setEditingDayData(null); setSwapTarget(null); }}
+                                      >
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        className="bg-rose-500 hover:bg-rose-600 text-white"
+                                        disabled={saveWorkoutPlanMutation.isPending}
+                                        onClick={() => {
+                                          saveWorkoutPlanMutation.mutate({
+                                            planId: editingDayData.planId,
+                                            exercises: editingDayData.exercises,
+                                            coachNotes: editingCoachNotes || undefined,
+                                          });
+                                        }}
+                                      >
+                                        <Save className="w-3.5 h-3.5 mr-1.5" />
+                                        {saveWorkoutPlanMutation.isPending ? "Saving..." : "Save Changes"}
+                                      </Button>
+                                    </div>
                                   </div>
-                                  );
-                                })}
-                              </div>
+                                )}
+                              </>
                             )}
                           </div>
                         );

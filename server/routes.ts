@@ -7182,6 +7182,20 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // Update a coaching workout plan (edit exercises, notes, etc.)
+  app.patch("/api/admin/coaching/workout-plans/:planId", requireAdmin, async (req, res) => {
+    try {
+      const { planId } = req.params;
+      const updates = req.body;
+      const updated = await storage.updateCoachingWorkoutPlan(planId, updates);
+      if (!updated) return res.status(404).json({ message: "Workout plan not found" });
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating workout plan:", error);
+      res.status(500).json({ message: "Failed to update workout plan" });
+    }
+  });
+
   // Get workout plan for a client
   app.get("/api/admin/coaching/clients/:clientId/workout-plan", requireAdmin, async (req, res) => {
     try {
