@@ -65,33 +65,11 @@ const generalApiLimiter = rateLimit({
   validate: { trustProxy: false },
 });
 
-// Helper function to generate a strong password that meets all requirements
-function generateStrongPassword(length: number = 12): string {
-  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const numbers = '0123456789';
-  const special = '!@#$%^&*';
-  
-  // Ensure at least one of each required character type
-  const password = [
-    uppercase[Math.floor(Math.random() * uppercase.length)],
-    lowercase[Math.floor(Math.random() * lowercase.length)],
-    numbers[Math.floor(Math.random() * numbers.length)],
-  ];
-  
-  // Fill the rest with random characters from all sets
-  const allChars = lowercase + uppercase + numbers + special;
-  for (let i = password.length; i < length; i++) {
-    password.push(allChars[Math.floor(Math.random() * allChars.length)]);
-  }
-  
-  // Shuffle the password to avoid predictable patterns
-  for (let i = password.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [password[i], password[j]] = [password[j], password[i]];
-  }
-  
-  return password.join('');
+function generateSimplePassword(firstName?: string): string {
+  const name = (firstName || 'Member').trim();
+  const simpleName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  const year = new Date().getFullYear();
+  return `${simpleName}${year}`;
 }
 
 // Configure Cloudinary
@@ -4091,8 +4069,7 @@ RESPONSE GUIDELINES:
       const userData = adminCreateUserSchema.parse(requestData);
 
       const firstName = userData.firstName.trim();
-      const simpleName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
-      const plainPassword = req.body.password || `${simpleName}123`;
+      const plainPassword = req.body.password || generateSimplePassword(firstName);
       
       // Hash the password before storing
       const hashedPassword = await bcrypt.hash(plainPassword, 10);
@@ -4741,9 +4718,7 @@ RESPONSE GUIDELINES:
       if (manualPassword) {
         plainPassword = manualPassword;
       } else {
-        const name = (user.firstName || 'User').trim();
-        const simpleName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-        plainPassword = `${simpleName}123`;
+        plainPassword = generateSimplePassword(user.firstName || 'User');
       }
 
       // Hash the password before storing
@@ -6558,15 +6533,6 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     'quick-core-reset': { courseId: 'quick-core-reset', durationMonths: 3 },
   };
 
-  // Helper to generate random password
-  function generatePassword(length = 10): string {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let password = '';
-    for (let i = 0; i < length; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return password;
-  }
 
   // Verify Shopify webhook signature
   function verifyShopifyWebhook(body: string, signature: string | undefined, secret: string): boolean {
@@ -6617,8 +6583,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         console.log("Existing user found for Shopify order:", email);
       } else {
         isNewUser = true;
-        const simpleName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
-        password = `${simpleName}123`;
+        password = generateSimplePassword(firstName);
         const hashedPassword = await bcrypt.hash(password, 10);
         
         const now = new Date();
@@ -7100,12 +7065,14 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         if (!firstName || !lastName) {
           return res.status(400).json({ message: "First name and last name are required for new clients without an existing account." });
         }
+        const autoPassword = generateSimplePassword(firstName);
+        const hashedAutoPassword = await bcrypt.hash(autoPassword, 10);
         user = await storage.createUser({
           email: email.toLowerCase().trim(),
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           phone: phone?.trim() || null,
-          password: "",
+          password: hashedAutoPassword,
           isAdmin: false,
           termsAccepted: true,
           disclaimerAccepted: true,
