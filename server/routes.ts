@@ -6572,6 +6572,91 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // ==================== ADMIN SEND EMAIL ====================
+
+  app.post("/api/admin/send-email", requireAdmin, async (req, res) => {
+    try {
+      const { userId, subject, message } = req.body;
+
+      if (!userId || !subject || !message) {
+        return res.status(400).json({ message: "userId, subject, and message are required" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const messageHtml = message.replace(/\n/g, '<br>');
+      const recipientName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'there';
+
+      const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fdf2f8;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fdf2f8;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700;">Stronger with Zoe</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px 30px;">
+              <p style="color: #1f2937; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                Hi ${recipientName},
+              </p>
+              <div style="color: #374151; font-size: 15px; line-height: 1.8;">
+                ${messageHtml}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 20px 30px 30px;">
+              <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0; font-style: italic;">
+                With love,<br>Coach Zoe 💕
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #fdf2f8; padding: 20px 30px; text-align: center; border-radius: 0 0 16px 16px;">
+              <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 0;">
+                © ${new Date().getFullYear()} Stronger With Zoe. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+      const result = await emailService.send({
+        to: { email: user.email, name: `${user.firstName || ''} ${user.lastName || ''}`.trim() },
+        subject,
+        html,
+        text: `Hi ${recipientName},\n\n${message}\n\nWith love,\nCoach Zoe\n\n© ${new Date().getFullYear()} Stronger With Zoe.`,
+      });
+
+      if (!result.success) {
+        console.error("Failed to send admin email:", result.error);
+        return res.status(500).json({ message: result.error || "Failed to send email" });
+      }
+
+      console.log(`[Admin Email] Sent to ${user.email} - Subject: "${subject}"`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error sending admin email:", error);
+      res.status(500).json({ message: "Failed to send email" });
+    }
+  });
+
   // ==================== SHOPIFY WEBHOOK ====================
   
   // Recognized Shopify product titles that should trigger account creation & enrollment

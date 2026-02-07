@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Search, Download, ChevronDown, FileText, FileSpreadsheet, Calendar as CalendarIcon, Phone, Users, Heart, BookOpen, MessageCircle } from "lucide-react";
+import { ArrowLeft, Search, Download, ChevronDown, FileText, FileSpreadsheet, Calendar as CalendarIcon, Phone, Users, Heart, BookOpen, MessageCircle, Mail } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState, useMemo } from "react";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays } from "date-fns";
 import jsPDF from "jspdf";
 import type { DateRange } from "react-day-picker";
+import { apiRequest } from "@/lib/queryClient";
 
 interface MasterUser {
   id: string;
@@ -43,10 +46,89 @@ const coachingStatusColors: Record<string, string> = {
   cancelled: "bg-red-100 text-red-700",
 };
 
+function SendEmailDialog({ user, onClose }: { user: MasterUser | null; onClose: () => void }) {
+  const { toast } = useToast();
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+
+  const sendEmail = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/admin/send-email", {
+        userId: user!.id,
+        subject,
+        message,
+      });
+    },
+    onSuccess: () => {
+      toast({ title: "Email sent!", description: `Email sent to ${user?.firstName || user?.email}` });
+      setSubject("");
+      setMessage("");
+      onClose();
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to send email", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const recipientName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'No name' : '';
+
+  return (
+    <Dialog open={!!user} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Mail className="w-5 h-5 text-pink-500" />
+            Send Email
+          </DialogTitle>
+          <DialogDescription>
+            Send a direct email to <span className="font-semibold">{recipientName}</span> ({user?.email})
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 pt-2">
+          <div>
+            <Label htmlFor="email-subject" className="text-sm font-medium">Subject</Label>
+            <Input
+              id="email-subject"
+              placeholder="Email subject..."
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="email-message" className="text-sm font-medium">Message</Label>
+            <Textarea
+              id="email-message"
+              placeholder="Write your message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={6}
+              className="mt-1"
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="outline" onClick={onClose} disabled={sendEmail.isPending}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => sendEmail.mutate()}
+              disabled={!subject.trim() || !message.trim() || sendEmail.isPending}
+              className="bg-pink-500 hover:bg-pink-600 text-white"
+            >
+              {sendEmail.isPending ? "Sending..." : "Send Email"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function AdminActive() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [emailDialogUser, setEmailDialogUser] = useState<MasterUser | null>(null);
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
   const [filterByDate, setFilterByDate] = useState(false);
   const [filterType, setFilterType] = useState<"daily" | "weekly" | "monthly">("daily");
@@ -416,16 +498,17 @@ export default function AdminActive() {
                     <th className="text-left py-4 px-3 text-sm font-semibold text-green-900">Courses</th>
                     <th className="text-left py-4 px-3 text-sm font-semibold text-green-900">Joined</th>
                     <th className="text-left py-4 px-3 text-sm font-semibold text-green-900">Status</th>
+                    <th className="text-left py-4 px-3 text-sm font-semibold text-green-900">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={7} className="py-12 text-center text-gray-500">Loading members...</td>
+                      <td colSpan={8} className="py-12 text-center text-gray-500">Loading members...</td>
                     </tr>
                   ) : filteredMembers.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-12 text-center text-gray-500">
+                      <td colSpan={8} className="py-12 text-center text-gray-500">
                         No members found
                       </td>
                     </tr>
@@ -525,6 +608,17 @@ export default function AdminActive() {
                               </span>
                             )}
                           </td>
+                          <td className="py-3 px-3">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-green-100 hover:text-green-700"
+                              title="Send Email"
+                              onClick={() => setEmailDialogUser(member)}
+                            >
+                              <Mail className="w-4 h-4" />
+                            </Button>
+                          </td>
                         </tr>
                       );
                     })
@@ -541,6 +635,8 @@ export default function AdminActive() {
           </CardContent>
         </Card>
       </div>
+
+      <SendEmailDialog user={emailDialogUser} onClose={() => setEmailDialogUser(null)} />
     </div>
   );
 }
