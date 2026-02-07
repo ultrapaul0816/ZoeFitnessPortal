@@ -53,6 +53,9 @@ export default function Admin() {
   const [postpartumFilter, setPostpartumFilter] = useState<string>('all');
   const [lastActiveFilter, setLastActiveFilter] = useState<string>('all');
   const [passwordMode, setPasswordMode] = useState<'auto' | 'manual'>('auto');
+  const [emailDialogUser, setEmailDialogUser] = useState<User | null>(null);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
   const [manualPassword, setManualPassword] = useState('');
   const [resetPasswordMode, setResetPasswordMode] = useState<'auto' | 'manual'>('auto');
   const [resetManualPassword, setResetManualPassword] = useState('');
@@ -180,6 +183,22 @@ export default function Admin() {
   };
 
   // Log email sent mutation
+  const sendDirectEmailMutation = useMutation({
+    mutationFn: async (data: { userId: string; subject: string; message: string }) => {
+      const res = await apiRequest("POST", "/api/admin/send-email", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Email sent!", description: `Email sent to ${emailDialogUser?.email}` });
+      setEmailDialogUser(null);
+      setEmailSubject("");
+      setEmailMessage("");
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to send", description: error.message || "Something went wrong", variant: "destructive" });
+    },
+  });
+
   const logEmailMutation = useMutation({
     mutationFn: async (data: { userId: string; emailType: 'expiring' | 'expired' }) => {
       const response = await apiRequest("POST", "/api/admin/renewal-email-logs", data);
@@ -1911,6 +1930,15 @@ Stronger With Zoe Support`;
                           data-testid={`button-view-${member.id}`}
                         >
                           <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:bg-pink-50 hover:text-pink-600"
+                          title="Send Email"
+                          onClick={() => setEmailDialogUser(member)}
+                        >
+                          <Mail className="w-4 h-4" />
                         </Button>
                       </div>
                     </td>
@@ -4038,6 +4066,57 @@ Stronger With Zoe Support`;
               </div>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!emailDialogUser} onOpenChange={(open) => { if (!open) { setEmailDialogUser(null); setEmailSubject(""); setEmailMessage(""); } }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-pink-600" />
+              Send Email
+            </DialogTitle>
+            <DialogDescription>
+              Send an email to {emailDialogUser?.firstName} {emailDialogUser?.lastName} ({emailDialogUser?.email})
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1 block">Subject</Label>
+              <Input
+                placeholder="Email subject..."
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1 block">Message</Label>
+              <Textarea
+                placeholder="Type your message here..."
+                rows={6}
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => { setEmailDialogUser(null); setEmailSubject(""); setEmailMessage(""); }}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!emailDialogUser || !emailSubject.trim() || !emailMessage.trim()) return;
+                  sendDirectEmailMutation.mutate({ userId: emailDialogUser.id, subject: emailSubject, message: emailMessage });
+                }}
+                disabled={sendDirectEmailMutation.isPending || !emailSubject.trim() || !emailMessage.trim()}
+                className="bg-pink-600 hover:bg-pink-700 text-white"
+              >
+                {sendDirectEmailMutation.isPending ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
+                ) : (
+                  <><Send className="w-4 h-4 mr-2" /> Send Email</>
+                )}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>
