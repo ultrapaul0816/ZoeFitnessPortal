@@ -90,6 +90,7 @@ export default function AdminCoaching() {
   const [swapTarget, setSwapTarget] = useState<{ sectionIdx: number; exerciseIdx: number } | null>(null);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [addingExerciseSection, setAddingExerciseSection] = useState<number | null>(null);
+  const [videoPopupUrl, setVideoPopupUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
   const { data: clients = [], isLoading: isLoadingClients } = useQuery<CoachingClientWithUser[]>({
@@ -1079,7 +1080,7 @@ export default function AdminCoaching() {
                                                       variant="ghost"
                                                       className="h-8 w-8 p-0 text-rose-500 hover:text-rose-700 hover:bg-rose-50 shrink-0"
                                                       title="Play exercise video"
-                                                      onClick={() => window.open(ex.videoUrl, '_blank')}
+                                                      onClick={() => setVideoPopupUrl(ex.videoUrl)}
                                                     >
                                                       <Play className="w-3.5 h-3.5 fill-current" />
                                                     </Button>
@@ -1581,6 +1582,24 @@ export default function AdminCoaching() {
           </div>
         )}
       </div>
+      <Dialog open={!!videoPopupUrl} onOpenChange={(open) => { if (!open) setVideoPopupUrl(null); }}>
+        <DialogContent className="sm:max-w-[720px] p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-2">
+            <DialogTitle className="text-sm">Exercise Video</DialogTitle>
+          </DialogHeader>
+          {videoPopupUrl && (
+            <div className="aspect-video w-full">
+              <iframe
+                src={videoPopupUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/").split("&")[0] + "?autoplay=1"}
+                className="w-full h-full"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                title="Exercise Video"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
