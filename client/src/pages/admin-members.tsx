@@ -1,23 +1,45 @@
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Users, Search, Download, ChevronDown, FileText, FileSpreadsheet, Mail, Phone, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, Users, Search, Download, ChevronDown, FileText, FileSpreadsheet, Mail, Phone, Calendar, CheckCircle, XCircle, Send, Loader2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import jsPDF from "jspdf";
+import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 
 export default function AdminMembers() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [emailDialogUser, setEmailDialogUser] = useState<User | null>(null);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
 
   const { data: allUsers = [], isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
+  });
+
+  const sendEmailMutation = useMutation({
+    mutationFn: async (data: { userId: string; subject: string; message: string }) => {
+      const res = await apiRequest("POST", "/api/admin/send-email", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Email sent!", description: `Email sent to ${emailDialogUser?.email}` });
+      setEmailDialogUser(null);
+      setEmailSubject("");
+      setEmailMessage("");
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to send", description: error.message || "Something went wrong", variant: "destructive" });
+    },
   });
 
   const members = allUsers.filter(u => !u.isAdmin);
@@ -163,16 +185,17 @@ export default function AdminMembers() {
                     <th className="text-left py-4 px-4 text-sm font-semibold text-pink-900">Joined</th>
                     <th className="text-left py-4 px-4 text-sm font-semibold text-pink-900">Status</th>
                     <th className="text-left py-4 px-4 text-sm font-semibold text-pink-900">WhatsApp</th>
+                    <th className="text-left py-4 px-4 text-sm font-semibold text-pink-900">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={6} className="py-12 text-center text-gray-500">Loading members...</td>
+                      <td colSpan={7} className="py-12 text-center text-gray-500">Loading members...</td>
                     </tr>
                   ) : filteredMembers.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-12 text-center text-gray-500">No members found</td>
+                      <td colSpan={7} className="py-12 text-center text-gray-500">No members found</td>
                     </tr>
                   ) : (
                     filteredMembers.map((member) => {
@@ -235,6 +258,17 @@ export default function AdminMembers() {
                               <Badge variant="secondary" className="bg-gray-100 text-gray-500">No</Badge>
                             )}
                           </td>
+                          <td className="py-4 px-4">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title="Send Email"
+                              onClick={() => setEmailDialogUser(member)}
+                              className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-50"
+                            >
+                              <Mail className="w-4 h-4" />
+                            </Button>
+                          </td>
                         </tr>
                       );
                     })
@@ -250,6 +284,58 @@ export default function AdminMembers() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={!!emailDialogUser} onOpenChange={(open) => { if (!open) { setEmailDialogUser(null); setEmailSubject(""); setEmailMessage(""); } }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-pink-600" />
+              Send Email
+            </DialogTitle>
+            <DialogDescription>
+              Send an email to {emailDialogUser?.firstName} {emailDialogUser?.lastName} ({emailDialogUser?.email})
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Subject</label>
+              <Input
+                placeholder="Email subject..."
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Message</label>
+              <Textarea
+                placeholder="Type your message here..."
+                rows={6}
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => { setEmailDialogUser(null); setEmailSubject(""); setEmailMessage(""); }}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!emailDialogUser || !emailSubject.trim() || !emailMessage.trim()) return;
+                  sendEmailMutation.mutate({ userId: emailDialogUser.id, subject: emailSubject, message: emailMessage });
+                }}
+                disabled={sendEmailMutation.isPending || !emailSubject.trim() || !emailMessage.trim()}
+                className="bg-pink-600 hover:bg-pink-700 text-white"
+              >
+                {sendEmailMutation.isPending ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
+                ) : (
+                  <><Send className="w-4 h-4 mr-2" /> Send Email</>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
