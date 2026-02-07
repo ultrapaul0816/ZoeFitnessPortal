@@ -38,6 +38,8 @@ import {
   Save,
   X,
   ArrowUpDown,
+  Play,
+  Video,
 } from "lucide-react";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
@@ -192,9 +194,9 @@ export default function AdminCoaching() {
       const interval = setInterval(() => {
         setGenerationProgress(prev => {
           if (prev >= 95) { clearInterval(interval); return 95; }
-          return prev + (95 - prev) * 0.08;
+          return prev + (95 - prev) * 0.05;
         });
-      }, 400);
+      }, 500);
       return () => clearInterval(interval);
     } else {
       setGenerationProgress(0);
@@ -1013,7 +1015,16 @@ export default function AdminCoaching() {
                                     {(editingDayData.exercises?.sections || []).map((section: any, sIdx: number) => (
                                       <div key={sIdx} className="space-y-3">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                          <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-xs">{section.name || section.type}</Badge>
+                                          <Input
+                                            className="text-xs h-7 w-40 font-semibold text-rose-700 bg-rose-50 border-rose-200"
+                                            value={section.name || section.type || ""}
+                                            onChange={(e) => {
+                                              const updated = { ...editingDayData };
+                                              updated.exercises.sections[sIdx].name = e.target.value;
+                                              setEditingDayData({ ...updated });
+                                            }}
+                                            placeholder="Section name..."
+                                          />
                                           {section.duration && <span className="text-xs text-gray-400">{section.duration}</span>}
                                           <div className="flex items-center gap-1">
                                             <span className="text-xs text-gray-400">×</span>
@@ -1052,15 +1063,28 @@ export default function AdminCoaching() {
                                             <div key={eIdx} className="grid grid-cols-12 gap-2 items-start p-3 rounded-lg border border-gray-100 bg-gray-50/50">
                                               <div className="col-span-3">
                                                 <Label className="text-[10px] text-gray-400 mb-1 block">Exercise</Label>
-                                                <Input
-                                                  className="text-xs h-8"
-                                                  value={ex.name || ""}
-                                                  onChange={(e) => {
-                                                    const updated = { ...editingDayData };
-                                                    updated.exercises.sections[sIdx].exercises[eIdx].name = e.target.value;
-                                                    setEditingDayData({ ...updated });
-                                                  }}
-                                                />
+                                                <div className="flex items-center gap-1">
+                                                  <Input
+                                                    className="text-xs h-8 flex-1"
+                                                    value={ex.name || ""}
+                                                    onChange={(e) => {
+                                                      const updated = { ...editingDayData };
+                                                      updated.exercises.sections[sIdx].exercises[eIdx].name = e.target.value;
+                                                      setEditingDayData({ ...updated });
+                                                    }}
+                                                  />
+                                                  {ex.videoUrl && (
+                                                    <Button
+                                                      size="sm"
+                                                      variant="ghost"
+                                                      className="h-8 w-8 p-0 text-rose-500 hover:text-rose-700 hover:bg-rose-50 shrink-0"
+                                                      title="Play exercise video"
+                                                      onClick={() => window.open(ex.videoUrl, '_blank')}
+                                                    >
+                                                      <Play className="w-3.5 h-3.5 fill-current" />
+                                                    </Button>
+                                                  )}
+                                                </div>
                                               </div>
                                               <div className="col-span-1">
                                                 <Label className="text-[10px] text-gray-400 mb-1 block">Sets</Label>
@@ -1187,7 +1211,10 @@ export default function AdminCoaching() {
                                                               setSwapTarget(null);
                                                             }}
                                                           >
-                                                            <span className="font-medium">{libEx.name}</span>
+                                                            <span className="font-medium flex items-center gap-1.5">
+                                                              {libEx.videoUrl && <Video className="w-3 h-3 text-rose-400 shrink-0" />}
+                                                              {libEx.name}
+                                                            </span>
                                                             <span className="text-gray-400">{libEx.category} · {libEx.difficulty}</span>
                                                           </button>
                                                         ))}
@@ -1255,7 +1282,10 @@ export default function AdminCoaching() {
                                                         setExerciseSearchQuery("");
                                                       }}
                                                     >
-                                                      <span className="font-medium">{libEx.name}</span>
+                                                      <span className="font-medium flex items-center gap-1.5">
+                                                        {libEx.videoUrl && <Video className="w-3 h-3 text-rose-400 shrink-0" />}
+                                                        {libEx.name}
+                                                      </span>
                                                       <span className="text-gray-400">{libEx.category} · {libEx.difficulty}</span>
                                                     </button>
                                                   ))}
