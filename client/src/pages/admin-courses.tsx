@@ -41,7 +41,10 @@ import {
   Award,
   Calendar,
   Power,
-  PowerOff
+  PowerOff,
+  Info,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Course, CourseModule, InsertCourse, InsertCourseModule } from "@shared/schema";
@@ -112,6 +115,7 @@ export default function AdminCourses() {
   const [moduleViewMode, setModuleViewMode] = useState<"grid" | "list">("list");
   const [archivingCourse, setArchivingCourse] = useState<Course | null>(null);
   const [archivingModule, setArchivingModule] = useState<CourseModule | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
 
   const [courseForm, setCourseForm] = useState<{
     name: string;
@@ -498,6 +502,78 @@ export default function AdminCourses() {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+            </div>
+
+            <div className="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/80 to-indigo-50/80">
+              <button
+                onClick={() => setShowGuide(!showGuide)}
+                className="w-full flex items-center justify-between p-4 text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Info className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-900">How to Build a Course</h4>
+                    <p className="text-xs text-gray-500">Step-by-step guide to creating and publishing a new course</p>
+                  </div>
+                </div>
+                {showGuide ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+              </button>
+              {showGuide && (
+                <div className="px-4 pb-4 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                    <div className="relative p-3 rounded-lg bg-white border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">1</span>
+                        <h5 className="text-xs font-semibold text-gray-900">Create Course</h5>
+                      </div>
+                      <p className="text-[11px] text-gray-500 leading-relaxed">Click "Create Course" above. Add a name, description, level, and duration. It starts as a draft.</p>
+                      <ChevronRight className="hidden md:block w-4 h-4 text-gray-300 absolute -right-3.5 top-1/2 -translate-y-1/2 z-10" />
+                    </div>
+                    <div className="relative p-3 rounded-lg bg-white border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">2</span>
+                        <h5 className="text-xs font-semibold text-gray-900">Create Modules</h5>
+                      </div>
+                      <p className="text-[11px] text-gray-500 leading-relaxed">Go to the "Modules" tab to create reusable modules (like weeks or chapters). Choose a type: Educational, Workout, Nutrition, etc.</p>
+                      <ChevronRight className="hidden md:block w-4 h-4 text-gray-300 absolute -right-3.5 top-1/2 -translate-y-1/2 z-10" />
+                    </div>
+                    <div className="relative p-3 rounded-lg bg-white border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">3</span>
+                        <h5 className="text-xs font-semibold text-gray-900">Add Content</h5>
+                      </div>
+                      <p className="text-[11px] text-gray-500 leading-relaxed">Open a module, create sections, then add content items: videos, text, exercises, PDFs, or workouts. Use the Exercise Library for exercises.</p>
+                      <ChevronRight className="hidden md:block w-4 h-4 text-gray-300 absolute -right-3.5 top-1/2 -translate-y-1/2 z-10" />
+                    </div>
+                    <div className="relative p-3 rounded-lg bg-white border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">4</span>
+                        <h5 className="text-xs font-semibold text-gray-900">Assign Modules</h5>
+                      </div>
+                      <p className="text-[11px] text-gray-500 leading-relaxed">Go back to the course, click "Edit", and assign your modules in order. Modules can be reused across multiple courses.</p>
+                      <ChevronRight className="hidden md:block w-4 h-4 text-gray-300 absolute -right-3.5 top-1/2 -translate-y-1/2 z-10" />
+                    </div>
+                    <div className="p-3 rounded-lg bg-white border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">5</span>
+                        <h5 className="text-xs font-semibold text-gray-900">Publish</h5>
+                      </div>
+                      <p className="text-[11px] text-gray-500 leading-relaxed">When everything is ready, change the course status to "Published". Users can then see and enroll in it.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-100">
+                    <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                    <div className="text-[11px] text-amber-800 space-y-1">
+                      <p><strong>Quick tips:</strong></p>
+                      <p>The <strong>Exercise Library</strong> is shared across all courses and coaching -- add exercises there first, then reference them in your content.</p>
+                      <p><strong>Modules</strong> are reusable building blocks. Create them once, assign them to any course.</p>
+                      <p>A course structure looks like: <strong>Course</strong> &rarr; <strong>Modules</strong> &rarr; <strong>Sections</strong> &rarr; <strong>Content Items</strong> (videos, text, exercises, PDFs)</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {coursesLoading ? (
