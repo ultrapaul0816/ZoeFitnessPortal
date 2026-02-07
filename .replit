@@ -41,3 +41,8 @@ waitForPort = 5000
 [agent]
 expertMode = true
 integrations = ["resend:1.0.0", "javascript_openai_ai_integrations:1.0.0", "spotify:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+APP_URL = "https://strongerwithzoe.com"

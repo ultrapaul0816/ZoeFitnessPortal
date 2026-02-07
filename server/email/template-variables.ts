@@ -41,7 +41,7 @@ export function generateUserVariables(
     baseUrl?: string;
   } = {}
 ): TemplateVariables {
-  const baseUrl = options.baseUrl || process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+  const baseUrl = options.baseUrl || process.env.APP_URL || 'https://strongerwithzoe.com';
   const dashboardUrl = `${baseUrl}/dashboard`;
   
   // Generate tracking pixel if campaign and recipient IDs are provided
@@ -64,7 +64,7 @@ export function generateUserVariables(
  * Generate sample variables for preview purposes
  */
 export function generateSampleVariables(baseUrl?: string): TemplateVariables {
-  const url = baseUrl || process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+  const url = baseUrl || process.env.APP_URL || 'https://strongerwithzoe.com';
   
   return {
     firstName: 'Sarah',

@@ -75,7 +75,7 @@ export function createDailyWorkoutReminderEmail(data: DailyWorkoutReminderData):
               <table role="presentation" style="width: 100%; border-collapse: collapse;">
                 <tr>
                   <td align="center" style="padding: 8px 0 24px;">
-                    <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://strongerwithzoe.com'}/dashboard" 
+                    <a href="${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard" 
                        style="display: inline-block; background-color: #e11d48; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600;">
                       Start Today's Workout
                     </a>
@@ -95,7 +95,7 @@ export function createDailyWorkoutReminderEmail(data: DailyWorkoutReminderData):
             <td style="background-color: #f9fafb; padding: 20px 32px; text-align: center; border-radius: 0 0 12px 12px;">
               <p style="color: #9ca3af; font-size: 12px; line-height: 1.5; margin: 0;">
                 Stronger with Zoe<br>
-                <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://strongerwithzoe.com'}/settings" style="color: #9ca3af;">Manage notification preferences</a>
+                <a href="${process.env.APP_URL || 'https://strongerwithzoe.com'}/settings" style="color: #9ca3af;">Manage notification preferences</a>
               </p>
             </td>
           </tr>
@@ -117,7 +117,7 @@ TODAY'S WORKOUT: ${todayWorkoutName}
 
 ${streakMessage}
 
-Start your workout now: ${process.env.REPLIT_DEV_DOMAIN || 'https://strongerwithzoe.com'}/dashboard
+Start your workout now: ${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard
 
 You've got this, mama. Show up for yourself today.
 

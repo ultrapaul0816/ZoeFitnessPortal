@@ -687,9 +687,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createMagicLink(email, token, expiresAt);
       
       // Build the magic link URL
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+      const baseUrl = process.env.APP_URL || (process.env.REPLIT_DEV_DOMAIN 
         ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-        : process.env.BASE_URL || 'http://localhost:5000';
+        : process.env.BASE_URL || 'http://localhost:5000');
       const magicLinkUrl = `${baseUrl}/api/auth/magic-link/${token}`;
       
       // Send magic link email
@@ -3103,7 +3103,7 @@ RESPONSE GUIDELINES:
       }
 
       // Generate variables for this user
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://app.strongerwithzoe.com';
+      const baseUrl = process.env.APP_URL || 'https://strongerwithzoe.com';
       const userVariables = generateUserVariables(user, {
         programName: 'Your Postpartum Strength Recovery Program',
         campaignId: 'quick-send',
@@ -3164,7 +3164,7 @@ RESPONSE GUIDELINES:
       }
 
       // Generate variables for this user
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://app.strongerwithzoe.com';
+      const baseUrl = process.env.APP_URL || 'https://strongerwithzoe.com';
       const userVariables = generateUserVariables(user, {
         programName: 'Your Postpartum Strength Recovery Program',
         campaignId: 'quick-send',
@@ -3533,7 +3533,7 @@ RESPONSE GUIDELINES:
         return res.status(404).json({ message: "Template not found" });
       }
 
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+      const baseUrl = process.env.APP_URL || 'https://strongerwithzoe.com';
       const sampleVariables = generateSampleVariables(baseUrl);
 
       const previewSubject = replaceTemplateVariables(template.subject, sampleVariables);
@@ -3571,7 +3571,7 @@ RESPONSE GUIDELINES:
         return res.status(404).json({ message: "Template not found" });
       }
 
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+      const baseUrl = process.env.APP_URL || 'https://strongerwithzoe.com';
       const sampleVariables = generateSampleVariables(baseUrl);
 
       const subject = replaceTemplateVariables(template.subject, sampleVariables);
@@ -3629,7 +3629,7 @@ RESPONSE GUIDELINES:
       }
 
       // Generate preview with first user's data
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+      const baseUrl = process.env.APP_URL || 'https://strongerwithzoe.com';
       const firstUser = targetedUsers[0];
       const userVariables = generateUserVariables(firstUser, {
         programName: 'Your Postpartum Strength Recovery Program',
@@ -3748,7 +3748,7 @@ RESPONSE GUIDELINES:
 
       const createdRecipients = await storage.createCampaignRecipients(recipientsToCreate);
 
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co';
+      const baseUrl = process.env.APP_URL || 'https://strongerwithzoe.com';
 
       setImmediate(async () => {
         try {

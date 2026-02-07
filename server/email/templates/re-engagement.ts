@@ -61,7 +61,7 @@ export function createReEngagementEmail(data: ReEngagementEmailData): EmailTempl
               <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 30px;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard" 
+                    <a href="${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard" 
                        style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #a855f7 100%); color: #ffffff; text-decoration: none; padding: 18px 40px; border-radius: 30px; font-size: 18px; font-weight: 700; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); text-transform: uppercase; letter-spacing: 0.5px;">
                       Start My Next Workout →
                     </a>
@@ -103,7 +103,7 @@ It's been a little while since we last saw you, and we just wanted to say—we'r
 
 ${programProgress !== undefined && programProgress > 0 ? `Your Progress: You're ${programProgress}% through your program. You've already done the hard part—getting started. Let's pick up where you left off!\n\n` : ''}Remember, every mama's journey is different. There's no "falling behind"—only moving forward at your own pace. You've got this!
 
-Start your next workout: ${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard
+Start your next workout: ${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard
 
 Rooting for you always,
 Zoe & The Team

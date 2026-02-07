@@ -77,7 +77,7 @@ export function createProgramReminderEmail(data: ProgramReminderEmailData): Emai
               <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 30px;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/heal-your-core" 
+                    <a href="${process.env.APP_URL || 'https://strongerwithzoe.com'}/heal-your-core" 
                        style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
                       Continue Week ${weekNumber}
                     </a>
@@ -123,7 +123,7 @@ ${workoutsCompleted < totalWorkouts
   : `Amazing Work! You've completed all your workouts for Week ${weekNumber}! Take a moment to celebrate this win—you're doing incredible!`
 }
 
-Continue Week ${weekNumber}: ${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/heal-your-core
+Continue Week ${weekNumber}: ${process.env.APP_URL || 'https://strongerwithzoe.com'}/heal-your-core
 
 Keep showing up, mama. You're doing better than you think!
 

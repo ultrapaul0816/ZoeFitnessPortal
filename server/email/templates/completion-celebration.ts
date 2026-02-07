@@ -68,7 +68,7 @@ export function createCompletionCelebrationEmail(data: CompletionCelebrationEmai
               <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 30px;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard" 
+                    <a href="${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard" 
                        style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
                       View Your Dashboard
                     </a>
@@ -128,7 +128,7 @@ WHAT'S NEXT?
 • Track your progress - Update your before/after photos in the Progress Tracker
 • Stay connected - Continue engaging with our supportive WhatsApp community
 
-View Your Dashboard: ${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard
+View Your Dashboard: ${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard
 
 We'd love to hear from you! Share your wins, transformations, and progress photos in our Community Feed. Your journey could inspire another mom to start hers!
 

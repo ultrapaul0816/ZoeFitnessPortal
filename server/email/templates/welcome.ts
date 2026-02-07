@@ -44,7 +44,7 @@ export function createWelcomeEmail(data: WelcomeEmailData): EmailTemplate {
               <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 30px;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard" 
+                    <a href="${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard" 
                        style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
                       Start Your Journey
                     </a>
@@ -94,7 +94,7 @@ You're doing amazing, mama! Welcome to ${programName}. We're so excited to suppo
 
 Your program is now ready and waiting for you. Remember, this is your journey—go at your own pace, celebrate every win (no matter how small), and know that we're here cheering you on every step of the way.
 
-Get started: ${process.env.REPLIT_DEV_DOMAIN || 'https://your-domain.repl.co'}/dashboard
+Get started: ${process.env.APP_URL || 'https://strongerwithzoe.com'}/dashboard
 
 Quick Tip: Set aside 20-30 minutes for your workouts. Consistency over perfection is key!
 
