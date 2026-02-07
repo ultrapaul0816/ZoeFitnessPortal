@@ -6574,19 +6574,15 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
   // ==================== SHOPIFY WEBHOOK ====================
   
-  // Product to course mapping - maps Shopify product titles/IDs to course IDs
-  const SHOPIFY_PRODUCT_COURSE_MAP: Record<string, { courseId: string; durationMonths: number }> = {
-    // Heal Your Core variations
+  // Recognized Shopify product titles that should trigger account creation & enrollment
+  const SHOPIFY_COURSE_PRODUCTS: Record<string, { courseId: string; durationMonths: number }> = {
     'postnatal: heal your core (1 year access)': { courseId: 'heal-your-core-course', durationMonths: 12 },
-    'heal your core': { courseId: 'heal-your-core-course', durationMonths: 12 },
-    'heal-your-core': { courseId: 'heal-your-core-course', durationMonths: 12 },
-    // Prenatal Strength variations
-    'prenatal strength': { courseId: 'prenatal-strength-course', durationMonths: 12 },
-    'prenatal-strength': { courseId: 'prenatal-strength-course', durationMonths: 12 },
-    // Quick Core Reset variations
-    '2-week core reset': { courseId: 'quick-core-reset', durationMonths: 3 },
-    'quick-core-reset': { courseId: 'quick-core-reset', durationMonths: 3 },
   };
+
+  // Variant titles that include WhatsApp community access
+  const WHATSAPP_VARIANTS = new Set([
+    'heal your core + whatsapp community',
+  ]);
 
 
   // Verify Shopify webhook signature
@@ -6617,22 +6613,22 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const lineItems = order.line_items || [];
 
       // STEP 1: Scan all line items for recognized course products (EXACT match only)
-      const matchedCourses: { item: any; mapping: { courseId: string; durationMonths: number } }[] = [];
+      const matchedCourses: { item: any; mapping: { courseId: string; durationMonths: number }; includesWhatsApp: boolean }[] = [];
       const unmatchedProducts: string[] = [];
 
       for (const item of lineItems) {
         const productTitle = (item.title || item.name || '').toLowerCase().trim();
-        const productId = item.product_id?.toString() || '';
+        const variantTitle = (item.variant_title || '').toLowerCase().trim();
 
-        const courseMapping = SHOPIFY_PRODUCT_COURSE_MAP[productTitle] || 
-                             SHOPIFY_PRODUCT_COURSE_MAP[productId];
+        const courseMapping = SHOPIFY_COURSE_PRODUCTS[productTitle];
 
         if (courseMapping) {
-          matchedCourses.push({ item, mapping: courseMapping });
-          console.log(`[Shopify Webhook] Matched product "${item.title}" -> course "${courseMapping.courseId}"`);
+          const includesWhatsApp = WHATSAPP_VARIANTS.has(variantTitle);
+          matchedCourses.push({ item, mapping: courseMapping, includesWhatsApp });
+          console.log(`[Shopify Webhook] Matched product "${item.title}" (variant: "${item.variant_title || 'default'}") -> course "${courseMapping.courseId}"${includesWhatsApp ? ' + WhatsApp Community' : ''}`);
         } else {
           unmatchedProducts.push(item.title || item.name || 'Unknown product');
-          console.log(`[Shopify Webhook] Skipped non-course product: "${item.title || item.name}" (no matching course found)`);
+          console.log(`[Shopify Webhook] Skipped non-course product: "${item.title || item.name}" (variant: "${item.variant_title || 'none'}")`);
         }
       }
 
@@ -6700,10 +6696,15 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         console.log(`[Shopify Webhook] Created new user: ${email}`);
       }
 
-      // STEP 4: Enroll user in matched courses
+      // STEP 4: Enroll user in matched courses and handle WhatsApp access
       const enrolledCourses: string[] = [];
+      let enableWhatsApp = false;
 
-      for (const { mapping } of matchedCourses) {
+      for (const { mapping, includesWhatsApp } of matchedCourses) {
+        if (includesWhatsApp) {
+          enableWhatsApp = true;
+        }
+
         const existingEnrollment = await storage.db.execute(sql`
           SELECT id FROM course_enrollments 
           WHERE user_id = ${userId} AND course_id = ${mapping.courseId}
@@ -6724,6 +6725,20 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         } else {
           console.log(`[Shopify Webhook] ${email} already enrolled in: ${mapping.courseId}, skipping`);
         }
+      }
+
+      // STEP 5: Enable WhatsApp community access if purchased
+      if (enableWhatsApp) {
+        const whatsAppExpiry = new Date();
+        whatsAppExpiry.setFullYear(whatsAppExpiry.getFullYear() + 1);
+        await storage.db.execute(sql`
+          UPDATE users SET 
+            has_whats_app_support = true,
+            whats_app_support_duration = '12 months',
+            whats_app_support_expiry_date = ${whatsAppExpiry}
+          WHERE id = ${userId}
+        `);
+        console.log(`[Shopify Webhook] Enabled WhatsApp community access for ${email} (expires: ${whatsAppExpiry.toISOString()})`);
       }
 
       // Store payment record
@@ -6800,6 +6815,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         userId, 
         isNewUser,
         enrolledCourses,
+        whatsAppEnabled: enableWhatsApp,
         skippedProducts: unmatchedProducts,
         message: isNewUser ? "User created and enrolled" : "Existing user - enrollment processed"
       });
