@@ -6612,9 +6612,42 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       }
 
       const order = req.body;
-      console.log("Received Shopify order webhook:", order.id);
+      console.log("[Shopify Webhook] Received order:", order.id);
 
-      // Extract customer data
+      const lineItems = order.line_items || [];
+
+      // STEP 1: Scan all line items for recognized course products (EXACT match only)
+      const matchedCourses: { item: any; mapping: { courseId: string; durationMonths: number } }[] = [];
+      const unmatchedProducts: string[] = [];
+
+      for (const item of lineItems) {
+        const productTitle = (item.title || item.name || '').toLowerCase().trim();
+        const productId = item.product_id?.toString() || '';
+
+        const courseMapping = SHOPIFY_PRODUCT_COURSE_MAP[productTitle] || 
+                             SHOPIFY_PRODUCT_COURSE_MAP[productId];
+
+        if (courseMapping) {
+          matchedCourses.push({ item, mapping: courseMapping });
+          console.log(`[Shopify Webhook] Matched product "${item.title}" -> course "${courseMapping.courseId}"`);
+        } else {
+          unmatchedProducts.push(item.title || item.name || 'Unknown product');
+          console.log(`[Shopify Webhook] Skipped non-course product: "${item.title || item.name}" (no matching course found)`);
+        }
+      }
+
+      // STEP 2: If no course products found, skip entirely (no account creation)
+      if (matchedCourses.length === 0) {
+        console.log(`[Shopify Webhook] Order ${order.id} contains no course products. Skipping account creation. Products: ${unmatchedProducts.join(', ')}`);
+        return res.status(200).json({ 
+          success: true, 
+          skipped: true,
+          message: "No course products found in order - skipped",
+          products: unmatchedProducts
+        });
+      }
+
+      // STEP 3: Extract customer data and create/find user (only for course purchases)
       const customer = order.customer || {};
       const email = customer.email || order.email;
       const firstName = customer.first_name || order.billing_address?.first_name || 'Customer';
@@ -6622,11 +6655,10 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const phone = customer.phone || order.billing_address?.phone || null;
 
       if (!email) {
-        console.error("No email in Shopify order:", order.id);
+        console.error("[Shopify Webhook] No email in order:", order.id);
         return res.status(400).json({ message: "No customer email in order" });
       }
 
-      // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       
       let userId: string;
@@ -6635,7 +6667,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
       if (existingUser) {
         userId = existingUser.id;
-        console.log("Existing user found for Shopify order:", email);
+        console.log(`[Shopify Webhook] Existing user found: ${email}`);
       } else {
         isNewUser = true;
         password = generateSimplePassword(firstName);
@@ -6653,7 +6685,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
           phone,
           isAdmin: false,
           profilePictureUrl: null,
-          termsAccepted: true, // Auto-accept since they agreed on Shopify
+          termsAccepted: true,
           termsAcceptedAt: now,
           disclaimerAccepted: true,
           disclaimerAcceptedAt: now,
@@ -6665,58 +6697,37 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         });
 
         userId = newUser.id;
-        console.log("Created new user from Shopify order:", email);
+        console.log(`[Shopify Webhook] Created new user: ${email}`);
       }
 
-      // Process line items and enroll in courses
-      const lineItems = order.line_items || [];
+      // STEP 4: Enroll user in matched courses
       const enrolledCourses: string[] = [];
 
-      for (const item of lineItems) {
-        const productTitle = (item.title || item.name || '').toLowerCase();
-        const productId = item.product_id?.toString() || '';
+      for (const { mapping } of matchedCourses) {
+        const existingEnrollment = await storage.db.execute(sql`
+          SELECT id FROM course_enrollments 
+          WHERE user_id = ${userId} AND course_id = ${mapping.courseId}
+        `);
 
-        // Find matching course
-        let courseMapping = SHOPIFY_PRODUCT_COURSE_MAP[productTitle] || 
-                           SHOPIFY_PRODUCT_COURSE_MAP[productId];
+        if (existingEnrollment.rows.length === 0) {
+          const expiryDate = new Date();
+          expiryDate.setMonth(expiryDate.getMonth() + mapping.durationMonths);
 
-        // Try partial match if exact match not found
-        if (!courseMapping) {
-          for (const [key, value] of Object.entries(SHOPIFY_PRODUCT_COURSE_MAP)) {
-            if (productTitle.includes(key) || key.includes(productTitle)) {
-              courseMapping = value;
-              break;
-            }
-          }
-        }
-
-        if (courseMapping) {
-          // Check if already enrolled
-          const existingEnrollment = await storage.db.execute(sql`
-            SELECT id FROM course_enrollments 
-            WHERE user_id = ${userId} AND course_id = ${courseMapping.courseId}
+          const enrollmentId = randomUUID();
+          await storage.db.execute(sql`
+            INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, expires_at, enrolled_at)
+            VALUES (${enrollmentId}, ${mapping.courseId}, ${userId}, 'active', 0, ${expiryDate}, NOW())
           `);
 
-          if (existingEnrollment.rows.length === 0) {
-            // Calculate expiry date
-            const expiryDate = new Date();
-            expiryDate.setMonth(expiryDate.getMonth() + courseMapping.durationMonths);
-
-            // Create enrollment
-            const enrollmentId = randomUUID();
-            await storage.db.execute(sql`
-              INSERT INTO course_enrollments (id, course_id, user_id, status, progress_percentage, expires_at, enrolled_at)
-              VALUES (${enrollmentId}, ${courseMapping.courseId}, ${userId}, 'active', 0, ${expiryDate}, NOW())
-            `);
-
-            enrolledCourses.push(courseMapping.courseId);
-            console.log(`Enrolled user ${email} in course ${courseMapping.courseId}`);
-          }
+          enrolledCourses.push(mapping.courseId);
+          console.log(`[Shopify Webhook] Enrolled ${email} in course: ${mapping.courseId}`);
+        } else {
+          console.log(`[Shopify Webhook] ${email} already enrolled in: ${mapping.courseId}, skipping`);
         }
       }
 
       // Store payment record
-      const totalAmount = Math.round(parseFloat(order.total_price || '0') * 100); // Convert to paise
+      const totalAmount = Math.round(parseFloat(order.total_price || '0') * 100);
       const paymentId = randomUUID();
       await storage.db.execute(sql`
         INSERT INTO payments (id, user_id, source, transaction_id, order_id, product_name, amount, currency, status, metadata, created_at)
@@ -6739,6 +6750,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const isProductionEnv = process.env.NODE_ENV === 'production';
       if (isNewUser && password && isProductionEnv) {
         try {
+          const courseNames = enrolledCourses.join(', ');
           await emailService.send({
             to: { email, name: `${firstName} ${lastName}`.trim() },
             subject: "Welcome to Stronger with Zoe! 💪",
@@ -6771,13 +6783,16 @@ Keep it to 2-4 sentences, warm and encouraging.`;
               </div>
             `,
           });
-          console.log("Welcome email sent to:", email);
+          console.log("[Shopify Webhook] Welcome email sent to:", email);
         } catch (emailError) {
-          console.error("Failed to send welcome email:", emailError);
-          // Don't fail the webhook for email errors
+          console.error("[Shopify Webhook] Failed to send welcome email:", emailError);
         }
       } else if (isNewUser && password && !isProductionEnv) {
-        console.log("[Shopify Webhook] Skipping welcome email in development environment for:", email);
+        console.log("[Shopify Webhook] Skipping welcome email in dev for:", email);
+      }
+
+      if (unmatchedProducts.length > 0) {
+        console.log(`[Shopify Webhook] Note: Order also contained non-course products that were ignored: ${unmatchedProducts.join(', ')}`);
       }
 
       res.status(200).json({ 
@@ -6785,6 +6800,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         userId, 
         isNewUser,
         enrolledCourses,
+        skippedProducts: unmatchedProducts,
         message: isNewUser ? "User created and enrolled" : "Existing user - enrollment processed"
       });
 
