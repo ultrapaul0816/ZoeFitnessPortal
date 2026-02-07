@@ -50,7 +50,7 @@ interface AdminLayoutProps {
 const navItems: NavItem[] = [
   { id: "overview", label: "Dashboard", icon: LayoutDashboard, section: "Main" },
   { id: "preview", label: "Preview as User", icon: Eye, section: "Main", path: "/admin/preview", badge: "New" },
-  { id: "members", label: "Active Members", icon: Users, section: "Members" },
+  { id: "members", label: "All Members", icon: Users, section: "Members" },
   { id: "deactivated", label: "Deactivated", icon: UserX, section: "Members" },
   { id: "courses", label: "Courses", icon: GraduationCap, section: "Content", path: "/admin/courses" },
   { id: "modules", label: "Module Library", icon: Layers, section: "Content", path: "/admin/modules" },

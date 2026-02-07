@@ -1,8 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { randomUUID, createHmac } from "crypto";
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
 import { storage } from "./storage";
+import { coachingClients } from "@shared/schema";
 import {
   loginSchema,
   insertWorkoutCompletionSchema,
@@ -2671,6 +2672,60 @@ RESPONSE GUIDELINES:
       res.json(users);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/users/master-list", requireAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const allCoachingClients = await storage.db.select({
+        userId: coachingClients.userId,
+        status: coachingClients.status,
+        isPregnant: coachingClients.isPregnant,
+      }).from(coachingClients);
+      
+      const enrollmentRows = await storage.db.execute(sql`
+        SELECT ce.user_id, ce.course_id, ce.status, c.title as course_title
+        FROM course_enrollments ce
+        LEFT JOIN courses c ON ce.course_id = c.id
+        WHERE ce.status = 'active'
+      `);
+      
+      const enrollmentsByUser: Record<string, Array<{courseId: string, courseTitle: string, status: string}>> = {};
+      for (const row of enrollmentRows.rows) {
+        const userId = row.user_id as string;
+        if (!enrollmentsByUser[userId]) enrollmentsByUser[userId] = [];
+        enrollmentsByUser[userId].push({
+          courseId: row.course_id as string,
+          courseTitle: (row.course_title as string) || row.course_id as string,
+          status: row.status as string,
+        });
+      }
+      
+      const coachingByUser: Record<string, {status: string, isPregnant: boolean}> = {};
+      for (const client of allCoachingClients) {
+        coachingByUser[client.userId] = {
+          status: client.status,
+          isPregnant: client.isPregnant || false,
+        };
+      }
+      
+      const enrichedUsers = users
+        .filter(u => !u.isAdmin)
+        .map(u => {
+          const { password, ...userWithoutPassword } = u;
+          return {
+            ...userWithoutPassword,
+            coachingInfo: coachingByUser[u.id] || null,
+            enrolledCourses: enrollmentsByUser[u.id] || [],
+            hasWhatsAppSupport: u.hasWhatsAppSupport || false,
+          };
+        });
+      
+      res.json(enrichedUsers);
+    } catch (error) {
+      console.error("Error fetching master list:", error);
+      res.status(500).json({ message: "Failed to fetch master list" });
     }
   });
 
