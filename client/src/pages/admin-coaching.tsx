@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -86,6 +86,8 @@ export default function AdminCoaching() {
   const [editingCoachNotes, setEditingCoachNotes] = useState<string>("");
   const [exerciseSearchQuery, setExerciseSearchQuery] = useState("");
   const [swapTarget, setSwapTarget] = useState<{ sectionIdx: number; exerciseIdx: number } | null>(null);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [addingExerciseSection, setAddingExerciseSection] = useState<number | null>(null);
   const { toast } = useToast();
 
   const { data: clients = [], isLoading: isLoadingClients } = useQuery<CoachingClientWithUser[]>({
@@ -184,6 +186,21 @@ export default function AdminCoaching() {
     },
   });
 
+  useEffect(() => {
+    if (generateWorkoutMutation.isPending) {
+      setGenerationProgress(0);
+      const interval = setInterval(() => {
+        setGenerationProgress(prev => {
+          if (prev >= 95) { clearInterval(interval); return 95; }
+          return prev + (95 - prev) * 0.08;
+        });
+      }, 400);
+      return () => clearInterval(interval);
+    } else {
+      setGenerationProgress(0);
+    }
+  }, [generateWorkoutMutation.isPending]);
+
   const generateNutritionMutation = useMutation({
     mutationFn: async (clientId: string) => {
       const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-nutrition`);
@@ -241,8 +258,8 @@ export default function AdminCoaching() {
   });
 
   const saveWorkoutPlanMutation = useMutation({
-    mutationFn: async ({ planId, exercises, coachNotes }: { planId: string; exercises: any; coachNotes?: string }) => {
-      const res = await apiRequest("PATCH", `/api/admin/coaching/workout-plans/${planId}`, { exercises, coachNotes });
+    mutationFn: async ({ planId, exercises, coachNotes, title }: { planId: string; exercises: any; coachNotes?: string; title?: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/coaching/workout-plans/${planId}`, { exercises, coachNotes, title });
       return res.json();
     },
     onSuccess: () => {
@@ -862,6 +879,24 @@ export default function AdminCoaching() {
                                 {isGenerating ? "Generating..." : hasWeek ? "Regenerate" : "Generate"}
                               </Button>
                             </div>
+                            {isGenerating && (
+                              <div className="space-y-2 py-4">
+                                <div className="flex items-center justify-between text-xs text-gray-500">
+                                  <span className="flex items-center gap-2">
+                                    <Sparkles className="w-3.5 h-3.5 text-purple-500 animate-pulse" />
+                                    AI is creating Week {week} workout plan...
+                                  </span>
+                                  <span>{Math.round(generationProgress)}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                  <div
+                                    className="h-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500 ease-out"
+                                    style={{ width: `${generationProgress}%` }}
+                                  />
+                                </div>
+                                <p className="text-[10px] text-gray-400">This usually takes about 15-20 seconds</p>
+                              </div>
+                            )}
                             {!previousWeekExists && !hasWeek && (
                               <p className="text-xs text-gray-400 italic">Generate Week {week - 1} first</p>
                             )}
@@ -949,10 +984,20 @@ export default function AdminCoaching() {
                                   <div className="mt-4 rounded-xl border border-rose-200 bg-white p-5 space-y-5">
                                     <div className="flex items-center justify-between">
                                       <div>
-                                        <h4 className="font-semibold text-gray-900">
-                                          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][editingDayData.dayNumber - 1]} — {editingDayData.title}
-                                        </h4>
-                                        <p className="text-xs text-gray-500 mt-0.5">Edit exercises, sets, reps, and notes below</p>
+                                        <div className="flex items-center gap-2">
+                                          <span className="font-semibold text-gray-900">
+                                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][editingDayData.dayNumber - 1]} —
+                                          </span>
+                                          <Input
+                                            className="text-sm font-semibold h-8 w-60"
+                                            value={editingDayData.title || ""}
+                                            onChange={(e) => {
+                                              setEditingDayData({ ...editingDayData, title: e.target.value });
+                                            }}
+                                            placeholder="Workout title..."
+                                          />
+                                        </div>
+                                        <p className="text-xs text-gray-500 mt-0.5">Edit title, exercises, and notes below</p>
                                       </div>
                                       <Button
                                         size="sm"
@@ -967,10 +1012,39 @@ export default function AdminCoaching() {
 
                                     {(editingDayData.exercises?.sections || []).map((section: any, sIdx: number) => (
                                       <div key={sIdx} className="space-y-3">
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 flex-wrap">
                                           <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-xs">{section.name || section.type}</Badge>
                                           {section.duration && <span className="text-xs text-gray-400">{section.duration}</span>}
-                                          {section.rounds && section.rounds > 1 && <span className="text-xs text-gray-400">× {section.rounds} rounds</span>}
+                                          <div className="flex items-center gap-1">
+                                            <span className="text-xs text-gray-400">×</span>
+                                            <Input
+                                              className="text-xs h-6 w-12 text-center"
+                                              type="number"
+                                              min={1}
+                                              value={section.rounds ?? 1}
+                                              onChange={(e) => {
+                                                const updated = { ...editingDayData };
+                                                updated.exercises.sections[sIdx].rounds = e.target.value ? parseInt(e.target.value) : 1;
+                                                setEditingDayData({ ...updated });
+                                              }}
+                                            />
+                                            <span className="text-xs text-gray-400">rounds</span>
+                                          </div>
+                                          {section.restBetweenRounds && (
+                                            <span className="text-xs text-gray-400">· Rest: {section.restBetweenRounds}</span>
+                                          )}
+                                        </div>
+                                        <div className="mt-1">
+                                          <Input
+                                            className="text-xs h-7 text-gray-600"
+                                            placeholder="Section description (optional)..."
+                                            value={section.description || ""}
+                                            onChange={(e) => {
+                                              const updated = { ...editingDayData };
+                                              updated.exercises.sections[sIdx].description = e.target.value || null;
+                                              setEditingDayData({ ...updated });
+                                            }}
+                                          />
                                         </div>
 
                                         <div className="space-y-2">
@@ -993,7 +1067,7 @@ export default function AdminCoaching() {
                                                 <Input
                                                   className="text-xs h-8"
                                                   type="number"
-                                                  value={ex.sets ?? ""}
+                                                  value={ex.sets ?? 1}
                                                   onChange={(e) => {
                                                     const updated = { ...editingDayData };
                                                     updated.exercises.sections[sIdx].exercises[eIdx].sets = e.target.value ? parseInt(e.target.value) : null;
@@ -1132,26 +1206,66 @@ export default function AdminCoaching() {
                                           size="sm"
                                           variant="outline"
                                           className="text-xs h-7 text-rose-600 border-rose-200 hover:bg-rose-50"
-                                          onClick={() => {
-                                            const updated = { ...editingDayData };
-                                            if (!updated.exercises.sections[sIdx].exercises) {
-                                              updated.exercises.sections[sIdx].exercises = [];
-                                            }
-                                            updated.exercises.sections[sIdx].exercises.push({
-                                              name: "",
-                                              exerciseId: null,
-                                              videoUrl: null,
-                                              sets: 1,
-                                              reps: null,
-                                              duration: null,
-                                              restAfter: null,
-                                              notes: null,
-                                            });
-                                            setEditingDayData({ ...updated });
-                                          }}
+                                          onClick={() => setAddingExerciseSection(addingExerciseSection === sIdx ? null : sIdx)}
                                         >
                                           <Plus className="w-3 h-3 mr-1" /> Add Exercise
                                         </Button>
+
+                                        {addingExerciseSection === sIdx && (
+                                          <div className="mt-2 p-3 rounded-lg border border-rose-100 bg-rose-50/50">
+                                            <div className="flex items-center gap-2 mb-2">
+                                              <Search className="w-3.5 h-3.5 text-gray-400" />
+                                              <Input
+                                                className="text-xs h-8 flex-1"
+                                                placeholder="Search exercise library to add..."
+                                                value={exerciseSearchQuery}
+                                                onChange={(e) => setExerciseSearchQuery(e.target.value)}
+                                                autoFocus
+                                              />
+                                              <Button size="sm" variant="ghost" className="h-8" onClick={() => setAddingExerciseSection(null)}>
+                                                <X className="w-3.5 h-3.5" />
+                                              </Button>
+                                            </div>
+                                            <ScrollArea className="max-h-40">
+                                              <div className="space-y-1">
+                                                {(exerciseLibrary || [])
+                                                  .filter((libEx: any) => !exerciseSearchQuery || libEx.name?.toLowerCase().includes(exerciseSearchQuery.toLowerCase()))
+                                                  .slice(0, 20)
+                                                  .map((libEx: any) => (
+                                                    <button
+                                                      key={libEx.id}
+                                                      className="w-full text-left px-3 py-1.5 rounded text-xs hover:bg-rose-100 transition-colors flex items-center justify-between"
+                                                      onClick={() => {
+                                                        const updated = { ...editingDayData };
+                                                        if (!updated.exercises.sections[sIdx].exercises) {
+                                                          updated.exercises.sections[sIdx].exercises = [];
+                                                        }
+                                                        updated.exercises.sections[sIdx].exercises.push({
+                                                          name: libEx.name,
+                                                          exerciseId: libEx.id,
+                                                          videoUrl: libEx.videoUrl || null,
+                                                          sets: 1,
+                                                          reps: null,
+                                                          duration: null,
+                                                          restAfter: null,
+                                                          notes: null,
+                                                        });
+                                                        setEditingDayData({ ...updated });
+                                                        setAddingExerciseSection(null);
+                                                        setExerciseSearchQuery("");
+                                                      }}
+                                                    >
+                                                      <span className="font-medium">{libEx.name}</span>
+                                                      <span className="text-gray-400">{libEx.category} · {libEx.difficulty}</span>
+                                                    </button>
+                                                  ))}
+                                                {(exerciseLibrary || []).filter((libEx: any) => !exerciseSearchQuery || libEx.name?.toLowerCase().includes(exerciseSearchQuery.toLowerCase())).length === 0 && (
+                                                  <p className="text-xs text-gray-400 px-3 py-2">No exercises found</p>
+                                                )}
+                                              </div>
+                                            </ScrollArea>
+                                          </div>
+                                        )}
 
                                         {sIdx < (editingDayData.exercises?.sections || []).length - 1 && <Separator />}
                                       </div>
@@ -1190,6 +1304,7 @@ export default function AdminCoaching() {
                                             planId: editingDayData.planId,
                                             exercises: editingDayData.exercises,
                                             coachNotes: editingCoachNotes || undefined,
+                                            title: editingDayData.title,
                                           });
                                         }}
                                       >

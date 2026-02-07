@@ -7363,6 +7363,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Warmup",
           "type": "warmup",
+          "description": "Light movements to prepare the body",
           "duration": "5 minutes",
           "rounds": 1,
           "restBetweenRounds": null,
@@ -7382,6 +7383,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Activation Sequence",
           "type": "activation",
+          "description": "Activate key muscle groups with band work",
           "duration": null,
           "rounds": 3,
           "restBetweenRounds": "15 seconds",
@@ -7401,6 +7403,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Workout Part 1",
           "type": "main",
+          "description": "Heavy compound movements for strength building",
           "duration": null,
           "rounds": 3,
           "restBetweenRounds": "60 seconds",
@@ -7409,7 +7412,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "name": "Assisted Band Pullups",
               "exerciseId": null,
               "videoUrl": null,
-              "sets": 4,
+              "sets": 1,
               "reps": "6-8",
               "duration": null,
               "restAfter": "60 seconds",
@@ -7420,6 +7423,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Workout Part 2 - Circuit",
           "type": "circuit",
+          "description": "High-intensity circuit for muscular endurance",
           "duration": null,
           "rounds": 4,
           "restBetweenRounds": "90 seconds",
@@ -7428,6 +7432,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Finisher - EMOM 8 min",
           "type": "finisher",
+          "description": "Timed interval work to push conditioning",
           "duration": "8 minutes",
           "rounds": null,
           "restBetweenRounds": null,
@@ -7437,6 +7442,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Stretch",
           "type": "stretch",
+          "description": "Targeted stretches for worked muscle groups",
           "duration": "2 minutes",
           "rounds": 1,
           "restBetweenRounds": null,
@@ -7456,6 +7462,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Cooldown",
           "type": "cooldown",
+          "description": "Gentle movements to bring heart rate down",
           "duration": "5 minutes",
           "rounds": 1,
           "restBetweenRounds": null,
@@ -7511,9 +7518,11 @@ SECTION RULES FOR SPORT & ACTIVE PLAY:
 
 EXERCISE SELECTION:
 - When an exercise matches one in the EXERCISE LIBRARY above, use the exact exerciseId and videoUrl from the library
-- For exercises not in the library, set exerciseId to null and videoUrl to null
+- ONLY use exercises from the EXERCISE LIBRARY above. Every exercise MUST have a valid exerciseId and videoUrl from the library. Do NOT invent exercises outside the library.
 - For warmup/cooldown flows, exerciseId and videoUrl can be null
 - Each exercise object must have: name, exerciseId, videoUrl, sets, reps, duration, restAfter, notes
+- Default sets to 1 for most exercises unless the exercise specifically needs multiple sets
+- Each section object must also include a 'description' field with a brief description of that section's purpose
 
 PROGRESSION:
 - Week ${weekNumber} should be ${weekNumber === 1 ? "introductory and foundational - lighter weights, fewer rounds, focus on form" : weekNumber === 2 ? "building on week 1 with moderate progression - slightly more rounds or reps" : weekNumber === 3 ? "challenging with increased intensity - heavier weights, more complex movements" : "peak week with the most advanced variations and highest volume"}
