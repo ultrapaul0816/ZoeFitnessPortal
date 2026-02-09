@@ -6688,6 +6688,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
   // Shopify webhook endpoint for order creation
   app.post("/api/webhooks/shopify/order-created", async (req, res) => {
+    let orderLog: any = null;
     try {
       const shopifySecret = process.env.SHOPIFY_WEBHOOK_SECRET;
       const rawBody = JSON.stringify(req.body);
@@ -6701,6 +6702,29 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
       const order = req.body;
       console.log("[Shopify Webhook] Received order:", order.id);
+
+      try {
+        orderLog = await storage.createShopifyOrder({
+          shopifyOrderId: order.id?.toString() || '',
+          orderNumber: order.name || order.order_number?.toString() || '',
+          customerEmail: order.customer?.email || order.email || '',
+          customerFirstName: order.customer?.first_name || order.billing_address?.first_name || '',
+          customerLastName: order.customer?.last_name || order.billing_address?.last_name || '',
+          customerPhone: order.customer?.phone || order.billing_address?.phone || '',
+          productTitle: (order.line_items || []).map((i: any) => i.title).join(', '),
+          variantTitle: (order.line_items || []).map((i: any) => i.variant_title || 'default').join(', '),
+          amount: Math.round(parseFloat(order.total_price || '0') * 100),
+          currency: order.currency || 'INR',
+          paymentStatus: order.financial_status || 'paid',
+          financialStatus: order.financial_status || '',
+          fulfillmentStatus: order.fulfillment_status || 'unfulfilled',
+          processingStatus: 'pending',
+          rawPayload: order,
+          billingAddress: order.billing_address || null,
+        });
+      } catch (logError) {
+        console.error('[Shopify Webhook] Failed to create order log:', logError);
+      }
 
       const lineItems = order.line_items || [];
 
@@ -6727,6 +6751,12 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       // STEP 2: If no course products found, skip entirely (no account creation)
       if (matchedCourses.length === 0) {
         console.log(`[Shopify Webhook] Order ${order.id} contains no course products. Skipping account creation. Products: ${unmatchedProducts.join(', ')}`);
+        if (orderLog) {
+          await storage.updateShopifyOrder(orderLog.id, {
+            processingStatus: 'skipped',
+            processingResult: JSON.stringify({ reason: 'No course products found', products: unmatchedProducts }),
+          });
+        }
         return res.status(200).json({ 
           success: true, 
           skipped: true,
@@ -6902,6 +6932,17 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         console.log(`[Shopify Webhook] Note: Order also contained non-course products that were ignored: ${unmatchedProducts.join(', ')}`);
       }
 
+      if (orderLog) {
+        await storage.updateShopifyOrder(orderLog.id, {
+          processingStatus: 'processed',
+          processingResult: JSON.stringify({ enrolledCourses, whatsAppEnabled: enableWhatsApp, isNewUser, skippedProducts: unmatchedProducts }),
+          userId,
+          courseEnrolled: enrolledCourses.join(', '),
+          whatsappEnabled: enableWhatsApp,
+          emailSent: isNewUser && !!password && isProductionEnv,
+        });
+      }
+
       res.status(200).json({ 
         success: true, 
         userId, 
@@ -6914,8 +6955,27 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
     } catch (error) {
       console.error("Shopify webhook error:", error);
+      if (orderLog) {
+        await storage.updateShopifyOrder(orderLog.id, {
+          processingStatus: 'failed',
+          processingResult: JSON.stringify({ error: String(error) }),
+        }).catch(e => console.error('[Shopify Webhook] Failed to update order log:', e));
+      }
       res.status(500).json({ message: "Webhook processing failed" });
     }
+  });
+
+  // Get all Shopify orders
+  app.get("/api/admin/shopify-orders", requireAdmin, async (req, res) => {
+    const orders = await storage.getShopifyOrders();
+    res.json(orders);
+  });
+
+  // Get single order details
+  app.get("/api/admin/shopify-orders/:id", requireAdmin, async (req, res) => {
+    const order = await storage.getShopifyOrderById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    res.json(order);
   });
 
   // Test endpoint to send WhatsApp expiry reminder email (admin only)

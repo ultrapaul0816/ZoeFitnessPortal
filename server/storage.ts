@@ -71,6 +71,8 @@ import {
   type InsertCoachingCheckin,
   type CoachingWorkoutCompletion,
   type InsertCoachingWorkoutCompletion,
+  type ShopifyOrder,
+  type InsertShopifyOrder,
 } from "@shared/schema";
 import {
   users,
@@ -120,6 +122,7 @@ import {
   directMessages,
   coachingCheckins,
   coachingWorkoutCompletions,
+  shopifyOrders,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -611,6 +614,12 @@ export interface IStorage {
   getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]>;
   upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion>;
   bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]>;
+
+  // Shopify Orders
+  getShopifyOrders(): Promise<ShopifyOrder[]>;
+  getShopifyOrderById(id: string): Promise<ShopifyOrder | undefined>;
+  createShopifyOrder(order: InsertShopifyOrder): Promise<ShopifyOrder>;
+  updateShopifyOrder(id: string, updates: Partial<ShopifyOrder>): Promise<ShopifyOrder | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -2449,6 +2458,10 @@ export class MemStorage implements IStorage {
   async getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]> { return []; }
   async upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion> { throw new Error("Not implemented"); }
   async bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]> { return []; }
+  async getShopifyOrders(): Promise<ShopifyOrder[]> { return []; }
+  async getShopifyOrderById(id: string): Promise<ShopifyOrder | undefined> { return undefined; }
+  async createShopifyOrder(order: InsertShopifyOrder): Promise<ShopifyOrder> { throw new Error("Not implemented"); }
+  async updateShopifyOrder(id: string, updates: Partial<ShopifyOrder>): Promise<ShopifyOrder | undefined> { return undefined; }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -5691,6 +5704,25 @@ class DatabaseStorage implements IStorage {
       results.push(result);
     }
     return results;
+  }
+
+  async getShopifyOrders(): Promise<ShopifyOrder[]> {
+    return await this.db.select().from(shopifyOrders).orderBy(desc(shopifyOrders.createdAt));
+  }
+
+  async getShopifyOrderById(id: string): Promise<ShopifyOrder | undefined> {
+    const [order] = await this.db.select().from(shopifyOrders).where(eq(shopifyOrders.id, id));
+    return order;
+  }
+
+  async createShopifyOrder(order: InsertShopifyOrder): Promise<ShopifyOrder> {
+    const [created] = await this.db.insert(shopifyOrders).values(order).returning();
+    return created;
+  }
+
+  async updateShopifyOrder(id: string, updates: Partial<ShopifyOrder>): Promise<ShopifyOrder | undefined> {
+    const [updated] = await this.db.update(shopifyOrders).set(updates).where(eq(shopifyOrders.id, id)).returning();
+    return updated;
   }
 }
 

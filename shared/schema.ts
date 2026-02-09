@@ -524,6 +524,33 @@ export const payments = pgTable("payments", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+// Shopify Orders - logs all Shopify webhook orders for debugging and tracking
+export const shopifyOrders = pgTable("shopify_orders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  shopifyOrderId: text("shopify_order_id").notNull(),
+  orderNumber: text("order_number"),
+  customerEmail: text("customer_email"),
+  customerFirstName: text("customer_first_name"),
+  customerLastName: text("customer_last_name"),
+  customerPhone: text("customer_phone"),
+  productTitle: text("product_title"),
+  variantTitle: text("variant_title"),
+  amount: integer("amount").notNull(),
+  currency: text("currency").default("INR"),
+  paymentStatus: text("payment_status").default("paid"),
+  financialStatus: text("financial_status"),
+  fulfillmentStatus: text("fulfillment_status"),
+  processingStatus: text("processing_status").default("pending"),
+  processingResult: text("processing_result"),
+  userId: varchar("user_id"),
+  courseEnrolled: text("course_enrolled"),
+  whatsappEnabled: boolean("whatsapp_enabled").default(false),
+  emailSent: boolean("email_sent").default(false),
+  rawPayload: jsonb("raw_payload"),
+  billingAddress: jsonb("billing_address"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 // User Module Progress - tracks progress per module
 export const userModuleProgress = pgTable("user_module_progress", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1375,6 +1402,11 @@ export type DirectMessage = typeof directMessages.$inferSelect;
 export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
 export type CoachingCheckin = typeof coachingCheckins.$inferSelect;
 export type InsertCoachingCheckin = z.infer<typeof insertCoachingCheckinSchema>;
+
+// Shopify Orders types
+export const insertShopifyOrderSchema = createInsertSchema(shopifyOrders).omit({ id: true, createdAt: true });
+export type ShopifyOrder = typeof shopifyOrders.$inferSelect;
+export type InsertShopifyOrder = z.infer<typeof insertShopifyOrderSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z
