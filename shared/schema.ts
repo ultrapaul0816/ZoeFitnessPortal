@@ -551,6 +551,25 @@ export const shopifyOrders = pgTable("shopify_orders", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const communicationsLog = pgTable("communications_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  channel: text("channel").notNull(), // email, whatsapp, sms
+  direction: text("direction").notNull().default("outgoing"), // outgoing, incoming
+  provider: text("provider").notNull(), // resend, twilio, manual
+  recipientEmail: text("recipient_email"),
+  recipientPhone: text("recipient_phone"),
+  recipientName: text("recipient_name"),
+  userId: varchar("user_id"), // linked user ID if known
+  subject: text("subject"),
+  contentPreview: text("content_preview"), // first ~200 chars of content, stripped of HTML
+  messageType: text("message_type"), // welcome, magic-link, campaign, admin-send, re-engagement, program-reminder, completion-celebration, whatsapp-expiry, daily-workout-reminder, test, coaching, custom
+  status: text("status").notNull().default("sent"), // sent, delivered, failed, received, bounced
+  messageId: text("message_id"), // External message ID from provider (Resend ID, Twilio SID)
+  errorMessage: text("error_message"), // Error details if failed
+  metadata: jsonb("metadata"), // Additional context data
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 // User Module Progress - tracks progress per module
 export const userModuleProgress = pgTable("user_module_progress", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1407,6 +1426,11 @@ export type InsertCoachingCheckin = z.infer<typeof insertCoachingCheckinSchema>;
 export const insertShopifyOrderSchema = createInsertSchema(shopifyOrders).omit({ id: true, createdAt: true });
 export type ShopifyOrder = typeof shopifyOrders.$inferSelect;
 export type InsertShopifyOrder = z.infer<typeof insertShopifyOrderSchema>;
+
+// Communications Log types
+export const insertCommunicationsLogSchema = createInsertSchema(communicationsLog).omit({ id: true, createdAt: true });
+export type CommunicationsLogEntry = typeof communicationsLog.$inferSelect;
+export type InsertCommunicationsLogEntry = z.infer<typeof insertCommunicationsLogSchema>;
 
 // Password validation schema with strength requirements
 export const passwordSchema = z

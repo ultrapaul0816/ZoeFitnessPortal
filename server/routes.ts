@@ -6978,6 +6978,51 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     res.json(order);
   });
 
+  // Get communications log
+  app.get("/api/admin/communications-log", requireAdmin, async (req, res) => {
+    try {
+      const { channel, status, messageType, limit, offset } = req.query;
+      const filters = {
+        channel: channel as string | undefined,
+        status: status as string | undefined,
+        messageType: messageType as string | undefined,
+        limit: limit ? parseInt(limit as string) : 50,
+        offset: offset ? parseInt(offset as string) : 0,
+      };
+      
+      const [entries, total] = await Promise.all([
+        storage.getCommunicationsLog(filters),
+        storage.getCommunicationsLogCount(filters),
+      ]);
+      
+      res.json({ entries, total });
+    } catch (error) {
+      console.error("Error fetching communications log:", error);
+      res.status(500).json({ message: "Failed to fetch communications log" });
+    }
+  });
+
+  // Get communications stats
+  app.get("/api/admin/communications-log/stats", requireAdmin, async (req, res) => {
+    try {
+      const [totalEmails, sentEmails, failedEmails] = await Promise.all([
+        storage.getCommunicationsLogCount({ channel: 'email' }),
+        storage.getCommunicationsLogCount({ channel: 'email', status: 'sent' }),
+        storage.getCommunicationsLogCount({ channel: 'email', status: 'failed' }),
+      ]);
+      
+      res.json({
+        total: totalEmails,
+        sent: sentEmails,
+        failed: failedEmails,
+        channels: { email: totalEmails },
+      });
+    } catch (error) {
+      console.error("Error fetching communications stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
   // Test endpoint to send WhatsApp expiry reminder email (admin only)
   app.post("/api/admin/test-whatsapp-reminder", requireAdmin, async (req, res) => {
     try {

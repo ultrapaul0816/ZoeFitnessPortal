@@ -1,6 +1,7 @@
 import { ResendEmailProvider } from './providers/resend';
 import type { IEmailProvider, SendEmailParams, EmailSendResult } from './providers/base';
 import type { User } from '@shared/schema';
+import { storage } from '../storage';
 import {
   createWelcomeEmail,
   createReEngagementEmail,
@@ -18,6 +19,10 @@ import {
   type MagicLinkEmailData,
 } from './templates';
 
+function stripHtmlForPreview(html: string): string {
+  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().substring(0, 200);
+}
+
 class EmailService {
   private provider: IEmailProvider;
 
@@ -25,8 +30,34 @@ class EmailService {
     this.provider = new ResendEmailProvider();
   }
 
-  async send(params: SendEmailParams): Promise<EmailSendResult> {
-    return this.provider.send(params);
+  async send(params: SendEmailParams, logContext?: { messageType?: string; userId?: string }): Promise<EmailSendResult> {
+    const result = await this.provider.send(params);
+
+    try {
+      const toArray = Array.isArray(params.to) ? params.to : [params.to];
+      const recipientEmail = toArray[0]?.email || '';
+      const recipientName = toArray[0]?.name || '';
+
+      await storage.createCommunicationsLogEntry({
+        channel: 'email',
+        direction: 'outgoing',
+        provider: 'resend',
+        recipientEmail,
+        recipientName,
+        userId: logContext?.userId || null,
+        subject: params.subject,
+        contentPreview: params.text ? params.text.substring(0, 200) : (params.html ? stripHtmlForPreview(params.html) : ''),
+        messageType: logContext?.messageType || 'custom',
+        status: result.success ? 'sent' : 'failed',
+        messageId: result.messageId || null,
+        errorMessage: result.error || null,
+        metadata: null,
+      });
+    } catch (logError) {
+      console.error('[CommsLog] Failed to log email:', logError);
+    }
+
+    return result;
   }
 
   async validateConnection(): Promise<boolean> {
@@ -44,7 +75,7 @@ class EmailService {
       subject: template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 'welcome', userId: user.id });
   }
 
   async sendReEngagementEmail(
@@ -61,7 +92,7 @@ class EmailService {
       subject: template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 're-engagement', userId: user.id });
   }
 
   async sendProgramReminderEmail(
@@ -78,7 +109,7 @@ class EmailService {
       subject: template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 'program-reminder', userId: user.id });
   }
 
   async sendCompletionCelebrationEmail(
@@ -95,7 +126,7 @@ class EmailService {
       subject: template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 'completion-celebration', userId: user.id });
   }
 
   async sendWhatsAppExpiryReminderEmail(
@@ -112,7 +143,7 @@ class EmailService {
       subject: template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 'whatsapp-expiry', userId: user.id });
   }
 
   async sendTemplateTestEmail(templateType: 'welcome' | 're-engagement' | 'program-reminder' | 'completion-celebration' | 'daily-workout-reminder', toEmail: string, customSubject?: string): Promise<EmailSendResult> {
@@ -164,7 +195,7 @@ class EmailService {
       subject: customSubject || template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 'test' });
   }
 
   async sendDailyWorkoutReminderEmail(
@@ -178,7 +209,7 @@ class EmailService {
       subject: template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 'daily-workout-reminder' });
   }
 
   async sendMagicLinkEmail(
@@ -196,7 +227,7 @@ class EmailService {
       subject: template.subject,
       html: template.html,
       text: template.text,
-    });
+    }, { messageType: 'magic-link' });
   }
 
   async sendTestEmail(toEmail: string): Promise<EmailSendResult> {
@@ -247,7 +278,7 @@ class EmailService {
         </html>
       `,
       text: `Success! Your email service is working correctly.\n\nThis is a test email sent at ${new Date().toLocaleString()}.\n\n© ${new Date().getFullYear()} Stronger With Zoe. All rights reserved.`,
-    });
+    }, { messageType: 'test' });
   }
 }
 

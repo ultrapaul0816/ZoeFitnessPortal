@@ -73,6 +73,8 @@ import {
   type InsertCoachingWorkoutCompletion,
   type ShopifyOrder,
   type InsertShopifyOrder,
+  type CommunicationsLogEntry,
+  type InsertCommunicationsLogEntry,
 } from "@shared/schema";
 import {
   users,
@@ -123,11 +125,12 @@ import {
   coachingCheckins,
   coachingWorkoutCompletions,
   shopifyOrders,
+  communicationsLog,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { eq, and, desc, sql, count, asc, gte, lte, or, isNull, lt, notInArray, inArray } from "drizzle-orm";
+import { eq, and, desc, sql, count, asc, gte, lte, or, isNull, lt, notInArray, inArray, type SQL } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -620,6 +623,11 @@ export interface IStorage {
   getShopifyOrderById(id: string): Promise<ShopifyOrder | undefined>;
   createShopifyOrder(order: InsertShopifyOrder): Promise<ShopifyOrder>;
   updateShopifyOrder(id: string, updates: Partial<ShopifyOrder>): Promise<ShopifyOrder | undefined>;
+
+  // Communications Log
+  getCommunicationsLog(filters?: { channel?: string; status?: string; messageType?: string; limit?: number; offset?: number }): Promise<CommunicationsLogEntry[]>;
+  getCommunicationsLogCount(filters?: { channel?: string; status?: string; messageType?: string }): Promise<number>;
+  createCommunicationsLogEntry(entry: InsertCommunicationsLogEntry): Promise<CommunicationsLogEntry>;
 }
 
 export class MemStorage implements IStorage {
@@ -2462,6 +2470,9 @@ export class MemStorage implements IStorage {
   async getShopifyOrderById(id: string): Promise<ShopifyOrder | undefined> { return undefined; }
   async createShopifyOrder(order: InsertShopifyOrder): Promise<ShopifyOrder> { throw new Error("Not implemented"); }
   async updateShopifyOrder(id: string, updates: Partial<ShopifyOrder>): Promise<ShopifyOrder | undefined> { return undefined; }
+  async getCommunicationsLog() { return []; }
+  async getCommunicationsLogCount() { return 0; }
+  async createCommunicationsLogEntry(entry: InsertCommunicationsLogEntry) { return { id: randomUUID(), ...entry, createdAt: new Date() } as CommunicationsLogEntry; }
 }
 
 // Database Storage Implementation using PostgreSQL
@@ -5723,6 +5734,43 @@ class DatabaseStorage implements IStorage {
   async updateShopifyOrder(id: string, updates: Partial<ShopifyOrder>): Promise<ShopifyOrder | undefined> {
     const [updated] = await this.db.update(shopifyOrders).set(updates).where(eq(shopifyOrders.id, id)).returning();
     return updated;
+  }
+
+  async getCommunicationsLog(filters?: { channel?: string; status?: string; messageType?: string; limit?: number; offset?: number }): Promise<CommunicationsLogEntry[]> {
+    let query = this.db.select().from(communicationsLog).orderBy(desc(communicationsLog.createdAt));
+    
+    const conditions: SQL[] = [];
+    if (filters?.channel) conditions.push(eq(communicationsLog.channel, filters.channel));
+    if (filters?.status) conditions.push(eq(communicationsLog.status, filters.status));
+    if (filters?.messageType) conditions.push(eq(communicationsLog.messageType, filters.messageType));
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as any;
+    }
+    
+    if (filters?.limit) query = query.limit(filters.limit) as any;
+    if (filters?.offset) query = query.offset(filters.offset) as any;
+    
+    return query;
+  }
+
+  async getCommunicationsLogCount(filters?: { channel?: string; status?: string; messageType?: string }): Promise<number> {
+    const conditions: SQL[] = [];
+    if (filters?.channel) conditions.push(eq(communicationsLog.channel, filters.channel));
+    if (filters?.status) conditions.push(eq(communicationsLog.status, filters.status));
+    if (filters?.messageType) conditions.push(eq(communicationsLog.messageType, filters.messageType));
+    
+    const result = await this.db
+      .select({ count: sql<number>`count(*)` })
+      .from(communicationsLog)
+      .where(conditions.length > 0 ? and(...conditions) : undefined);
+    
+    return Number(result[0]?.count || 0);
+  }
+
+  async createCommunicationsLogEntry(entry: InsertCommunicationsLogEntry): Promise<CommunicationsLogEntry> {
+    const [result] = await this.db.insert(communicationsLog).values(entry).returning();
+    return result;
   }
 }
 
