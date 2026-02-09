@@ -6664,10 +6664,17 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     'postnatal: heal your core (1 year access)': { courseId: 'heal-your-core-course', durationMonths: 12 },
   };
 
-  // Variant titles that include WhatsApp community access
+  // Variant titles that include WhatsApp community access (exact matches)
   const WHATSAPP_VARIANTS = new Set([
     'heal your core + whatsapp community',
   ]);
+
+  // Flexible WhatsApp variant detection - checks if variant contains WhatsApp-related keywords
+  function isWhatsAppVariant(variantTitle: string): boolean {
+    const normalized = variantTitle.toLowerCase().trim();
+    if (WHATSAPP_VARIANTS.has(normalized)) return true;
+    return normalized.includes('whatsapp') || normalized.includes('whats app') || normalized.includes('community');
+  }
 
 
   // Verify Shopify webhook signature
@@ -6708,12 +6715,12 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         const courseMapping = SHOPIFY_COURSE_PRODUCTS[productTitle];
 
         if (courseMapping) {
-          const includesWhatsApp = WHATSAPP_VARIANTS.has(variantTitle);
+          const includesWhatsApp = isWhatsAppVariant(variantTitle);
           matchedCourses.push({ item, mapping: courseMapping, includesWhatsApp });
-          console.log(`[Shopify Webhook] Matched product "${item.title}" (variant: "${item.variant_title || 'default'}") -> course "${courseMapping.courseId}"${includesWhatsApp ? ' + WhatsApp Community' : ''}`);
+          console.log(`[Shopify Webhook] Matched product "${item.title}" (variant: "${item.variant_title || 'default'}", raw variant: "${variantTitle}") -> course "${courseMapping.courseId}"${includesWhatsApp ? ' + WhatsApp Community' : ''}`);
         } else {
           unmatchedProducts.push(item.title || item.name || 'Unknown product');
-          console.log(`[Shopify Webhook] Skipped non-course product: "${item.title || item.name}" (variant: "${item.variant_title || 'none'}")`);
+          console.log(`[Shopify Webhook] Skipped non-course product: "${item.title || item.name}" (variant: "${item.variant_title || 'none'}", product title normalized: "${productTitle}")`);
         }
       }
 
@@ -6872,7 +6879,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
                 </div>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="https://app.strongerwithzoe.in" style="background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                  <a href="${process.env.APP_URL || 'https://strongerwithzoe.com'}" style="background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                     Start Your Journey →
                   </a>
                 </div>
