@@ -44,6 +44,9 @@ The platform automatically tracks user activity for engagement analytics, includ
 ## Payment & WhatsApp Integration
 Razorpay webhook at `/api/webhooks/razorpay` processes WhatsApp community payments (₹1000). The webhook verifies HMAC-SHA256 signatures, filters WhatsApp-specific payments, creates pending requests in the `whatsapp_requests` table, and sends admin email notifications (production only). Admin endpoints at `/api/admin/whatsapp-requests` allow viewing and completing/rejecting requests. Completing a request automatically enables WhatsApp support for the user.
 
+## Unified Communications Log
+The `communications_log` table tracks all outgoing/incoming messages across channels (email, WhatsApp, SMS). The email service is instrumented to automatically log every email sent through Resend with message type, status, recipient details, subject, content preview, and provider message ID. Admin page at `/admin/communications` shows all messages with channel/status/type filters, summary stats, click-to-expand detail view, and pagination. API endpoints: `GET /api/admin/communications-log` (with filters) and `GET /api/admin/communications-log/stats`.
+
 ## Shopify Order Logging
 All incoming Shopify webhook orders are logged to the `shopify_orders` table with full details (customer info, product/variant, amount, raw payload). Each order tracks its processing status (pending → processed/failed/skipped) and what actions were taken (user created, course enrolled, WhatsApp enabled, email sent). Admin page at `/admin/orders` shows all orders with search, filtering by status, and detailed order view. The Shopify webhook uses flexible WhatsApp variant detection — matching any variant containing "whatsapp", "whats app", or "community" keywords.
 
