@@ -997,7 +997,7 @@ export default function AdminCoaching() {
                                             }}
                                             placeholder="Section name..."
                                           />
-                                          {section.duration && <span className="text-xs text-gray-400">{section.duration}</span>}
+                                          {(section.durationSeconds || section.duration) && <span className="text-xs text-gray-400">{section.durationSeconds ? `${Math.floor(section.durationSeconds / 60)}min` : section.duration}</span>}
                                           <div className="flex items-center gap-1">
                                             <span className="text-xs text-gray-400">×</span>
                                             <Input
@@ -1013,8 +1013,8 @@ export default function AdminCoaching() {
                                             />
                                             <span className="text-xs text-gray-400">rounds</span>
                                           </div>
-                                          {section.restBetweenRounds && (
-                                            <span className="text-xs text-gray-400">· Rest: {section.restBetweenRounds}</span>
+                                          {(section.restBetweenRoundsSeconds || section.restBetweenRounds) && (
+                                            <span className="text-xs text-gray-400">· Rest: {section.restBetweenRoundsSeconds ? `${section.restBetweenRoundsSeconds}s` : section.restBetweenRounds}</span>
                                           )}
                                         </div>
                                         <div className="mt-1">
@@ -1084,25 +1084,33 @@ export default function AdminCoaching() {
                                                 />
                                               </div>
                                               <div className="col-span-2">
-                                                <Label className="text-[10px] text-gray-400 mb-1 block">Duration</Label>
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Duration (sec)</Label>
                                                 <Input
                                                   className="text-xs h-8"
-                                                  value={ex.duration || ""}
+                                                  type="number"
+                                                  min={0}
+                                                  value={ex.durationSeconds ?? ex.duration ?? ""}
                                                   onChange={(e) => {
                                                     const updated = { ...editingDayData };
-                                                    updated.exercises.sections[sIdx].exercises[eIdx].duration = e.target.value || null;
+                                                    const val = e.target.value ? parseInt(e.target.value) : null;
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].durationSeconds = val;
+                                                    delete updated.exercises.sections[sIdx].exercises[eIdx].duration;
                                                     setEditingDayData({ ...updated });
                                                   }}
                                                 />
                                               </div>
                                               <div className="col-span-2">
-                                                <Label className="text-[10px] text-gray-400 mb-1 block">Rest</Label>
+                                                <Label className="text-[10px] text-gray-400 mb-1 block">Rest (sec)</Label>
                                                 <Input
                                                   className="text-xs h-8"
-                                                  value={ex.restAfter || ""}
+                                                  type="number"
+                                                  min={0}
+                                                  value={ex.restAfterSeconds ?? ex.restAfter ?? ""}
                                                   onChange={(e) => {
                                                     const updated = { ...editingDayData };
-                                                    updated.exercises.sections[sIdx].exercises[eIdx].restAfter = e.target.value || null;
+                                                    const val = e.target.value ? parseInt(e.target.value) : null;
+                                                    updated.exercises.sections[sIdx].exercises[eIdx].restAfterSeconds = val;
+                                                    delete updated.exercises.sections[sIdx].exercises[eIdx].restAfter;
                                                     setEditingDayData({ ...updated });
                                                   }}
                                                 />

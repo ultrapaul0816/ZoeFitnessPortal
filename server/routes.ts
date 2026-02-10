@@ -7648,9 +7648,9 @@ IMPORTANT: Return a JSON object with exactly this structure:
           "name": "Warmup",
           "type": "warmup",
           "description": "Light movements to prepare the body",
-          "duration": "5 minutes",
+          "durationSeconds": 300,
           "rounds": 1,
-          "restBetweenRounds": null,
+          "restBetweenRoundsSeconds": null,
           "exercises": [
             {
               "name": "Warmup Flow",
@@ -7658,8 +7658,8 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "videoUrl": null,
               "sets": 1,
               "reps": null,
-              "duration": "5 minutes",
-              "restAfter": null,
+              "durationSeconds": 300,
+              "restAfterSeconds": null,
               "notes": "Gentle full-body warm-up: arm circles, cat-cow, hip circles"
             }
           ]
@@ -7668,9 +7668,9 @@ IMPORTANT: Return a JSON object with exactly this structure:
           "name": "Activation Sequence",
           "type": "activation",
           "description": "Activate key muscle groups with band work",
-          "duration": null,
+          "durationSeconds": null,
           "rounds": 3,
-          "restBetweenRounds": "15 seconds",
+          "restBetweenRoundsSeconds": 15,
           "exercises": [
             {
               "name": "Band Lat Pulldowns",
@@ -7678,8 +7678,8 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "videoUrl": "use-url-from-library-if-available",
               "sets": 1,
               "reps": "20",
-              "duration": null,
-              "restAfter": null,
+              "durationSeconds": null,
+              "restAfterSeconds": null,
               "notes": "Use mini band, controlled movement"
             }
           ]
@@ -7688,9 +7688,9 @@ IMPORTANT: Return a JSON object with exactly this structure:
           "name": "Workout Part 1",
           "type": "main",
           "description": "Heavy compound movements for strength building",
-          "duration": null,
+          "durationSeconds": null,
           "rounds": 3,
-          "restBetweenRounds": "60 seconds",
+          "restBetweenRoundsSeconds": 60,
           "exercises": [
             {
               "name": "Assisted Band Pullups",
@@ -7698,8 +7698,8 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "videoUrl": null,
               "sets": 1,
               "reps": "6-8",
-              "duration": null,
-              "restAfter": "60 seconds",
+              "durationSeconds": null,
+              "restAfterSeconds": 60,
               "notes": "Focus on controlled negative"
             }
           ]
@@ -7708,18 +7708,18 @@ IMPORTANT: Return a JSON object with exactly this structure:
           "name": "Workout Part 2 - Circuit",
           "type": "circuit",
           "description": "High-intensity circuit for muscular endurance",
-          "duration": null,
+          "durationSeconds": null,
           "rounds": 4,
-          "restBetweenRounds": "90 seconds",
+          "restBetweenRoundsSeconds": 90,
           "exercises": []
         },
         {
           "name": "Finisher - EMOM 8 min",
           "type": "finisher",
           "description": "Timed interval work to push conditioning",
-          "duration": "8 minutes",
+          "durationSeconds": 480,
           "rounds": null,
-          "restBetweenRounds": null,
+          "restBetweenRoundsSeconds": null,
           "format": "45 secs work / 15 secs rest",
           "exercises": []
         },
@@ -7727,9 +7727,9 @@ IMPORTANT: Return a JSON object with exactly this structure:
           "name": "Stretch",
           "type": "stretch",
           "description": "Targeted stretches for worked muscle groups",
-          "duration": "2 minutes",
+          "durationSeconds": 120,
           "rounds": 1,
-          "restBetweenRounds": null,
+          "restBetweenRoundsSeconds": null,
           "exercises": [
             {
               "name": "Camel Pose",
@@ -7737,8 +7737,8 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "videoUrl": null,
               "sets": 1,
               "reps": null,
-              "duration": "1 minute",
-              "restAfter": null,
+              "durationSeconds": 60,
+              "restAfterSeconds": null,
               "notes": "Hold and breathe"
             }
           ]
@@ -7747,9 +7747,9 @@ IMPORTANT: Return a JSON object with exactly this structure:
           "name": "Cooldown",
           "type": "cooldown",
           "description": "Gentle movements to bring heart rate down",
-          "duration": "5 minutes",
+          "durationSeconds": 300,
           "rounds": 1,
-          "restBetweenRounds": null,
+          "restBetweenRoundsSeconds": null,
           "exercises": [
             {
               "name": "Cooldown Flow",
@@ -7757,8 +7757,8 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "videoUrl": null,
               "sets": 1,
               "reps": null,
-              "duration": "5 minutes",
-              "restAfter": null,
+              "durationSeconds": 300,
+              "restAfterSeconds": null,
               "notes": "Gentle stretching and deep breathing"
             }
           ]
@@ -7804,7 +7804,11 @@ EXERCISE SELECTION:
 - When an exercise matches one in the EXERCISE LIBRARY above, use the exact exerciseId and videoUrl from the library
 - ONLY use exercises from the EXERCISE LIBRARY above. Every exercise MUST have a valid exerciseId and videoUrl from the library. Do NOT invent exercises outside the library.
 - For warmup/cooldown flows, exerciseId and videoUrl can be null
-- Each exercise object must have: name, exerciseId, videoUrl, sets, reps, duration, restAfter, notes
+- Each exercise object must have: name, exerciseId, videoUrl, sets, reps, durationSeconds, restAfterSeconds, notes
+- DURATION RULE: "durationSeconds" must be a number (seconds) or null. Example: 30 means 30 seconds, 300 means 5 minutes. Do NOT use text strings like "30 seconds".
+- REST RULE: "restAfterSeconds" and section "restBetweenRoundsSeconds" must be a number (seconds) or null. Example: 60 means 60 seconds rest.
+- SECTION DURATION: Section-level "durationSeconds" must also be a number (seconds) or null. Example: 300 for a 5-minute section.
+- MINIMUM REQUIREMENT: Every exercise must have at least one of "reps" or "durationSeconds" — both cannot be null at the same time.
 - Default sets to 1 for most exercises unless the exercise specifically needs multiple sets
 - Each section object must also include a 'description' field with a brief description of that section's purpose
 

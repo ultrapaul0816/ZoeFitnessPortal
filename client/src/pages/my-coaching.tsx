@@ -48,7 +48,9 @@ interface Exercise {
   sets?: number;
   reps?: string;
   duration?: string;
+  durationSeconds?: number;
   restSeconds?: number;
+  restAfterSeconds?: number;
   notes?: string;
 }
 
@@ -660,9 +662,9 @@ export default function MyCoaching() {
                                               x{section.rounds} rounds
                                             </Badge>
                                           )}
-                                          {section.duration && (
+                                          {(section.durationSeconds || section.duration) && (
                                             <span className="text-xs text-gray-500 ml-auto mr-2 shrink-0">
-                                              {section.duration}
+                                              {section.durationSeconds ? (section.durationSeconds >= 60 ? `${Math.floor(section.durationSeconds / 60)} min` : `${section.durationSeconds}s`) : section.duration}
                                             </span>
                                           )}
                                         </div>
@@ -680,9 +682,9 @@ export default function MyCoaching() {
                                               {section.format}
                                             </div>
                                           )}
-                                          {section.restBetweenRounds && (
+                                          {(section.restBetweenRoundsSeconds || section.restBetweenRounds) && (
                                             <p className="text-xs text-gray-500">
-                                              Rest between rounds: {section.restBetweenRounds}
+                                              Rest between rounds: {section.restBetweenRoundsSeconds ? `${section.restBetweenRoundsSeconds}s` : section.restBetweenRounds}
                                             </p>
                                           )}
 
@@ -770,15 +772,15 @@ export default function MyCoaching() {
                                                           {ex.reps} reps
                                                         </span>
                                                       )}
-                                                      {ex.duration && (
+                                                      {(ex.durationSeconds || ex.duration) && (
                                                         <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
                                                           <Clock className="w-3 h-3 inline mr-0.5" />
-                                                          {ex.duration}
+                                                          {ex.durationSeconds ? (ex.durationSeconds >= 60 ? `${Math.floor(ex.durationSeconds / 60)} min` : `${ex.durationSeconds}s`) : ex.duration}
                                                         </span>
                                                       )}
-                                                      {ex.restAfter && (
+                                                      {(ex.restAfterSeconds || ex.restAfter) && (
                                                         <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
-                                                          Rest: {ex.restAfter}
+                                                          Rest: {ex.restAfterSeconds ? `${ex.restAfterSeconds}s` : ex.restAfter}
                                                         </span>
                                                       )}
                                                     </div>
@@ -816,10 +818,10 @@ export default function MyCoaching() {
                                         {ex.reps} reps
                                       </span>
                                     )}
-                                    {ex.duration && (
+                                    {(ex.durationSeconds || ex.duration) && (
                                       <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
                                         <Clock className="w-3 h-3 inline mr-0.5" />
-                                        {ex.duration}
+                                        {ex.durationSeconds ? (ex.durationSeconds >= 60 ? `${Math.floor(ex.durationSeconds / 60)} min` : `${ex.durationSeconds}s`) : ex.duration}
                                       </span>
                                     )}
                                     {ex.restSeconds && (
