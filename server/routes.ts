@@ -6576,7 +6576,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
   app.post("/api/admin/send-email", requireAdmin, async (req, res) => {
     try {
-      const { userId, subject, message } = req.body;
+      const { userId, subject, message, attachments } = req.body;
 
       if (!userId || !subject || !message) {
         return res.status(400).json({ message: "userId, subject, and message are required" });
@@ -6587,14 +6587,26 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         return res.status(404).json({ message: "User not found" });
       }
 
-      const messageHtml = message.replace(/\n/g, '<br>');
       const recipientName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'there';
+
+      const isHtml = message.startsWith('<');
+      const messageHtml = isHtml ? message : message.replace(/\n/g, '<br>');
 
       const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .email-content h1 { font-size: 22px; font-weight: 700; color: #1f2937; margin: 0 0 12px; }
+    .email-content h2 { font-size: 18px; font-weight: 600; color: #1f2937; margin: 0 0 10px; }
+    .email-content p { margin: 0 0 12px; }
+    .email-content ul, .email-content ol { margin: 0 0 12px; padding-left: 24px; }
+    .email-content li { margin: 0 0 4px; }
+    .email-content a { color: #ec4899; text-decoration: underline; }
+    .email-content u { text-decoration: underline; }
+    .email-content s { text-decoration: line-through; }
+  </style>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #fdf2f8;">
   <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fdf2f8;">
@@ -6611,7 +6623,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
               <p style="color: #1f2937; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
                 Hi ${recipientName},
               </p>
-              <div style="color: #374151; font-size: 15px; line-height: 1.8;">
+              <div class="email-content" style="color: #374151; font-size: 15px; line-height: 1.8;">
                 ${messageHtml}
               </div>
             </td>
@@ -6637,19 +6649,31 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 </body>
 </html>`;
 
-      const result = await emailService.send({
+      const plainText = message.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+
+      const emailParams: any = {
         to: { email: user.email, name: `${user.firstName || ''} ${user.lastName || ''}`.trim() },
         subject,
         html,
-        text: `Hi ${recipientName},\n\n${message}\n\nWith love,\nCoach Zoe\n\n© ${new Date().getFullYear()} Stronger With Zoe.`,
-      });
+        text: `Hi ${recipientName},\n\n${plainText}\n\nWith love,\nCoach Zoe\n\n© ${new Date().getFullYear()} Stronger With Zoe.`,
+      };
+
+      if (attachments && Array.isArray(attachments) && attachments.length > 0) {
+        emailParams.attachments = attachments.map((att: { filename: string; content: string; contentType: string }) => ({
+          filename: att.filename,
+          content: att.content,
+          contentType: att.contentType,
+        }));
+      }
+
+      const result = await emailService.send(emailParams, { messageType: 'admin-send', userId: user.id });
 
       if (!result.success) {
         console.error("Failed to send admin email:", result.error);
         return res.status(500).json({ message: result.error || "Failed to send email" });
       }
 
-      console.log(`[Admin Email] Sent to ${user.email} - Subject: "${subject}"`);
+      console.log(`[Admin Email] Sent to ${user.email} - Subject: "${subject}"${attachments?.length ? ` with ${attachments.length} attachment(s)` : ''}`);
       res.json({ success: true });
     } catch (error) {
       console.error("Error sending admin email:", error);
