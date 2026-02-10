@@ -7608,10 +7608,28 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
       });
 
-      const formDataStr = client.formData ? JSON.stringify(client.formData) : "No form data available";
+      const formResponses = await storage.getCoachingFormResponses(client.id);
+      let formDataStr = client.formData ? JSON.stringify(client.formData) : "";
+      const coachingType = (client as any).coachingType || "pregnancy_coaching";
+
+      if (coachingType === "private_coaching") {
+        const pcForm = formResponses.find((r: any) => r.formType === "private_coaching_questionnaire");
+        if (pcForm) {
+          formDataStr = `PRIVATE COACHING QUESTIONNAIRE:\n${JSON.stringify(pcForm.responses)}`;
+        }
+      } else {
+        const lifestyleForm = formResponses.find((r: any) => r.formType === "lifestyle_questionnaire");
+        const healthForm = formResponses.find((r: any) => r.formType === "health_evaluation");
+        const parts = [];
+        if (lifestyleForm) parts.push(`LIFESTYLE QUESTIONNAIRE:\n${JSON.stringify(lifestyleForm.responses)}`);
+        if (healthForm) parts.push(`HEALTH EVALUATION:\n${JSON.stringify(healthForm.responses)}`);
+        if (parts.length > 0) formDataStr = parts.join("\n\n");
+      }
+      if (!formDataStr) formDataStr = "No form data available";
+
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
-      const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+      const userInfo = `Name: ${user.firstName} ${user.lastName}${coachingType === "pregnancy_coaching" ? `, Postpartum weeks: ${user.postpartumWeeks || "unknown"}` : ""}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
       let calculatedTrimester: number | null = null;
       let weeksPregnant: number | null = null;
       if (client.isPregnant && client.dueDate) {
@@ -7628,7 +7646,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         messages: [
           {
             role: "system",
-            content: `You are Zoe, an expert postnatal fitness coach known for structured, professional workout plans. Create a personalized 1-week workout plan for Week ${weekNumber} of a 4-week program.
+            content: `You are Zoe, an expert ${coachingType === "private_coaching" ? "personal fitness transformation coach" : "postnatal fitness coach"} known for structured, professional workout plans. Create a personalized 1-week workout plan for Week ${weekNumber} of a 4-week program.
 
 You have access to an EXERCISE LIBRARY below. When selecting exercises, PREFER exercises from this library and include their exerciseId and videoUrl. If an exercise you want to prescribe is NOT in the library, set exerciseId and videoUrl to null.
 
@@ -7815,7 +7833,7 @@ EXERCISE SELECTION:
 
 PROGRESSION:
 - Week ${weekNumber} should be ${weekNumber === 1 ? "introductory and foundational - lighter weights, fewer rounds, focus on form" : weekNumber === 2 ? "building on week 1 with moderate progression - slightly more rounds or reps" : weekNumber === 3 ? "challenging with increased intensity - heavier weights, more complex movements" : "peak week with the most advanced variations and highest volume"}
-- Focus on postpartum-safe exercises (pelvic floor awareness, core rehabilitation, functional movements)
+- ${coachingType === "private_coaching" ? "Focus on the client's selected goals from their questionnaire (e.g., fat loss, muscle toning, injury rehab, detox, etc.). Tailor exercise selection to match their fitness level, available equipment, and exercise location (gym vs home)." : "Focus on postpartum-safe exercises (pelvic floor awareness, core rehabilitation, functional movements)"}
 - Always include breathing cues in notes where relevant
 
 PREGNANCY SAFETY (if client is pregnant):
@@ -7917,10 +7935,28 @@ PREGNANCY SAFETY (if client is pregnant):
         apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
       });
 
-      const formDataStr = client.formData ? JSON.stringify(client.formData) : "No form data available";
+      const formResponses = await storage.getCoachingFormResponses(client.id);
+      let formDataStr = client.formData ? JSON.stringify(client.formData) : "";
+      const coachingType = (client as any).coachingType || "pregnancy_coaching";
+
+      if (coachingType === "private_coaching") {
+        const pcForm = formResponses.find((r: any) => r.formType === "private_coaching_questionnaire");
+        if (pcForm) {
+          formDataStr = `PRIVATE COACHING QUESTIONNAIRE:\n${JSON.stringify(pcForm.responses)}`;
+        }
+      } else {
+        const lifestyleForm = formResponses.find((r: any) => r.formType === "lifestyle_questionnaire");
+        const healthForm = formResponses.find((r: any) => r.formType === "health_evaluation");
+        const parts = [];
+        if (lifestyleForm) parts.push(`LIFESTYLE QUESTIONNAIRE:\n${JSON.stringify(lifestyleForm.responses)}`);
+        if (healthForm) parts.push(`HEALTH EVALUATION:\n${JSON.stringify(healthForm.responses)}`);
+        if (parts.length > 0) formDataStr = parts.join("\n\n");
+      }
+      if (!formDataStr) formDataStr = "No form data available";
+
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
-      const userInfo = `Name: ${user.firstName} ${user.lastName}, Postpartum weeks: ${user.postpartumWeeks || "unknown"}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+      const userInfo = `Name: ${user.firstName} ${user.lastName}${coachingType === "pregnancy_coaching" ? `, Postpartum weeks: ${user.postpartumWeeks || "unknown"}` : ""}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
       let calcTrimesterNutrition: number | null = null;
       let weeksPregnantNutrition: number | null = null;
       if (client.isPregnant && client.dueDate) {
@@ -7937,7 +7973,7 @@ PREGNANCY SAFETY (if client is pregnant):
         messages: [
           {
             role: "system",
-            content: `You are Zoe, an expert postnatal nutrition coach. Create a personalized, practical nutrition plan that's easy for busy new mothers to follow.
+            content: `You are Zoe, an expert ${coachingType === "private_coaching" ? "nutrition and wellness coach specializing in lifestyle transformation" : "postnatal nutrition coach"}. Create a personalized, practical nutrition plan that's easy for ${coachingType === "private_coaching" ? "busy clients" : "busy new mothers"} to follow.
 
 IMPORTANT: Return a JSON object with exactly this structure:
 {
@@ -7993,10 +8029,9 @@ Rules:
 - "weeklyPrepTips" must be an array of 4-6 practical meal prep tips
 - "snackIdeas" must be an array of 5-8 quick snack ideas
 - "coachNotes" must be a personalized encouragement string
-- Focus on nutrient-dense, postpartum-friendly foods that support recovery and energy
-- Include iron-rich foods, calcium sources, and foods that support lactation if relevant
-- Keep meals practical, quick to prepare, and family-friendly for busy new mothers
-- Adjust calorie targets based on activity level, breastfeeding status, and goals
+- ${coachingType === "private_coaching" ? "Focus on nutrient-dense foods aligned with the client's goals (fat loss, muscle building, detox, wellness, etc.). Use their diet preferences, food restrictions, and eating habits from the questionnaire to personalize the plan." : "Focus on nutrient-dense, postpartum-friendly foods that support recovery and energy. Include iron-rich foods, calcium sources, and foods that support lactation if relevant."}
+- Keep meals practical, quick to prepare, and ${coachingType === "private_coaching" ? "aligned with the client's cooking ability and lifestyle" : "family-friendly for busy new mothers"}
+- Adjust calorie targets based on activity level, ${coachingType === "private_coaching" ? "current weight, BMI, and transformation goals" : "breastfeeding status, and goals"}
 
 PREGNANCY NUTRITION (if client is pregnant):
 - Increase calorie target by 300-500 cal/day depending on trimester
