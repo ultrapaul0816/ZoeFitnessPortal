@@ -41,6 +41,7 @@ import {
   Play,
   Video,
 } from "lucide-react";
+import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-responses";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
 type CoachingClientWithUser = CoachingClient & {
@@ -715,37 +716,7 @@ export default function AdminCoaching() {
                     </CardContent>
                   </Card>
 
-                  <Card className="border-0 shadow-sm">
-                    <CardHeader>
-                      <CardTitle className="text-base">Form Responses & Health Info</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {selectedClient.formData ? (
-                        <div className="space-y-3">
-                          {Object.entries(selectedClient.formData as Record<string, string>).map(([key, value]) => (
-                            <div key={key}>
-                              <p className="text-xs font-medium text-gray-500 uppercase">{key.replace(/_/g, " ")}</p>
-                              <p className="text-sm text-gray-900 mt-0.5">{String(value)}</p>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-400">No form data available yet</p>
-                      )}
-                      {selectedClient.healthNotes && (
-                        <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                          <p className="text-xs font-medium text-yellow-700 uppercase mb-1">Health Notes</p>
-                          <p className="text-sm text-yellow-900">{selectedClient.healthNotes}</p>
-                        </div>
-                      )}
-                      {selectedClient.notes && (
-                        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                          <p className="text-xs font-medium text-gray-500 uppercase mb-1">Admin Notes</p>
-                          <p className="text-sm text-gray-700">{selectedClient.notes}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <CoachingFormResponsesSection clientId={selectedClient.id} />
 
                   <Card className="border-0 shadow-sm lg:col-span-2">
                     <CardHeader>
