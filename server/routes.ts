@@ -7955,6 +7955,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
         {
           "name": "Power Oats Bowl",
           "description": "Oats topped with banana, nut butter, and seeds",
+          "cuisine": "international",
           "prepTime": "5 min",
           "calories": 400,
           "protein": 15,
@@ -7985,8 +7986,9 @@ IMPORTANT: Return a JSON object with exactly this structure:
 Rules:
 - "dailyStructure" must include overview, dailyCalorieTarget (number), macroSplit (object with protein/carbs/fat percentages), hydration (string), supplements (string array)
 - "meals" must be an array of exactly 4 objects with mealType: "breakfast", "lunch", "snack", "dinner"
-- Each mealType must have a "timing" field (string) and exactly 3 options in the "options" array
-- Each option needs: name (string), description (string), prepTime (string), calories (number), protein (number in grams), carbs (number in grams), fat (number in grams), ingredients (string array), quickInstructions (string)
+- Each mealType must have a "timing" field (string) and exactly 5 options in the "options" array
+- INDIAN DISH RULE: At least 2 out of the 5 options per meal MUST be Indian dishes (e.g., poha, upma, idli, dosa, paratha, dal, khichdi, roti sabzi, paneer dishes, raita, chaat, etc.). Tag Indian dishes with "cuisine": "indian" and others with "cuisine": "international".
+- Each option needs: name (string), description (string), cuisine (string: "indian" or "international"), prepTime (string), calories (number), protein (number in grams), carbs (number in grams), fat (number in grams), ingredients (string array), quickInstructions (string)
 - "weeklyPrepTips" must be an array of 4-6 practical meal prep tips
 - "snackIdeas" must be an array of 5-8 quick snack ideas
 - "coachNotes" must be a personalized encouragement string
@@ -8084,6 +8086,128 @@ PREGNANCY NUTRITION (if client is pregnant):
     } catch (error) {
       console.error("Error generating nutrition plan:", error);
       res.status(500).json({ message: "Failed to generate nutrition plan. Please try again." });
+    }
+  });
+
+  // Update a single nutrition dish option inline
+  app.patch("/api/admin/coaching/nutrition-plans/:planId/options/:optionIndex", requireAdmin, async (req, res) => {
+    try {
+      const { planId, optionIndex } = req.params;
+      const idx = parseInt(optionIndex);
+      
+      const existingPlan = await storage.getCoachingNutritionPlanById(planId);
+      if (!existingPlan) return res.status(404).json({ message: "Nutrition plan not found" });
+      
+      const options = (existingPlan.options as any[]) || [];
+      if (idx < 0 || idx >= options.length) return res.status(400).json({ message: "Invalid option index" });
+      
+      options[idx] = { ...options[idx], ...req.body };
+      
+      const updated = await storage.updateCoachingNutritionPlan(planId, { options } as any);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating nutrition option:", error);
+      res.status(500).json({ message: "Failed to update nutrition option" });
+    }
+  });
+
+  // Regenerate a single nutrition dish option via AI
+  app.post("/api/admin/coaching/nutrition-plans/:planId/options/:optionIndex/regenerate", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const { planId, optionIndex } = req.params;
+      const idx = parseInt(optionIndex);
+      
+      const existingPlan = await storage.getCoachingNutritionPlanById(planId);
+      if (!existingPlan) return res.status(404).json({ message: "Nutrition plan not found" });
+      
+      const options = (existingPlan.options as any[]) || [];
+      if (idx < 0 || idx >= options.length) return res.status(400).json({ message: "Invalid option index" });
+
+      const client = await storage.getCoachingClient(existingPlan.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      const currentDish = options[idx];
+      const otherDishes = options.filter((_: any, i: number) => i !== idx).map((o: any) => o.name);
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const userInfo = user ? `Name: ${user.firstName} ${user.lastName}, Goals: ${(user.goals || []).join(", ") || "general fitness"}` : "Unknown user";
+      const healthNotesStr = client.healthNotes || "No specific health notes";
+      const preferCuisine = req.body.preferCuisine || null;
+
+      const regenResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert postnatal nutrition coach. Generate exactly ONE replacement dish option for a ${existingPlan.mealType} meal.
+
+The current dish "${currentDish.name}" needs to be replaced with a new alternative.
+
+EXISTING OPTIONS (do NOT repeat these): ${otherDishes.join(", ")}
+
+${preferCuisine ? `CUISINE PREFERENCE: Generate an ${preferCuisine} dish.` : "Generate either an Indian or international dish — your choice."}
+
+Return a JSON object with exactly this structure:
+{
+  "option": {
+    "name": "Dish Name",
+    "description": "Brief description",
+    "cuisine": "indian" or "international",
+    "prepTime": "X min",
+    "calories": 400,
+    "protein": 20,
+    "carbs": 45,
+    "fat": 12,
+    "ingredients": ["ingredient1", "ingredient2"],
+    "quickInstructions": "Step by step instructions"
+  }
+}
+
+Rules:
+- Must be different from the existing dishes listed above
+- Must be practical, quick to prepare, and nutritious for postpartum recovery
+- Include accurate macro estimates
+- If Indian cuisine, use authentic Indian dishes (not fusion)`
+          },
+          {
+            role: "user",
+            content: `Replace the ${existingPlan.mealType} dish "${currentDish.name}" for:\n${userInfo}\nHealth notes: ${healthNotesStr}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.8,
+      });
+
+      const regenData = JSON.parse(regenResponse.choices[0].message.content || "{}");
+      const newOption = regenData.option || regenData;
+      
+      if (!newOption.name) {
+        return res.status(500).json({ message: "AI generated an invalid dish. Please try again." });
+      }
+
+      options[idx] = newOption;
+      const updated = await storage.updateCoachingNutritionPlan(planId, { options } as any);
+      res.json({ message: `Replaced "${currentDish.name}" with "${newOption.name}"`, plan: updated });
+    } catch (error) {
+      console.error("Error regenerating nutrition option:", error);
+      res.status(500).json({ message: "Failed to regenerate dish. Please try again." });
+    }
+  });
+
+  // Update nutrition plan options (full replace)
+  app.patch("/api/admin/coaching/nutrition-plans/:planId", requireAdmin, async (req, res) => {
+    try {
+      const updated = await storage.updateCoachingNutritionPlan(req.params.planId, req.body);
+      if (!updated) return res.status(404).json({ message: "Nutrition plan not found" });
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating nutrition plan:", error);
+      res.status(500).json({ message: "Failed to update nutrition plan" });
     }
   });
 

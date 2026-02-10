@@ -598,6 +598,7 @@ export interface IStorage {
   
   // Coaching Nutrition Plans
   getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]>;
+  getCoachingNutritionPlanById(id: string): Promise<CoachingNutritionPlan | undefined>;
   createCoachingNutritionPlan(plan: InsertCoachingNutritionPlan): Promise<CoachingNutritionPlan>;
   updateCoachingNutritionPlan(id: string, updates: Partial<CoachingNutritionPlan>): Promise<CoachingNutritionPlan | undefined>;
   deleteCoachingNutritionPlans(clientId: string): Promise<void>;
@@ -2460,6 +2461,7 @@ export class MemStorage implements IStorage {
   async deleteCoachingWorkoutPlans(clientId: string): Promise<void> {}
   async deleteCoachingWorkoutPlan(id: string): Promise<void> {}
   async getCoachingNutritionPlans(clientId: string): Promise<CoachingNutritionPlan[]> { return []; }
+  async getCoachingNutritionPlanById(id: string): Promise<CoachingNutritionPlan | undefined> { return undefined; }
   async createCoachingNutritionPlan(plan: InsertCoachingNutritionPlan): Promise<CoachingNutritionPlan> { throw new Error("Not implemented"); }
   async updateCoachingNutritionPlan(id: string, updates: Partial<CoachingNutritionPlan>): Promise<CoachingNutritionPlan | undefined> { return undefined; }
   async deleteCoachingNutritionPlans(clientId: string): Promise<void> {}
@@ -5612,6 +5614,12 @@ class DatabaseStorage implements IStorage {
     return this.db.select().from(coachingNutritionPlans)
       .where(eq(coachingNutritionPlans.clientId, clientId))
       .orderBy(coachingNutritionPlans.orderIndex);
+  }
+
+  async getCoachingNutritionPlanById(id: string): Promise<CoachingNutritionPlan | undefined> {
+    const [plan] = await this.db.select().from(coachingNutritionPlans)
+      .where(eq(coachingNutritionPlans.id, id));
+    return plan;
   }
 
   async createCoachingNutritionPlan(plan: InsertCoachingNutritionPlan): Promise<CoachingNutritionPlan> {
