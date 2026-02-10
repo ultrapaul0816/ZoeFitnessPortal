@@ -7457,6 +7457,37 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // Get form responses for a coaching client
+  app.get("/api/admin/coaching/clients/:clientId/form-responses", requireAdmin, async (req, res) => {
+    try {
+      const responses = await storage.getCoachingFormResponses(req.params.clientId);
+      res.json(responses);
+    } catch (error) {
+      console.error("Error fetching form responses:", error);
+      res.status(500).json({ message: "Failed to fetch form responses" });
+    }
+  });
+
+  // Upsert (create or update) a form response for a coaching client
+  app.post("/api/admin/coaching/clients/:clientId/form-responses", requireAdmin, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const { formType, responses } = req.body;
+      if (!formType || !responses) {
+        return res.status(400).json({ message: "formType and responses are required" });
+      }
+      const result = await storage.upsertCoachingFormResponse({
+        clientId,
+        formType,
+        responses,
+      });
+      res.json(result);
+    } catch (error) {
+      console.error("Error saving form response:", error);
+      res.status(500).json({ message: "Failed to save form response" });
+    }
+  });
+
   // Update a coaching workout plan (edit exercises, notes, etc.)
   app.patch("/api/admin/coaching/workout-plans/:planId", requireAdmin, async (req, res) => {
     try {
