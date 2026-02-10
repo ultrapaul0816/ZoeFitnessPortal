@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Users, Search, Download, ChevronDown, FileText, FileSpreadsheet, Mail, Phone, Calendar, CheckCircle, XCircle, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, Users, Search, Download, ChevronDown, FileText, FileSpreadsheet, Mail, Phone, Calendar, CheckCircle, XCircle, Send, Loader2, Paperclip, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import jsPDF from "jspdf";
 import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
+import RichTextEditor from "@/components/rich-text-editor";
 
 export default function AdminMembers() {
   const [, navigate] = useLocation();
@@ -21,21 +21,50 @@ export default function AdminMembers() {
   const [emailDialogUser, setEmailDialogUser] = useState<User | null>(null);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
+  const [emailAttachments, setEmailAttachments] = useState<{ filename: string; content: string; contentType: string }[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: allUsers = [], isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
   });
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    Array.from(files).forEach(file => {
+      if (file.size > 10 * 1024 * 1024) {
+        toast({ title: "File too large", description: `${file.name} exceeds 10MB limit`, variant: "destructive" });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        setEmailAttachments(prev => [...prev, { filename: file.name, content: base64, contentType: file.type || 'application/octet-stream' }]);
+      };
+      reader.readAsDataURL(file);
+    });
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeAttachment = (index: number) => {
+    setEmailAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const resetEmailDialog = () => {
+    setEmailDialogUser(null);
+    setEmailSubject("");
+    setEmailMessage("");
+    setEmailAttachments([]);
+  };
+
   const sendEmailMutation = useMutation({
-    mutationFn: async (data: { userId: string; subject: string; message: string }) => {
+    mutationFn: async (data: { userId: string; subject: string; message: string; attachments?: { filename: string; content: string; contentType: string }[] }) => {
       const res = await apiRequest("POST", "/api/admin/send-email", data);
       return res.json();
     },
     onSuccess: () => {
       toast({ title: "Email sent!", description: `Email sent to ${emailDialogUser?.email}` });
-      setEmailDialogUser(null);
-      setEmailSubject("");
-      setEmailMessage("");
+      resetEmailDialog();
     },
     onError: (error: any) => {
       toast({ title: "Failed to send", description: error.message || "Something went wrong", variant: "destructive" });
@@ -285,8 +314,8 @@ export default function AdminMembers() {
         </Card>
       </div>
 
-      <Dialog open={!!emailDialogUser} onOpenChange={(open) => { if (!open) { setEmailDialogUser(null); setEmailSubject(""); setEmailMessage(""); } }}>
-        <DialogContent className="max-w-lg">
+      <Dialog open={!!emailDialogUser} onOpenChange={(open) => { if (!open) resetEmailDialog(); }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Mail className="w-5 h-5 text-pink-600" />
@@ -307,23 +336,62 @@ export default function AdminMembers() {
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">Message</label>
-              <Textarea
+              <RichTextEditor
+                content={emailMessage}
+                onChange={setEmailMessage}
                 placeholder="Type your message here..."
-                rows={6}
-                value={emailMessage}
-                onChange={(e) => setEmailMessage(e.target.value)}
               />
             </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Attachments</label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                multiple
+                className="hidden"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg,.gif,.txt,.zip"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-gray-600 hover:text-pink-600"
+              >
+                <Paperclip className="w-4 h-4 mr-2" />
+                Add Attachment
+              </Button>
+              <p className="text-xs text-gray-400 mt-1">Max 10MB per file. Supported: PDF, DOC, XLS, CSV, images, TXT, ZIP</p>
+              {emailAttachments.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {emailAttachments.map((att, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm bg-gray-50 rounded px-3 py-1.5">
+                      <Paperclip className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      <span className="truncate flex-1">{att.filename}</span>
+                      <button onClick={() => removeAttachment(i)} className="text-gray-400 hover:text-red-500">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => { setEmailDialogUser(null); setEmailSubject(""); setEmailMessage(""); }}>
+              <Button variant="outline" onClick={resetEmailDialog}>
                 Cancel
               </Button>
               <Button
                 onClick={() => {
-                  if (!emailDialogUser || !emailSubject.trim() || !emailMessage.trim()) return;
-                  sendEmailMutation.mutate({ userId: emailDialogUser.id, subject: emailSubject, message: emailMessage });
+                  if (!emailDialogUser || !emailSubject.trim() || !emailMessage.trim() || emailMessage === '<p></p>') return;
+                  sendEmailMutation.mutate({
+                    userId: emailDialogUser.id,
+                    subject: emailSubject,
+                    message: emailMessage,
+                    attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
+                  });
                 }}
-                disabled={sendEmailMutation.isPending || !emailSubject.trim() || !emailMessage.trim()}
+                disabled={sendEmailMutation.isPending || !emailSubject.trim() || !emailMessage.trim() || emailMessage === '<p></p>'}
                 className="bg-pink-600 hover:bg-pink-700 text-white"
               >
                 {sendEmailMutation.isPending ? (
