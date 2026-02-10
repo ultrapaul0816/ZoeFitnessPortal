@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -53,8 +52,6 @@ const HELP_NEEDED_OPTIONS = [
 
 function getDefaultLifestyleForm(): Record<string, any> {
   return {
-    fullName: "", age: "", whatsappNumber: "", email: "",
-    emergencyContactName: "", emergencyRelationship: "", emergencyContactNumber: "",
     pregnancyNumber: "", expectedDueDate: "", trimester: "",
     medicalHistory: [], medicalHistoryOther: "", medicalFlags: [], medicalFlagsOther: "",
     discomfortAreas: [], discomfortWorse: [],
@@ -68,7 +65,6 @@ function getDefaultLifestyleForm(): Record<string, any> {
 
 function getDefaultHealthForm(): Record<string, any> {
   return {
-    fullName: "", age: "", phoneNumber: "", email: "",
     expectedDueDate: "", currentTrimester: "",
     participantDeclaration: "",
     doctorName: "", doctorQualification: "", clinicName: "", doctorContact: "",
@@ -158,23 +154,8 @@ function LifestyleQuestionnaireDialog({ open, onOpenChange, existingData, client
             Lifestyle Questionnaire
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 pr-4" style={{ maxHeight: "calc(90vh - 140px)" }}>
+        <div className="flex-1 overflow-y-auto pr-4" style={{ maxHeight: "calc(90vh - 140px)" }}>
           <div className="space-y-4 py-2">
-            <SectionHeader title="Personal Information" />
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Full Name</Label><Input value={form.fullName} onChange={e => set("fullName", e.target.value)} /></div>
-              <div><Label>Age</Label><Input type="number" value={form.age} onChange={e => set("age", e.target.value)} /></div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>WhatsApp Number</Label><Input value={form.whatsappNumber} onChange={e => set("whatsappNumber", e.target.value)} /></div>
-              <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div><Label>Emergency Contact Name</Label><Input value={form.emergencyContactName} onChange={e => set("emergencyContactName", e.target.value)} /></div>
-              <div><Label>Relationship</Label><Input value={form.emergencyRelationship} onChange={e => set("emergencyRelationship", e.target.value)} /></div>
-              <div><Label>Emergency Contact Number</Label><Input value={form.emergencyContactNumber} onChange={e => set("emergencyContactNumber", e.target.value)} /></div>
-            </div>
-
             <SectionHeader title="Pregnancy Details" />
             <div className="grid grid-cols-3 gap-3">
               <div>
@@ -299,7 +280,7 @@ function LifestyleQuestionnaireDialog({ open, onOpenChange, existingData, client
               <span>Yes, I consent to being contacted</span>
             </label>
           </div>
-        </ScrollArea>
+        </div>
         <DialogFooter className="pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={() => mutation.mutate()} disabled={mutation.isPending} className="bg-gradient-to-r from-pink-500 to-rose-500 text-white">
@@ -352,17 +333,9 @@ function HealthEvaluationDialog({ open, onOpenChange, existingData, clientId }: 
             Health Evaluation
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 pr-4" style={{ maxHeight: "calc(90vh - 140px)" }}>
+        <div className="flex-1 overflow-y-auto pr-4" style={{ maxHeight: "calc(90vh - 140px)" }}>
           <div className="space-y-4 py-2">
-            <SectionHeader title="Personal Information" />
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Full Name</Label><Input value={form.fullName} onChange={e => set("fullName", e.target.value)} /></div>
-              <div><Label>Age</Label><Input type="number" value={form.age} onChange={e => set("age", e.target.value)} /></div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Phone Number</Label><Input value={form.phoneNumber} onChange={e => set("phoneNumber", e.target.value)} /></div>
-              <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>
-            </div>
+            <SectionHeader title="Pregnancy Details" />
             <div className="grid grid-cols-2 gap-3">
               <div><Label>Expected Due Date</Label><Input type="date" value={form.expectedDueDate} onChange={e => set("expectedDueDate", e.target.value)} /></div>
               <div>
@@ -417,7 +390,7 @@ function HealthEvaluationDialog({ open, onOpenChange, existingData, clientId }: 
               <div><Label>Restrictions</Label><Textarea value={form.clearanceRestrictions} onChange={e => set("clearanceRestrictions", e.target.value)} rows={3} placeholder="Describe restrictions..." /></div>
             )}
           </div>
-        </ScrollArea>
+        </div>
         <DialogFooter className="pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={() => mutation.mutate()} disabled={mutation.isPending} className="bg-gradient-to-r from-pink-500 to-rose-500 text-white">
@@ -433,17 +406,6 @@ function HealthEvaluationDialog({ open, onOpenChange, existingData, clientId }: 
 function LifestyleReadOnly({ data }: { data: Record<string, any> }) {
   return (
     <div className="space-y-3">
-      <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Personal Information</h4>
-      <div className="grid grid-cols-2 gap-2">
-        <ReadOnlyField label="Full Name" value={data.fullName} />
-        <ReadOnlyField label="Age" value={data.age} />
-        <ReadOnlyField label="WhatsApp" value={data.whatsappNumber} />
-        <ReadOnlyField label="Email" value={data.email} />
-        <ReadOnlyField label="Emergency Contact" value={data.emergencyContactName} />
-        <ReadOnlyField label="Relationship" value={data.emergencyRelationship} />
-        <ReadOnlyField label="Emergency Number" value={data.emergencyContactNumber} />
-      </div>
-      <Separator />
       <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Pregnancy Details</h4>
       <div className="grid grid-cols-2 gap-2">
         <ReadOnlyField label="Pregnancy Number" value={data.pregnancyNumber} />
@@ -492,12 +454,8 @@ function LifestyleReadOnly({ data }: { data: Record<string, any> }) {
 function HealthEvaluationReadOnly({ data }: { data: Record<string, any> }) {
   return (
     <div className="space-y-3">
-      <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Personal Information</h4>
+      <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Pregnancy Details</h4>
       <div className="grid grid-cols-2 gap-2">
-        <ReadOnlyField label="Full Name" value={data.fullName} />
-        <ReadOnlyField label="Age" value={data.age} />
-        <ReadOnlyField label="Phone" value={data.phoneNumber} />
-        <ReadOnlyField label="Email" value={data.email} />
         <ReadOnlyField label="Expected Due Date" value={data.expectedDueDate} />
         <ReadOnlyField label="Trimester" value={data.currentTrimester} />
       </div>
