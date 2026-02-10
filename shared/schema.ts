@@ -1029,6 +1029,7 @@ export const insertWhatsappRequestSchema = createInsertSchema(whatsappRequests).
 export const coachingClients = pgTable("coaching_clients", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
+  coachingType: text("coaching_type").default("pregnancy_coaching"),
   status: text("status").default("pending"),
   formData: jsonb("form_data"),
   healthNotes: text("health_notes"),
