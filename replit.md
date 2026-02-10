@@ -59,6 +59,9 @@ The platform supports a private coaching program with personalized AI-generated 
 ### Client Date Tracking
 Each coaching client has 4 separate dates: `purchaseDate` (when payment was made), `formSubmissionDate` (when Google Form was submitted), `startDate` (admin-set program start), `endDate` (admin-set program end). All dates are editable by the admin in the client overview tab.
 
+### Coaching Form Responses
+The `coaching_form_responses` table stores in-app form submissions linked to coaching clients. Two form types: `lifestyle_questionnaire` (30+ fields covering personal info, pregnancy details, medical history, discomfort, movement history, goals, referral, consent) and `health_evaluation` (personal info, participant declaration, doctor/midwife clearance with name, qualification, clinic, clearance decision, restrictions). Admin can enter/edit form data via dialogs in the coaching client detail view. API: `GET/POST /api/admin/coaching/clients/:clientId/form-responses`. Component: `client/src/components/admin/coaching-form-responses.tsx`.
+
 ### Pregnancy Tracking
 Coaching clients can be tagged with pregnancy status. Fields: `isPregnant` (boolean), `dueDate`, `pregnancyNotes`. Trimester is auto-calculated from due date (weeks 1-12 = 1st, 13-26 = 2nd, 27-40 = 3rd). Admin can set/update/remove pregnancy info. AI workout and nutrition generation prompts include trimester-specific safety rules (exercise modifications, food restrictions, calorie adjustments) when a client is marked as pregnant.
 
