@@ -45,4 +45,4 @@ integrations = ["resend:1.0.0", "javascript_openai_ai_integrations:1.0.0", "spot
 [userenv]
 
 [userenv.shared]
-APP_URL = "https://strongerwithzoe.com"
+APP_URL = "https://www.strongerwithzoe.in"
