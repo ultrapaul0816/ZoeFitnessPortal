@@ -7365,7 +7365,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
   // Create new coaching client (admin enrolls user)
   app.post("/api/admin/coaching/clients", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
-      const { email, firstName, lastName, phone, notes, paymentAmount } = req.body;
+      const { email, firstName, lastName, phone, notes, paymentAmount, coachingType } = req.body;
       if (!email) return res.status(400).json({ message: "Email is required" });
 
       let user = await storage.getUserByEmail(email.toLowerCase().trim());
@@ -7402,6 +7402,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
       const client = await storage.createCoachingClient({
         userId: user.id,
+        coachingType: coachingType || "pregnancy_coaching",
         status: "pending",
         notes: notes || null,
         paymentAmount: paymentAmount || null,

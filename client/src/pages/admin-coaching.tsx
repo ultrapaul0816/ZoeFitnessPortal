@@ -84,6 +84,7 @@ export default function AdminCoaching() {
   const [newClientPhone, setNewClientPhone] = useState("");
   const [newClientNotes, setNewClientNotes] = useState("");
   const [newClientPaymentAmount, setNewClientPaymentAmount] = useState("5000");
+  const [newClientCoachingType, setNewClientCoachingType] = useState("pregnancy_coaching");
   const [messageInput, setMessageInput] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedAdminDay, setExpandedAdminDay] = useState<string | null>(null);
@@ -141,7 +142,7 @@ export default function AdminCoaching() {
   });
 
   const createClientMutation = useMutation({
-    mutationFn: async (data: { email: string; firstName?: string; lastName?: string; phone?: string; notes: string; paymentAmount: number }) => {
+    mutationFn: async (data: { email: string; firstName?: string; lastName?: string; phone?: string; notes: string; paymentAmount: number; coachingType?: string }) => {
       const res = await apiRequest("POST", "/api/admin/coaching/clients", data);
       return res.json();
     },
@@ -153,6 +154,7 @@ export default function AdminCoaching() {
       setNewClientLastName("");
       setNewClientPhone("");
       setNewClientNotes("");
+      setNewClientCoachingType("pregnancy_coaching");
       toast({ title: "Client enrolled", description: "Thank you email will be sent to the client." });
     },
     onError: (err: Error) => {
@@ -407,6 +409,18 @@ export default function AdminCoaching() {
                     />
                   </div>
                   <div>
+                    <Label>Coaching Type <span className="text-red-400">*</span></Label>
+                    <Select value={newClientCoachingType} onValueChange={setNewClientCoachingType}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pregnancy_coaching">Pregnancy with Zoe</SelectItem>
+                        <SelectItem value="private_coaching">Private Coaching</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
                     <Label>Payment Amount (₹)</Label>
                     <Input 
                       type="number"
@@ -434,7 +448,8 @@ export default function AdminCoaching() {
                       lastName: newClientLastName || undefined,
                       phone: newClientPhone || undefined,
                       notes: newClientNotes, 
-                      paymentAmount: parseInt(newClientPaymentAmount) * 100 
+                      paymentAmount: parseInt(newClientPaymentAmount) * 100,
+                      coachingType: newClientCoachingType,
                     })}
                     disabled={!newClientEmail || createClientMutation.isPending}
                     className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
@@ -546,6 +561,9 @@ export default function AdminCoaching() {
                             </p>
                             <Badge variant="outline" className={cn("text-[10px] shrink-0", statusColors[client.status || "pending"])}>
                               {statusLabels[client.status || "pending"]}
+                            </Badge>
+                            <Badge variant="outline" className={cn("text-[10px] shrink-0", (client as any).coachingType === "private_coaching" ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-pink-50 text-pink-600 border-pink-200")}>
+                              {(client as any).coachingType === "private_coaching" ? "Private" : "Pregnancy"}
                             </Badge>
                           </div>
                           <p className="text-sm text-gray-500 truncate">{client.user.email}</p>
@@ -752,7 +770,7 @@ export default function AdminCoaching() {
                     </CardContent>
                   </Card>
 
-                  <CoachingFormResponsesSection clientId={selectedClient.id} />
+                  <CoachingFormResponsesSection clientId={selectedClient.id} coachingType={(selectedClient as any).coachingType || "pregnancy_coaching"} />
 
                   <Card className="border-0 shadow-sm lg:col-span-2">
                     <CardHeader>
