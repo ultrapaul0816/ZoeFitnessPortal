@@ -71,6 +71,8 @@ import {
   type InsertCoachingCheckin,
   type CoachingWorkoutCompletion,
   type InsertCoachingWorkoutCompletion,
+  type CoachingFormResponse,
+  type InsertCoachingFormResponse,
   type ShopifyOrder,
   type InsertShopifyOrder,
   type CommunicationsLogEntry,
@@ -124,6 +126,7 @@ import {
   directMessages,
   coachingCheckins,
   coachingWorkoutCompletions,
+  coachingFormResponses,
   shopifyOrders,
   communicationsLog,
 } from "@shared/schema";
@@ -612,6 +615,11 @@ export interface IStorage {
   // Coaching Check-ins
   getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]>;
   createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin>;
+
+  // Coaching Form Responses
+  getCoachingFormResponses(clientId: string): Promise<CoachingFormResponse[]>;
+  getCoachingFormResponse(clientId: string, formType: string): Promise<CoachingFormResponse | undefined>;
+  upsertCoachingFormResponse(data: InsertCoachingFormResponse): Promise<CoachingFormResponse>;
 
   // Coaching Workout Completions
   getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]>;
@@ -2463,6 +2471,9 @@ export class MemStorage implements IStorage {
   async getUnreadMessageCount(clientId: string, receiverId: string): Promise<number> { return 0; }
   async getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]> { return []; }
   async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> { throw new Error("Not implemented"); }
+  async getCoachingFormResponses(clientId: string): Promise<CoachingFormResponse[]> { return []; }
+  async getCoachingFormResponse(clientId: string, formType: string): Promise<CoachingFormResponse | undefined> { return undefined; }
+  async upsertCoachingFormResponse(data: InsertCoachingFormResponse): Promise<CoachingFormResponse> { throw new Error("Not implemented"); }
   async getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]> { return []; }
   async upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion> { throw new Error("Not implemented"); }
   async bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]> { return []; }
@@ -5663,6 +5674,31 @@ class DatabaseStorage implements IStorage {
 
   async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> {
     const [created] = await this.db.insert(coachingCheckins).values(checkin).returning();
+    return created;
+  }
+
+  async getCoachingFormResponses(clientId: string): Promise<CoachingFormResponse[]> {
+    return this.db.select().from(coachingFormResponses)
+      .where(eq(coachingFormResponses.clientId, clientId))
+      .orderBy(sql`${coachingFormResponses.submittedAt} DESC`);
+  }
+
+  async getCoachingFormResponse(clientId: string, formType: string): Promise<CoachingFormResponse | undefined> {
+    const [response] = await this.db.select().from(coachingFormResponses)
+      .where(and(eq(coachingFormResponses.clientId, clientId), eq(coachingFormResponses.formType, formType)));
+    return response;
+  }
+
+  async upsertCoachingFormResponse(data: InsertCoachingFormResponse): Promise<CoachingFormResponse> {
+    const existing = await this.getCoachingFormResponse(data.clientId, data.formType);
+    if (existing) {
+      const [updated] = await this.db.update(coachingFormResponses)
+        .set({ responses: data.responses, updatedAt: new Date() })
+        .where(eq(coachingFormResponses.id, existing.id))
+        .returning();
+      return updated;
+    }
+    const [created] = await this.db.insert(coachingFormResponses).values(data).returning();
     return created;
   }
 

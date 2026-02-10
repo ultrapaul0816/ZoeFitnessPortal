@@ -1122,6 +1122,15 @@ export const coachingCheckins = pgTable("coaching_checkins", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const coachingFormResponses = pgTable("coaching_form_responses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: varchar("client_id").notNull(),
+  formType: text("form_type").notNull(),
+  responses: jsonb("responses").notNull(),
+  submittedAt: timestamp("submitted_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 export const coachingWorkoutCompletions = pgTable("coaching_workout_completions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   clientId: varchar("client_id").notNull(),
@@ -1421,6 +1430,11 @@ export type DirectMessage = typeof directMessages.$inferSelect;
 export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
 export type CoachingCheckin = typeof coachingCheckins.$inferSelect;
 export type InsertCoachingCheckin = z.infer<typeof insertCoachingCheckinSchema>;
+
+// Coaching Form Responses types
+export const insertCoachingFormResponseSchema = createInsertSchema(coachingFormResponses).omit({ id: true, submittedAt: true, updatedAt: true });
+export type CoachingFormResponse = typeof coachingFormResponses.$inferSelect;
+export type InsertCoachingFormResponse = z.infer<typeof insertCoachingFormResponseSchema>;
 
 // Shopify Orders types
 export const insertShopifyOrderSchema = createInsertSchema(shopifyOrders).omit({ id: true, createdAt: true });
