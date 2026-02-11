@@ -335,7 +335,8 @@ export default function MyCoaching() {
           setUser(data.user);
           localStorage.setItem("user", JSON.stringify(data.user));
         } else {
-          localStorage.removeItem("user");
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
         }
       } catch {
         const parsedUser = JSON.parse(userData);
@@ -365,11 +366,9 @@ export default function MyCoaching() {
       }
       const data = await response.json();
       localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
-      toast({ title: "Welcome back! ✨", description: "Your coaching dashboard is ready" });
+      window.location.href = "/my-coaching";
     } catch (error: any) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
-    } finally {
       setLoginLoading(false);
     }
   };

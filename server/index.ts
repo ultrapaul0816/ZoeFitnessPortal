@@ -19,11 +19,12 @@ const dbConnectionString = isProduction
 const PgSession = connectPgSimple(session);
 
 // Configure cookie based on environment
+// Both dev (Replit HTTPS proxy) and production need secure+none for iframe compatibility
 const cookieConfig = {
   maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days - extended for better user experience
   httpOnly: true,
-  secure: isProduction, // Only require HTTPS in production
-  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+  secure: true,
+  sameSite: "none" as const,
 };
 
 console.log(`[SESSION] Config - isProduction: ${isProduction}, secure: ${cookieConfig.secure}, sameSite: ${cookieConfig.sameSite}`);
