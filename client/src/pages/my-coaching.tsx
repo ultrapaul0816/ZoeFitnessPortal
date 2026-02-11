@@ -366,6 +366,9 @@ export default function MyCoaching() {
       }
       const data = await response.json();
       localStorage.setItem("user", JSON.stringify(data.user));
+      if (data.authToken) {
+        localStorage.setItem("coaching_auth_token", data.authToken);
+      }
       window.location.href = "/my-coaching";
     } catch (error: any) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
@@ -400,30 +403,70 @@ export default function MyCoaching() {
     } catch (e) {
     }
     localStorage.removeItem("user");
+    localStorage.removeItem("coaching_auth_token");
     setUser(null);
     queryClient.clear();
     toast({ title: "Signed out successfully" });
   };
 
+  const coachingFetch = async (url: string, options: RequestInit = {}) => {
+    const token = localStorage.getItem("coaching_auth_token");
+    const headers: Record<string, string> = { ...(options.headers as Record<string, string> || {}) };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    return fetch(url, { ...options, headers, credentials: "include" });
+  };
+
+  const coachingQueryFn = async ({ queryKey }: { queryKey: string[] }) => {
+    const res = await coachingFetch(queryKey[0]);
+    if (!res.ok) {
+      if (res.status === 401) return null;
+      throw new Error(`${res.status}: ${res.statusText}`);
+    }
+    return res.json();
+  };
+
+  const coachingApiRequest = async (method: string, url: string, data?: unknown) => {
+    const token = localStorage.getItem("coaching_auth_token");
+    const headers: Record<string, string> = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (data) headers["Content-Type"] = "application/json";
+    const res = await fetch(url, {
+      method,
+      headers,
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`${res.status}: ${text}`);
+    }
+    return res;
+  };
+
   const { data: planData, isLoading: planLoading } = useQuery<MyPlanResponse>({
     queryKey: ["/api/coaching/my-plan"],
+    queryFn: coachingQueryFn,
     enabled: !!user,
   });
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery<DirectMessage[]>({
     queryKey: ["/api/coaching/messages"],
+    queryFn: coachingQueryFn,
     enabled: !!user && !!planData?.client,
     refetchInterval: 10000,
   });
 
   const { data: checkins = [] } = useQuery<CoachingCheckin[]>({
     queryKey: ["/api/coaching/checkins"],
+    queryFn: coachingQueryFn,
     enabled: !!user && !!planData?.client,
   });
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      await apiRequest("POST", "/api/coaching/messages", { content });
+      await coachingApiRequest("POST", "/api/coaching/messages", { content });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/coaching/messages"] });
@@ -436,7 +479,7 @@ export default function MyCoaching() {
 
   const submitCheckinMutation = useMutation({
     mutationFn: async (data: typeof checkinForm) => {
-      await apiRequest("POST", "/api/coaching/checkins", {
+      await coachingApiRequest("POST", "/api/coaching/checkins", {
         ...data,
         date: new Date().toISOString(),
       });
@@ -471,7 +514,7 @@ export default function MyCoaching() {
   const { data: completionsData = [] } = useQuery<any[]>({
     queryKey: ["/api/coaching/workout-completions", selectedWeek],
     queryFn: async () => {
-      const res = await fetch(`/api/coaching/workout-completions?week=${selectedWeek}`, { credentials: "include" });
+      const res = await coachingFetch(`/api/coaching/workout-completions?week=${selectedWeek}`);
       if (!res.ok) return [];
       return res.json();
     },
@@ -480,7 +523,7 @@ export default function MyCoaching() {
 
   const toggleCompletionMutation = useMutation({
     mutationFn: async (data: { planId: string; weekNumber: number; dayNumber: number; sectionIndex: number; exerciseIndex: number; exerciseName: string; completed: boolean }) => {
-      await apiRequest("POST", "/api/coaching/workout-completions", data);
+      await coachingApiRequest("POST", "/api/coaching/workout-completions", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/coaching/workout-completions"] });
