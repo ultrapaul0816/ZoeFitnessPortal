@@ -114,25 +114,7 @@ const upload = multer({
   },
 });
 
-// Global middleware: resolve auth token to userId for all API routes (iframe cookie-less fallback)
-app.use("/api", async (req: any, _res: any, next: any) => {
-  if (req.session?.userId) return next();
-  const authHeader = req.headers.authorization;
-  if (authHeader?.startsWith("Bearer ")) {
-    const token = authHeader.slice(7);
-    try {
-      const user = await storage.getUserByAuthToken(token);
-      if (user) {
-        (req as any)._tokenUserId = user.id;
-        if (!req.session) req.session = {};
-        req.session.userId = user.id;
-      }
-    } catch (e) {
-      // ignore token lookup errors
-    }
-  }
-  next();
-});
+// Token auth middleware is registered inside registerRoutes() below
 
 // Session validation middleware
 function requireAuth(req: any, res: any, next: any) {
@@ -198,6 +180,26 @@ function handleMulterError(err: any, req: any, res: any, next: any) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply general rate limiting to all API routes
   app.use("/api", generalApiLimiter);
+
+  // Global middleware: resolve auth token to userId for all API routes (iframe cookie-less fallback)
+  app.use("/api", async (req: any, _res: any, next: any) => {
+    if (req.session?.userId) return next();
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.slice(7);
+      try {
+        const user = await storage.getUserByAuthToken(token);
+        if (user) {
+          (req as any)._tokenUserId = user.id;
+          if (!req.session) req.session = {};
+          req.session.userId = user.id;
+        }
+      } catch (e) {
+        // ignore token lookup errors
+      }
+    }
+    next();
+  });
   
   // Serve attached assets (use different path to avoid conflict with built assets)
   app.get("/attached-assets/:filename(*)", (req, res) => {
