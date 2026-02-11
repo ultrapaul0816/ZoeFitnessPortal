@@ -129,6 +129,7 @@ import {
   coachingFormResponses,
   shopifyOrders,
   communicationsLog,
+  authTokens,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -391,6 +392,10 @@ export interface IStorage {
   getValidMagicLink(token: string): Promise<MagicLink | undefined>;
   markMagicLinkAsUsed(id: string): Promise<void>;
   deleteMagicLinks(email: string): Promise<void>;
+
+  createAuthToken(userId: string, token: string, expiresAt: Date): Promise<void>;
+  getUserByAuthToken(token: string): Promise<User | undefined>;
+  deleteAuthTokensForUser(userId: string): Promise<void>;
 
   // User Check-ins
   createUserCheckin(checkin: InsertUserCheckin): Promise<UserCheckin>;
@@ -2120,6 +2125,16 @@ export class MemStorage implements IStorage {
   }
 
   async deleteMagicLinks(email: string): Promise<void> {
+    // No-op
+  }
+
+  async createAuthToken(userId: string, token: string, expiresAt: Date): Promise<void> {
+    // No-op in MemStorage
+  }
+  async getUserByAuthToken(token: string): Promise<User | undefined> {
+    return undefined;
+  }
+  async deleteAuthTokensForUser(userId: string): Promise<void> {
     // No-op
   }
 
@@ -3985,6 +4000,25 @@ class DatabaseStorage implements IStorage {
     await this.db
       .delete(magicLinks)
       .where(eq(magicLinks.email, email.toLowerCase()));
+  }
+
+  async createAuthToken(userId: string, token: string, expiresAt: Date): Promise<void> {
+    await this.db.insert(authTokens).values({ userId, token, expiresAt });
+  }
+
+  async getUserByAuthToken(token: string): Promise<User | undefined> {
+    const result = await this.db
+      .select()
+      .from(authTokens)
+      .where(and(eq(authTokens.token, token), gte(authTokens.expiresAt, new Date())))
+      .limit(1);
+    if (result.length === 0) return undefined;
+    const userResult = await this.db.select().from(users).where(eq(users.id, result[0].userId)).limit(1);
+    return userResult[0] as User | undefined;
+  }
+
+  async deleteAuthTokensForUser(userId: string): Promise<void> {
+    await this.db.delete(authTokens).where(eq(authTokens.userId, userId));
   }
 
   // User Check-ins
