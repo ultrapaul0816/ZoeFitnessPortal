@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { randomUUID, createHmac } from "crypto";
+import { randomUUID, createHmac, randomBytes } from "crypto";
 import { sql, eq } from "drizzle-orm";
 import { storage } from "./storage";
 import { coachingClients } from "@shared/schema";
@@ -335,11 +335,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[LOGIN] Success for: ${updatedUser.email} (isAdmin: ${updatedUser.isAdmin})`);
       console.log(`[LOGIN] Session ID: ${req.sessionID}`);
 
+      // Generate auth token for cookie-less authentication (iframe compatibility)
+      const authToken = randomBytes(32).toString('hex');
+      const tokenExpiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000); // 90 days
+      await storage.deleteAuthTokensForUser(updatedUser.id);
+      await storage.createAuthToken(updatedUser.id, authToken, tokenExpiresAt);
+
       // Explicitly save session before sending response to avoid race condition
       req.session.save((err) => {
         if (err) {
           console.error(`[LOGIN] Session save error:`, err);
-          return res.status(500).json({ message: "Failed to create session" });
         }
         
         console.log(`[LOGIN] Session saved successfully for: ${updatedUser.email}, sessionId: ${req.sessionID}`);
@@ -366,6 +371,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             isCoachingClient,
             lastCheckinPromptAt: updatedUser.lastCheckinPromptAt,
           },
+          authToken,
         });
       });
     } catch (error: any) {
@@ -8312,11 +8318,30 @@ Rules:
   // CLIENT-FACING COACHING ROUTES
   // ============================================================================
 
+  // Middleware: resolve auth token to userId for coaching routes (cookie-less fallback)
+  app.use("/api/coaching", async (req, _res, next) => {
+    if (req.session?.userId) return next();
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.slice(7);
+      try {
+        const user = await storage.getUserByAuthToken(token);
+        if (user) {
+          (req as any)._tokenUserId = user.id;
+        }
+      } catch (e) {
+        // ignore token lookup errors
+      }
+    }
+    next();
+  });
+
   // Get coaching data for logged-in user
   app.get("/api/coaching/my-plan", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8359,8 +8384,9 @@ Rules:
   // Get messages for logged-in coaching client
   app.get("/api/coaching/messages", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8378,8 +8404,9 @@ Rules:
   // Send message from client to coach
   app.post("/api/coaching/messages", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8410,8 +8437,9 @@ Rules:
   // Submit coaching check-in from client
   app.post("/api/coaching/checkins", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8433,8 +8461,9 @@ Rules:
   // Get coaching check-ins for logged-in client
   app.get("/api/coaching/checkins", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8449,8 +8478,9 @@ Rules:
 
   app.get("/api/coaching/workout-completions", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8468,8 +8498,9 @@ Rules:
 
   app.post("/api/coaching/workout-completions", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8501,8 +8532,9 @@ Rules:
 
   app.post("/api/coaching/workout-completions/bulk", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
