@@ -47,6 +47,13 @@ import {
   Shield,
   Utensils,
   Activity,
+  Wand2,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Crown,
+  Star,
 } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
@@ -278,6 +285,7 @@ function extractQuestionnaireData(formResponses?: FormResponse[], coachingType?:
 export default function MyCoaching() {
   const [, setLocation] = useLocation();
   const [user, setUser] = useState<UserType | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const { toast } = useToast();
   const [activeView, setActiveView] = useState<ActiveView>("today");
 
@@ -287,6 +295,13 @@ export default function MyCoaching() {
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [magicLinkMode, setMagicLinkMode] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
 
   const [checkinForm, setCheckinForm] = useState({
     mood: "",
@@ -304,7 +319,7 @@ export default function MyCoaching() {
     async function checkAuth() {
       const userData = localStorage.getItem("user");
       if (!userData) {
-        setLocation("/");
+        setAuthChecked(true);
         return;
       }
       try {
@@ -314,16 +329,65 @@ export default function MyCoaching() {
           setUser(data.user);
           localStorage.setItem("user", JSON.stringify(data.user));
         } else {
-          const parsedUser = JSON.parse(userData);
-          setUser(parsedUser);
+          localStorage.removeItem("user");
         }
       } catch {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
       }
+      setAuthChecked(true);
     }
     checkAuth();
-  }, [setLocation]);
+  }, []);
+
+  const handleCoachingLogin = async () => {
+    if (!loginEmail || !loginPassword) {
+      toast({ title: "Please enter your email and password", variant: "destructive" });
+      return;
+    }
+    setLoginLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/auth/login", {
+        email: loginEmail,
+        password: loginPassword,
+        termsAccepted: true,
+        disclaimerAccepted: true,
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Login failed");
+      }
+      const data = await response.json();
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+      toast({ title: "Welcome back! ✨", description: "Your coaching dashboard is ready" });
+    } catch (error: any) {
+      toast({ title: "Login failed", description: error.message, variant: "destructive" });
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    if (!loginEmail) {
+      toast({ title: "Please enter your email", variant: "destructive" });
+      return;
+    }
+    setLoginLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/auth/magic-link", { email: loginEmail });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to send magic link");
+      }
+      setMagicLinkSent(true);
+      toast({ title: "Magic Link Sent! ✨", description: "Check your email for the login link" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setLoginLoading(false);
+    }
+  };
 
   const { data: planData, isLoading: planLoading } = useQuery<MyPlanResponse>({
     queryKey: ["/api/coaching/my-plan"],
@@ -478,11 +542,181 @@ export default function MyCoaching() {
     submitCheckinMutation.mutate(checkinForm);
   };
 
-  if (!user) {
+  if (!authChecked) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4" />
         <p className="text-gray-600 font-medium">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-rose-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-400/5 rounded-full blur-3xl" />
+        </div>
+
+        <div className="relative z-10 w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-pink-500/20 border border-pink-500/30 rounded-full px-4 py-1.5 mb-6">
+              <Crown className="w-3.5 h-3.5 text-pink-400" />
+              <span className="text-xs font-semibold text-pink-300 tracking-wide uppercase">Private Coaching</span>
+            </div>
+            <div className="w-24 h-18 mx-auto mb-4 flex items-center justify-center">
+              <img
+                src="/assets/logo.png"
+                alt="Stronger With Zoe"
+                className="w-full h-full object-contain brightness-0 invert drop-shadow-lg"
+                loading="eager"
+              />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-gray-400 text-sm">
+              Your personalized coaching experience awaits
+            </p>
+          </div>
+
+          <Card className="rounded-2xl shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/10">
+            <CardContent className="p-6 sm:p-8">
+              {magicLinkSent ? (
+                <div className="text-center py-4">
+                  <div className="w-16 h-16 bg-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Mail className="w-8 h-8 text-pink-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2">Check Your Email</h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    We've sent a secure login link to <span className="text-pink-400 font-medium">{loginEmail}</span>
+                  </p>
+                  <Button
+                    variant="ghost"
+                    onClick={() => { setMagicLinkSent(false); setMagicLinkMode(false); }}
+                    className="text-pink-400 hover:text-pink-300 hover:bg-white/5"
+                  >
+                    Try another method
+                  </Button>
+                </div>
+              ) : magicLinkMode ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-300 mb-1.5 block">Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                      <Input
+                        type="email"
+                        placeholder="your@email.com"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 rounded-xl focus:border-pink-500 focus:ring-pink-500/20"
+                        onKeyDown={(e) => e.key === "Enter" && handleMagicLink()}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleMagicLink}
+                    disabled={loginLoading}
+                    className="w-full h-12 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold rounded-xl shadow-lg shadow-pink-500/25 transition-all"
+                  >
+                    {loginLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                    Send Magic Link
+                  </Button>
+                  <button
+                    onClick={() => setMagicLinkMode(false)}
+                    className="w-full text-sm text-gray-400 hover:text-pink-400 transition-colors pt-1"
+                  >
+                    Sign in with password instead
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-300 mb-1.5 block">Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                      <Input
+                        type="email"
+                        placeholder="your@email.com"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 rounded-xl focus:border-pink-500 focus:ring-pink-500/20"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-300 mb-1.5 block">Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 rounded-xl focus:border-pink-500 focus:ring-pink-500/20"
+                        onKeyDown={(e) => e.key === "Enter" && handleCoachingLogin()}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleCoachingLogin}
+                    disabled={loginLoading}
+                    className="w-full h-12 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold rounded-xl shadow-lg shadow-pink-500/25 transition-all"
+                  >
+                    {loginLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    Sign In
+                  </Button>
+
+                  <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-white/10" />
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="px-3 bg-transparent text-gray-500">or</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setMagicLinkMode(true)}
+                    className="w-full flex items-center justify-center gap-2 h-11 border border-white/10 rounded-xl text-sm text-gray-300 hover:bg-white/5 hover:border-pink-500/30 transition-all"
+                  >
+                    <Wand2 className="w-4 h-4 text-pink-400" />
+                    Sign in with Magic Link
+                  </button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="mt-6 text-center">
+            <div className="flex items-center justify-center gap-4 text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5" />
+                <span className="text-xs">Secure</span>
+              </div>
+              <div className="w-1 h-1 rounded-full bg-gray-600" />
+              <div className="flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5" />
+                <span className="text-xs">Premium</span>
+              </div>
+              <div className="w-1 h-1 rounded-full bg-gray-600" />
+              <div className="flex items-center gap-1.5">
+                <Heart className="w-3.5 h-3.5" />
+                <span className="text-xs">By Zoe</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
