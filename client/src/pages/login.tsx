@@ -146,6 +146,8 @@ export default function Login() {
       });
       if (data.user.isAdmin) {
         setLocation("/admin");
+      } else if (data.user.isCoachingClient) {
+        setLocation("/my-coaching");
       } else {
         setLocation("/dashboard");
       }
@@ -224,6 +226,8 @@ export default function Login() {
         setShowForgotPassword(false);
         if (data.user.isAdmin) {
           setLocation("/admin");
+        } else if (data.user.isCoachingClient) {
+          setLocation("/my-coaching");
         } else {
           setLocation("/dashboard");
         }
@@ -259,6 +263,8 @@ export default function Login() {
         setShowForgotPassword(false);
         if (data.user.isAdmin) {
           setLocation("/admin");
+        } else if (data.user.isCoachingClient) {
+          setLocation("/my-coaching");
         } else {
           setLocation("/dashboard");
         }

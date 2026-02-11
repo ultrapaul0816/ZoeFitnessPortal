@@ -318,6 +318,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Check if user is an active coaching client
+      let isCoachingClient = false;
+      try {
+        const coachingClient = await storage.getCoachingClientByUserId(updatedUser.id);
+        if (coachingClient && (coachingClient.status === 'active' || coachingClient.status === 'pending_plan')) {
+          isCoachingClient = true;
+        }
+      } catch (e) {
+        // Not a coaching client, that's fine
+      }
+
       // Create server-side session
       req.session.userId = updatedUser.id;
 
@@ -352,6 +363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             postpartumWeeks: updatedUser.postpartumWeeks,
             lastLoginAt: updatedUser.lastLoginAt,
             loginCount: updatedUser.loginCount,
+            isCoachingClient,
             lastCheckinPromptAt: updatedUser.lastCheckinPromptAt,
           },
         });
@@ -378,6 +390,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid session" });
       }
 
+      // Check if user is an active coaching client
+      let isCoachingClient = false;
+      try {
+        const coachingClient = await storage.getCoachingClientByUserId(user.id);
+        if (coachingClient && (coachingClient.status === 'active' || coachingClient.status === 'pending_plan')) {
+          isCoachingClient = true;
+        }
+      } catch (e) {
+        // Not a coaching client, that's fine
+      }
+
       res.json({
         user: {
           id: user.id,
@@ -398,6 +421,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastLoginAt: user.lastLoginAt,
           hasCompletedOnboarding: user.hasCompletedOnboarding,
           hasSeenFirstWorkoutWelcome: user.hasSeenFirstWorkoutWelcome,
+          isCoachingClient,
         },
       });
     } catch (error) {
@@ -749,13 +773,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[MAGIC-LINK] Login success for: ${magicLink.email}`);
       
-      // Save session and redirect to dashboard
+      // Check if user is coaching client for redirect
+      let redirectUrl = '/dashboard';
+      try {
+        const coachingClient = await storage.getCoachingClientByUserId(user.id);
+        if (coachingClient && (coachingClient.status === 'active' || coachingClient.status === 'pending_plan')) {
+          redirectUrl = '/my-coaching';
+        }
+      } catch (e) {}
+
+      // Save session and redirect
       req.session.save((err) => {
         if (err) {
           console.error(`[MAGIC-LINK] Session save error:`, err);
           return res.redirect('/login?error=session_error');
         }
-        res.redirect('/dashboard');
+        res.redirect(redirectUrl);
       });
     } catch (error: any) {
       console.error(`[MAGIC-LINK] Verify error:`, error?.message || error);

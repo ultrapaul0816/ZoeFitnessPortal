@@ -261,11 +261,18 @@ function getFormattedDate(): string {
   return `${dayName}, ${month} ${date}${suffix}`;
 }
 
-function extractQuestionnaireData(formResponses?: FormResponse[]) {
+function extractQuestionnaireData(formResponses?: FormResponse[], coachingType?: string) {
   if (!formResponses || formResponses.length === 0) return null;
-  const questionnaire = formResponses.find(f => f.formType === "private_coaching_questionnaire");
-  if (!questionnaire) return null;
-  return questionnaire.formData;
+  
+  const privateQ = formResponses.find(f => f.formType === "private_coaching_questionnaire");
+  if (privateQ) return privateQ.formData;
+  
+  const lifestyleQ = formResponses.find(f => f.formType === "lifestyle_questionnaire");
+  if (lifestyleQ) return lifestyleQ.formData;
+  
+  if (formResponses.length > 0) return formResponses[0].formData;
+  
+  return null;
 }
 
 export default function MyCoaching() {
@@ -555,7 +562,7 @@ export default function MyCoaching() {
     );
   }
 
-  const formData = extractQuestionnaireData(planData.formResponses);
+  const formData = extractQuestionnaireData(planData.formResponses, planData.client?.coachingType);
   const userProfile = planData.userProfile;
   const firstName = userProfile?.firstName || user?.firstName || "there";
   const lastName = userProfile?.lastName || user?.lastName || "";
@@ -568,14 +575,14 @@ export default function MyCoaching() {
   const sectionE = formData?.sectionE || formData?.section_e || {};
   const sectionI = formData?.sectionI || formData?.section_i || {};
 
-  const age = sectionA.age || "";
-  const height = sectionA.height || "";
-  const weight = sectionA.weight || sectionI.targetWeight || "";
-  const doctorClearance = sectionC.doctorClearance;
-  const injuries = sectionC.injuries || "";
-  const dietaryPreference = sectionE.dietaryPreference || "";
-  const stressLevel = sectionD.stressLevel ? parseInt(sectionD.stressLevel) : 0;
-  const primaryGoal = sectionB.primaryGoal || "";
+  const age = sectionA.age || formData?.age || formData?.sectionA_age || formData?.sectionA_dateOfBirth || "";
+  const height = sectionA.height || formData?.height || formData?.sectionA_height || "";
+  const weight = sectionA.weight || sectionI.targetWeight || formData?.weight || formData?.sectionA_weight || "";
+  const doctorClearance = sectionC.doctorClearance || formData?.doctorClearance || formData?.sectionC_medicalClearance;
+  const injuries = sectionC.injuries || formData?.injuries || formData?.sectionC_injuries || formData?.medicalConditions || formData?.sectionC_medicalConditions || "";
+  const dietaryPreference = sectionE.dietaryPreference || formData?.dietaryPreferences || formData?.sectionE_dietaryPreferences || "";
+  const stressLevel = sectionD.stressLevel ? parseInt(sectionD.stressLevel) : (formData?.stressLevel ? parseInt(formData.stressLevel) : (formData?.sectionD_stressLevel ? parseInt(formData.sectionD_stressLevel) : 0));
+  const primaryGoal = sectionB.primaryGoal || formData?.primaryGoal || formData?.fitnessGoals || formData?.sectionB_primaryGoal || "";
 
   const constraintTags: string[] = [];
   if (dietaryPreference && dietaryPreference !== "non-veg" && dietaryPreference !== "non_veg") {
