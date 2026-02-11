@@ -151,7 +151,8 @@ interface CoachingClient {
 
 interface FormResponse {
   formType: string;
-  formData: any;
+  formData?: any;
+  responses?: any;
 }
 
 interface MyPlanResponse {
@@ -268,16 +269,20 @@ function getFormattedDate(): string {
   return `${dayName}, ${month} ${date}${suffix}`;
 }
 
+function getFormData(fr: FormResponse) {
+  return fr.formData || fr.responses || null;
+}
+
 function extractQuestionnaireData(formResponses?: FormResponse[], coachingType?: string) {
   if (!formResponses || formResponses.length === 0) return null;
   
   const privateQ = formResponses.find(f => f.formType === "private_coaching_questionnaire");
-  if (privateQ) return privateQ.formData;
+  if (privateQ) return getFormData(privateQ);
   
   const lifestyleQ = formResponses.find(f => f.formType === "lifestyle_questionnaire");
-  if (lifestyleQ) return lifestyleQ.formData;
+  if (lifestyleQ) return getFormData(lifestyleQ);
   
-  if (formResponses.length > 0) return formResponses[0].formData;
+  if (formResponses.length > 0) return getFormData(formResponses[0]);
   
   return null;
 }
@@ -566,11 +571,11 @@ export default function MyCoaching() {
               <Crown className="w-3.5 h-3.5 text-pink-400" />
               <span className="text-xs font-semibold text-pink-300 tracking-wide uppercase">Private Coaching</span>
             </div>
-            <div className="w-24 h-18 mx-auto mb-4 flex items-center justify-center">
+            <div className="w-28 h-20 mx-auto mb-4 flex items-center justify-center bg-white/90 rounded-2xl p-2 shadow-lg">
               <img
                 src="/assets/logo.png"
                 alt="Stronger With Zoe"
-                className="w-full h-full object-contain brightness-0 invert drop-shadow-lg"
+                className="w-full h-full object-contain"
                 loading="eager"
               />
             </div>
@@ -815,7 +820,9 @@ export default function MyCoaching() {
   const doctorClearance = sectionC.doctorClearance || formData?.doctorClearance || formData?.sectionC_medicalClearance;
   const injuries = sectionC.injuries || formData?.injuries || formData?.sectionC_injuries || formData?.medicalConditions || formData?.sectionC_medicalConditions || "";
   const dietaryPreference = sectionE.dietaryPreference || formData?.dietaryPreferences || formData?.sectionE_dietaryPreferences || "";
-  const stressLevel = sectionD.stressLevel ? parseInt(sectionD.stressLevel) : (formData?.stressLevel ? parseInt(formData.stressLevel) : (formData?.sectionD_stressLevel ? parseInt(formData.sectionD_stressLevel) : 0));
+  const stressRaw = sectionD.stressLevel || formData?.stressLevel || formData?.sectionD_stressLevel || "";
+  const stressLevel = parseInt(stressRaw) || 0;
+  const stressText = typeof stressRaw === "string" ? stressRaw.toLowerCase() : "";
   const primaryGoal = sectionB.primaryGoal || formData?.primaryGoal || formData?.fitnessGoals || formData?.sectionB_primaryGoal || "";
 
   const constraintTags: string[] = [];
@@ -826,11 +833,23 @@ export default function MyCoaching() {
     const injuryParts = injuries.split(",").map((s: string) => s.trim()).filter(Boolean);
     injuryParts.forEach((inj: string) => constraintTags.push(inj));
   }
-  if (stressLevel >= 7) {
+  if (stressLevel >= 7 || stressText === "high" || stressText === "very high" || stressText === "severe") {
     constraintTags.push("High Stress");
   }
   if (client.isPregnant) {
     constraintTags.push(`Trimester ${client.trimester || "?"}`);
+  }
+  if (formData?.deliveryType && formData.deliveryType.toLowerCase().includes("c-section")) {
+    constraintTags.push("C-Section Recovery");
+  }
+  if (formData?.diastasisRecti && formData.diastasisRecti.toLowerCase() !== "none" && formData.diastasisRecti.toLowerCase() !== "no") {
+    constraintTags.push("Diastasis Recti");
+  }
+  if (formData?.pelvicFloorIssues && formData.pelvicFloorIssues.toLowerCase() !== "none" && formData.pelvicFloorIssues.toLowerCase() !== "no") {
+    constraintTags.push("Pelvic Floor");
+  }
+  if (formData?.breastfeeding && formData.breastfeeding.toLowerCase() === "yes") {
+    constraintTags.push("Breastfeeding");
   }
 
   const { month: currentMonthNum, phaseName } = getCurrentMonth(currentWeek);
