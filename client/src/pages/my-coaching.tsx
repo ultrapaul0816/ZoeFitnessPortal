@@ -54,6 +54,7 @@ import {
   Mail,
   Crown,
   Star,
+  LogOut,
 } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
@@ -392,6 +393,17 @@ export default function MyCoaching() {
     } finally {
       setLoginLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest("POST", "/api/auth/logout");
+    } catch (e) {
+    }
+    localStorage.removeItem("user");
+    setUser(null);
+    queryClient.clear();
+    toast({ title: "Signed out successfully" });
   };
 
   const { data: planData, isLoading: planLoading } = useQuery<MyPlanResponse>({
@@ -1920,14 +1932,19 @@ export default function MyCoaching() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white pb-40">
       <div className="max-w-2xl mx-auto px-4 pt-6">
-        <div className="text-center mb-5">
-          <h1 className="text-xl font-bold text-gray-900">
-            {activeView === "today" ? "My Coaching" : 
-             activeView === "workouts" ? "My Coaching" :
-             activeView === "nutrition" ? "My Coaching" :
-             activeView === "messages" ? "My Coaching" : "My Coaching"}
-          </h1>
-          <p className="text-xs text-pink-600 font-medium mt-0.5">High Performance Operating System</p>
+        <div className="flex items-center justify-between mb-5">
+          <div className="w-8" />
+          <div className="text-center">
+            <h1 className="text-xl font-bold text-gray-900">My Coaching</h1>
+            <p className="text-xs text-pink-600 font-medium mt-0.5">High Performance Operating System</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-pink-100 text-gray-400 hover:text-pink-600 transition-colors"
+            title="Sign Out"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
 
         {activeView === "today" && renderTodayView()}
