@@ -63,6 +63,9 @@ export default function AdminLogin() {
       return response.json();
     },
     onSuccess: async (data) => {
+      if (data.authToken) {
+        localStorage.setItem("coaching_auth_token", data.authToken);
+      }
       if (data.user.isAdmin) {
         localStorage.setItem("user", JSON.stringify(data.user));
         toast({
@@ -137,6 +140,9 @@ export default function AdminLogin() {
     },
     onSuccess: async (data) => {
       if (data.loggedIn && data.user) {
+        if (data.authToken) {
+          localStorage.setItem("coaching_auth_token", data.authToken);
+        }
         if (data.user.isAdmin) {
           localStorage.setItem("user", JSON.stringify(data.user));
           toast({

@@ -134,6 +134,9 @@ export default function Login() {
       return response.json();
     },
     onSuccess: (data) => {
+      if (data.authToken) {
+        localStorage.setItem("coaching_auth_token", data.authToken);
+      }
       localStorage.setItem("user", JSON.stringify(data.user));
       
       if (showTermsAndDisclaimer && (termsAccepted || disclaimerAccepted)) {
@@ -218,6 +221,9 @@ export default function Login() {
     },
     onSuccess: (data) => {
       if (data.loggedIn && data.user) {
+        if (data.authToken) {
+          localStorage.setItem("coaching_auth_token", data.authToken);
+        }
         localStorage.setItem("user", JSON.stringify(data.user));
         toast({
           title: `Welcome back, ${data.user.firstName}! 💪`,
@@ -255,6 +261,9 @@ export default function Login() {
     },
     onSuccess: (data) => {
       if (data.user) {
+        if (data.authToken) {
+          localStorage.setItem("coaching_auth_token", data.authToken);
+        }
         localStorage.setItem("user", JSON.stringify(data.user));
         toast({
           title: "Password Reset! 🎉",

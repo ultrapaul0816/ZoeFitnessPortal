@@ -114,21 +114,43 @@ const upload = multer({
   },
 });
 
+// Global middleware: resolve auth token to userId for all API routes (iframe cookie-less fallback)
+app.use("/api", async (req: any, _res: any, next: any) => {
+  if (req.session?.userId) return next();
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.slice(7);
+    try {
+      const user = await storage.getUserByAuthToken(token);
+      if (user) {
+        (req as any)._tokenUserId = user.id;
+        if (!req.session) req.session = {};
+        req.session.userId = user.id;
+      }
+    } catch (e) {
+      // ignore token lookup errors
+    }
+  }
+  next();
+});
+
 // Session validation middleware
 function requireAuth(req: any, res: any, next: any) {
-  if (!req.session?.userId) {
+  const userId = req.session?.userId || req._tokenUserId;
+  if (!userId) {
     return res.status(401).json({ message: "Unauthorized. Please log in." });
   }
   next();
 }
 
 async function requireAdmin(req: any, res: any, next: any) {
-  if (!req.session?.userId) {
+  const userId = req.session?.userId || req._tokenUserId;
+  if (!userId) {
     return res.status(401).json({ message: "Unauthorized. Please log in." });
   }
   
   try {
-    const user = await storage.getUser(req.session.userId);
+    const user = await storage.getUser(userId);
     if (!user || !user.isAdmin) {
       return res.status(401).json({ message: "Unauthorized. Admin access required." });
     }
@@ -383,13 +405,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Check current session and return user if logged in
   app.get("/api/auth/session", async (req, res) => {
     try {
-      console.log(`[SESSION] Check - sessionId: ${req.sessionID}, userId: ${req.session?.userId}, cookie: ${req.headers.cookie?.substring(0, 50)}...`);
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      console.log(`[SESSION] Check - sessionId: ${req.sessionID}, userId: ${userId}, cookie: ${req.headers.cookie?.substring(0, 50)}...`);
       
-      if (!req.session?.userId) {
+      if (!userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser(userId);
       if (!user) {
         // Session exists but user doesn't - clear invalid session
         req.session.destroy(() => {});
@@ -536,6 +559,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Create session
         req.session.userId = updatedUser.id;
 
+        // Generate auth token for cookie-less authentication (iframe compatibility)
+        const authToken = randomBytes(32).toString('hex');
+        const tokenExpiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+        await storage.deleteAuthTokensForUser(updatedUser.id);
+        await storage.createAuthToken(updatedUser.id, authToken, tokenExpiresAt);
+
         // Delete the used code
         await storage.deletePasswordResetCodes(email);
 
@@ -561,6 +590,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.json({
             verified: true,
             loggedIn: true,
+            authToken,
             user: {
               id: updatedUser.id,
               email: updatedUser.email,
@@ -650,6 +680,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create session to log them in
       req.session.userId = updatedUser.id;
 
+      // Generate auth token for cookie-less authentication (iframe compatibility)
+      const authToken = randomBytes(32).toString('hex');
+      const tokenExpiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+      await storage.deleteAuthTokensForUser(updatedUser.id);
+      await storage.createAuthToken(updatedUser.id, authToken, tokenExpiresAt);
+
       console.log(`[PASSWORD-RESET] Password reset and login success for: ${email}`);
       
       // Explicitly save session before sending response to avoid race condition
@@ -662,6 +698,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({
           success: true,
           message: "Password reset successfully",
+          authToken,
           user: {
             id: updatedUser.id,
             email: updatedUser.email,
@@ -8318,23 +8355,7 @@ Rules:
   // CLIENT-FACING COACHING ROUTES
   // ============================================================================
 
-  // Middleware: resolve auth token to userId for coaching routes (cookie-less fallback)
-  app.use("/api/coaching", async (req, _res, next) => {
-    if (req.session?.userId) return next();
-    const authHeader = req.headers.authorization;
-    if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.slice(7);
-      try {
-        const user = await storage.getUserByAuthToken(token);
-        if (user) {
-          (req as any)._tokenUserId = user.id;
-        }
-      } catch (e) {
-        // ignore token lookup errors
-      }
-    }
-    next();
-  });
+  // Token middleware moved to global level (before all API routes)
 
   // Get coaching data for logged-in user
   app.get("/api/coaching/my-plan", async (req, res) => {

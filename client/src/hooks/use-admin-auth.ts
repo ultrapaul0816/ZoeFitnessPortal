@@ -17,7 +17,10 @@ export function useAdminAuth(): AdminAuthState {
   useEffect(() => {
     async function checkAdminSession() {
       try {
-        const response = await fetch("/api/auth/session", { credentials: "include" });
+        const headers: Record<string, string> = {};
+        const token = localStorage.getItem("coaching_auth_token");
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const response = await fetch("/api/auth/session", { credentials: "include", headers });
         
         if (response.ok) {
           const data = await response.json();
