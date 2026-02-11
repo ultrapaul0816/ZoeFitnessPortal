@@ -8315,7 +8315,8 @@ Rules:
   // Get coaching data for logged-in user
   app.get("/api/coaching/my-plan", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8358,7 +8359,8 @@ Rules:
   // Get messages for logged-in coaching client
   app.get("/api/coaching/messages", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8376,7 +8378,8 @@ Rules:
   // Send message from client to coach
   app.post("/api/coaching/messages", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8407,7 +8410,8 @@ Rules:
   // Submit coaching check-in from client
   app.post("/api/coaching/checkins", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8429,7 +8433,8 @@ Rules:
   // Get coaching check-ins for logged-in client
   app.get("/api/coaching/checkins", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8444,7 +8449,8 @@ Rules:
 
   app.get("/api/coaching/workout-completions", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8462,7 +8468,8 @@ Rules:
 
   app.post("/api/coaching/workout-completions", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8494,7 +8501,8 @@ Rules:
 
   app.post("/api/coaching/workout-completions/bulk", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
       const client = await storage.getCoachingClientByUserId(user.id);
@@ -8527,7 +8535,8 @@ Rules:
 
   app.get("/api/admin/coaching/:clientId/workout-completions", async (req, res) => {
     try {
-      const user = (req as any).user;
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(req.session.userId);
       if (!user?.isAdmin) return res.status(403).json({ message: "Admin access required" });
 
       const { clientId } = req.params;
