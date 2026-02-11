@@ -8604,6 +8604,169 @@ Rules:
     }
   });
 
+  // Program Progress - Heal Your Core 6-week tracking
+  app.get("/api/admin/program-progress", requireAdmin, async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`
+        WITH heal_your_core AS (
+          SELECT id FROM courses WHERE name = 'Heal Your Core' LIMIT 1
+        ),
+        enrolled_users AS (
+          SELECT ce.user_id, ce.enrolled_at
+          FROM course_enrollments ce
+          JOIN heal_your_core hyc ON ce.course_id = hyc.id
+        ),
+        user_completions AS (
+          SELECT 
+            wc.user_id,
+            wc.workout_id,
+            wc.completed_at,
+            CAST(REPLACE(SPLIT_PART(wc.workout_id, '-', 1), 'week', '') AS INTEGER) as week_num
+          FROM workout_completions wc
+          WHERE wc.workout_id LIKE 'week%-day%'
+        ),
+        user_photos AS (
+          SELECT 
+            user_id,
+            MAX(CASE WHEN photo_type = 'start' THEN 'yes' ELSE NULL END) as has_start_photo,
+            MAX(CASE WHEN photo_type = 'finish' THEN 'yes' ELSE NULL END) as has_finish_photo
+          FROM progress_photos
+          GROUP BY user_id
+        )
+        SELECT 
+          u.id as user_id,
+          u.email,
+          u.first_name,
+          u.last_name,
+          eu.enrolled_at,
+          COALESCE(up.has_start_photo, 'no') as has_start_photo,
+          COALESCE(up.has_finish_photo, 'no') as has_finish_photo,
+          COUNT(CASE WHEN uc.week_num = 1 THEN 1 END) as week1,
+          COUNT(CASE WHEN uc.week_num = 2 THEN 1 END) as week2,
+          COUNT(CASE WHEN uc.week_num = 3 THEN 1 END) as week3,
+          COUNT(CASE WHEN uc.week_num = 4 THEN 1 END) as week4,
+          COUNT(CASE WHEN uc.week_num = 5 THEN 1 END) as week5,
+          COUNT(CASE WHEN uc.week_num = 6 THEN 1 END) as week6,
+          COUNT(uc.workout_id) as total_completions,
+          MAX(uc.completed_at) as last_activity
+        FROM enrolled_users eu
+        JOIN users u ON u.id = eu.user_id
+        LEFT JOIN user_completions uc ON uc.user_id = eu.user_id
+        LEFT JOIN user_photos up ON up.user_id = eu.user_id
+        GROUP BY u.id, u.email, u.first_name, u.last_name, eu.enrolled_at, up.has_start_photo, up.has_finish_photo
+        ORDER BY total_completions DESC, eu.enrolled_at ASC
+      `);
+
+      const rows = (result as any).rows || result;
+      const progress = rows.map((r: any) => ({
+        userId: r.user_id,
+        email: r.email,
+        firstName: r.first_name,
+        lastName: r.last_name,
+        enrolledAt: r.enrolled_at,
+        hasStartPhoto: r.has_start_photo === 'yes',
+        hasFinishPhoto: r.has_finish_photo === 'yes',
+        weeks: {
+          1: parseInt(r.week1) || 0,
+          2: parseInt(r.week2) || 0,
+          3: parseInt(r.week3) || 0,
+          4: parseInt(r.week4) || 0,
+          5: parseInt(r.week5) || 0,
+          6: parseInt(r.week6) || 0,
+        },
+        totalCompletions: parseInt(r.total_completions) || 0,
+        lastActivity: r.last_activity,
+      }));
+
+      const totalEnrolled = progress.length;
+      const fullyCompleted = progress.filter((p: any) => p.totalCompletions >= 24).length;
+      const inProgress = progress.filter((p: any) => p.totalCompletions > 0 && p.totalCompletions < 24).length;
+      const notStarted = progress.filter((p: any) => p.totalCompletions === 0).length;
+      const withStartPhoto = progress.filter((p: any) => p.hasStartPhoto).length;
+      const withFinishPhoto = progress.filter((p: any) => p.hasFinishPhoto).length;
+
+      res.json({
+        summary: { totalEnrolled, fullyCompleted, inProgress, notStarted, withStartPhoto, withFinishPhoto },
+        users: progress,
+        generatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error fetching program progress:", error);
+      res.status(500).json({ message: "Failed to fetch program progress" });
+    }
+  });
+
+  app.get("/api/admin/program-progress/export-csv", requireAdmin, async (req, res) => {
+    try {
+      const result = await storage.db.execute(sql`
+        WITH heal_your_core AS (
+          SELECT id FROM courses WHERE name = 'Heal Your Core' LIMIT 1
+        ),
+        enrolled_users AS (
+          SELECT ce.user_id, ce.enrolled_at
+          FROM course_enrollments ce
+          JOIN heal_your_core hyc ON ce.course_id = hyc.id
+        ),
+        user_completions AS (
+          SELECT 
+            wc.user_id,
+            wc.workout_id,
+            wc.completed_at,
+            CAST(REPLACE(SPLIT_PART(wc.workout_id, '-', 1), 'week', '') AS INTEGER) as week_num
+          FROM workout_completions wc
+          WHERE wc.workout_id LIKE 'week%-day%'
+        ),
+        user_photos AS (
+          SELECT 
+            user_id,
+            MAX(CASE WHEN photo_type = 'start' THEN 'yes' ELSE NULL END) as has_start_photo,
+            MAX(CASE WHEN photo_type = 'finish' THEN 'yes' ELSE NULL END) as has_finish_photo
+          FROM progress_photos
+          GROUP BY user_id
+        )
+        SELECT 
+          u.first_name,
+          u.last_name,
+          u.email,
+          eu.enrolled_at,
+          COALESCE(up.has_start_photo, 'no') as has_start_photo,
+          COALESCE(up.has_finish_photo, 'no') as has_finish_photo,
+          COUNT(CASE WHEN uc.week_num = 1 THEN 1 END) as week1,
+          COUNT(CASE WHEN uc.week_num = 2 THEN 1 END) as week2,
+          COUNT(CASE WHEN uc.week_num = 3 THEN 1 END) as week3,
+          COUNT(CASE WHEN uc.week_num = 4 THEN 1 END) as week4,
+          COUNT(CASE WHEN uc.week_num = 5 THEN 1 END) as week5,
+          COUNT(CASE WHEN uc.week_num = 6 THEN 1 END) as week6,
+          COUNT(uc.workout_id) as total_completions,
+          MAX(uc.completed_at) as last_activity
+        FROM enrolled_users eu
+        JOIN users u ON u.id = eu.user_id
+        LEFT JOIN user_completions uc ON uc.user_id = eu.user_id
+        LEFT JOIN user_photos up ON up.user_id = eu.user_id
+        GROUP BY u.first_name, u.last_name, u.email, eu.enrolled_at, up.has_start_photo, up.has_finish_photo
+        ORDER BY total_completions DESC, eu.enrolled_at ASC
+      `);
+
+      const rows = (result as any).rows || result;
+      let csv = "Name,Email,Enrolled Date,Start Photo,Finish Photo,Week 1 (/4),Week 2 (/4),Week 3 (/4),Week 4 (/4),Week 5 (/4),Week 6 (/4),Total (/24),Progress %,Last Activity\n";
+      
+      for (const r of rows) {
+        const total = parseInt(r.total_completions) || 0;
+        const pct = Math.round((total / 24) * 100);
+        const lastAct = r.last_activity ? new Date(r.last_activity).toLocaleDateString() : 'N/A';
+        const enrolled = r.enrolled_at ? new Date(r.enrolled_at).toLocaleDateString() : 'N/A';
+        csv += `"${r.first_name} ${r.last_name}","${r.email}","${enrolled}","${r.has_start_photo === 'yes' ? 'Yes' : 'No'}","${r.has_finish_photo === 'yes' ? 'Yes' : 'No'}",${r.week1},${r.week2},${r.week3},${r.week4},${r.week5},${r.week6},${total},${pct}%,"${lastAct}"\n`;
+      }
+
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", `attachment; filename="heal-your-core-progress-${new Date().toISOString().split('T')[0]}.csv"`);
+      res.send(csv);
+    } catch (error) {
+      console.error("Error exporting program progress CSV:", error);
+      res.status(500).json({ message: "Failed to export CSV" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

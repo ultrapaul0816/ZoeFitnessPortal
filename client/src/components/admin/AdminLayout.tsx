@@ -31,6 +31,7 @@ import {
   HeartHandshake,
   ShoppingBag,
   Send,
+  TrendingUp,
 } from "lucide-react";
 
 interface NavItem {
@@ -63,6 +64,7 @@ const navItems: NavItem[] = [
   { id: "reports", label: "Reports", icon: FileText, section: "Insights", path: "/admin/reports" },
   { id: "orders", label: "Shopify Orders", icon: ShoppingBag, section: "Insights", path: "/admin/orders" },
   { id: "communications", label: "Communications", icon: Send, section: "Insights", path: "/admin/communications" },
+  { id: "program-progress", label: "Program Progress", icon: TrendingUp, section: "Insights", path: "/admin/program-progress" },
   { id: "email-campaigns", label: "Email Campaigns", icon: Mail, section: "Marketing", path: "/admin-email-campaigns" },
   { id: "email-analytics", label: "Email Analytics", icon: BarChart3, section: "Marketing", path: "/admin-email-analytics" },
   { id: "automation", label: "Automation", icon: Zap, section: "Marketing", path: "/admin/automation" },
