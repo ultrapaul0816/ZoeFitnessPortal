@@ -1465,6 +1465,14 @@ export const loginSchema = z.object({
 
 export type LoginData = z.infer<typeof loginSchema>;
 
+export const authTokens = pgTable("auth_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 // Extended login schema that requires terms and disclaimer acceptance for new users
 export const loginWithDisclaimerSchema = loginSchema.extend({
   termsAccepted: z.boolean().refine((val) => val === true, {
