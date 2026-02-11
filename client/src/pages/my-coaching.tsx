@@ -749,7 +749,7 @@ export default function MyCoaching() {
 
   if (!planData?.client) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <div className="max-w-lg mx-auto px-4 pt-12 text-center">
           <div className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Heart className="w-10 h-10 text-pink-500" />
@@ -760,12 +760,11 @@ export default function MyCoaching() {
           </p>
           <Button
             className="bg-pink-500 hover:bg-pink-600 text-white"
-            onClick={() => setLocation("/dashboard")}
+            onClick={handleLogout}
           >
-            Back to Dashboard
+            Sign Out
           </Button>
         </div>
-        <BottomNav />
       </div>
     );
   }
@@ -794,7 +793,7 @@ export default function MyCoaching() {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <div className="max-w-lg mx-auto px-4 pt-12 text-center">
           <div className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Sparkles className="w-10 h-10 text-pink-500" />
@@ -803,12 +802,11 @@ export default function MyCoaching() {
           <p className="text-gray-600 mb-6">{msg.description}</p>
           <Button
             className="bg-pink-500 hover:bg-pink-600 text-white"
-            onClick={() => setLocation("/dashboard")}
+            onClick={handleLogout}
           >
-            Back to Dashboard
+            Sign Out
           </Button>
         </div>
-        <BottomNav />
       </div>
     );
   }
