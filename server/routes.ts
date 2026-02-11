@@ -8292,6 +8292,7 @@ Rules:
       const nutritionPlan = await storage.getCoachingNutritionPlans(client.id);
       const tips = await storage.getCoachingTips(client.id);
       const unreadMessages = await storage.getUnreadMessageCount(client.id, user.id);
+      const formResponses = await storage.getCoachingFormResponses(client.id);
 
       res.json({
         client: {
@@ -8300,11 +8301,21 @@ Rules:
           startDate: client.startDate,
           endDate: client.endDate,
           planDurationWeeks: client.planDurationWeeks,
+          coachingType: client.coachingType,
+          isPregnant: client.isPregnant,
+          trimester: client.trimester,
+          dueDate: client.dueDate,
         },
         workoutPlan: workoutPlan.filter(p => p.isApproved),
         nutritionPlan: nutritionPlan.filter(p => p.isApproved),
         tips,
         unreadMessages,
+        formResponses,
+        userProfile: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        },
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch coaching plan" });
