@@ -53,6 +53,9 @@ All incoming Shopify webhook orders are logged to the `shopify_orders` table wit
 ## System Reports
 Admin reports page at `/admin/reports` provides a system usage summary including user stats, enrollments, workout completions, community engagement, and WhatsApp requests. Reports are exportable as CSV files.
 
+## Program Progress Tracking
+Admin page at `/admin/program-progress` tracks Heal Your Core 6-week program completion for all enrolled users. Shows per-week workout completion counts (4 workouts per week, 24 total), overall progress percentage, and before/after photo upload status (start photo + finish photo). Summary stats show total enrolled, fully completed, in progress, and not started counts. Data is exportable as CSV (for Excel) and PDF. API endpoints: `GET /api/admin/program-progress` (JSON data) and `GET /api/admin/program-progress/export-csv` (CSV download). Workout completion data comes from the `workout_completions` table (workout_id format: "weekN-dayM") and photo status from `progress_photos` table (photo_type: 'start' or 'finish').
+
 ## Private 1:1 Coaching
 The platform supports two coaching tracks via a `coachingType` field on `coaching_clients` (default: "pregnancy_coaching"):
 1. **Pregnancy with Zoe** (`pregnancy_coaching`): Uses two forms — `lifestyle_questionnaire` (30+ fields) and `health_evaluation`. AI prompts focus on postnatal/prenatal safe exercises and recovery nutrition.
