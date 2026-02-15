@@ -136,6 +136,7 @@ export default function Login() {
     onSuccess: (data) => {
       if (data.authToken) {
         localStorage.setItem("coaching_auth_token", data.authToken);
+        localStorage.setItem("coaching_auth_token_expiry", String(Date.now() + 90 * 24 * 60 * 60 * 1000));
       }
       localStorage.setItem("user", JSON.stringify(data.user));
       
@@ -223,6 +224,7 @@ export default function Login() {
       if (data.loggedIn && data.user) {
         if (data.authToken) {
           localStorage.setItem("coaching_auth_token", data.authToken);
+        localStorage.setItem("coaching_auth_token_expiry", String(Date.now() + 90 * 24 * 60 * 60 * 1000));
         }
         localStorage.setItem("user", JSON.stringify(data.user));
         toast({
@@ -263,6 +265,7 @@ export default function Login() {
       if (data.user) {
         if (data.authToken) {
           localStorage.setItem("coaching_auth_token", data.authToken);
+        localStorage.setItem("coaching_auth_token_expiry", String(Date.now() + 90 * 24 * 60 * 60 * 1000));
         }
         localStorage.setItem("user", JSON.stringify(data.user));
         toast({

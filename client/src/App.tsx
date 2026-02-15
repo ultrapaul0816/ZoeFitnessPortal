@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, Component, type ReactNode } from "react";
 import { useActivityTracking } from "@/hooks/use-activity-tracking";
 import UpdatePrompt from "@/components/update-prompt";
 import Login from "@/pages/login";
@@ -49,6 +49,40 @@ const AdminOrders = lazy(() => import("@/pages/admin-orders"));
 const AdminCommunications = lazy(() => import("@/pages/admin-communications"));
 const AdminProgramProgress = lazy(() => import("@/pages/admin-program-progress"));
 const MyCoaching = lazy(() => import("@/pages/my-coaching"));
+
+// Error boundary to catch rendering errors
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("[ErrorBoundary] Caught error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-50 to-white p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Something went wrong</h2>
+          <p className="text-gray-600 mb-4 text-center">An unexpected error occurred. Please try refreshing the page.</p>
+          <button
+            onClick={() => { this.setState({ hasError: false }); window.location.reload(); }}
+            className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition-colors"
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Loading component for lazy-loaded pages
 function PageLoader({ message }: { message: string }) {
@@ -127,7 +161,9 @@ function App() {
         <UpdatePrompt />
         <ActivityTracker />
         <Toaster />
-        <Router />
+        <ErrorBoundary>
+          <Router />
+        </ErrorBoundary>
       </TooltipProvider>
     </QueryClientProvider>
   );

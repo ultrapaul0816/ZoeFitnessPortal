@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, boolean, integer, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean, integer, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -49,40 +49,49 @@ export const programs = pgTable("programs", {
   workoutCount: integer("workout_count").notNull(),
   isActive: boolean("is_active").notNull().default(false), // draft/active state
   isVisible: boolean("is_visible").notNull().default(true), // visibility to members
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
 export const memberPrograms = pgTable("member_programs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
-  programId: varchar("program_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  programId: varchar("program_id").notNull().references(() => programs.id),
   purchaseDate: timestamp("purchase_date").default(sql`now()`),
   expiryDate: timestamp("expiry_date").notNull(),
   isActive: boolean("is_active").default(true),
   progress: integer("progress").default(0), // completed workouts
   completionPercentage: integer("completion_percentage").default(0), // 0-100
   completedAt: timestamp("completed_at"), // when program was 100% completed
-});
+}, (table) => [
+  index("member_programs_user_id_idx").on(table.userId),
+  index("member_programs_program_id_idx").on(table.programId),
+]);
 
 export const workouts = pgTable("workouts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  programId: varchar("program_id").notNull(),
+  programId: varchar("program_id").notNull().references(() => programs.id),
   name: text("name").notNull(),
   description: text("description").notNull(),
   duration: text("duration").notNull(),
   day: integer("day").notNull(), // day number in program
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
 export const workoutCompletions = pgTable("workout_completions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
-  workoutId: varchar("workout_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  workoutId: varchar("workout_id").notNull().references(() => workouts.id),
   completedAt: timestamp("completed_at").default(sql`now()`),
   challengeRating: integer("challenge_rating"), // 1-5 scale
   notes: text("notes"),
   photoUrl: text("photo_url"),
   duration: integer("duration"), // actual workout duration in minutes
   mood: text("mood"), // how they felt after
-});
+}, (table) => [
+  index("workout_completions_user_id_idx").on(table.userId),
+]);
 
 export const savedWorkouts = pgTable("saved_workouts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -93,7 +102,7 @@ export const savedWorkouts = pgTable("saved_workouts", {
 
 export const communityPosts = pgTable("community_posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
   content: text("content").notNull(),
   imageUrls: text("image_urls").array(), // Support multiple images (2-4)
   cloudinaryPublicIds: text("cloudinary_public_ids").array(), // Corresponding cloudinary IDs
@@ -103,22 +112,28 @@ export const communityPosts = pgTable("community_posts", {
   isReported: boolean("is_reported").default(false),
   isSensitiveContent: boolean("is_sensitive_content").default(false), // for blurred progress photos
   createdAt: timestamp("created_at").default(sql`now()`),
-});
+}, (table) => [
+  index("community_posts_user_id_idx").on(table.userId),
+]);
 
 export const postLikes = pgTable("post_likes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
-  postId: varchar("post_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  postId: varchar("post_id").notNull().references(() => communityPosts.id),
   createdAt: timestamp("created_at").default(sql`now()`),
-});
+}, (table) => [
+  index("post_likes_post_id_idx").on(table.postId),
+]);
 
 export const postComments = pgTable("post_comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
-  postId: varchar("post_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  postId: varchar("post_id").notNull().references(() => communityPosts.id),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").default(sql`now()`),
-});
+}, (table) => [
+  index("post_comments_post_id_idx").on(table.postId),
+]);
 
 export const notifications = pgTable("notifications", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1467,11 +1482,13 @@ export type LoginData = z.infer<typeof loginSchema>;
 
 export const authTokens = pgTable("auth_tokens", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
   token: text("token").notNull().unique(),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").default(sql`now()`),
-});
+}, (table) => [
+  index("auth_tokens_token_idx").on(table.token),
+]);
 
 // Extended login schema that requires terms and disclaimer acceptance for new users
 export const loginWithDisclaimerSchema = loginSchema.extend({

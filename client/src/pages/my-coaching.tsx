@@ -368,6 +368,7 @@ export default function MyCoaching() {
       localStorage.setItem("user", JSON.stringify(data.user));
       if (data.authToken) {
         localStorage.setItem("coaching_auth_token", data.authToken);
+        localStorage.setItem("coaching_auth_token_expiry", String(Date.now() + 90 * 24 * 60 * 60 * 1000));
       }
       window.location.href = "/my-coaching";
     } catch (error: any) {
@@ -404,6 +405,7 @@ export default function MyCoaching() {
     }
     localStorage.removeItem("user");
     localStorage.removeItem("coaching_auth_token");
+    localStorage.removeItem("coaching_auth_token_expiry");
     setUser(null);
     queryClient.clear();
     toast({ title: "Signed out successfully" });

@@ -139,27 +139,8 @@ export default function Dashboard() {
   useEffect(() => {
     // Check session with server on mount
     async function checkAuth() {
-      // Helper to use localStorage data
-      const useLocalStorageUser = () => {
-        const userData = localStorage.getItem("user");
-        if (!userData) {
-          setLocation("/");
-          return false;
-        }
-        try {
-          const parsedUser = JSON.parse(userData);
-          setUser(parsedUser);
-          setProfileData(prev => ({
-            ...prev,
-            fullName: `${parsedUser.firstName} ${parsedUser.lastName}`,
-            email: parsedUser.email
-          }));
-          return true;
-        } catch {
-          localStorage.removeItem("user");
-          setLocation("/");
-          return false;
-        }
+      const redirectToLogin = () => {
+        setLocation("/");
       };
 
       try {
@@ -167,7 +148,6 @@ export default function Dashboard() {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
-          localStorage.setItem("user", JSON.stringify(data.user));
           
           // Check if this is the first login for profile completion banner
           const lastLogin = localStorage.getItem("lastLoginDate");
@@ -204,13 +184,10 @@ export default function Dashboard() {
           // Prefetch common data in background for faster navigation
           prefetchAppData();
         } else {
-          // Session check failed - try localStorage as fallback (useful for admin switching views)
-          // This handles timing issues where session cookie may not be immediately available
-          useLocalStorageUser();
+          redirectToLogin();
         }
       } catch (error) {
-        // On network error, try localStorage as fallback
-        useLocalStorageUser();
+        redirectToLogin();
       }
     }
     

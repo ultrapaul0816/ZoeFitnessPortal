@@ -232,7 +232,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.body
       );
 
-      console.log(`[LOGIN] Attempt for email: ${email}`);
+      const maskedEmail = email.replace(/^(.)(.*)(@.*)$/, '$1***$3');
+      console.log(`[LOGIN] Attempt for email: ${maskedEmail}`);
 
       const user = await storage.getUserByEmail(email);
       if (!user) {
@@ -356,8 +357,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create server-side session
       req.session.userId = updatedUser.id;
 
-      console.log(`[LOGIN] Success for: ${updatedUser.email} (isAdmin: ${updatedUser.isAdmin})`);
-      console.log(`[LOGIN] Session ID: ${req.sessionID}`);
+      const maskedLoginEmail = updatedUser.email.replace(/^(.)(.*)(@.*)$/, '$1***$3');
+      console.log(`[LOGIN] Success for: ${maskedLoginEmail} (isAdmin: ${updatedUser.isAdmin})`);
 
       // Generate auth token for cookie-less authentication (iframe compatibility)
       const authToken = randomBytes(32).toString('hex');
@@ -408,7 +409,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/session", async (req, res) => {
     try {
       const userId = req.session?.userId || (req as any)._tokenUserId;
-      console.log(`[SESSION] Check - sessionId: ${req.sessionID}, userId: ${userId}, cookie: ${req.headers.cookie?.substring(0, 50)}...`);
+      console.log(`[SESSION] Check - userId: ${userId}`);
       
       if (!userId) {
         return res.status(401).json({ message: "Not authenticated" });
@@ -1334,9 +1335,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Accept terms
-  app.post("/api/auth/accept-terms", async (req, res) => {
+  app.post("/api/auth/accept-terms", requireAuth, async (req, res) => {
     try {
+      const sessionUserId = req.session?.userId || (req as any)._tokenUserId;
       const { userId } = req.body;
+      if (userId !== sessionUserId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
 
       const updatedUser = await storage.updateUser(userId, {
         termsAccepted: true,
@@ -1368,16 +1373,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({
         needsDisclaimer: !user.disclaimerAccepted,
-        userExists: true,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to check disclaimer status" });
     }
   });
 
-  app.post("/api/auth/accept-disclaimer", async (req, res) => {
+  app.post("/api/auth/accept-disclaimer", requireAuth, async (req, res) => {
     try {
+      const sessionUserId = req.session?.userId || (req as any)._tokenUserId;
       const { userId } = req.body;
+      if (userId !== sessionUserId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
 
       if (!userId) {
         console.error("[accept-disclaimer] Missing userId in request body");
@@ -1405,9 +1413,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update user profile
-  app.patch("/api/users/:id/profile", async (req, res) => {
+  app.patch("/api/users/:id/profile", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
+      const sessionUserId = req.session?.userId || (req as any)._tokenUserId;
+      // Allow users to update their own profile, or admins to update any profile
+      if (id !== sessionUserId) {
+        const adminUser = await storage.getUser(sessionUserId);
+        if (!adminUser?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      }
       const profileUpdates = updateUserProfileSchema.parse(req.body);
 
       const updatedUser = await storage.updateUser(id, profileUpdates);
@@ -1518,7 +1534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Member programs
-  app.get("/api/member-programs/:userId", async (req, res) => {
+  app.get("/api/member-programs/:userId", requireAuth, async (req, res) => {
     try {
       const { userId } = req.params;
       const memberPrograms = await storage.getMemberPrograms(userId);
@@ -1530,7 +1546,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enroll user in program
-  app.post("/api/member-programs", async (req, res) => {
+  app.post("/api/member-programs", requireAdmin, async (req, res) => {
     try {
       const { userId, programId, expiryDate } = req.body;
       
@@ -1561,7 +1577,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Remove user enrollment from program
-  app.delete("/api/member-programs/:enrollmentId", async (req, res) => {
+  app.delete("/api/member-programs/:enrollmentId", requireAdmin, async (req, res) => {
     try {
       const { enrollmentId } = req.params;
       console.log(`[DELETE] Removing enrollment: ${enrollmentId}`);
@@ -2744,7 +2760,7 @@ RESPONSE GUIDELINES:
   });
 
   // Admin routes
-  app.get("/api/admin/users", async (req, res) => {
+  app.get("/api/admin/users", requireAdmin, async (req, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
@@ -2807,7 +2823,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.get("/api/admin/stats", async (req, res) => {
+  app.get("/api/admin/stats", requireAdmin, async (req, res) => {
     try {
       const stats = await storage.getUserStats();
       res.json(stats);
@@ -2816,7 +2832,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.get("/api/admin/analytics", async (req, res) => {
+  app.get("/api/admin/analytics", requireAdmin, async (req, res) => {
     try {
       const analytics = await storage.getAnalytics();
       res.json(analytics);
@@ -2827,7 +2843,7 @@ RESPONSE GUIDELINES:
   });
 
   // Recent activity logs for admin dashboard
-  app.get("/api/admin/activity-logs", async (req, res) => {
+  app.get("/api/admin/activity-logs", requireAdmin, async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 50;
       const activities = await storage.getRecentActivityLogs(limit);
@@ -2967,7 +2983,7 @@ RESPONSE GUIDELINES:
   });
 
   // Detailed member profile data for admin
-  app.get("/api/admin/member-profile/:userId", async (req, res) => {
+  app.get("/api/admin/member-profile/:userId", requireAdmin, async (req, res) => {
     try {
       const { userId } = req.params;
       
@@ -4247,8 +4263,7 @@ RESPONSE GUIDELINES:
           validFrom: newUser.validFrom,
           validUntil: newUser.validUntil,
         },
-        password: plainPassword, // Return plaintext password for admin to share with user
-        message: "User created successfully",
+        message: "User created successfully. Password has been set.",
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -4263,7 +4278,7 @@ RESPONSE GUIDELINES:
   });
 
   // Temporary admin endpoint to update user passwords (for testing only)
-  app.patch("/api/admin/users/:id/password", async (req, res) => {
+  app.patch("/api/admin/users/:id/password", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const { password } = req.body;
@@ -4272,7 +4287,8 @@ RESPONSE GUIDELINES:
         return res.status(400).json({ message: "Password is required" });
       }
 
-      const updatedUser = await storage.updateUser(id, { password });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const updatedUser = await storage.updateUser(id, { password: hashedPassword });
 
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
@@ -4837,7 +4853,7 @@ RESPONSE GUIDELINES:
   });
 
   // Reset user password
-  app.post("/api/admin/users/:id/reset-password", passwordResetLimiter, async (req, res) => {
+  app.post("/api/admin/users/:id/reset-password", requireAdmin, passwordResetLimiter, async (req, res) => {
     try {
       const { id } = req.params;
       const { password: manualPassword } = req.body;
@@ -4859,9 +4875,8 @@ RESPONSE GUIDELINES:
 
       await storage.updateUser(id, { password: hashedPassword });
 
-      res.json({ 
-        message: "Password reset successfully",
-        password: plainPassword // Return plaintext password for admin to share with user
+      res.json({
+        message: "Password reset successfully"
       });
     } catch (error) {
       console.error("Reset password error:", error);

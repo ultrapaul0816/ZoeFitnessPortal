@@ -19,12 +19,14 @@ const dbConnectionString = isProduction
 const PgSession = connectPgSimple(session);
 
 // Configure cookie based on environment
-// Both dev (Replit HTTPS proxy) and production need secure+none for iframe compatibility
+// Production/Replit (HTTPS): secure + sameSite=none for iframe/cross-origin compatibility
+// Local development (HTTP): secure=false + sameSite=lax for localhost sessions
+const isReplit = !!process.env.REPL_ID;
 const cookieConfig = {
   maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days - extended for better user experience
   httpOnly: true,
-  secure: true,
-  sameSite: "none" as const,
+  secure: isProduction || isReplit,
+  sameSite: (isProduction || isReplit ? "none" : "lax") as "none" | "lax",
 };
 
 console.log(`[SESSION] Config - isProduction: ${isProduction}, secure: ${cookieConfig.secure}, sameSite: ${cookieConfig.sameSite}`);
@@ -81,7 +83,7 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
+    console.error("[ERROR]", err);
   });
 
   // importantly only setup vite in development and after

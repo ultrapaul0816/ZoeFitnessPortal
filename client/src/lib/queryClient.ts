@@ -3,10 +3,22 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = {};
   const token = localStorage.getItem("coaching_auth_token");
+  const tokenExpiry = localStorage.getItem("coaching_auth_token_expiry");
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    // Clear expired tokens
+    if (tokenExpiry && Date.now() > parseInt(tokenExpiry, 10)) {
+      localStorage.removeItem("coaching_auth_token");
+      localStorage.removeItem("coaching_auth_token_expiry");
+    } else {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
   }
   return headers;
+}
+
+export function clearAuthToken() {
+  localStorage.removeItem("coaching_auth_token");
+  localStorage.removeItem("coaching_auth_token_expiry");
 }
 
 async function throwIfResNotOk(res: Response) {

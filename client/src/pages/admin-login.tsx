@@ -65,6 +65,7 @@ export default function AdminLogin() {
     onSuccess: async (data) => {
       if (data.authToken) {
         localStorage.setItem("coaching_auth_token", data.authToken);
+        localStorage.setItem("coaching_auth_token_expiry", String(Date.now() + 90 * 24 * 60 * 60 * 1000));
       }
       if (data.user.isAdmin) {
         localStorage.setItem("user", JSON.stringify(data.user));
@@ -142,6 +143,7 @@ export default function AdminLogin() {
       if (data.loggedIn && data.user) {
         if (data.authToken) {
           localStorage.setItem("coaching_auth_token", data.authToken);
+        localStorage.setItem("coaching_auth_token_expiry", String(Date.now() + 90 * 24 * 60 * 60 * 1000));
         }
         if (data.user.isAdmin) {
           localStorage.setItem("user", JSON.stringify(data.user));
