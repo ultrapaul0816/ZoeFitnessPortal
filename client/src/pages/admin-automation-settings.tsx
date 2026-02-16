@@ -43,6 +43,7 @@ export default function AdminAutomationSettings() {
   const [selectedRule, setSelectedRule] = useState<EmailAutomationRule | null>(null);
   const [editSubject, setEditSubject] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [testingRuleId, setTestingRuleId] = useState<string | null>(null);
 
   // Fetch automation rules
   const { data: rules = [], isLoading: isLoadingRules, isError: isRulesError, error: rulesError } = useQuery<EmailAutomationRule[]>({
@@ -113,12 +114,14 @@ export default function AdminAutomationSettings() {
       return await response.json();
     },
     onSuccess: (data: any) => {
+      setTestingRuleId(null);
       toast({
         title: "Test Email Sent",
         description: `Test email has been sent to ${data.sentTo}`,
       });
     },
     onError: (error: any) => {
+      setTestingRuleId(null);
       toast({
         title: "Error",
         description: error.message || "Failed to send test email",
@@ -372,12 +375,15 @@ export default function AdminAutomationSettings() {
 
                         <Button
                           variant="outline"
-                          onClick={() => sendTestMutation.mutate(rule.id)}
-                          disabled={sendTestMutation.isPending}
+                          onClick={() => {
+                            setTestingRuleId(rule.id);
+                            sendTestMutation.mutate(rule.id);
+                          }}
+                          disabled={testingRuleId === rule.id && sendTestMutation.isPending}
                           className="border-green-300 hover:bg-green-50 text-green-700"
                           data-testid={`button-test-${rule.id}`}
                         >
-                          {sendTestMutation.isPending ? (
+                          {testingRuleId === rule.id && sendTestMutation.isPending ? (
                             <>
                               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                               Sending...
