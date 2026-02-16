@@ -7667,10 +7667,9 @@ ${JSON.stringify(allFormData, null, 2)}`,
         ? "Private Coaching Questionnaire"
         : "Pregnancy Coaching Intake Forms";
 
-      // Generate form URL based on coaching type
-      const formUrl = coachingType === "private_coaching"
-        ? `${process.env.CLIENT_URL || "http://localhost:5000"}/coaching/private-intake`
-        : `${process.env.CLIENT_URL || "http://localhost:5000"}/coaching/intake`;
+      // Generate form URL - points to client's coaching dashboard where intake forms are available
+      const baseUrl = process.env.APP_URL || process.env.CLIENT_URL || "http://localhost:5000";
+      const formUrl = `${baseUrl}/my-coaching`;
 
       // Send email via emailService singleton
       console.log(`[Coaching] Attempting to send intake form request to ${user.email} for client ${clientId}`);
