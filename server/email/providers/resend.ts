@@ -1,53 +1,22 @@
 import { Resend } from 'resend';
 import type { IEmailProvider, SendEmailParams, EmailSendResult, EmailAddress } from './base';
 
-let connectionSettings: any;
+const DEFAULT_FROM_EMAIL = 'Stronger With Zoe <noreply@strongerwithzoe.in>';
 
-const DEFAULT_FROM_EMAIL = 'Your Postpartum Strength <noreply@yourpostpartumstrength.com>';
-
-async function getCredentials() {
-  // First, try direct RESEND_API_KEY env var (works everywhere)
-  if (process.env.RESEND_API_KEY) {
-    return {
-      apiKey: process.env.RESEND_API_KEY,
-      fromEmail: process.env.RESEND_FROM_EMAIL || DEFAULT_FROM_EMAIL
-    };
-  }
-
-  // Fallback: try Replit connectors
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY
-    ? 'repl ' + process.env.REPL_IDENTITY
-    : process.env.WEB_REPL_RENEWAL
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL
-    : null;
-
-  if (!xReplitToken || !hostname) {
-    throw new Error('No Resend API key found. Set RESEND_API_KEY env var or connect via Replit.');
-  }
-
-  connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  if (!connectionSettings || !connectionSettings.settings.api_key) {
-    throw new Error('Resend not connected');
+function getCredentials() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY environment variable is not set.');
   }
 
   return {
-    apiKey: connectionSettings.settings.api_key,
-    fromEmail: connectionSettings.settings.from_email || DEFAULT_FROM_EMAIL
+    apiKey,
+    fromEmail: process.env.RESEND_FROM_EMAIL || DEFAULT_FROM_EMAIL
   };
 }
 
-async function getUncachableResendClient() {
-  const { apiKey, fromEmail } = await getCredentials();
+function getResendClient() {
+  const { apiKey, fromEmail } = getCredentials();
   return {
     client: new Resend(apiKey),
     fromEmail
@@ -64,11 +33,13 @@ function formatEmailAddress(addr: EmailAddress): string {
 export class ResendEmailProvider implements IEmailProvider {
   async send(params: SendEmailParams): Promise<EmailSendResult> {
     try {
-      const { client, fromEmail } = await getUncachableResendClient();
+      const { client, fromEmail } = getResendClient();
 
-      const toAddresses = Array.isArray(params.to) 
+      const toAddresses = Array.isArray(params.to)
         ? params.to.map(addr => formatEmailAddress(addr))
         : [formatEmailAddress(params.to)];
+
+      console.log(`[Resend] Sending email from="${fromEmail}" to="${toAddresses.join(', ')}" subject="${params.subject}"`);
 
       const emailData: any = {
         from: fromEmail,
@@ -96,19 +67,20 @@ export class ResendEmailProvider implements IEmailProvider {
       const { data, error } = await client.emails.send(emailData);
 
       if (error) {
-        console.error('Resend error:', error);
+        console.error('[Resend] API error:', error);
         return {
           success: false,
           error: error.message || 'Failed to send email',
         };
       }
 
+      console.log(`[Resend] Email sent successfully, messageId=${data?.id}`);
       return {
         success: true,
         messageId: data?.id,
       };
     } catch (error) {
-      console.error('Email send error:', error);
+      console.error('[Resend] Send error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -118,10 +90,10 @@ export class ResendEmailProvider implements IEmailProvider {
 
   async validateConnection(): Promise<boolean> {
     try {
-      await getCredentials();
+      getCredentials();
       return true;
     } catch (error) {
-      console.error('Resend validation error:', error);
+      console.error('[Resend] Validation error:', error);
       return false;
     }
   }

@@ -7035,7 +7035,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
             const resend = new Resend(process.env.RESEND_API_KEY);
             
             await resend.emails.send({
-              from: 'Your Postpartum Strength <noreply@yourpostpartumstrength.com>',
+              from: 'Stronger With Zoe <noreply@strongerwithzoe.in>',
               to: 'sushil@realinfluencers.in',
               subject: `New WhatsApp Community Payment - ${userName}`,
               html: `
