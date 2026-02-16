@@ -113,7 +113,7 @@ function Router() {
       <Route path="/admin/login" component={() => <LazyRoute component={AdminLogin} message="Loading admin login..." />} />
       <Route path="/admin" component={() => <LazyRoute component={Admin} message="Loading admin..." />} />
       <Route path="/admin/analytics" component={() => <LazyRoute component={AdminAnalytics} message="Loading analytics..." />} />
-      <Route path="/admin-automation-settings" component={() => <LazyRoute component={AdminAutomationSettings} message="Loading..." />} />
+      <Route path="/admin/automation" component={() => <LazyRoute component={AdminAutomationSettings} message="Loading..." />} />
       <Route path="/admin/courses" component={() => <LazyRoute component={AdminCourses} message="Loading courses..." />} />
       <Route path="/admin/modules" component={() => <LazyRoute component={AdminCourses} message="Loading modules..." />} />
       <Route path="/admin/modules/:moduleId" component={() => <LazyRoute component={AdminModuleEditor} message="Loading..." />} />

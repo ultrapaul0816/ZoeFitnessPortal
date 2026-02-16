@@ -479,7 +479,7 @@ export default function AdminEmailCampaigns() {
             </div>
           </div>
           <Button
-            onClick={() => setLocation("/admin-automation-settings")}
+            onClick={() => setLocation("/admin/automation")}
             variant="outline"
             className="flex items-center gap-2"
             data-testid="button-automation-settings"
