@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RefreshCw, CheckCircle, Dumbbell } from "lucide-react";
 import type { WeekOverview } from "./PlanBuilderWizard";
 
-interface Exercise {
+export interface Exercise {
   name: string;
   sets?: string;
   reps?: string;
@@ -14,12 +14,12 @@ interface Exercise {
   notes?: string;
 }
 
-interface WorkoutSection {
+export interface WorkoutSection {
   title: string;
   exercises: Exercise[];
 }
 
-interface WorkoutDay {
+export interface WorkoutDay {
   dayNumber: number;
   title: string;
   description: string;

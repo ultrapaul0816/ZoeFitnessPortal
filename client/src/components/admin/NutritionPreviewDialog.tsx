@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RefreshCw, CheckCircle, Apple } from "lucide-react";
 import type { WeekOverview } from "./PlanBuilderWizard";
 
-interface MealOption {
+export interface MealOption {
   name: string;
   description: string;
   macros: {
@@ -18,12 +18,12 @@ interface MealOption {
   instructions?: string;
 }
 
-interface NutritionMeal {
+export interface NutritionMeal {
   mealType: string; // "breakfast", "lunch", "snack", "dinner"
   options: MealOption[];
 }
 
-interface NutritionPreview {
+export interface NutritionPreview {
   weekNumber: number;
   meals: NutritionMeal[];
   dailyMacros: {
