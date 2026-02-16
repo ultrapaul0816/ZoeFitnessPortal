@@ -1048,6 +1048,15 @@ export default function AdminCoaching() {
                                   const aiSummaryApproved = !!(selectedClient as any).aiSummaryApproved;
                                   const canStartBuilding = hasCoachRemarks && hasAiSummary && coachRemarksApproved && aiSummaryApproved;
 
+                                  // Debug logging
+                                  console.log('[Plan Builder Check]', {
+                                    hasCoachRemarks,
+                                    hasAiSummary,
+                                    coachRemarksApproved,
+                                    aiSummaryApproved,
+                                    canStartBuilding
+                                  });
+
                                   return (
                                     <>
                                       {!canStartBuilding && (
@@ -1064,7 +1073,7 @@ export default function AdminCoaching() {
                                       <Button
                                         onClick={() => setPlanBuilderOpen(true)}
                                         size="lg"
-                                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                                        className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={!canStartBuilding}
                                       >
                                         Start Building Program
@@ -1165,9 +1174,9 @@ export default function AdminCoaching() {
                               <div className="flex gap-2">
                                 <Button
                                   variant="outline" size="sm"
-                                  className="text-violet-600 border-violet-300 hover:bg-violet-50"
+                                  className="text-violet-600 border-violet-300 hover:bg-violet-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                   onClick={() => generateCoachRemarksMutation.mutate(selectedClient.id)}
-                                  disabled={generateCoachRemarksMutation.isPending}
+                                  disabled={generateCoachRemarksMutation.isPending || !!(selectedClient as any).coachRemarksApproved}
                                 >
                                   <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
                                   {generateCoachRemarksMutation.isPending ? "Generating..." : "Generate with AI"}
@@ -1322,8 +1331,8 @@ export default function AdminCoaching() {
                                   <Button
                                     variant="ghost" size="sm"
                                     onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
-                                    disabled={regenerateAiSummaryMutation.isPending}
-                                    className="text-xs text-violet-600 hover:text-gray-900"
+                                    disabled={regenerateAiSummaryMutation.isPending || !!(selectedClient as any).aiSummaryApproved}
+                                    className="text-xs text-violet-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
                                     <RefreshCw className={cn("w-3 h-3 mr-1", regenerateAiSummaryMutation.isPending && "animate-spin")} />
                                     {regenerateAiSummaryMutation.isPending ? "Regenerating..." : "Regenerate"}
