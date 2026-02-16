@@ -7672,8 +7672,7 @@ ${JSON.stringify(allFormData, null, 2)}`,
         ? `${process.env.CLIENT_URL || "http://localhost:5000"}/coaching/private-intake`
         : `${process.env.CLIENT_URL || "http://localhost:5000"}/coaching/intake`;
 
-      // Send email via EmailService
-      const emailService = new EmailService();
+      // Send email via emailService singleton
       await emailService.sendEmail({
         to: user.email,
         subject: `Action Required: Complete Your ${formType}`,

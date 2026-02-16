@@ -133,8 +133,7 @@ export function CoachingSidebar({
       {/* New Client Button - Top */}
       <div className="px-4 pt-4 pb-2">
         <Button
-          variant="outline"
-          className="w-full justify-center"
+          className="w-full justify-center bg-pink-500 hover:bg-pink-600 text-white"
           onClick={onNewClient}
         >
           <Plus className="w-4 h-4 mr-2" />
