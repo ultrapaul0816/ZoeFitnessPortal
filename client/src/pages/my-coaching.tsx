@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import BottomNav from "@/components/bottom-nav";
+import { StrategicWelcome } from "@/components/onboarding/StrategicWelcome";
 import {
   Dumbbell,
   Apple,
@@ -886,6 +887,12 @@ export default function MyCoaching() {
   const [showCheckinSuccess, setShowCheckinSuccess] = useState(false);
   const [showWorkoutCelebration, setShowWorkoutCelebration] = useState(false);
 
+  // Strategic Welcome onboarding tracking for private coaching
+  const [welcomeCompleted, setWelcomeCompleted] = useState(() => {
+    if (!user?.id) return false;
+    return localStorage.getItem(`welcome_completed_${user.id}`) === 'true';
+  });
+
   const [checkinForm, setCheckinForm] = useState({
     mood: "",
     energyLevel: 5,
@@ -923,6 +930,13 @@ export default function MyCoaching() {
     }
     checkAuth();
   }, []);
+
+  // Update welcomeCompleted when user changes
+  useEffect(() => {
+    if (user?.id) {
+      setWelcomeCompleted(localStorage.getItem(`welcome_completed_${user.id}`) === 'true');
+    }
+  }, [user?.id]);
 
   const handleCoachingLogin = async () => {
     if (!loginEmail || !loginPassword) {
@@ -1428,8 +1442,23 @@ export default function MyCoaching() {
   }
 
   const client = planData.client;
+  const coachingType = client.coachingType;
 
-  // Show intake form for enrolled clients
+  // Show Strategic Welcome for new private coaching clients (before intake)
+  if ((client.status === "enrolled" || client.status === "pending") && coachingType === "private_coaching" && !welcomeCompleted) {
+    return (
+      <StrategicWelcome
+        onComplete={() => {
+          if (user?.id) {
+            localStorage.setItem(`welcome_completed_${user.id}`, 'true');
+            setWelcomeCompleted(true);
+          }
+        }}
+      />
+    );
+  }
+
+  // Show intake form for enrolled clients (after Strategic Welcome for private coaching)
   if (client.status === "enrolled" || client.status === "pending") {
     return <IntakeFormWizard clientId={client.id} onComplete={() => queryClient.invalidateQueries({ queryKey: ["/api/coaching/my-plan"] })} onLogout={handleLogout} userName={planData.userProfile?.firstName || "there"} />;
   }
@@ -1660,6 +1689,41 @@ export default function MyCoaching() {
     return (
       <div>
         {renderProfileCard()}
+
+        {/* Strategic Framework Card - Only for private coaching */}
+        {coachingType === "private_coaching" && (
+          <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-white border-0 mb-6 rounded-2xl shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Crown className="w-6 h-6 text-blue-400" />
+                <h3 className="text-xl font-semibold">Your High Performance Framework</h3>
+              </div>
+
+              {/* 5 Pillars Progress */}
+              <div className="grid grid-cols-5 gap-3">
+                {[
+                  { icon: Dumbbell, label: "Training", progress: 85 },
+                  { icon: Apple, label: "Nutrition", progress: 72 },
+                  { icon: Brain, label: "Mindset", progress: 60 },
+                  { icon: Heart, label: "Relationships", progress: 55 },
+                  { icon: Target, label: "Purpose", progress: 68 }
+                ].map((pillar, i) => (
+                  <div key={i} className="text-center">
+                    <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-slate-700 flex items-center justify-center">
+                      <pillar.icon className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="text-xs text-slate-400 mb-1">{pillar.label}</div>
+                    <div className="text-sm font-semibold">{pillar.progress}%</div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-sm text-slate-300 mt-4 text-center">
+                Your complete operating system for high performance across all dimensions of life
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="mb-5">
           <h2 className="text-lg font-bold text-gray-900">

@@ -76,17 +76,31 @@ type CoachingClientWithUser = CoachingClient & {
 type CoachingView = "clients" | "client-detail";
 
 const statusColors: Record<string, string> = {
-  enrolled: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  intake_complete: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  plan_generating: "bg-blue-100 text-blue-700 border-blue-200",
-  plan_ready: "bg-cyan-100 text-cyan-700 border-cyan-200",
-  active: "bg-green-100 text-green-700 border-green-200",
-  paused: "bg-orange-100 text-orange-700 border-orange-200",
-  completed: "bg-gray-100 text-gray-700 border-gray-200",
-  cancelled: "bg-red-100 text-red-700 border-red-200",
+  enrolled: "bg-gray-50 text-gray-700 border-gray-200",
+  intake_complete: "bg-gray-50 text-gray-700 border-gray-200",
+  plan_generating: "bg-gray-50 text-gray-700 border-gray-200",
+  plan_ready: "bg-gray-50 text-gray-700 border-gray-200",
+  active: "bg-gray-50 text-gray-700 border-gray-200",
+  paused: "bg-gray-50 text-gray-700 border-gray-200",
+  completed: "bg-gray-50 text-gray-700 border-gray-200",
+  cancelled: "bg-gray-50 text-gray-700 border-gray-200",
   // Legacy fallbacks
-  pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  pending_plan: "bg-blue-100 text-blue-700 border-blue-200",
+  pending: "bg-gray-50 text-gray-700 border-gray-200",
+  pending_plan: "bg-gray-50 text-gray-700 border-gray-200",
+};
+
+// Status dot colors for visual distinction
+const statusDotColors: Record<string, string> = {
+  enrolled: "bg-yellow-500",
+  intake_complete: "bg-blue-500",
+  plan_generating: "bg-blue-500",
+  plan_ready: "bg-green-500",
+  active: "bg-green-500",
+  paused: "bg-gray-400",
+  completed: "bg-gray-300",
+  cancelled: "bg-red-500",
+  pending: "bg-yellow-500",
+  pending_plan: "bg-blue-500",
 };
 
 const statusLabels: Record<string, string> = {
@@ -541,7 +555,7 @@ export default function AdminCoaching() {
           {activeView === "clients" && (
             <Dialog open={showNewClientDialog} onOpenChange={setShowNewClientDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/40">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                   <Plus className="w-4 h-4 mr-2" />
                   New Client
                 </Button>
@@ -619,18 +633,18 @@ export default function AdminCoaching() {
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setShowNewClientDialog(false)}>Cancel</Button>
-                  <Button 
-                    onClick={() => createClientMutation.mutate({ 
-                      email: newClientEmail, 
+                  <Button
+                    onClick={() => createClientMutation.mutate({
+                      email: newClientEmail,
                       firstName: newClientFirstName || undefined,
                       lastName: newClientLastName || undefined,
                       phone: newClientPhone || undefined,
-                      notes: newClientNotes, 
+                      notes: newClientNotes,
                       paymentAmount: parseInt(newClientPaymentAmount) * 100,
                       coachingType: newClientCoachingType,
                     })}
                     disabled={!newClientEmail || createClientMutation.isPending}
-                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     {createClientMutation.isPending ? "Enrolling..." : "Enroll Client"}
                   </Button>
@@ -643,59 +657,59 @@ export default function AdminCoaching() {
         {activeView === "clients" && (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-gray-50">
+              <Card className="border border-gray-200 bg-white">
                 <CardContent className="pt-5 pb-4 px-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Clients</p>
                       <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center">
-                      <Users className="w-5 h-5 text-pink-600" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-gray-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className={cn("border-0 shadow-sm bg-gradient-to-br from-white to-green-50/30", statusFilter === "active" && "ring-2 ring-green-400")} onClick={() => setStatusFilter(statusFilter === "active" ? "all" : "active")} role="button">
+              <Card className={cn("border border-gray-200 bg-white hover:bg-gray-50", statusFilter === "active" && "ring-2 ring-blue-600")} onClick={() => setStatusFilter(statusFilter === "active" ? "all" : "active")} role="button">
                 <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Active</p>
-                      <p className="text-2xl font-bold text-green-600 mt-1">{stats.active}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stats.active}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-gray-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className={cn("border-0 shadow-sm bg-gradient-to-br from-white to-amber-50/30", statusFilter === "needs_action" && "ring-2 ring-amber-400")} onClick={() => setStatusFilter(statusFilter === "needs_action" ? "all" : "needs_action")} role="button">
+              <Card className={cn("border border-gray-200 bg-white hover:bg-gray-50", statusFilter === "needs_action" && "ring-2 ring-blue-600")} onClick={() => setStatusFilter(statusFilter === "needs_action" ? "all" : "needs_action")} role="button">
                 <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Needs Action</p>
-                      <p className="text-2xl font-bold text-amber-600 mt-1">{stats.needsAction}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stats.needsAction}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                      <AlertCircle className="w-5 h-5 text-amber-600" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                      <AlertCircle className="w-5 h-5 text-gray-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-blue-50/30">
+              <Card className="border border-gray-200 bg-white">
                 <CardContent className="pt-5 pb-4 px-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-in Rate</p>
-                      <p className="text-2xl font-bold text-blue-600 mt-1">{stats.avgCheckinRate}%</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stats.avgCheckinRate}%</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <Activity className="w-5 h-5 text-blue-600" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                      <Activity className="w-5 h-5 text-gray-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className={cn("border-0 shadow-sm bg-gradient-to-br from-white to-gray-50/30", statusFilter === "completed" && "ring-2 ring-gray-400")} onClick={() => setStatusFilter(statusFilter === "completed" ? "all" : "completed")} role="button">
+              <Card className={cn("border border-gray-200 bg-white hover:bg-gray-50", statusFilter === "completed" && "ring-2 ring-blue-600")} onClick={() => setStatusFilter(statusFilter === "completed" ? "all" : "completed")} role="button">
                 <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
@@ -757,11 +771,12 @@ export default function AdminCoaching() {
         {activeView === "client-detail" && selectedClient && (
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-lg">
+              <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg">
                 {selectedClient.user.firstName[0]}{selectedClient.user.lastName[0]}
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
+                  <div className={cn("w-2 h-2 rounded-full", statusDotColors[selectedClient.status || "enrolled"])} />
                   <Badge variant="outline" className={cn("text-xs", statusColors[selectedClient.status || "enrolled"])}>
                     {statusLabels[selectedClient.status || "enrolled"]}
                   </Badge>
@@ -774,15 +789,12 @@ export default function AdminCoaching() {
                     onValueChange={(week) => generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: parseInt(week) })}
                     disabled={generateWorkoutMutation.isPending}
                   >
-                    <SelectTrigger className="w-[240px] bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-lg [&>span]:text-white font-medium">
+                    <SelectTrigger className="w-[240px] bg-blue-600 hover:bg-blue-700 text-white border-0 [&>span]:text-white font-medium">
                       <Brain className="w-4 h-4 mr-2" />
                       {generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : (() => {
                         const weeksGen = new Set((clientWorkoutPlan as any[]).map((p: any) => p.weekNumber)).size;
                         return `Generate Workout (${weeksGen}/4)`;
                       })()}
-                      {!generateWorkoutMutation.isPending && new Set((clientWorkoutPlan as any[]).map((p: any) => p.weekNumber)).size < 4 && (
-                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full animate-ping" />
-                      )}
                     </SelectTrigger>
                     <SelectContent>
                       {[1, 2, 3, 4].map(week => {
@@ -801,7 +813,6 @@ export default function AdminCoaching() {
                     onClick={() => requestIntakeFormMutation.mutate(selectedClient.id)}
                     disabled={requestIntakeFormMutation.isPending}
                     variant="outline"
-                    className="border-yellow-300 text-yellow-700 hover:bg-yellow-50"
                   >
                     <Mail className="w-4 h-4 mr-2" />
                     {requestIntakeFormMutation.isPending ? "Sending..." : "Request Intake Form"}
@@ -811,7 +822,7 @@ export default function AdminCoaching() {
                   <Button
                     onClick={() => approveIntakeMutation.mutate(selectedClient.id)}
                     disabled={approveIntakeMutation.isPending}
-                    className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     <Brain className="w-4 h-4 mr-2" />
                     {approveIntakeMutation.isPending ? "Approving..." : "Approve & Generate Plan"}
@@ -821,7 +832,7 @@ export default function AdminCoaching() {
                   <Button
                     onClick={() => activateClientMutation.mutate(selectedClient.id)}
                     disabled={activateClientMutation.isPending}
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     <CheckCircle2 className="w-4 h-4 mr-2" />
                     {activateClientMutation.isPending ? "Activating..." : "Activate Client"}
@@ -881,12 +892,12 @@ export default function AdminCoaching() {
               if (!isPreActive && isFullyOnboarded) return null; // Hide for fully active clients
 
               return (
-                <Card className={cn("border-0 shadow-sm", isPreActive ? "bg-gradient-to-r from-amber-50 to-orange-50 ring-1 ring-amber-200" : "bg-gradient-to-r from-green-50 to-emerald-50 ring-1 ring-green-200")}>
+                <Card className={cn("border border-gray-200 bg-white", isPreActive && "ring-1 ring-blue-600")}>
                   <CardContent className="py-4 px-5">
                     {isPreActive && (
                       <div className="flex items-center gap-2 mb-3">
-                        <AlertCircle className="w-4 h-4 text-amber-600" />
-                        <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">Onboarding In Progress</span>
+                        <AlertCircle className="w-4 h-4 text-gray-600" />
+                        <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Onboarding In Progress</span>
                         {currentStepIdx >= 0 && (
                           <span className="text-xs text-amber-600 ml-auto">
                             Next: {steps[currentStepIdx]?.action || steps[currentStepIdx]?.label}
@@ -917,7 +928,7 @@ export default function AdminCoaching() {
                               {isDone ? (
                                 <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-green-600" />
                               ) : isCurrent ? (
-                                <CircleDot className="w-3.5 h-3.5 shrink-0 text-amber-600 animate-pulse" />
+                                <CircleDot className="w-3.5 h-3.5 shrink-0 text-blue-600" />
                               ) : (
                                 <Circle className="w-3.5 h-3.5 shrink-0" />
                               )}
@@ -1020,13 +1031,13 @@ export default function AdminCoaching() {
                     return (
                       <>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                          <Card className="border-0 shadow-sm bg-gradient-to-br from-violet-50 to-purple-50">
+                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
                             <CardContent className="p-4">
                               <div className="flex items-center gap-2 mb-1">
-                                <Dumbbell className="w-4 h-4 text-violet-500" />
+                                <Dumbbell className="w-4 h-4 text-gray-600" />
                                 <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Workout</span>
                               </div>
-                              <div className="text-xl font-bold text-violet-700">{workoutPercent}%</div>
+                              <div className="text-xl font-bold text-gray-900">{workoutPercent}%</div>
                               <div className="text-[11px] text-gray-500">Week {currentWeek} progress</div>
                               <div className="mt-2 h-1.5 bg-violet-100 rounded-full overflow-hidden">
                                 <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${workoutPercent}%` }} />
@@ -1034,35 +1045,35 @@ export default function AdminCoaching() {
                             </CardContent>
                           </Card>
 
-                          <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-50 to-amber-50">
+                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
                             <CardContent className="p-4">
                               <div className="flex items-center gap-2 mb-1">
-                                <Flame className="w-4 h-4 text-orange-500" />
+                                <Flame className="w-4 h-4 text-gray-600" />
                                 <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Streak</span>
                               </div>
-                              <div className="text-xl font-bold text-orange-700">{streak} days</div>
+                              <div className="text-xl font-bold text-gray-900">{streak} days</div>
                               <div className="text-[11px] text-gray-500">Check-in streak</div>
                             </CardContent>
                           </Card>
 
-                          <Card className={cn("border-0 shadow-sm", selectedClient.unreadMessages > 0 ? "bg-gradient-to-br from-pink-50 to-rose-50 ring-2 ring-pink-200" : "bg-gradient-to-br from-pink-50 to-rose-50")}>
+                          <Card className={cn("border-0 shadow-sm", selectedClient.unreadMessages > 0 ? "border border-gray-200 bg-white ring-2 ring-pink-200" : "border border-gray-200 bg-white")}>
                             <CardContent className="p-4">
                               <div className="flex items-center gap-2 mb-1">
-                                <MessageSquare className="w-4 h-4 text-pink-500" />
+                                <MessageSquare className="w-4 h-4 text-gray-600" />
                                 <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Messages</span>
                               </div>
-                              <div className="text-xl font-bold text-pink-700">{selectedClient.unreadMessages}</div>
+                              <div className="text-xl font-bold text-gray-900">{selectedClient.unreadMessages}</div>
                               <div className="text-[11px] text-gray-500">{selectedClient.unreadMessages > 0 ? "unread messages" : "all caught up"}</div>
                             </CardContent>
                           </Card>
 
-                          <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-sky-50">
+                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
                             <CardContent className="p-4">
                               <div className="flex items-center gap-2 mb-1">
                                 <Calendar className="w-4 h-4 text-blue-500" />
                                 <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Active</span>
                               </div>
-                              <div className="text-xl font-bold text-blue-700">Day {daysSinceStart || 0}</div>
+                              <div className="text-xl font-bold text-gray-900">Day {daysSinceStart || 0}</div>
                               <div className="text-[11px] text-gray-500">of {totalDays} days</div>
                               <div className="mt-2 h-1.5 bg-blue-100 rounded-full overflow-hidden">
                                 <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${Math.min(100, (daysSinceStart / totalDays) * 100)}%` }} />
@@ -1070,18 +1081,18 @@ export default function AdminCoaching() {
                             </CardContent>
                           </Card>
 
-                          <Card className="border-0 shadow-sm bg-gradient-to-br from-emerald-50 to-green-50">
+                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
                             <CardContent className="p-4">
                               <div className="flex items-center gap-2 mb-1">
-                                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                                <TrendingUp className="w-4 h-4 text-gray-600" />
                                 <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Phase</span>
                               </div>
-                              <div className="text-lg font-bold text-emerald-700">Week {currentWeek}</div>
+                              <div className="text-lg font-bold text-gray-900">Week {currentWeek}</div>
                               <div className="text-[11px] text-gray-500">{phaseNames[currentWeek] || "Active"}</div>
                             </CardContent>
                           </Card>
 
-                          <Card className="border-0 shadow-sm bg-gradient-to-br from-cyan-50 to-teal-50">
+                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
                             <CardContent className="p-4">
                               <div className="flex items-center gap-2 mb-1">
                                 <ClipboardList className="w-4 h-4 text-cyan-500" />
@@ -1137,7 +1148,7 @@ export default function AdminCoaching() {
 
                           {nextUngenWeek ? (
                             <Button
-                              className="h-auto py-3 px-4 justify-start gap-3 bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg hover:from-violet-600 hover:to-purple-600 transition-all"
+                              className="h-auto py-3 px-4 justify-start gap-3 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:from-violet-600 hover:to-purple-600 transition-all"
                               onClick={() => {
                                 if (selectedClient) {
                                   generatePlanOutlineMutation.mutate({ clientId: selectedClient.id, weekNumber: nextUngenWeek });
@@ -1176,7 +1187,7 @@ export default function AdminCoaching() {
                             <div className="flex items-start justify-between">
                               <div>
                                 <CardTitle className="text-base flex items-center gap-2">
-                                  <Sparkles className="w-4 h-4 text-violet-500" />
+                                  <Sparkles className="w-4 h-4 text-gray-600" />
                                   Coach's Notes & Direction
                                 </CardTitle>
                                 <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit mt-1">These notes are used by AI when generating workouts and nutrition plans</p>
@@ -1250,7 +1261,7 @@ export default function AdminCoaching() {
                                   <ClipboardList className="w-4 h-4 text-cyan-500" />
                                   Latest Check-in
                                 </CardTitle>
-                                <Button variant="ghost" size="sm" className="text-xs text-pink-600 hover:text-pink-700" onClick={() => setActiveTab("checkins")}>
+                                <Button variant="ghost" size="sm" className="text-xs text-pink-600 hover:text-gray-900" onClick={() => setActiveTab("checkins")}>
                                   View all check-ins →
                                 </Button>
                               </div>
@@ -1298,14 +1309,14 @@ export default function AdminCoaching() {
                             <CardHeader>
                               <div className="flex items-center justify-between">
                                 <CardTitle className="text-base flex items-center gap-2">
-                                  <Brain className="w-4 h-4 text-violet-500" />
+                                  <Brain className="w-4 h-4 text-gray-600" />
                                   AI Assessment Summary
                                 </CardTitle>
                                 <Button
                                   variant="ghost" size="sm"
                                   onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
                                   disabled={regenerateAiSummaryMutation.isPending}
-                                  className="text-xs text-violet-600 hover:text-violet-700"
+                                  className="text-xs text-violet-600 hover:text-gray-900"
                                 >
                                   <RefreshCw className={cn("w-3 h-3 mr-1", regenerateAiSummaryMutation.isPending && "animate-spin")} />
                                   {regenerateAiSummaryMutation.isPending ? "Regenerating..." : "Regenerate"}
@@ -1362,7 +1373,7 @@ export default function AdminCoaching() {
                           <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Week {week}</div>
                           {isGenerating ? (
                             <div className="mt-1">
-                              <Sparkles className="w-5 h-5 text-purple-500 animate-pulse mx-auto" />
+                              <Sparkles className="w-5 h-5 text-purple-500  mx-auto" />
                               <div className="text-[10px] text-purple-600 mt-1">Generating...</div>
                             </div>
                           ) : hasWeek ? (
@@ -1375,7 +1386,7 @@ export default function AdminCoaching() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-7 text-xs text-violet-600 hover:text-violet-700 hover:bg-violet-100 px-2"
+                                className="h-7 text-xs text-violet-600 hover:text-gray-900 hover:bg-violet-100 px-2"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
@@ -1494,7 +1505,7 @@ export default function AdminCoaching() {
                                 }}
                                 disabled={generateWorkoutMutation.isPending || generatePlanOutlineMutation.isPending || !previousWeekExists}
                                 className={cn(
-                                  hasWeek ? "" : "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                                  hasWeek ? "" : "bg-blue-600 hover:bg-blue-700 text-white"
                                 )}
                               >
                                 <Sparkles className="w-3.5 h-3.5 mr-1.5" />
@@ -1505,14 +1516,14 @@ export default function AdminCoaching() {
                               <div className="space-y-2 py-4">
                                 <div className="flex items-center justify-between text-xs text-gray-500">
                                   <span className="flex items-center gap-2">
-                                    <Sparkles className="w-3.5 h-3.5 text-purple-500 animate-pulse" />
+                                    <Sparkles className="w-3.5 h-3.5 text-purple-500 " />
                                     AI is creating Week {week} workout plan...
                                   </span>
                                   <span>{Math.round(generationProgress)}%</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                                   <div
-                                    className="h-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500 ease-out"
+                                    className="h-2 rounded-full bg-blue-600 hover:bg-blue-700 transition-all duration-500 ease-out"
                                     style={{ width: `${generationProgress}%` }}
                                   />
                                 </div>
@@ -1994,7 +2005,7 @@ export default function AdminCoaching() {
                         onClick={() => generateNutritionMutation.mutate(selectedClient.id)}
                         disabled={generateNutritionMutation.isPending}
                         className={cn(
-                          (clientNutritionPlan as any[]).length > 0 ? "" : "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                          (clientNutritionPlan as any[]).length > 0 ? "" : "bg-blue-600 hover:bg-blue-700 text-white"
                         )}
                       >
                         <Sparkles className="w-3.5 h-3.5 mr-1.5" />
@@ -2024,7 +2035,7 @@ export default function AdminCoaching() {
                               )}
                               <div className="flex gap-4 flex-wrap">
                                 {overview.dailyStructure?.dailyCalorieTarget && (
-                                  <div className="text-sm"><span className="font-semibold text-violet-700">{overview.dailyStructure.dailyCalorieTarget} cal</span> daily target</div>
+                                  <div className="text-sm"><span className="font-semibold text-gray-900">{overview.dailyStructure.dailyCalorieTarget} cal</span> daily target</div>
                                 )}
                                 {overview.dailyStructure?.macroSplit && (
                                   <div className="text-sm">
@@ -2164,7 +2175,7 @@ export default function AdminCoaching() {
                                               <div className="flex items-center gap-1.5">
                                                 <p className="font-medium text-sm text-gray-900 truncate">{opt.name}</p>
                                                 {opt.cuisine === "indian" && (
-                                                  <span className="text-[9px] text-orange-700 bg-orange-50 px-1 py-0.5 rounded shrink-0">🇮🇳</span>
+                                                  <span className="text-[9px] text-gray-900 bg-orange-50 px-1 py-0.5 rounded shrink-0">🇮🇳</span>
                                                 )}
                                               </div>
                                               {opt.prepTime && <span className="text-[10px] text-gray-400">{opt.prepTime}</span>}
@@ -2178,7 +2189,7 @@ export default function AdminCoaching() {
                                                 <Pencil className="w-3 h-3" />
                                               </button>
                                               <button
-                                                className={cn("p-1 rounded hover:bg-violet-100 text-gray-400 hover:text-violet-600 transition-colors", isRegenerating && "animate-spin text-violet-500")}
+                                                className={cn("p-1 rounded hover:bg-violet-100 text-gray-400 hover:text-violet-600 transition-colors", isRegenerating && "animate-spin text-gray-600")}
                                                 onClick={() => regenerateNutritionDishMutation.mutate({ planId: mealPlan.id, optionIndex: i })}
                                                 disabled={isRegenerating || regenerateNutritionDishMutation.isPending}
                                                 title="Regenerate with AI"
@@ -2241,7 +2252,7 @@ export default function AdminCoaching() {
                                 <div className={cn(
                                   "max-w-[70%] p-3 rounded-2xl text-sm",
                                   isAdmin
-                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-br-md"
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white rounded-br-md"
                                     : "bg-white border border-gray-200 text-gray-900 rounded-bl-md"
                                 )}>
                                   <p>{msg.content}</p>
@@ -2294,7 +2305,7 @@ export default function AdminCoaching() {
                           }
                         }}
                         disabled={!messageInput.trim() || sendMessageMutation.isPending}
-                        className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         <Send className="w-4 h-4" />
                       </Button>
@@ -2413,7 +2424,7 @@ export default function AdminCoaching() {
         <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-violet-500" />
+              <Brain className="w-5 h-5 text-gray-600" />
               Week {outlinePreviewWeek} Plan Outline
             </DialogTitle>
             <p className="text-sm text-gray-500 mt-1">Review the weekly approach before generating the full workout</p>
@@ -2444,7 +2455,7 @@ export default function AdminCoaching() {
                     <h4 className="font-semibold text-sm text-gray-900 mb-2">Focus Areas</h4>
                     <div className="flex flex-wrap gap-2">
                       {outline.focusAreas.map((area: string, idx: number) => (
-                        <Badge key={idx} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        <Badge key={idx} variant="outline" className="bg-blue-50 text-gray-900 border-blue-200">
                           {area}
                         </Badge>
                       ))}
@@ -2541,7 +2552,7 @@ export default function AdminCoaching() {
                         }
                       }}
                       disabled={approveOutlineAndGenerateMutation.isPending || generateWorkoutMutation.isPending}
-                      className="bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       <CheckCircle2 className="w-4 h-4 mr-2" />
                       Approve & Generate Workout
