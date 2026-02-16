@@ -3011,7 +3011,7 @@ class DatabaseStorage implements IStorage {
     offset?: number;
   }): Promise<{
     posts: (CommunityPost & {
-      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl">;
+      user: Pick<User, "id" | "firstName" | "lastName" | "profilePictureUrl" | "profilePictureThumbnailUrl">;
       likeCount: number;
       commentCount: number;
       isLikedByUser?: boolean;

@@ -40,6 +40,13 @@ export default function AdminWhatsApp() {
     return new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
+  const getWhatsAppStartDate = (member: User): Date | null => {
+    if (!member.whatsAppSupportExpiryDate) return null;
+    const expiry = new Date(member.whatsAppSupportExpiryDate);
+    expiry.setMonth(expiry.getMonth() - (member.whatsAppSupportDuration || 3));
+    return expiry;
+  };
+
   const getExpiryStatus = (date: Date | string | null) => {
     if (!date) return { label: 'No Expiry', color: 'gray' };
     const now = new Date();
@@ -86,7 +93,7 @@ export default function AdminWhatsApp() {
         y = 20;
       }
       const name = `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.email;
-      const startDate = formatDate(member.whatsAppSupportStartDate);
+      const startDate = formatDate(getWhatsAppStartDate(member));
       const expiryDate = formatDate(member.whatsAppSupportExpiryDate);
       const status = getExpiryStatus(member.whatsAppSupportExpiryDate);
       
@@ -112,7 +119,7 @@ export default function AdminWhatsApp() {
         name,
         member.email || '',
         member.phone || '',
-        formatDate(member.whatsAppSupportStartDate),
+        formatDate(getWhatsAppStartDate(member)),
         formatDate(member.whatsAppSupportExpiryDate),
         status.label,
         member.country || ''
@@ -225,7 +232,7 @@ export default function AdminWhatsApp() {
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-1 text-sm text-gray-600">
                               <Calendar className="w-3 h-3" />
-                              {formatDate(member.whatsAppSupportStartDate)}
+                              {formatDate(getWhatsAppStartDate(member))}
                             </div>
                           </td>
                           <td className="py-4 px-4">

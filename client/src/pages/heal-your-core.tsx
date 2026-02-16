@@ -827,6 +827,7 @@ export default function HealYourCorePage() {
         <ZoeWelcomeModal
           isOpen={showWelcomeModal}
           onClose={handleWelcomeClose}
+          userId={user?.id || ""}
         />
       )}
     </div>

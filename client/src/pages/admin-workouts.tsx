@@ -171,10 +171,7 @@ export default function AdminWorkouts() {
 
   const createWorkoutMutation = useMutation({
     mutationFn: async (data: typeof form) => {
-      return apiRequest('/api/admin/structured-workouts', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      return apiRequest('POST', '/api/admin/structured-workouts', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/structured-workouts'] });
@@ -189,10 +186,7 @@ export default function AdminWorkouts() {
 
   const updateWorkoutMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: typeof form }) => {
-      return apiRequest(`/api/admin/structured-workouts/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-      });
+      return apiRequest('PATCH', `/api/admin/structured-workouts/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/structured-workouts'] });
@@ -209,9 +203,7 @@ export default function AdminWorkouts() {
 
   const deleteWorkoutMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/admin/structured-workouts/${id}`, {
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/admin/structured-workouts/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/structured-workouts'] });
@@ -225,10 +217,7 @@ export default function AdminWorkouts() {
 
   const addExerciseMutation = useMutation({
     mutationFn: async ({ workoutId, data }: { workoutId: string; data: typeof exerciseForm }) => {
-      return apiRequest(`/api/admin/structured-workouts/${workoutId}/exercises`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      return apiRequest('POST', `/api/admin/structured-workouts/${workoutId}/exercises`, data);
     },
     onSuccess: () => {
       if (selectedWorkout) {
@@ -246,9 +235,7 @@ export default function AdminWorkouts() {
 
   const removeExerciseMutation = useMutation({
     mutationFn: async (linkId: string) => {
-      return apiRequest(`/api/admin/workout-exercise-links/${linkId}`, {
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/admin/workout-exercise-links/${linkId}`);
     },
     onSuccess: () => {
       if (selectedWorkout) {
@@ -350,7 +337,7 @@ export default function AdminWorkouts() {
 
   if (sessionLoading || isLoading) {
     return (
-      <AdminLayout>
+      <AdminLayout activeTab="workouts" onTabChange={() => {}}>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
         </div>
@@ -363,7 +350,7 @@ export default function AdminWorkouts() {
   );
 
   return (
-    <AdminLayout>
+    <AdminLayout activeTab="workouts" onTabChange={() => {}} onNavigate={setLocation}>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

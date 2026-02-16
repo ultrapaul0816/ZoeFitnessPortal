@@ -86,7 +86,7 @@ export default function ProfileModal({ isOpen, onClose, user, onUserUpdate }: Pr
     // Remove empty fields from submission
     const cleanedData = Object.entries(formData).reduce((acc, [key, value]) => {
       if (value !== undefined && value !== "") {
-        acc[key as keyof UpdateUserProfile] = value;
+        (acc as Record<string, unknown>)[key] = value;
       }
       return acc;
     }, {} as UpdateUserProfile);
