@@ -80,7 +80,16 @@ export function CoachingSidebar({
   if (collapsed) {
     return (
       <aside className="w-12 flex-shrink-0 border-r border-gray-200 bg-white flex flex-col h-full">
-        <div className="p-2 border-b border-gray-200 flex justify-center">
+        <div className="p-2 border-b border-gray-200 flex flex-col items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={onNewClient}
+            title="New Client"
+          >
+            <Plus className="w-4 h-4 text-gray-500" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -115,25 +124,26 @@ export function CoachingSidebar({
             </button>
           ))}
         </div>
-        <div className="p-2 border-t border-gray-200 flex justify-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={onNewClient}
-            title="New Client"
-          >
-            <Plus className="w-4 h-4 text-gray-500" />
-          </Button>
-        </div>
       </aside>
     );
   }
 
   return (
     <aside className="w-80 flex-shrink-0 border-r border-gray-200 bg-white flex flex-col h-full">
-      {/* Header with collapse toggle */}
-      <div className="p-4 border-b border-gray-200 flex items-center gap-2">
+      {/* New Client Button - Top */}
+      <div className="px-4 pt-4 pb-2">
+        <Button
+          variant="outline"
+          className="w-full justify-center"
+          onClick={onNewClient}
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Client
+        </Button>
+      </div>
+
+      {/* Search + collapse toggle */}
+      <div className="px-4 pb-3 flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
@@ -153,6 +163,8 @@ export function CoachingSidebar({
           <PanelLeftClose className="w-4 h-4 text-gray-500" />
         </Button>
       </div>
+
+      <div className="border-b border-gray-200" />
 
       {/* Quick Stats */}
       <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
@@ -239,17 +251,6 @@ export function CoachingSidebar({
         )}
       </div>
 
-      {/* New Client Button - Always at Bottom */}
-      <div className="p-4 border-t border-gray-200 bg-white">
-        <Button
-          variant="outline"
-          className="w-full justify-center"
-          onClick={onNewClient}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Client
-        </Button>
-      </div>
     </aside>
   );
 }
