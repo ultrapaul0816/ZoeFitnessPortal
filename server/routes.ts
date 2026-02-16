@@ -7673,7 +7673,8 @@ ${JSON.stringify(allFormData, null, 2)}`,
         : `${process.env.CLIENT_URL || "http://localhost:5000"}/coaching/intake`;
 
       // Send email via emailService singleton
-      await emailService.sendEmail({
+      console.log(`[Coaching] Attempting to send intake form request to ${user.email} for client ${clientId}`);
+      const result = await emailService.sendEmail({
         to: user.email,
         subject: `Action Required: Complete Your ${formType}`,
         html: `
@@ -7726,6 +7727,11 @@ ${JSON.stringify(allFormData, null, 2)}`,
           </div>
         `,
       });
+
+      if (!result.success) {
+        console.error(`[Coaching] Email send failed for ${user.email}:`, result.error);
+        return res.status(500).json({ message: `Failed to send form request email: ${result.error}` });
+      }
 
       console.log(`[Coaching] Intake form request sent to ${user.email} for client ${clientId}`);
       res.json({ success: true, message: "Form request email sent" });

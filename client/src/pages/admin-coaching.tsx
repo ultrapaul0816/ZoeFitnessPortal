@@ -934,85 +934,84 @@ export default function AdminCoaching() {
 
                     return (
                       <>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Progress & Phase Card */}
+                          <Card className="border border-gray-200 shadow-sm bg-white">
                             <CardContent className="p-4">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Dumbbell className="w-4 h-4 text-gray-600" />
-                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Workout</span>
+                              <div className="flex items-center gap-2 mb-3">
+                                <Dumbbell className="w-4 h-4 text-violet-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Progress</span>
+                                <span className="ml-auto text-xs font-semibold text-violet-600">Week {currentWeek} · {phaseNames[currentWeek] || "Active"}</span>
                               </div>
-                              <div className="text-xl font-bold text-gray-900">{workoutPercent}%</div>
-                              <div className="text-[11px] text-gray-500">Week {currentWeek} progress</div>
-                              <div className="mt-2 h-1.5 bg-violet-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${workoutPercent}%` }} />
+                              <div className="space-y-3">
+                                <div>
+                                  <div className="flex justify-between items-baseline mb-1">
+                                    <span className="text-sm text-gray-600">Workout completion</span>
+                                    <span className="text-sm font-bold text-gray-900">{workoutPercent}%</span>
+                                  </div>
+                                  <div className="h-1.5 bg-violet-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${workoutPercent}%` }} />
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="flex justify-between items-baseline mb-1">
+                                    <span className="text-sm text-gray-600">Program timeline</span>
+                                    <span className="text-sm font-bold text-gray-900">Day {daysSinceStart || 0} <span className="font-normal text-gray-400">/ {totalDays}</span></span>
+                                  </div>
+                                  <div className="h-1.5 bg-blue-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${Math.min(100, (daysSinceStart / totalDays) * 100)}%` }} />
+                                  </div>
+                                </div>
                               </div>
                             </CardContent>
                           </Card>
 
-                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
+                          {/* Engagement Card */}
+                          <Card className="border border-gray-200 shadow-sm bg-white">
                             <CardContent className="p-4">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Flame className="w-4 h-4 text-gray-600" />
-                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Streak</span>
+                              <div className="flex items-center gap-2 mb-3">
+                                <Activity className="w-4 h-4 text-emerald-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Engagement</span>
                               </div>
-                              <div className="text-xl font-bold text-gray-900">{streak} days</div>
-                              <div className="text-[11px] text-gray-500">Check-in streak</div>
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <Flame className="w-3.5 h-3.5 text-orange-500" />
+                                    <span className="text-sm text-gray-600">Check-in streak</span>
+                                  </div>
+                                  <span className="text-sm font-bold text-gray-900">{streak} days</span>
+                                </div>
+                                <Separator />
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <ClipboardList className="w-3.5 h-3.5 text-cyan-500" />
+                                    <span className="text-sm text-gray-600">Last check-in</span>
+                                  </div>
+                                  {lastCheckin ? (
+                                    <div className="text-sm font-medium text-gray-900">
+                                      {lastCheckin.mood === "great" ? "🤩" : lastCheckin.mood === "good" ? "😊" : lastCheckin.mood === "okay" ? "😐" : lastCheckin.mood === "tired" ? "😴" : lastCheckin.mood === "struggling" ? "😣" : "📋"}
+                                      {" "}{lastCheckin.energyLevel}/5 energy
+                                      <span className="text-gray-400 ml-1">· {lastCheckinAge !== null && lastCheckinAge < 24 ? `${lastCheckinAge}h ago` : lastCheckinAge !== null ? `${Math.floor(lastCheckinAge / 24)}d ago` : ""}</span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-sm text-gray-400">None yet</span>
+                                  )}
+                                </div>
+                              </div>
                             </CardContent>
                           </Card>
 
-                          <Card className={cn("border-0 shadow-sm", selectedClient.unreadMessages > 0 ? "border border-gray-200 bg-white ring-2 ring-pink-200" : "border border-gray-200 bg-white")}>
+                          {/* Messages Card */}
+                          <Card className={cn("border shadow-sm bg-white", selectedClient.unreadMessages > 0 ? "border-pink-200 ring-2 ring-pink-100" : "border-gray-200")}>
                             <CardContent className="p-4">
-                              <div className="flex items-center gap-2 mb-1">
-                                <MessageSquare className="w-4 h-4 text-gray-600" />
+                              <div className="flex items-center gap-2 mb-3">
+                                <MessageSquare className="w-4 h-4 text-pink-500" />
                                 <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Messages</span>
                               </div>
-                              <div className="text-xl font-bold text-gray-900">{selectedClient.unreadMessages}</div>
-                              <div className="text-[11px] text-gray-500">{selectedClient.unreadMessages > 0 ? "unread messages" : "all caught up"}</div>
-                            </CardContent>
-                          </Card>
-
-                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Calendar className="w-4 h-4 text-blue-500" />
-                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Active</span>
+                              <div className="flex items-center gap-3">
+                                <div className="text-2xl font-bold text-gray-900">{selectedClient.unreadMessages}</div>
+                                <div className="text-sm text-gray-500">{selectedClient.unreadMessages > 0 ? "unread messages" : "All caught up"}</div>
                               </div>
-                              <div className="text-xl font-bold text-gray-900">Day {daysSinceStart || 0}</div>
-                              <div className="text-[11px] text-gray-500">of {totalDays} days</div>
-                              <div className="mt-2 h-1.5 bg-blue-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${Math.min(100, (daysSinceStart / totalDays) * 100)}%` }} />
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2 mb-1">
-                                <TrendingUp className="w-4 h-4 text-gray-600" />
-                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Phase</span>
-                              </div>
-                              <div className="text-lg font-bold text-gray-900">Week {currentWeek}</div>
-                              <div className="text-[11px] text-gray-500">{phaseNames[currentWeek] || "Active"}</div>
-                            </CardContent>
-                          </Card>
-
-                          <Card className="border-0 shadow-sm border border-gray-200 bg-white">
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2 mb-1">
-                                <ClipboardList className="w-4 h-4 text-cyan-500" />
-                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Last Check-in</span>
-                              </div>
-                              {lastCheckin ? (
-                                <>
-                                  <div className="text-lg font-bold text-cyan-700">
-                                    {lastCheckin.mood === "great" ? "🤩" : lastCheckin.mood === "good" ? "😊" : lastCheckin.mood === "okay" ? "😐" : lastCheckin.mood === "tired" ? "😴" : lastCheckin.mood === "struggling" ? "😣" : "📋"}
-                                    <span className="ml-1 text-sm">{lastCheckin.energyLevel}/5</span>
-                                  </div>
-                                  <div className="text-[11px] text-gray-500">{lastCheckinAge !== null && lastCheckinAge < 24 ? `${lastCheckinAge}h ago` : lastCheckinAge !== null ? `${Math.floor(lastCheckinAge / 24)}d ago` : ""}</div>
-                                </>
-                              ) : (
-                                <div className="text-sm text-gray-400">No check-ins yet</div>
-                              )}
                             </CardContent>
                           </Card>
                         </div>
