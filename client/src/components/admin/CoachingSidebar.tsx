@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 type CoachingClient = {
   id: number;
@@ -66,6 +66,7 @@ export function CoachingSidebar({
   isLoading = false,
 }: CoachingSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [collapsed, setCollapsed] = useState(false);
 
   // Filter clients based on search query
   const filteredClients = clients.filter((client) => {
@@ -75,11 +76,65 @@ export function CoachingSidebar({
     return fullName.includes(searchLower) || email.includes(searchLower);
   });
 
+  // Collapsed view - narrow strip with toggle
+  if (collapsed) {
+    return (
+      <aside className="w-12 flex-shrink-0 border-r border-gray-200 bg-white flex flex-col h-full">
+        <div className="p-2 border-b border-gray-200 flex justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setCollapsed(false)}
+            title="Expand sidebar"
+          >
+            <PanelLeftOpen className="w-4 h-4 text-gray-500" />
+          </Button>
+        </div>
+        {/* Collapsed client dots */}
+        <div className="flex-1 overflow-y-auto py-2 space-y-1">
+          {filteredClients.map((client) => (
+            <button
+              key={client.id}
+              onClick={() => onSelectClient(client.id)}
+              className={cn(
+                "w-full flex justify-center py-2 hover:bg-gray-50 transition-colors relative",
+                selectedClientId === client.id && "bg-blue-50 border-l-2 border-l-blue-600"
+              )}
+              title={`${client.user.firstName} ${client.user.lastName}`}
+            >
+              <div
+                className={cn(
+                  "w-2.5 h-2.5 rounded-full",
+                  statusDotColors[client.status || "enrolled"]
+                )}
+              />
+              {client.unreadMessages > 0 && (
+                <div className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full" />
+              )}
+            </button>
+          ))}
+        </div>
+        <div className="p-2 border-t border-gray-200 flex justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={onNewClient}
+            title="New Client"
+          >
+            <Plus className="w-4 h-4 text-gray-500" />
+          </Button>
+        </div>
+      </aside>
+    );
+  }
+
   return (
-    <aside className="w-80 border-r border-gray-200 bg-white flex flex-col h-full">
-      {/* Search */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="relative">
+    <aside className="w-80 flex-shrink-0 border-r border-gray-200 bg-white flex flex-col h-full">
+      {/* Header with collapse toggle */}
+      <div className="p-4 border-b border-gray-200 flex items-center gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Search clients..."
@@ -88,6 +143,15 @@ export function CoachingSidebar({
             className="pl-9 bg-gray-50 border-gray-200"
           />
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 flex-shrink-0"
+          onClick={() => setCollapsed(true)}
+          title="Collapse sidebar"
+        >
+          <PanelLeftClose className="w-4 h-4 text-gray-500" />
+        </Button>
       </div>
 
       {/* Quick Stats */}
