@@ -7503,36 +7503,32 @@ Keep it professional, concise, and actionable for the coach.`,
         return acc;
       }, {});
 
-      // Call Anthropic Claude with structured JSON output
-      const Anthropic = (await import("@anthropic-ai/sdk")).default;
-      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-      const response = await anthropic.messages.create({
-        model: "claude-3-opus-20240229",
-        max_tokens: 2000,
+      // Call OpenAI GPT-4o with structured JSON output
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
         messages: [
           {
-            role: "user",
-            content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes.
-
-Client: ${user.firstName} ${user.lastName}
-Coaching Type: ${client.coachingType || "pregnancy_coaching"}
-
-Intake Form Data:
-${JSON.stringify(allFormData, null, 2)}
-
-Generate a JSON object with exactly these fields:
+            role: "system",
+            content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes. Return a JSON object with exactly these fields:
 - trainingFocus: Specific training priorities, modifications, and focus areas (2-4 sentences)
 - nutritionalGuidance: Dietary needs, preferences, restrictions, macro goals (2-4 sentences)
 - thingsToWatch: Red flags, conditions to monitor, exercise modifications needed (2-4 sentences)
 - personalityNotes: Communication style, motivation drivers, coaching approach recommendations (2-4 sentences)
 
-Be specific to THIS client's data. Reference their actual medical history, goals, and constraints. Return ONLY valid JSON, no markdown or other formatting.`,
+Be specific to THIS client's data. Reference their actual medical history, goals, and constraints.`,
+          },
+          {
+            role: "user",
+            content: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
           },
         ],
+        response_format: { type: "json_object" },
+        max_tokens: 1500,
       });
 
-      const textContent = response.content[0].type === 'text' ? response.content[0].text : '{}';
-      const remarks = JSON.parse(textContent);
+      const remarks = JSON.parse(response.choices[0]?.message?.content || "{}");
       console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
       res.json({ success: true, remarks });
     } catch (error: any) {
@@ -7542,11 +7538,11 @@ Be specific to THIS client's data. Reference their actual medical history, goals
       console.error(`[Coaching] Detailed error: ${detailedError}`);
 
       // Check for specific error types
-      if (!process.env.ANTHROPIC_API_KEY) {
-        return res.status(500).json({ message: "Anthropic API key not configured" });
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY to your environment variables." });
       }
       if (errorMessage.includes("API key") || errorMessage.includes("authentication")) {
-        return res.status(500).json({ message: "Invalid Anthropic API key" });
+        return res.status(500).json({ message: "Invalid OpenAI API key" });
       }
 
       res.status(500).json({ message: `Failed to generate coach remarks: ${detailedError}` });
