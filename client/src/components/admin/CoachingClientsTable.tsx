@@ -161,26 +161,24 @@ export function CoachingClientsTable({ clients, isLoading, onSelectClient }: Coa
                 {/* Check-in */}
                 <td className="px-5 py-4">
                   {client.status === "active" ? (
-                    <div>
-                      {client.lastCheckinDate ? (
+                    client.lastCheckinDate ? (
+                      <div>
                         <span className="text-xs text-gray-600 block">
                           {new Date(client.lastCheckinDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                         </span>
-                      ) : (
-                        <span className="text-xs text-gray-400">None</span>
-                      )}
-                      {missed === 0 ? (
-                        <span className="text-[10px] text-green-600 font-medium">Today</span>
-                      ) : missed <= 2 ? (
-                        <span className={cn("text-[10px] font-medium", "text-amber-600")}>{missed}d ago</span>
-                      ) : missed < 999 ? (
-                        <span className={cn("text-[10px] font-medium", "text-red-600")}>{missed}d ago</span>
-                      ) : (
-                        <span className="text-[10px] text-red-500">Never</span>
-                      )}
-                    </div>
+                        {missed === 0 ? (
+                          <span className="text-[10px] text-green-600 font-medium">Today</span>
+                        ) : missed <= 2 ? (
+                          <span className="text-[10px] font-medium text-amber-600">{missed}d ago</span>
+                        ) : (
+                          <span className="text-[10px] font-medium text-red-600">{missed}d ago</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-400 italic">No check-ins yet</span>
+                    )
                   ) : (
-                    <span className="text-xs text-gray-400">-</span>
+                    <span className="text-xs text-gray-300">&mdash;</span>
                   )}
                 </td>
 
@@ -209,7 +207,10 @@ export function CoachingClientsTable({ clients, isLoading, onSelectClient }: Coa
 
                 {/* Actions */}
                 <td className="px-5 py-4 text-right">
-                  <ChevronRight className="w-4 h-4 text-gray-400 inline-block" />
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pink-600 bg-pink-50 rounded-full hover:bg-pink-100 transition-colors">
+                    View
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
                 </td>
               </tr>
             );

@@ -202,9 +202,9 @@ export function CoachingClientInfoCard({ client, onUpdateClient }: CoachingClien
                   <div>
                     <Label className="text-xs text-gray-500">Pregnancy Notes</Label>
                     <Textarea
-                      className="mt-1 text-sm min-h-[36px] bg-white"
-                      rows={1}
-                      placeholder="Pregnancy-related notes..."
+                      className="mt-1 text-sm min-h-[100px] bg-white resize-y"
+                      rows={4}
+                      placeholder="Pregnancy-related notes: complications, restrictions, special considerations, trimester-specific adjustments..."
                       defaultValue={client.pregnancyNotes || ''}
                       onBlur={(e) => {
                         if (e.target.value !== (client.pregnancyNotes || '')) {
