@@ -3754,7 +3754,17 @@ RESPONSE GUIDELINES:
   app.post("/api/admin/automation-rules/:id/test", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       const { id } = req.params;
-      const testEmail = "me@zoemodgill.in";
+      const defaultEmails = ["me@zoemodgill.in", "varun@strongerwithzoe.com", "himani@strongerwithzoe.com"];
+
+      // Accept comma-separated emails from request body, fall back to defaults
+      const emailsInput = req.body.emails as string | undefined;
+      const testEmails = emailsInput
+        ? emailsInput.split(",").map((e: string) => e.trim()).filter((e: string) => e.length > 0)
+        : defaultEmails;
+
+      if (testEmails.length === 0) {
+        return res.status(400).json({ message: "No valid email addresses provided" });
+      }
 
       const rule = await storage.getEmailAutomationRule(id);
       if (!rule) {
@@ -3778,16 +3788,25 @@ RESPONSE GUIDELINES:
         htmlContent = htmlContent.replace(regex, value);
       });
 
-      // Send via email service
-      await emailService.send({
-        to: { email: testEmail, name: "Test User" },
-        subject: `[TEST] ${subject}`,
-        html: htmlContent,
-      });
+      // Send to all recipients
+      const results = await Promise.allSettled(
+        testEmails.map((email: string) =>
+          emailService.send({
+            to: { email, name: "Test User" },
+            subject: `[TEST] ${subject}`,
+            html: htmlContent,
+          })
+        )
+      );
 
-      res.json({ 
-        message: `Test email sent to ${testEmail}`,
-        sentTo: testEmail 
+      const sentCount = results.filter(r => r.status === "fulfilled").length;
+      const sentTo = testEmails.join(", ");
+
+      res.json({
+        message: `Test email sent to ${sentCount}/${testEmails.length} recipients`,
+        sentTo,
+        sentCount,
+        totalRecipients: testEmails.length,
       });
     } catch (error) {
       console.error("Error sending test automation email:", error);

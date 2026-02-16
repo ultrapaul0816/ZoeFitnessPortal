@@ -44,6 +44,7 @@ export default function AdminAutomationSettings() {
   const [editSubject, setEditSubject] = useState("");
   const [editContent, setEditContent] = useState("");
   const [testingRuleId, setTestingRuleId] = useState<string | null>(null);
+  const [testEmails, setTestEmails] = useState("me@zoemodgill.in, varun@strongerwithzoe.com, himani@strongerwithzoe.com");
 
   // Fetch automation rules
   const { data: rules = [], isLoading: isLoadingRules, isError: isRulesError, error: rulesError } = useQuery<EmailAutomationRule[]>({
@@ -109,8 +110,8 @@ export default function AdminAutomationSettings() {
 
   // Send test email mutation
   const sendTestMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await apiRequest("POST", `/api/admin/automation-rules/${id}/test`, {});
+    mutationFn: async ({ id, emails }: { id: string; emails: string }) => {
+      const response = await apiRequest("POST", `/api/admin/automation-rules/${id}/test`, { emails });
       return await response.json();
     },
     onSuccess: (data: any) => {
@@ -290,6 +291,17 @@ export default function AdminAutomationSettings() {
           </p>
         </div>
 
+        {/* Test Email Recipients */}
+        <div className="mb-6">
+          <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Test email recipients (comma-separated)</Label>
+          <Input
+            value={testEmails}
+            onChange={(e) => setTestEmails(e.target.value)}
+            placeholder="email1@example.com, email2@example.com"
+            className="max-w-2xl"
+          />
+        </div>
+
         {/* Error State */}
         {isRulesError && (
           <Card className="border-red-200 bg-red-50 mb-6">
@@ -377,7 +389,7 @@ export default function AdminAutomationSettings() {
                           variant="outline"
                           onClick={() => {
                             setTestingRuleId(rule.id);
-                            sendTestMutation.mutate(rule.id);
+                            sendTestMutation.mutate({ id: rule.id, emails: testEmails });
                           }}
                           disabled={testingRuleId === rule.id && sendTestMutation.isPending}
                           className="border-green-300 hover:bg-green-50 text-green-700"
