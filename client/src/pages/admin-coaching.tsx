@@ -62,6 +62,7 @@ import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-r
 import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCard";
 import { CoachingClientsTable } from "@/components/admin/CoachingClientsTable";
 import { CoachingWorkoutTable } from "@/components/admin/CoachingWorkoutTable";
+import { CoachingSidebar } from "@/components/admin/CoachingSidebar";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
 type CoachingClientWithUser = CoachingClient & {
@@ -532,28 +533,8 @@ export default function AdminCoaching() {
 
   return (
     <AdminLayout activeTab="private-coaching" onTabChange={() => {}} onNavigate={setLocation}>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-              {activeView === "client-detail" && selectedClient ? (
-                <>
-                  <button onClick={() => setActiveView("clients")} className="text-gray-400 hover:text-gray-600 transition-colors">
-                    Private Coaching
-                  </button>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                  <span>{selectedClient.user.firstName} {selectedClient.user.lastName}</span>
-                </>
-              ) : (
-                "Private Coaching"
-              )}
-            </h1>
-            {activeView === "clients" && (
-              <p className="text-gray-500 mt-1">Manage 1:1 coaching clients, plans, and messaging</p>
-            )}
-          </div>
-          {activeView === "clients" && (
-            <Dialog open={showNewClientDialog} onOpenChange={setShowNewClientDialog}>
+      {/* New Client Dialog - Always available */}
+      <Dialog open={showNewClientDialog} onOpenChange={setShowNewClientDialog}>
               <DialogTrigger asChild>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                   <Plus className="w-4 h-4 mr-2" />
@@ -650,127 +631,44 @@ export default function AdminCoaching() {
                   </Button>
                 </DialogFooter>
               </DialogContent>
-            </Dialog>
-          )}
-        </div>
+      </Dialog>
 
-        {activeView === "clients" && (
-          <>
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              <Card className="border border-gray-200 bg-white">
-                <CardContent className="pt-5 pb-4 px-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Clients</p>
-                      <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                      <Users className="w-5 h-5 text-gray-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className={cn("border border-gray-200 bg-white hover:bg-gray-50", statusFilter === "active" && "ring-2 ring-blue-600")} onClick={() => setStatusFilter(statusFilter === "active" ? "all" : "active")} role="button">
-                <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Active</p>
-                      <p className="text-2xl font-bold text-gray-900 mt-1">{stats.active}</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5 text-gray-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className={cn("border border-gray-200 bg-white hover:bg-gray-50", statusFilter === "needs_action" && "ring-2 ring-blue-600")} onClick={() => setStatusFilter(statusFilter === "needs_action" ? "all" : "needs_action")} role="button">
-                <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Needs Action</p>
-                      <p className="text-2xl font-bold text-gray-900 mt-1">{stats.needsAction}</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                      <AlertCircle className="w-5 h-5 text-gray-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border border-gray-200 bg-white">
-                <CardContent className="pt-5 pb-4 px-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-in Rate</p>
-                      <p className="text-2xl font-bold text-gray-900 mt-1">{stats.avgCheckinRate}%</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                      <Activity className="w-5 h-5 text-gray-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className={cn("border border-gray-200 bg-white hover:bg-gray-50", statusFilter === "completed" && "ring-2 ring-blue-600")} onClick={() => setStatusFilter(statusFilter === "completed" ? "all" : "completed")} role="button">
-                <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Completed</p>
-                      <p className="text-2xl font-bold text-gray-600 mt-1">{stats.completed}</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5 text-gray-500" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Sidebar + Main Panel Layout */}
+      <div className="flex h-[calc(100vh-120px)] overflow-hidden">
+        {/* Sidebar */}
+        <CoachingSidebar
+          clients={filteredClients as any}
+          selectedClientId={selectedClientId ? parseInt(selectedClientId) : null}
+          onSelectClient={(id) => openClientDetail(String(id))}
+          onNewClient={() => setShowNewClientDialog(true)}
+          stats={{
+            active: stats.active,
+            needsAction: stats.needsAction,
+          }}
+          isLoading={isLoadingClients}
+        />
+
+        {/* Main Panel */}
+        <main className="flex-1 overflow-y-auto bg-gray-50">
+          {!selectedClient ? (
+            /* Empty State - No Client Selected */
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Select a client to get started
+                </h3>
+                <p className="text-sm text-gray-500 mb-6">
+                  Choose a client from the sidebar to view their details and manage their coaching program
+                </p>
+              </div>
             </div>
-
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-lg">Coaching Clients</CardTitle>
-                    {statusFilter !== "all" && (
-                      <Badge variant="outline" className="text-xs cursor-pointer hover:bg-gray-100" onClick={() => setStatusFilter("all")}>
-                        {statusFilter === "needs_action" ? "Needs Action" : statusFilter} <X className="w-3 h-3 ml-1 inline" />
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={sortMode}
-                      onChange={e => setSortMode(e.target.value as "urgent" | "recent" | "alpha")}
-                      className="text-xs border border-gray-200 rounded-lg px-2 py-2 bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-300"
-                    >
-                      <option value="urgent">Most urgent</option>
-                      <option value="recent">Recently active</option>
-                      <option value="alpha">A → Z</option>
-                    </select>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        placeholder="Search clients..."
-                        className="pl-9 w-64"
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <CoachingClientsTable
-                  clients={filteredClients as any}
-                  isLoading={isLoadingClients}
-                  onSelectClient={openClientDetail}
-                />
-              </CardContent>
-            </Card>
-          </>
-        )}
-
-        {activeView === "client-detail" && selectedClient && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
+          ) : (
+            /* Client Detail View */
+            <div className="p-8">
+              <div className="space-y-6">
+                {/* Client Header */}
+                <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg">
                 {selectedClient.user.firstName[0]}{selectedClient.user.lastName[0]}
               </div>
@@ -2397,9 +2295,13 @@ export default function AdminCoaching() {
                 />
               </TabsContent>
             </Tabs>
-          </div>
-        )}
+              </div>
+            </div>
+          )}
+        </main>
       </div>
+
+      {/* Video Popup Dialog */}
       <Dialog open={!!videoPopupUrl} onOpenChange={(open) => { if (!open) setVideoPopupUrl(null); }}>
         <DialogContent className="sm:max-w-[720px] p-0 overflow-hidden">
           <DialogHeader className="p-4 pb-2">
