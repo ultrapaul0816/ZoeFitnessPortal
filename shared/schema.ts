@@ -1069,6 +1069,7 @@ export const coachingClients = pgTable("coaching_clients", {
   pregnancyNotes: text("pregnancy_notes"),
   notes: text("notes"),
   coachRemarks: jsonb("coach_remarks"),
+  weeklyPlanOutlines: jsonb("weekly_plan_outlines"), // Structured week-by-week plan outlines before full workout generation
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 }, (table) => [

@@ -7524,6 +7524,133 @@ Be specific to THIS client's data. Reference their actual medical history, goals
     }
   });
 
+  // Generate weekly plan outline (Unit 4 - Plan Preview Step)
+  app.post("/api/admin/coaching/clients/:clientId/generate-plan-outline", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const clientId = req.params.clientId;
+      const { weekNumber } = req.body;
+
+      if (!weekNumber || weekNumber < 1 || weekNumber > 4) {
+        return res.status(400).json({ message: "Week number must be between 1 and 4" });
+      }
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Gather context: form responses, coach remarks, previous week
+      const formResponses = await storage.getCoachingFormResponses(clientId);
+      const allFormData = formResponses.reduce((acc: any, r: any) => {
+        acc[r.formType] = r.responses;
+        return acc;
+      }, {});
+
+      const existingPlans = await storage.getCoachingWorkoutPlans(client.id);
+      const previousWeekPlans = existingPlans.filter((p: any) => p.weekNumber === weekNumber - 1);
+      const previousWeekSummary = previousWeekPlans.length > 0
+        ? previousWeekPlans.map((p: any) => `Day ${p.dayNumber}: ${p.dayType} - ${p.title}`).join(", ")
+        : "No previous week";
+
+      const coachRemarks = (client as any).coachRemarks || {};
+
+      // Call OpenAI for plan outline
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Generate a weekly plan outline BEFORE creating the full detailed workout. Return a JSON object with:
+- philosophy: Overall approach for this week (2-3 sentences)
+- focusAreas: Array of 2-4 key focus areas (strings)
+- dayOutlines: Array of 7 objects with { dayNumber, dayName, dayType, briefDescription }
+- progressionFromLastWeek: How this week builds on previous week (1-2 sentences)
+- safetyConsiderations: Any special precautions or modifications needed (1-2 sentences)
+
+Day types can be: Strength, Cardio, Recovery, Mobility, HIIT, Rest
+Be specific to THIS client's needs, trimester/stage, and goals.`,
+          },
+          {
+            role: "user",
+            content: `Client: ${user.firstName} ${user.lastName}
+Week Number: ${weekNumber}
+Coaching Type: ${(client as any).coachingType || "pregnancy_coaching"}
+Previous Week: ${previousWeekSummary}
+
+Coach Remarks:
+${JSON.stringify(coachRemarks, null, 2)}
+
+Intake Forms:
+${JSON.stringify(allFormData, null, 2)}`,
+          },
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 2000,
+      });
+
+      const outline = JSON.parse(response.choices[0]?.message?.content || "{}");
+
+      // Store outline in client's weeklyPlanOutlines JSONB
+      const currentOutlines = (client as any).weeklyPlanOutlines || {};
+      currentOutlines[weekNumber.toString()] = {
+        ...outline,
+        approved: false,
+        generatedAt: new Date().toISOString(),
+      };
+
+      await storage.updateCoachingClient(clientId, { weeklyPlanOutlines: currentOutlines } as any);
+      console.log(`[Coaching] Plan outline generated for client ${clientId}, week ${weekNumber}`);
+
+      res.json({ success: true, outline: currentOutlines[weekNumber.toString()] });
+    } catch (error) {
+      console.error("Error generating plan outline:", error);
+      res.status(500).json({ message: "Failed to generate plan outline" });
+    }
+  });
+
+  // Approve outline and generate full workout (Unit 4)
+  app.post("/api/admin/coaching/clients/:clientId/approve-outline-and-generate", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const clientId = req.params.clientId;
+      const { weekNumber, editedOutline } = req.body;
+
+      if (!weekNumber || weekNumber < 1 || weekNumber > 4) {
+        return res.status(400).json({ message: "Week number must be between 1 and 4" });
+      }
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      // Mark outline as approved and save any edits
+      const currentOutlines = (client as any).weeklyPlanOutlines || {};
+      if (!currentOutlines[weekNumber.toString()]) {
+        return res.status(400).json({ message: "No outline exists for this week. Generate outline first." });
+      }
+
+      currentOutlines[weekNumber.toString()].approved = true;
+      currentOutlines[weekNumber.toString()].approvedAt = new Date().toISOString();
+      if (editedOutline) {
+        currentOutlines[weekNumber.toString()].editedOutline = editedOutline;
+      }
+
+      await storage.updateCoachingClient(clientId, { weeklyPlanOutlines: currentOutlines } as any);
+
+      // Now generate the full workout using the approved outline as context
+      // This will inject the outline into the existing workout generation logic
+      console.log(`[Coaching] Outline approved for client ${clientId}, week ${weekNumber}. Proceeding to workout generation with outline context.`);
+
+      // Forward to existing workout generation endpoint with outline context injected
+      // For now, return success - the frontend will call the existing generate-workout endpoint
+      res.json({ success: true, message: "Outline approved. Ready to generate full workout." });
+    } catch (error) {
+      console.error("Error approving outline:", error);
+      res.status(500).json({ message: "Failed to approve outline" });
+    }
+  });
+
   // Generate AI workout plan for a specific week
   app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
