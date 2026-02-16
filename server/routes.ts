@@ -7473,6 +7473,57 @@ Keep it professional, concise, and actionable for the coach.`,
     }
   });
 
+  // Generate AI-powered coach remarks from intake forms
+  app.post("/api/admin/coaching/clients/:clientId/generate-coach-remarks", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const clientId = req.params.clientId;
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Get all form responses
+      const allResponses = await storage.getCoachingFormResponses(clientId);
+      const allFormData = allResponses.reduce((acc: any, r: any) => {
+        acc[r.formType] = r.responses;
+        return acc;
+      }, {});
+
+      // Call OpenAI with structured JSON output
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes. Return a JSON object with exactly these fields:
+- trainingFocus: Specific training priorities, modifications, and focus areas (2-4 sentences)
+- nutritionalGuidance: Dietary needs, preferences, restrictions, macro goals (2-4 sentences)
+- thingsToWatch: Red flags, conditions to monitor, exercise modifications needed (2-4 sentences)
+- personalityNotes: Communication style, motivation drivers, coaching approach recommendations (2-4 sentences)
+
+Be specific to THIS client's data. Reference their actual medical history, goals, and constraints.`,
+          },
+          {
+            role: "user",
+            content: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
+          },
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 1500,
+      });
+
+      const remarks = JSON.parse(response.choices[0]?.message?.content || "{}");
+      console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
+      res.json({ success: true, remarks });
+    } catch (error) {
+      console.error("Error generating coach remarks:", error);
+      res.status(500).json({ message: "Failed to generate coach remarks" });
+    }
+  });
+
   // Generate AI workout plan for a specific week
   app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {

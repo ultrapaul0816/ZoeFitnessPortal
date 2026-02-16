@@ -305,6 +305,34 @@ export default function AdminCoaching() {
     },
   });
 
+  const generateCoachRemarksMutation = useMutation({
+    mutationFn: async (clientId: string) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-coach-remarks`);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      if (data.remarks && selectedClient) {
+        const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
+        updateClientMutation.mutate({
+          clientId: selectedClient.id,
+          updates: {
+            coachRemarks: {
+              ...currentRemarks,
+              trainingFocus: data.remarks.trainingFocus || currentRemarks.trainingFocus || "",
+              nutritionalGuidance: data.remarks.nutritionalGuidance || currentRemarks.nutritionalGuidance || "",
+              thingsToWatch: data.remarks.thingsToWatch || currentRemarks.thingsToWatch || "",
+              personalityNotes: data.remarks.personalityNotes || currentRemarks.personalityNotes || "",
+            }
+          }
+        });
+      }
+      toast({ title: "AI-generated coaching notes applied", description: "Review and edit as needed before generating workouts." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error generating coach remarks", description: err.message, variant: "destructive" });
+    },
+  });
+
   const approvePlanMutation = useMutation({
     mutationFn: async (clientId: string) => {
       const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/approve-plan`);
@@ -1080,11 +1108,24 @@ export default function AdminCoaching() {
                         {/* === COACH'S NOTES & DIRECTION === */}
                         <Card className="border-0 shadow-sm border-l-4 border-l-violet-400">
                           <CardHeader className="pb-2">
-                            <CardTitle className="text-base flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-violet-500" />
-                              Coach's Notes & Direction
-                            </CardTitle>
-                            <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit">These notes are used by AI when generating workouts and nutrition plans</p>
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <CardTitle className="text-base flex items-center gap-2">
+                                  <Sparkles className="w-4 h-4 text-violet-500" />
+                                  Coach's Notes & Direction
+                                </CardTitle>
+                                <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit mt-1">These notes are used by AI when generating workouts and nutrition plans</p>
+                              </div>
+                              <Button
+                                variant="outline" size="sm"
+                                className="text-violet-600 border-violet-300 hover:bg-violet-50"
+                                onClick={() => generateCoachRemarksMutation.mutate(selectedClient.id)}
+                                disabled={generateCoachRemarksMutation.isPending}
+                              >
+                                <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
+                                {generateCoachRemarksMutation.isPending ? "Generating..." : "Generate with AI"}
+                              </Button>
+                            </div>
                           </CardHeader>
                           <CardContent>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
