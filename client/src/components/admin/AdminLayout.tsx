@@ -32,6 +32,7 @@ import {
   ShoppingBag,
   Send,
   TrendingUp,
+  Home,
 } from "lucide-react";
 
 interface NavItem {
@@ -283,7 +284,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
         </nav>
       </ScrollArea>
 
-      <div className="border-t border-gray-200/60 dark:border-gray-800 p-4 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm">
+      <div className="border-t border-gray-200/60 dark:border-gray-800 p-4 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm space-y-2">
         {isCollapsed ? (
           <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -293,24 +294,56 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
                   className="w-full flex items-center justify-center p-3.5 rounded-2xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-md hover:scale-105 group"
                   data-testid="nav-exit-admin"
                 >
-                  <LogOut className="w-5 h-5 group-hover:text-pink-600 transition-colors" />
+                  <Home className="w-5 h-5 group-hover:text-pink-600 transition-colors" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right" className="font-medium bg-gray-900 text-white border-gray-700">
                 Back to Member View
               </TooltipContent>
             </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={async () => {
+                    try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
+                    localStorage.removeItem("user");
+                    window.location.href = "/admin/login";
+                  }}
+                  className="w-full flex items-center justify-center p-3.5 rounded-2xl text-gray-600 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/20 transition-all duration-300 hover:shadow-md hover:scale-105 group"
+                  data-testid="nav-logout"
+                >
+                  <LogOut className="w-5 h-5 group-hover:text-red-600 transition-colors" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="font-medium bg-gray-900 text-white border-gray-700">
+                Logout
+              </TooltipContent>
+            </Tooltip>
           </TooltipProvider>
         ) : (
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 text-left group hover:shadow-md hover:scale-[1.01] relative overflow-hidden"
-            data-testid="nav-exit-admin"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-pink-500/5 to-pink-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-            <LogOut className="w-5 h-5 group-hover:scale-110 group-hover:text-pink-600 transition-all duration-300 relative z-10" />
-            <span className="text-sm font-semibold relative z-10">Back to Member View</span>
-          </button>
+          <>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 text-left group hover:shadow-md hover:scale-[1.01] relative overflow-hidden"
+              data-testid="nav-exit-admin"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-pink-500/5 to-pink-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              <Home className="w-5 h-5 group-hover:scale-110 group-hover:text-pink-600 transition-all duration-300 relative z-10" />
+              <span className="text-sm font-semibold relative z-10">Back to Member View</span>
+            </button>
+            <button
+              onClick={async () => {
+                try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
+                localStorage.removeItem("user");
+                window.location.href = "/admin/login";
+              }}
+              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-gray-600 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/20 transition-all duration-300 text-left group hover:shadow-md hover:scale-[1.01]"
+              data-testid="nav-logout"
+            >
+              <LogOut className="w-5 h-5 group-hover:scale-110 group-hover:text-red-600 transition-all duration-300" />
+              <span className="text-sm font-semibold group-hover:text-red-600 transition-colors">Logout</span>
+            </button>
+          </>
         )}
       </div>
     </div>

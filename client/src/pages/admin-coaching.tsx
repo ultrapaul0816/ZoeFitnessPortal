@@ -54,8 +54,13 @@ import {
   Circle,
   ArrowRight,
   UserPlus,
+  LayoutGrid,
+  Table2,
 } from "lucide-react";
 import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-responses";
+import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCard";
+import { CoachingClientsTable } from "@/components/admin/CoachingClientsTable";
+import { CoachingWorkoutTable } from "@/components/admin/CoachingWorkoutTable";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
 type CoachingClientWithUser = CoachingClient & {
@@ -122,6 +127,7 @@ export default function AdminCoaching() {
   const [generationProgress, setGenerationProgress] = useState(0);
   const [addingExerciseSection, setAddingExerciseSection] = useState<number | null>(null);
   const [videoPopupUrl, setVideoPopupUrl] = useState<string | null>(null);
+  const [workoutViewMode, setWorkoutViewMode] = useState<"calendar" | "table">("calendar");
   const [editingNutritionDish, setEditingNutritionDish] = useState<{ planId: string; optionIndex: number; data: any } | null>(null);
   const [regeneratingDish, setRegeneratingDish] = useState<string | null>(null);
   const { toast } = useToast();
@@ -645,120 +651,12 @@ export default function AdminCoaching() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                {isLoadingClients ? (
-                  <div className="text-center py-12 text-gray-500">Loading clients...</div>
-                ) : filteredClients.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">No coaching clients yet</p>
-                    <p className="text-gray-400 text-sm mt-1">Click "New Client" to enroll your first private coaching client</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {filteredClients.map(client => {
-                      const missed = (client as any).missedCheckinDays || 0;
-                      const unread = client.unreadMessages || 0;
-                      const isInactive = ["paused", "completed", "cancelled"].includes(client.status || "");
-                      const urgencyBorder = isInactive ? "border-l-gray-300" :
-                        (missed >= 3 || unread >= 3) ? "border-l-red-400" :
-                        (missed >= 1 || unread >= 1) ? "border-l-amber-400" :
-                        client.status === "active" ? "border-l-green-400" : "border-l-transparent";
-
-                      return (
-                        <button
-                          key={client.id}
-                          onClick={() => openClientDetail(client.id)}
-                          className={cn(
-                            "w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all text-left group border border-transparent hover:border-gray-200 border-l-4",
-                            urgencyBorder
-                          )}
-                        >
-                          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                            {client.user.firstName[0]}{client.user.lastName[0]}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="font-semibold text-gray-900 truncate">
-                                {client.user.firstName} {client.user.lastName}
-                              </p>
-                              <Badge variant="outline" className={cn("text-[10px] shrink-0", statusColors[client.status || "enrolled"])}>
-                                {statusLabels[client.status || "enrolled"]}
-                              </Badge>
-                              {(client.status === "enrolled" || client.status === "intake_complete") && (
-                                <Badge className="text-[9px] bg-amber-500 text-white animate-pulse shrink-0">
-                                  ACTION NEEDED
-                                </Badge>
-                              )}
-                              <Badge variant="outline" className={cn("text-[10px] shrink-0", (client as any).coachingType === "private_coaching" ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-pink-50 text-pink-600 border-pink-200")}>
-                                {(client as any).coachingType === "private_coaching" ? "Private" : "Pregnancy"}
-                              </Badge>
-                            </div>
-                            {/* Last message preview */}
-                            {(client as any).lastMessagePreview ? (
-                              <p className="text-xs text-gray-400 truncate mt-0.5 italic">"{(client as any).lastMessagePreview}..."</p>
-                            ) : (
-                              <p className="text-sm text-gray-500 truncate">{client.user.email}</p>
-                            )}
-                            {/* Onboarding hint for new clients */}
-                            {client.status === "enrolled" && (
-                              <div className="flex items-center gap-1 mt-1">
-                                <FileText className="w-3 h-3 text-amber-500" />
-                                <span className="text-[10px] text-amber-600 font-medium">Waiting for intake forms</span>
-                              </div>
-                            )}
-                            {client.status === "intake_complete" && (
-                              <div className="flex items-center gap-1 mt-1">
-                                <Brain className="w-3 h-3 text-indigo-500" />
-                                <span className="text-[10px] text-indigo-600 font-medium">Ready for plan generation</span>
-                              </div>
-                            )}
-                            {client.status === "plan_ready" && (
-                              <div className="flex items-center gap-1 mt-1">
-                                <Zap className="w-3 h-3 text-cyan-500" />
-                                <span className="text-[10px] text-cyan-600 font-medium">Plan ready — activate client</span>
-                              </div>
-                            )}
-                            {/* Check-in status line */}
-                            {client.status === "active" && (
-                              <div className="flex items-center gap-2 mt-1">
-                                {missed === 0 ? (
-                                  <span className="text-[10px] text-green-600 font-medium">Checked in today</span>
-                                ) : missed <= 2 ? (
-                                  <span className="text-[10px] text-amber-600">Last check-in: {missed}d ago</span>
-                                ) : missed < 999 ? (
-                                  <span className="text-[10px] text-red-600 font-medium">No check-in for {missed} days</span>
-                                ) : (
-                                  <span className="text-[10px] text-red-500">No check-ins yet</span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3 shrink-0">
-                            {unread > 0 && (
-                              <Badge className={cn("text-white text-[10px]", unread >= 3 ? "bg-red-500" : "bg-pink-500")}>
-                                {unread} new
-                              </Badge>
-                            )}
-                            <div className="text-right">
-                              {client.lastCheckinDate && (
-                                <span className="text-[10px] text-gray-400 block">
-                                  Check-in: {new Date(client.lastCheckinDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                </span>
-                              )}
-                              {client.startDate && (
-                                <span className="text-[10px] text-gray-400 block">
-                                  Started {new Date(client.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                </span>
-                              )}
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-pink-500 transition-colors" />
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+              <CardContent className="p-0">
+                <CoachingClientsTable
+                  clients={filteredClients as any}
+                  isLoading={isLoadingClients}
+                  onSelectClient={openClientDetail}
+                />
               </CardContent>
             </Card>
           </>
@@ -909,7 +807,7 @@ export default function AdminCoaching() {
                               onClick={() => {
                                 if (step.key === "remarks") setActiveTab("overview");
                                 else if (step.key === "plan") setActiveTab("workout");
-                                else if (step.key === "forms") setActiveTab("overview");
+                                else if (step.key === "forms") setActiveTab("intake");
                               }}
                               style={{ cursor: "pointer" }}
                             >
@@ -934,6 +832,12 @@ export default function AdminCoaching() {
               );
             })()}
 
+            {/* === CLIENT INFO CARD (collapsible, above tabs) === */}
+            <CoachingClientInfoCard
+              client={selectedClient as any}
+              onUpdateClient={(data) => updateClientMutation.mutate(data)}
+            />
+
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="bg-gray-100 p-1 rounded-xl">
                 <TabsTrigger value="overview" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
@@ -953,6 +857,12 @@ export default function AdminCoaching() {
                 </TabsTrigger>
                 <TabsTrigger value="checkins" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
                   <ClipboardList className="w-4 h-4" /> Check-ins
+                </TabsTrigger>
+                <TabsTrigger value="intake" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <FileText className="w-4 h-4" /> Intake Forms
+                  {selectedClient.status === "intake_complete" && (
+                    <Badge className="bg-indigo-500 text-white text-[9px] ml-1 px-1.5">New</Badge>
+                  )}
                 </TabsTrigger>
               </TabsList>
 
@@ -1279,132 +1189,8 @@ export default function AdminCoaching() {
                           </Card>
                         )}
 
-                        {/* === COLLAPSIBLE: Client Details & Forms === */}
-                        <details className="group">
-                          <summary className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-600 hover:text-gray-900 py-2">
-                            <ChevronRight className="w-4 h-4 transition-transform group-open:rotate-90" />
-                            Client Details & Intake Forms
-                            {selectedClient.isPregnant && (
-                              <Badge className="bg-pink-100 text-pink-700 border-pink-200 text-[10px]">
-                                {selectedClient.dueDate ? (() => {
-                                  const daysLeft = Math.max(0, Math.ceil((new Date(selectedClient.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
-                                  const weeksPregnant = Math.max(0, Math.floor((280 - daysLeft) / 7));
-                                  return `T${weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3} · Week ${weeksPregnant}`;
-                                })() : "Pregnant"}
-                              </Badge>
-                            )}
-                          </summary>
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
-                            {/* Client Info */}
-                            <Card className="border-0 shadow-sm">
-                              <CardHeader>
-                                <CardTitle className="text-base">Client Information</CardTitle>
-                              </CardHeader>
-                              <CardContent className="space-y-3">
-                                {[
-                                  { label: "Name", value: `${selectedClient.user.firstName} ${selectedClient.user.lastName}` },
-                                  { label: "Email", value: selectedClient.user.email },
-                                  { label: "Phone", value: selectedClient.user.phone || "Not provided" },
-                                  { label: "Program", value: `${selectedClient.planDurationWeeks || 4} weeks` },
-                                ].map((item, i) => (
-                                  <div key={i}>
-                                    <div className="flex justify-between">
-                                      <span className="text-sm text-gray-500">{item.label}</span>
-                                      <span className="text-sm font-medium">{item.value}</span>
-                                    </div>
-                                    {i < 3 && <Separator className="mt-3" />}
-                                  </div>
-                                ))}
-                                <Separator />
-                                {[
-                                  { label: "Purchase Date", field: "purchaseDate" },
-                                  { label: "Form Submission", field: "formSubmissionDate" },
-                                  { label: "Start Date", field: "startDate" },
-                                  { label: "End Date", field: "endDate" },
-                                ].map((item) => (
-                                  <div key={item.field}>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-sm text-gray-500">{item.label}</span>
-                                      <Input
-                                        type="date"
-                                        className="w-40 h-8 text-sm"
-                                        value={(selectedClient as any)[item.field] ? new Date((selectedClient as any)[item.field]).toISOString().split('T')[0] : ''}
-                                        onChange={(e) => updateClientMutation.mutate({
-                                          clientId: selectedClient.id,
-                                          updates: { [item.field]: e.target.value ? new Date(e.target.value).toISOString() : null }
-                                        })}
-                                      />
-                                    </div>
-                                    <Separator className="mt-3" />
-                                  </div>
-                                ))}
-                                <div className="flex justify-between">
-                                  <span className="text-sm text-gray-500">Payment</span>
-                                  <span className="text-sm font-medium">
-                                    ₹{((selectedClient.paymentAmount || 0) / 100).toLocaleString()}
-                                    <Badge variant="outline" className={cn("ml-2 text-[10px]",
-                                      selectedClient.paymentStatus === "completed" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                                    )}>
-                                      {selectedClient.paymentStatus || "pending"}
-                                    </Badge>
-                                  </span>
-                                </div>
-                                {/* Pregnancy Info inline */}
-                                {selectedClient.isPregnant && (
-                                  <>
-                                    <Separator />
-                                    <div className="space-y-3 pt-2">
-                                      <div className="text-sm font-medium text-pink-600">Pregnancy Details</div>
-                                      <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                          <Label className="text-xs text-gray-500">Due Date</Label>
-                                          <Input
-                                            type="date"
-                                            className="mt-1 h-8 text-sm"
-                                            value={selectedClient.dueDate ? new Date(selectedClient.dueDate).toISOString().split('T')[0] : ''}
-                                            onChange={(e) => updateClientMutation.mutate({
-                                              clientId: selectedClient.id,
-                                              updates: { dueDate: e.target.value ? new Date(e.target.value).toISOString() : null }
-                                            })}
-                                          />
-                                        </div>
-                                        <div>
-                                          <Label className="text-xs text-gray-500">Trimester</Label>
-                                          <div className="mt-1 h-8 flex items-center">
-                                            {selectedClient.dueDate ? (() => {
-                                              const daysLeft = Math.max(0, Math.ceil((new Date(selectedClient.dueDate).getTime() - Date.now()) / (1000*60*60*24)));
-                                              const wp = Math.max(0, Math.floor((280 - daysLeft) / 7));
-                                              const t = wp <= 12 ? 1 : wp <= 26 ? 2 : 3;
-                                              const tc: Record<number,string> = { 1: "bg-blue-100 text-blue-700", 2: "bg-amber-100 text-amber-700", 3: "bg-pink-100 text-pink-700" };
-                                              return <Badge className={cn("text-[10px]", tc[t])}>T{t} · Week {wp}</Badge>;
-                                            })() : <span className="text-xs text-gray-400">Set due date</span>}
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <Label className="text-xs text-gray-500">Pregnancy Notes</Label>
-                                        <Textarea
-                                          className="mt-1 text-sm min-h-[36px]"
-                                          rows={1}
-                                          placeholder="Pregnancy-related notes..."
-                                          defaultValue={selectedClient.pregnancyNotes || ''}
-                                          onBlur={(e) => {
-                                            if (e.target.value !== (selectedClient.pregnancyNotes || '')) {
-                                              updateClientMutation.mutate({ clientId: selectedClient.id, updates: { pregnancyNotes: e.target.value || null } });
-                                            }
-                                          }}
-                                        />
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-                              </CardContent>
-                            </Card>
-
-                            {/* Form Responses */}
-                            <CoachingFormResponsesSection clientId={selectedClient.id} coachingType={(selectedClient as any).coachingType || "pregnancy_coaching"} />
-                          </div>
-                        </details>
+                        {/* Client details moved to CoachingClientInfoCard above tabs */}
+                        {/* Intake forms moved to dedicated "Intake Forms" tab */}
                       </>
                     );
                   })()}
@@ -1463,10 +1249,78 @@ export default function AdminCoaching() {
 
                 <Card className="border-0 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="text-base">4-Week Workout Plan</CardTitle>
-                    <p className="text-sm text-gray-500 mt-1">Generate one week at a time. Click a day card to view and edit exercises.</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-base">4-Week Workout Plan</CardTitle>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {workoutViewMode === "calendar"
+                            ? "Generate one week at a time. Click a day card to view and edit exercises."
+                            : "All workout days at a glance. Click actions to view or edit."}
+                        </p>
+                      </div>
+                      <div className="flex items-center border rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => setWorkoutViewMode("calendar")}
+                          className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
+                            workoutViewMode === "calendar"
+                              ? "bg-pink-500 text-white"
+                              : "bg-white text-gray-500 hover:bg-gray-50"
+                          )}
+                        >
+                          <LayoutGrid className="w-3.5 h-3.5" /> Calendar
+                        </button>
+                        <button
+                          onClick={() => setWorkoutViewMode("table")}
+                          className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
+                            workoutViewMode === "table"
+                              ? "bg-pink-500 text-white"
+                              : "bg-white text-gray-500 hover:bg-gray-50"
+                          )}
+                        >
+                          <Table2 className="w-3.5 h-3.5" /> Table
+                        </button>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent>
+                    {workoutViewMode === "table" ? (
+                      <CoachingWorkoutTable
+                        workoutPlans={(clientWorkoutPlan as any[])}
+                        completions={(clientCompletions as any[])}
+                        onEditDay={(day) => {
+                          const exercisesData = day.exercises?.sections ? day.exercises : (day.exercises?.exercises || { sections: [] });
+                          setExpandedAdminDay(`${day.weekNumber}-${day.dayNumber}`);
+                          setEditingDayData({
+                            planId: day.id,
+                            dayNumber: day.dayNumber,
+                            weekNumber: day.weekNumber,
+                            title: day.title,
+                            dayType: day.dayType,
+                            exercises: JSON.parse(JSON.stringify(exercisesData || { sections: [] })),
+                          });
+                          setEditingCoachNotes(day.coachNotes || "");
+                          setSwapTarget(null);
+                          setExerciseSearchQuery("");
+                          setWorkoutViewMode("calendar"); // Switch to calendar to show inline editor
+                        }}
+                        onViewDay={(day) => {
+                          const exercisesData = day.exercises?.sections ? day.exercises : (day.exercises?.exercises || { sections: [] });
+                          setExpandedAdminDay(`${day.weekNumber}-${day.dayNumber}`);
+                          setEditingDayData({
+                            planId: day.id,
+                            dayNumber: day.dayNumber,
+                            weekNumber: day.weekNumber,
+                            title: day.title,
+                            dayType: day.dayType,
+                            exercises: JSON.parse(JSON.stringify(exercisesData || { sections: [] })),
+                          });
+                          setEditingCoachNotes(day.coachNotes || "");
+                          setWorkoutViewMode("calendar"); // Switch to calendar to show inline editor
+                        }}
+                      />
+                    ) : (
                     <div className="space-y-6">
                       {[1, 2, 3, 4].map(week => {
                         const weekPlan = (clientWorkoutPlan as any[]).filter(p => p.weekNumber === week);
@@ -1971,6 +1825,7 @@ export default function AdminCoaching() {
                         );
                       })}
                     </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -2369,6 +2224,13 @@ export default function AdminCoaching() {
                     )}
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="intake" className="mt-6">
+                <CoachingFormResponsesSection
+                  clientId={selectedClient.id}
+                  coachingType={(selectedClient as any).coachingType || "pregnancy_coaching"}
+                />
               </TabsContent>
             </Tabs>
           </div>

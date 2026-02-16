@@ -55,23 +55,33 @@ interface ProgramProgress {
   generatedAt: string;
 }
 
-function WeekBadge({ count }: { count: number }) {
+function WeekBadge({ count, week, completions }: { count: number; week?: number; completions?: any[] }) {
+  // Build tooltip showing which specific workouts were completed
+  let tooltip = `Week ${week || "?"}: ${count}/4 workouts`;
+  if (completions && completions.length > 0 && week) {
+    const weekCompletions = completions.filter((c: any) => c.weekNumber === week);
+    if (weekCompletions.length > 0) {
+      const days = weekCompletions.map((c: any) => `Day ${c.dayNumber}${c.completedAt ? ` (${new Date(c.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })})` : ""}`);
+      tooltip = `Week ${week}: ${days.join(", ")}`;
+    }
+  }
+
   if (count >= 4) {
     return (
-      <span className="inline-flex items-center justify-center w-10 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-sm border border-emerald-200">
+      <span title={tooltip} className="inline-flex items-center justify-center w-10 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-sm border border-emerald-200 cursor-help">
         {count}/4
       </span>
     );
   }
   if (count > 0) {
     return (
-      <span className="inline-flex items-center justify-center w-10 h-8 rounded-lg bg-amber-100 text-amber-700 font-bold text-sm border border-amber-200">
+      <span title={tooltip} className="inline-flex items-center justify-center w-10 h-8 rounded-lg bg-amber-100 text-amber-700 font-bold text-sm border border-amber-200 cursor-help">
         {count}/4
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center justify-center w-10 h-8 rounded-lg bg-gray-100 text-gray-400 font-bold text-sm border border-gray-200">
+    <span title={tooltip} className="inline-flex items-center justify-center w-10 h-8 rounded-lg bg-gray-100 text-gray-400 font-bold text-sm border border-gray-200 cursor-help">
       0/4
     </span>
   );
@@ -274,10 +284,20 @@ function PhotoModal({ userId, userName, open, onClose }: { userId: string; userN
   );
 }
 
-function ExpandedUserDetails({ userId }: { userId: string }) {
+function ExpandedUserDetails({ userId, hasStartPhoto, hasFinishPhoto, onViewPhotos }: {
+  userId: string;
+  hasStartPhoto: boolean;
+  hasFinishPhoto: boolean;
+  onViewPhotos: () => void;
+}) {
   const { data, isLoading } = useQuery<{ completions: any[]; checkins: any[] }>({
     queryKey: ["/api/admin/program-progress/details", userId],
     enabled: !!userId,
+  });
+
+  const { data: photos = [] } = useQuery<Array<{ id: string; photoUrl: string; photoType: string; week: number | null; createdAt: string | null }>>({
+    queryKey: ["/api/admin/program-progress/photos", userId],
+    enabled: !!userId && (hasStartPhoto || hasFinishPhoto),
   });
 
   if (isLoading) return <div className="p-4 text-center"><Loader2 className="w-4 h-4 animate-spin mx-auto" /></div>;
@@ -285,59 +305,164 @@ function ExpandedUserDetails({ userId }: { userId: string }) {
 
   const { completions = [], checkins = [] } = data;
   const recentCheckins = checkins.slice(0, 5);
-  const recentCompletions = completions.slice(-10);
+
+  // Build 6-week × 4-day grid
+  const dayLabels = ["Day 1", "Day 2", "Day 3", "Day 4"];
+  const workoutGrid: Record<number, Record<number, any>> = {};
+  for (let w = 1; w <= 6; w++) {
+    workoutGrid[w] = {};
+  }
+  completions.forEach((c: any) => {
+    if (c.weekNumber >= 1 && c.weekNumber <= 6 && c.dayNumber >= 1 && c.dayNumber <= 4) {
+      workoutGrid[c.weekNumber][c.dayNumber] = c;
+    }
+  });
+
+  const startPhotos = photos.filter(p => p.photoType === "start");
+  const finishPhotos = photos.filter(p => p.photoType === "finish" || p.photoType === "end");
 
   return (
-    <div className="bg-gray-50 p-4 border-t border-gray-100">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-            <Dumbbell className="w-3.5 h-3.5 text-pink-500" /> Recent Workouts
-          </h4>
-          {recentCompletions.length === 0 ? (
-            <p className="text-xs text-gray-400">No workouts completed</p>
-          ) : (
-            <div className="space-y-1.5">
-              {recentCompletions.map((c: any, i: number) => (
-                <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-2 border border-gray-100">
-                  <div>
-                    <span className="font-medium text-gray-700">Week {c.weekNumber} Day {c.dayNumber}</span>
-                    {c.rating && (
-                      <span className="ml-2 text-yellow-500">
-                        {Array.from({ length: c.rating }, (_, i) => "★").join("")}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-gray-400">
-                    {c.completedAt ? new Date(c.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ""}
-                  </span>
-                </div>
+    <div className="bg-gray-50 p-4 border-t border-gray-100 space-y-4">
+      {/* Full 6-week × 4-workout grid */}
+      <div>
+        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
+          <Dumbbell className="w-3.5 h-3.5 text-pink-500" /> Full Workout Completion Grid
+        </h4>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="bg-white">
+                <th className="text-left py-2 px-3 font-semibold text-gray-500 w-16">Week</th>
+                {dayLabels.map((label, i) => (
+                  <th key={i} className="text-center py-2 px-2 font-semibold text-gray-500">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[1, 2, 3, 4, 5, 6].map(week => (
+                <tr key={week} className="border-t border-gray-100">
+                  <td className="py-2 px-3 font-bold text-gray-600">Week {week}</td>
+                  {[1, 2, 3, 4].map(day => {
+                    const completion = workoutGrid[week][day];
+                    const isDone = !!completion;
+                    return (
+                      <td key={day} className="py-2 px-2 text-center">
+                        {isDone ? (
+                          <div className="inline-flex flex-col items-center gap-0.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                            <span className="text-[10px] text-green-700 font-medium">
+                              {completion.completedAt
+                                ? new Date(completion.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+                                : "Done"}
+                            </span>
+                            {completion.rating && (
+                              <span className="text-[10px] text-yellow-500">
+                                {Array.from({ length: Math.min(completion.rating, 5) }, () => "★").join("")}
+                              </span>
+                            )}
+                            {completion.duration && (
+                              <span className="text-[9px] text-gray-400">{completion.duration}min</span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="inline-flex items-center justify-center bg-gray-100 border border-gray-200 rounded-lg px-3 py-2">
+                            <span className="text-[10px] text-gray-400">Not done</span>
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
               ))}
-            </div>
-          )}
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      {/* Inline progress photos */}
+      {(hasStartPhoto || hasFinishPhoto) && (
         <div>
-          <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-            <Star className="w-3.5 h-3.5 text-amber-500" /> Recent Check-ins
+          <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
+            <Camera className="w-3.5 h-3.5 text-blue-500" /> Progress Photos
+            <button onClick={onViewPhotos} className="text-xs text-pink-500 hover:text-pink-700 ml-auto font-normal">
+              View full size →
+            </button>
           </h4>
-          {recentCheckins.length === 0 ? (
-            <p className="text-xs text-gray-400">No check-ins recorded</p>
-          ) : (
-            <div className="space-y-1.5">
-              {recentCheckins.map((c: any, i: number) => (
-                <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-2 border border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">{c.mood === "great" ? "🤩" : c.mood === "good" ? "😊" : c.mood === "okay" ? "😐" : c.mood === "tired" ? "😴" : c.mood === "struggling" ? "😣" : "📝"}</span>
-                    <span className="text-gray-600">Energy: {c.energyLevel || "-"}/5</span>
-                  </div>
-                  <span className="text-gray-400">
-                    {c.createdAt ? new Date(c.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ""}
-                  </span>
+          <div className="flex gap-4 flex-wrap">
+            {startPhotos.length > 0 && (
+              <div>
+                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide block mb-1.5">Start</span>
+                <div className="flex gap-2">
+                  {startPhotos.slice(0, 3).map(p => (
+                    <button
+                      key={p.id}
+                      onClick={onViewPhotos}
+                      className="w-20 h-28 rounded-lg overflow-hidden border-2 border-blue-200 hover:border-pink-400 transition-colors shadow-sm"
+                    >
+                      <img src={p.photoUrl} alt="Start" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            )}
+            {finishPhotos.length > 0 && (
+              <div>
+                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide block mb-1.5">Finish</span>
+                <div className="flex gap-2">
+                  {finishPhotos.slice(0, 3).map(p => (
+                    <button
+                      key={p.id}
+                      onClick={onViewPhotos}
+                      className="w-20 h-28 rounded-lg overflow-hidden border-2 border-emerald-200 hover:border-pink-400 transition-colors shadow-sm"
+                    >
+                      <img src={p.photoUrl} alt="Finish" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {!hasStartPhoto && (
+              <div>
+                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide block mb-1.5">Start</span>
+                <div className="w-20 h-28 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center">
+                  <CameraOff className="w-5 h-5 text-gray-300" />
+                </div>
+              </div>
+            )}
+            {!hasFinishPhoto && (
+              <div>
+                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide block mb-1.5">Finish</span>
+                <div className="w-20 h-28 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center">
+                  <CameraOff className="w-5 h-5 text-gray-300" />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+      )}
+
+      {/* Recent check-ins */}
+      <div>
+        <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+          <Star className="w-3.5 h-3.5 text-amber-500" /> Recent Check-ins
+        </h4>
+        {recentCheckins.length === 0 ? (
+          <p className="text-xs text-gray-400">No check-ins recorded</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-1.5">
+            {recentCheckins.map((c: any, i: number) => (
+              <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-2 border border-gray-100">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">{c.mood === "great" ? "🤩" : c.mood === "good" ? "😊" : c.mood === "okay" ? "😐" : c.mood === "tired" ? "😴" : c.mood === "struggling" ? "😣" : "📝"}</span>
+                  <span className="text-gray-600">E:{c.energyLevel || "-"}/5</span>
+                </div>
+                <span className="text-gray-400">
+                  {c.createdAt ? new Date(c.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ""}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -472,7 +597,7 @@ export default function AdminProgramProgress() {
                               </td>
                               {[1, 2, 3, 4, 5, 6].map((w) => (
                                 <td key={w} className="text-center py-3 px-1">
-                                  <WeekBadge count={user.weeks[w] || 0} />
+                                  <WeekBadge count={user.weeks[w] || 0} week={w} />
                                 </td>
                               ))}
                               <td className="py-3 px-2">
@@ -523,7 +648,12 @@ export default function AdminProgramProgress() {
                             {isExpanded && (
                               <tr key={`${user.userId}-details`}>
                                 <td colSpan={10} className="p-0">
-                                  <ExpandedUserDetails userId={user.userId} />
+                                  <ExpandedUserDetails
+                                    userId={user.userId}
+                                    hasStartPhoto={user.hasStartPhoto}
+                                    hasFinishPhoto={user.hasFinishPhoto}
+                                    onViewPhotos={() => setPhotoModalUser({ id: user.userId, name: `${user.firstName} ${user.lastName}` })}
+                                  />
                                 </td>
                               </tr>
                             )}
