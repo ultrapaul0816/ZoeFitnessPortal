@@ -8677,6 +8677,358 @@ Rules:
     }
   });
 
+  // Plan Builder API Endpoints
+
+  // Save week overview (Zoe's strategic input)
+  app.post("/api/admin/coaching/clients/:clientId/week-overview", requireAdmin, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const { weekNumber, philosophy, focusAreas, safety, progression } = req.body;
+
+      if (!weekNumber || weekNumber < 1 || weekNumber > 4) {
+        return res.status(400).json({ message: "Week number must be between 1 and 4" });
+      }
+
+      if (!philosophy || !focusAreas || !safety) {
+        return res.status(400).json({ message: "Philosophy, focus areas, and safety are required" });
+      }
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      // Get existing overviews or initialize empty object
+      const weeklyPlanOutlines = (client as any).weeklyPlanOutlines || {};
+
+      // Save the new overview
+      weeklyPlanOutlines[weekNumber] = {
+        weekNumber,
+        philosophy,
+        focusAreas,
+        safety,
+        ...(progression && { progression }),
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Update client with new overviews
+      await storage.updateCoachingClient(clientId, {
+        weeklyPlanOutlines,
+      } as any);
+
+      res.json({
+        message: "Week overview saved successfully",
+        overview: weeklyPlanOutlines[weekNumber],
+      });
+    } catch (error) {
+      console.error("Error saving week overview:", error);
+      res.status(500).json({ message: "Failed to save week overview" });
+    }
+  });
+
+  // Get plan builder state (which weeks have completed steps)
+  app.get("/api/admin/coaching/clients/:clientId/plan-builder-state", requireAdmin, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const weekOverviews = (client as any).weeklyPlanOutlines || {};
+      const workoutPlans = await storage.getCoachingWorkoutPlans(clientId);
+      const nutritionPlans = await storage.getCoachingNutritionPlans(clientId);
+
+      // Determine which weeks have which components
+      const workoutWeeks = [...new Set(workoutPlans.map(p => p.weekNumber))];
+      const nutritionWeeks = [...new Set(nutritionPlans.map(p => p.weekNumber))];
+
+      const isComplete =
+        Object.keys(weekOverviews).length === 4 &&
+        workoutWeeks.length === 4 &&
+        nutritionWeeks.length === 4;
+
+      res.json({
+        weekOverviews,
+        workoutWeeks,
+        nutritionWeeks,
+        isComplete,
+      });
+    } catch (error) {
+      console.error("Error getting plan builder state:", error);
+      res.status(500).json({ message: "Failed to get plan builder state" });
+    }
+  });
+
+  // Generate workout from overview (new Zoe-first approach)
+  app.post("/api/admin/coaching/clients/:clientId/generate-workout-from-overview", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const { weekNumber, overview } = req.body;
+
+      if (!weekNumber || weekNumber < 1 || weekNumber > 4) {
+        return res.status(400).json({ message: "Week number must be between 1 and 4" });
+      }
+
+      if (!overview || !overview.philosophy || !overview.focusAreas || !overview.safety) {
+        return res.status(400).json({ message: "Complete overview (philosophy, focus areas, safety) is required" });
+      }
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Get exercise library
+      const allExercises = await storage.getExercises();
+      const exerciseLibraryStr = allExercises.map(ex =>
+        `${ex.name} | ${ex.category} | ${ex.difficulty} | ${ex.id} | ${ex.videoUrl || "no-video"}`
+      ).join("\n");
+
+      // Get form responses for context
+      const formResponses = await storage.getCoachingFormResponses(client.id);
+      const coachingType = (client as any).coachingType || "pregnancy_coaching";
+
+      let formDataStr = "";
+      if (coachingType === "private_coaching") {
+        const pcForm = formResponses.find((r: any) => r.formType === "private_coaching_questionnaire");
+        if (pcForm) {
+          formDataStr = `PRIVATE COACHING QUESTIONNAIRE:\n${JSON.stringify(pcForm.responses)}`;
+        }
+      } else {
+        const lifestyleForm = formResponses.find((r: any) => r.formType === "lifestyle_questionnaire");
+        const healthForm = formResponses.find((r: any) => r.formType === "health_evaluation");
+        const parts = [];
+        if (lifestyleForm) parts.push(`LIFESTYLE QUESTIONNAIRE:\n${JSON.stringify(lifestyleForm.responses)}`);
+        if (healthForm) parts.push(`HEALTH EVALUATION:\n${JSON.stringify(healthForm.responses)}`);
+        if (parts.length > 0) formDataStr = parts.join("\n\n");
+      }
+      if (!formDataStr) formDataStr = "No form data available";
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const userInfo = `Name: ${user.firstName} ${user.lastName}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
+
+      const workoutResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert fitness coach. The coach has provided a strategic overview for Week ${weekNumber}. Your task is to IMPLEMENT this strategy by generating a detailed 7-day workout plan.
+
+COACH'S STRATEGIC OVERVIEW FOR WEEK ${weekNumber}:
+
+PHILOSOPHY & GOALS:
+${overview.philosophy}
+
+KEY FOCUS AREAS:
+${overview.focusAreas}
+
+SAFETY & MODIFICATIONS:
+${overview.safety}
+
+${overview.progression ? `PROGRESSION FROM PREVIOUS WEEK:\n${overview.progression}\n` : ""}
+
+Your task: Generate a 7-day workout plan that DIRECTLY IMPLEMENTS this strategic overview. Every exercise choice, rep scheme, set structure, and rest period should align with the coach's stated philosophy, focus areas, and safety requirements.
+
+EXERCISE LIBRARY:
+${exerciseLibraryStr}
+
+CLIENT INFORMATION:
+${userInfo}
+
+${formDataStr}
+
+IMPORTANT: Return a JSON object with exactly this structure (this is a PREVIEW only - will not be saved to database until coach approves):
+{
+  "days": [
+    {
+      "dayNumber": 1,
+      "dayType": "upper_body_strength",
+      "title": "Upper Body Strength",
+      "description": "Focus on shoulders, back, and arms",
+      "coachNotes": "Focus on form over speed",
+      "personalizationNote": "Exercises chosen based on your safety requirements and focus areas",
+      "personalizationTags": ["Safety Modified", "Focus Area Aligned"],
+      "sections": [
+        {
+          "title": "WARM-UP",
+          "exercises": [
+            {
+              "exerciseId": "uuid-from-library-or-null",
+              "name": "Band Pull-Aparts",
+              "sets": "2",
+              "reps": "15",
+              "restSeconds": 30,
+              "notes": "Light band, focus on shoulder blade squeeze",
+              "videoUrl": "url-from-library-or-null"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+Ensure all 7 days are included. Make sure exercises align with the safety modifications and focus areas provided by the coach.`,
+          },
+        ],
+        temperature: 0.8,
+        max_tokens: 8000,
+      });
+
+      const content = workoutResponse.choices[0]?.message?.content;
+      if (!content) throw new Error("No content in AI response");
+
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON found in AI response");
+
+      const workoutPlan = JSON.parse(jsonMatch[0]);
+
+      // Return preview (do not save to database yet)
+      res.json({
+        preview: true,
+        weekNumber,
+        workoutPlan,
+      });
+    } catch (error) {
+      console.error("Error generating workout from overview:", error);
+      res.status(500).json({ message: "Failed to generate workout plan" });
+    }
+  });
+
+  // Generate weekly nutrition (aligned with training intensity)
+  app.post("/api/admin/coaching/clients/:clientId/generate-weekly-nutrition", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const { weekNumber, overview, workoutIntensity } = req.body;
+
+      if (!weekNumber || weekNumber < 1 || weekNumber > 4) {
+        return res.status(400).json({ message: "Week number must be between 1 and 4" });
+      }
+
+      if (!overview || !overview.philosophy) {
+        return res.status(400).json({ message: "Overview is required" });
+      }
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const formResponses = await storage.getCoachingFormResponses(client.id);
+      const coachingType = (client as any).coachingType || "pregnancy_coaching";
+
+      let formDataStr = "";
+      if (coachingType === "private_coaching") {
+        const pcForm = formResponses.find((r: any) => r.formType === "private_coaching_questionnaire");
+        if (pcForm) {
+          formDataStr = `PRIVATE COACHING QUESTIONNAIRE:\n${JSON.stringify(pcForm.responses)}`;
+        }
+      }
+      if (!formDataStr) formDataStr = "No form data available";
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const intensity = workoutIntensity || "moderate";
+      const userInfo = `Name: ${user.firstName} ${user.lastName}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
+
+      const nutritionResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe, an expert nutrition coach. Generate a weekly nutrition plan for Week ${weekNumber} that SUPPORTS the training strategy.
+
+WEEK ${weekNumber} TRAINING CONTEXT:
+Training Overview: ${overview.philosophy}
+Focus Areas: ${overview.focusAreas}
+Workout Intensity: ${intensity}
+
+CLIENT INFORMATION:
+${userInfo}
+
+${formDataStr}
+
+IMPORTANT: Generate nutrition that ALIGNS with this week's training demands. For example:
+- Foundation weeks (Week 1): Moderate calories, establish protein baseline
+- Build weeks (Week 2-3): Increase protein/carbs slightly, support higher training volume
+- Peak weeks (Week 4): Optimize macros for performance
+
+Return a JSON object with this structure (PREVIEW only - will not be saved until coach approves):
+{
+  "weekNumber": ${weekNumber},
+  "dailyMacros": {
+    "calories": 1800,
+    "protein": 140,
+    "carbs": 150,
+    "fat": 60
+  },
+  "meals": [
+    {
+      "mealType": "breakfast",
+      "options": [
+        {
+          "name": "Protein Oatmeal Bowl",
+          "description": "Oats with protein powder, berries, and almond butter",
+          "macros": { "calories": 450, "protein": 35, "carbs": 45, "fat": 15 },
+          "ingredients": ["1 cup oats", "1 scoop protein powder", "1/2 cup berries", "1 tbsp almond butter"],
+          "instructions": "Cook oats, stir in protein powder, top with berries and almond butter."
+        }
+      ]
+    },
+    {
+      "mealType": "lunch",
+      "options": [...]
+    },
+    {
+      "mealType": "snack",
+      "options": [...]
+    },
+    {
+      "mealType": "dinner",
+      "options": [...]
+    }
+  ],
+  "weeklyPrepTips": [
+    "Batch cook proteins on Sunday",
+    "Pre-portion snacks for the week"
+  ],
+  "notes": "Focus on post-workout nutrition to support recovery from this week's training intensity."
+}
+
+Provide 2-3 options for each meal type. Ensure variety and alignment with training intensity.`,
+          },
+        ],
+        temperature: 0.8,
+        max_tokens: 6000,
+      });
+
+      const content = nutritionResponse.choices[0]?.message?.content;
+      if (!content) throw new Error("No content in AI response");
+
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON found in AI response");
+
+      const nutritionPlan = JSON.parse(jsonMatch[0]);
+
+      // Return preview (do not save to database yet)
+      res.json({
+        preview: true,
+        weekNumber,
+        nutritionPlan,
+      });
+    } catch (error) {
+      console.error("Error generating weekly nutrition:", error);
+      res.status(500).json({ message: "Failed to generate nutrition plan" });
+    }
+  });
+
   app.get("/api/coaching/my-plan", async (req, res) => {
     try {
       const userId = req.session?.userId || (req as any)._tokenUserId;
