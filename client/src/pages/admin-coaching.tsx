@@ -130,6 +130,8 @@ export default function AdminCoaching() {
   const [workoutViewMode, setWorkoutViewMode] = useState<"calendar" | "table">("calendar");
   const [editingNutritionDish, setEditingNutritionDish] = useState<{ planId: string; optionIndex: number; data: any } | null>(null);
   const [regeneratingDish, setRegeneratingDish] = useState<string | null>(null);
+  const [outlinePreviewWeek, setOutlinePreviewWeek] = useState<number | null>(null);
+  const [editingOutlineText, setEditingOutlineText] = useState<string>("");
   const { toast } = useToast();
 
   const { data: clients = [], isLoading: isLoadingClients } = useQuery<CoachingClientWithUser[]>({
@@ -330,6 +332,38 @@ export default function AdminCoaching() {
     },
     onError: (err: Error) => {
       toast({ title: "Error generating coach remarks", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const generatePlanOutlineMutation = useMutation({
+    mutationFn: async ({ clientId, weekNumber }: { clientId: string; weekNumber: number }) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-plan-outline`, {
+        body: JSON.stringify({ weekNumber }),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: "Plan outline generated", description: "Review the weekly approach before generating the full workout." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error generating outline", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const approveOutlineAndGenerateMutation = useMutation({
+    mutationFn: async ({ clientId, weekNumber, editedOutline }: { clientId: string; weekNumber: number; editedOutline?: string }) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/approve-outline-and-generate`, {
+        body: JSON.stringify({ weekNumber, editedOutline }),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: "Outline approved", description: "Ready to generate full workout with this approach." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error approving outline", description: err.message, variant: "destructive" });
     },
   });
 
@@ -1077,14 +1111,19 @@ export default function AdminCoaching() {
                           {nextUngenWeek ? (
                             <Button
                               className="h-auto py-3 px-4 justify-start gap-3 bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg hover:from-violet-600 hover:to-purple-600 transition-all"
-                              onClick={() => selectedClient && generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: nextUngenWeek })}
-                              disabled={generateWorkoutMutation.isPending}
+                              onClick={() => {
+                                if (selectedClient) {
+                                  generatePlanOutlineMutation.mutate({ clientId: selectedClient.id, weekNumber: nextUngenWeek });
+                                  setOutlinePreviewWeek(nextUngenWeek);
+                                }
+                              }}
+                              disabled={generatePlanOutlineMutation.isPending || generateWorkoutMutation.isPending}
                             >
                               <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
                                 <Brain className="w-5 h-5 text-white" />
                               </div>
                               <div className="text-left">
-                                <div className="text-sm font-medium">{generateWorkoutMutation.isPending ? `Generating...` : `Generate Week ${nextUngenWeek}`}</div>
+                                <div className="text-sm font-medium">{generatePlanOutlineMutation.isPending ? `Generating Outline...` : `Generate Week ${nextUngenWeek}`}</div>
                                 <div className="text-[11px] text-white/80">{weeksGenerated} of 4 weeks ready</div>
                               </div>
                             </Button>
@@ -1418,14 +1457,23 @@ export default function AdminCoaching() {
                               <Button
                                 size="sm"
                                 variant={hasWeek ? "outline" : "default"}
-                                onClick={() => generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: week })}
-                                disabled={generateWorkoutMutation.isPending || !previousWeekExists}
+                                onClick={() => {
+                                  if (hasWeek) {
+                                    // Regenerate: skip outline and go straight to workout
+                                    generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
+                                  } else {
+                                    // First time: generate outline first
+                                    generatePlanOutlineMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
+                                    setOutlinePreviewWeek(week);
+                                  }
+                                }}
+                                disabled={generateWorkoutMutation.isPending || generatePlanOutlineMutation.isPending || !previousWeekExists}
                                 className={cn(
                                   hasWeek ? "" : "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
                                 )}
                               >
                                 <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                                {isGenerating ? "Generating..." : hasWeek ? "Regenerate" : "Generate"}
+                                {isGenerating || generatePlanOutlineMutation.isPending ? "Generating..." : hasWeek ? "Regenerate" : "Generate"}
                               </Button>
                             </div>
                             {isGenerating && (
@@ -2332,6 +2380,152 @@ export default function AdminCoaching() {
               />
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Outline Preview Dialog (Unit 4) */}
+      <Dialog open={outlinePreviewWeek !== null} onOpenChange={(open) => { if (!open) { setOutlinePreviewWeek(null); setEditingOutlineText(""); } }}>
+        <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-violet-500" />
+              Week {outlinePreviewWeek} Plan Outline
+            </DialogTitle>
+            <p className="text-sm text-gray-500 mt-1">Review the weekly approach before generating the full workout</p>
+          </DialogHeader>
+          {selectedClient && outlinePreviewWeek && (() => {
+            const outlines = (selectedClient as any).weeklyPlanOutlines || {};
+            const outline = outlines[outlinePreviewWeek.toString()];
+
+            if (!outline) {
+              return (
+                <div className="py-8 text-center text-gray-400">
+                  <p>Outline not yet generated. Click "Generate Outline" to create it.</p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="space-y-4">
+                {/* Philosophy */}
+                <div className="bg-violet-50 rounded-lg p-4 border border-violet-200">
+                  <h4 className="font-semibold text-sm text-violet-900 mb-2">Weekly Philosophy</h4>
+                  <p className="text-sm text-gray-700">{outline.philosophy}</p>
+                </div>
+
+                {/* Focus Areas */}
+                {outline.focusAreas && outline.focusAreas.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-sm text-gray-900 mb-2">Focus Areas</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {outline.focusAreas.map((area: string, idx: number) => (
+                        <Badge key={idx} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          {area}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Day Outlines */}
+                {outline.dayOutlines && outline.dayOutlines.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-sm text-gray-900 mb-3">Day-by-Day Outline</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {outline.dayOutlines.map((day: any, idx: number) => (
+                        <div key={idx} className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 bg-white">
+                          <div className="flex-shrink-0 w-16 text-center">
+                            <div className="text-xs font-medium text-gray-500">{day.dayName || `Day ${day.dayNumber}`}</div>
+                            <Badge variant="outline" className="text-[10px] mt-1">{day.dayType}</Badge>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-gray-700">{day.briefDescription}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Progression */}
+                {outline.progressionFromLastWeek && (
+                  <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                    <h4 className="font-semibold text-sm text-amber-900 mb-2">Progression</h4>
+                    <p className="text-sm text-gray-700">{outline.progressionFromLastWeek}</p>
+                  </div>
+                )}
+
+                {/* Safety */}
+                {outline.safetyConsiderations && (
+                  <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                    <h4 className="font-semibold text-sm text-red-900 mb-2">Safety Considerations</h4>
+                    <p className="text-sm text-gray-700">{outline.safetyConsiderations}</p>
+                  </div>
+                )}
+
+                {/* Editable Text Area for Coach Notes */}
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Coach Adjustments (Optional)</Label>
+                  <Textarea
+                    placeholder="Add any custom notes or adjustments to this week's approach..."
+                    value={editingOutlineText}
+                    onChange={(e) => setEditingOutlineText(e.target.value)}
+                    className="min-h-[80px] text-sm"
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setOutlinePreviewWeek(null);
+                      setEditingOutlineText("");
+                    }}
+                  >
+                    Discard
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (selectedClient && outlinePreviewWeek) {
+                          generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: outlinePreviewWeek });
+                          setOutlinePreviewWeek(null);
+                          setEditingOutlineText("");
+                        }
+                      }}
+                      disabled={generateWorkoutMutation.isPending}
+                    >
+                      Skip to Direct Generation
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (selectedClient && outlinePreviewWeek) {
+                          approveOutlineAndGenerateMutation.mutate({
+                            clientId: selectedClient.id,
+                            weekNumber: outlinePreviewWeek,
+                            editedOutline: editingOutlineText || undefined,
+                          });
+                          // After approval, generate the full workout
+                          setTimeout(() => {
+                            generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: outlinePreviewWeek });
+                          }, 500);
+                          setOutlinePreviewWeek(null);
+                          setEditingOutlineText("");
+                        }
+                      }}
+                      disabled={approveOutlineAndGenerateMutation.isPending || generateWorkoutMutation.isPending}
+                      className="bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                    >
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      Approve & Generate Workout
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </AdminLayout>
