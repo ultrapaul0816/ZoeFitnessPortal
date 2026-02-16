@@ -15,6 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BottomNav from "@/components/bottom-nav";
 import { StrategicWelcome } from "@/components/onboarding/StrategicWelcome";
+import { PreProgramHub } from "@/components/coaching/PreProgramHub";
+import { PlanReveal } from "@/components/coaching/PlanReveal";
 import {
   Dumbbell,
   Apple,
@@ -150,6 +152,9 @@ interface CoachingClient {
   isPregnant?: boolean;
   trimester?: number;
   dueDate?: string;
+  plansGeneratedAt?: string;
+  planNarrative?: { summary?: string } | null;
+  activatedAt?: string;
 }
 
 interface FormResponse {
@@ -887,6 +892,19 @@ export default function MyCoaching() {
 
   const [showCheckinSuccess, setShowCheckinSuccess] = useState(false);
   const [showWorkoutCelebration, setShowWorkoutCelebration] = useState(false);
+  const [checkinAiInsight, setCheckinAiInsight] = useState<{ insight: string; tip?: string } | null>(null);
+  const [planRevealed, setPlanRevealed] = useState(() => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const u = JSON.parse(userData);
+        return localStorage.getItem(`plan_revealed_${u.id}`) === 'true';
+      }
+    } catch {}
+    return false;
+  });
+  const [showDifficultyFeedback, setShowDifficultyFeedback] = useState<{ planId: string; weekNumber: number; dayNumber: number } | null>(null);
+  const [difficultySubmitting, setDifficultySubmitting] = useState(false);
 
   // Strategic Welcome onboarding tracking for private coaching
   const [welcomeCompleted, setWelcomeCompleted] = useState(() => {
@@ -1102,26 +1120,40 @@ export default function MyCoaching() {
 
   const submitCheckinMutation = useMutation({
     mutationFn: async (data: typeof checkinForm) => {
-      await coachingApiRequest("POST", "/api/coaching/checkins", {
+      const res = await coachingApiRequest("POST", "/api/coaching/checkins", {
         ...data,
         date: new Date().toISOString(),
       });
+      return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/coaching/checkins"] });
       queryClient.invalidateQueries({ queryKey: ["/api/coaching/checkins/today"] });
-      const isUpdate = !!todayCheckinData?.checkin;
-      // Show celebration overlay
+      // Show celebration overlay with AI insight
+      if (data?.aiInsight) {
+        setCheckinAiInsight(data.aiInsight);
+      }
       setShowCheckinSuccess(true);
-      setTimeout(() => setShowCheckinSuccess(false), 3500);
-      toast({
-        title: isUpdate ? "Check-in updated! ✨" : "Check-in submitted! 🎉",
-        description: "Zoe will review it soon. You're doing amazing!",
-      });
+      // Don't auto-dismiss if we have an AI insight — let user dismiss manually
+      if (!data?.aiInsight) {
+        setTimeout(() => setShowCheckinSuccess(false), 3500);
+      }
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to submit check-in", variant: "destructive" });
     },
+  });
+
+  // Fetch real pillar scores for the 5 Pillars widget
+  const { data: pillarScores } = useQuery<{ training: number; nutrition: number; mindset: number; relationships: number; purpose: number }>({
+    queryKey: ["/api/coaching/pillar-scores"],
+    queryFn: async () => {
+      const res = await coachingFetch("/api/coaching/pillar-scores");
+      if (!res.ok) return { training: 0, nutrition: 0, mindset: 0, relationships: 0, purpose: 0 };
+      return res.json();
+    },
+    enabled: !!user && !!planData?.client && planData.client.status === "active",
+    refetchInterval: 5 * 60 * 1000, // refresh every 5 min
   });
 
   const getYouTubeId = (url: string) => {
@@ -1157,8 +1189,13 @@ export default function MyCoaching() {
           if (workout) {
             const stats = getDayCompletionStats(workout);
             if (stats.total > 0 && stats.completed === stats.total) {
+              // Show celebration with difficulty feedback prompt
+              setShowDifficultyFeedback({
+                planId: pending.planId,
+                weekNumber: workout.weekNumber,
+                dayNumber: pending.dayNumber,
+              });
               setShowWorkoutCelebration(true);
-              setTimeout(() => setShowWorkoutCelebration(false), 3500);
             }
           }
         }
@@ -1600,68 +1637,55 @@ export default function MyCoaching() {
     );
   }
 
-  // Show intake form for enrolled clients (after Strategic Welcome for private coaching)
-  if (client.status === "enrolled" || client.status === "pending") {
+  // Show intake form for enrolled clients that still need to complete forms in-app
+  // (fallback for clients who haven't completed external forms)
+  const hasFormResponses = planData?.formResponses && planData.formResponses.length > 0;
+  if ((client.status === "enrolled" || client.status === "pending") && !hasFormResponses && coachingType !== "private_coaching") {
     return <IntakeFormWizard clientId={client.id} onComplete={() => queryClient.invalidateQueries({ queryKey: ["/api/coaching/my-plan"] })} onLogout={handleLogout} userName={planData.userProfile?.firstName || "there"} />;
   }
 
-  // Show waiting screens for non-active statuses
+  // Show Pre-Program Hub for non-active statuses (replaces dead-end waiting screens)
   if (client.status !== "active") {
-    const statusMessages: Record<string, { title: string; description: string; icon: React.ReactNode }> = {
-      intake_complete: {
-        title: "Zoe is Reviewing Your Information",
-        description: "Thanks for completing your intake forms! Zoe will review your information and create your personalized plan. You'll be notified when it's ready.",
-        icon: <Eye className="w-10 h-10 text-indigo-500" />,
-      },
-      plan_generating: {
-        title: "Your Plan is Being Created",
-        description: "Zoe has reviewed your information and is now creating your personalized workout and nutrition plan. Almost there!",
-        icon: <Brain className="w-10 h-10 text-violet-500" />,
-      },
-      plan_ready: {
-        title: "Your Plan is Almost Ready!",
-        description: "Your personalized plan has been created and Zoe is doing a final review. You'll be notified very soon!",
-        icon: <Sparkles className="w-10 h-10 text-pink-500" />,
-      },
-      pending_plan: {
-        title: "Your Plan is Being Prepared",
-        description: "Zoe is crafting your personalized coaching plan. You'll be notified as soon as it's ready!",
-        icon: <Sparkles className="w-10 h-10 text-pink-500" />,
-      },
-      paused: {
-        title: "Coaching Paused",
-        description: "Your coaching program is currently paused. Reach out to Zoe to resume.",
-        icon: <Clock className="w-10 h-10 text-orange-500" />,
-      },
-      completed: {
-        title: "Program Completed!",
-        description: "Congratulations on completing your coaching program! What an incredible journey.",
-        icon: <Star className="w-10 h-10 text-yellow-500" />,
-      },
-    };
-
-    const msg = statusMessages[client.status] || {
-      title: "Coaching Status",
-      description: "Please contact Zoe for more information about your coaching program.",
-      icon: <Sparkles className="w-10 h-10 text-pink-500" />,
-    };
-
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-        <div className="max-w-lg mx-auto px-4 pt-12 text-center">
-          <div className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            {msg.icon}
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">{msg.title}</h1>
-          <p className="text-gray-600 mb-6">{msg.description}</p>
-          <Button
-            className="bg-pink-500 hover:bg-pink-600 text-white"
-            onClick={handleLogout}
-          >
-            Sign Out
-          </Button>
-        </div>
-      </div>
+      <PreProgramHub
+        client={{
+          id: client.id,
+          status: client.status,
+          startDate: client.startDate || null,
+          coachingType: client.coachingType || null,
+          plansGeneratedAt: client.plansGeneratedAt || null,
+        }}
+        userName={planData.userProfile?.firstName || "there"}
+        onLogout={handleLogout}
+        onNavigateToPhotos={() => {
+          window.location.href = "/progress-photos";
+        }}
+        coachingApiRequest={coachingApiRequest}
+      />
+    );
+  }
+
+  // Show Plan Reveal walkthrough on first visit after activation
+  if (client.status === "active" && !planRevealed) {
+    return (
+      <PlanReveal
+        client={{
+          id: client.id,
+          startDate: client.startDate || null,
+          coachingType: client.coachingType || null,
+          planNarrative: client.planNarrative || null,
+          planDurationWeeks: client.planDurationWeeks,
+        }}
+        userName={planData.userProfile?.firstName || "there"}
+        workoutPlan={planData.workoutPlan}
+        nutritionPlan={planData.nutritionPlan}
+        onComplete={() => {
+          if (user?.id) {
+            localStorage.setItem(`plan_revealed_${user.id}`, 'true');
+          }
+          setPlanRevealed(true);
+        }}
+      />
     );
   }
 
@@ -1841,14 +1865,14 @@ export default function MyCoaching() {
                 <h3 className="text-xl font-semibold">Your High Performance Framework</h3>
               </div>
 
-              {/* 5 Pillars Progress */}
+              {/* 5 Pillars Progress — calculated from real client data */}
               <div className="grid grid-cols-5 gap-3">
                 {[
-                  { icon: Dumbbell, label: "Training", progress: 85 },
-                  { icon: Apple, label: "Nutrition", progress: 72 },
-                  { icon: Brain, label: "Mindset", progress: 60 },
-                  { icon: Heart, label: "Relationships", progress: 55 },
-                  { icon: Target, label: "Purpose", progress: 68 }
+                  { icon: Dumbbell, label: "Training", progress: pillarScores?.training ?? 0 },
+                  { icon: Apple, label: "Nutrition", progress: pillarScores?.nutrition ?? 0 },
+                  { icon: Brain, label: "Mindset", progress: pillarScores?.mindset ?? 0 },
+                  { icon: Heart, label: "Relationships", progress: pillarScores?.relationships ?? 0 },
+                  { icon: Target, label: "Purpose", progress: pillarScores?.purpose ?? 0 }
                 ].map((pillar, i) => (
                   <div key={i} className="text-center">
                     <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-slate-700 flex items-center justify-center">
@@ -2851,17 +2875,40 @@ export default function MyCoaching() {
           )}
         </Button>
 
-        {/* Check-in success celebration */}
+        {/* Check-in success celebration with AI insight */}
         {showCheckinSuccess && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white rounded-3xl p-8 mx-6 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-500">
+            <div className="bg-white rounded-3xl p-8 mx-6 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-500 max-w-sm">
               <div className="text-6xl animate-bounce">🎉</div>
               <h3 className="text-2xl font-bold text-gray-900">Great job!</h3>
-              <p className="text-gray-600">Your check-in is in. Zoe will review it and keep you on track!</p>
-              <div className="flex items-center justify-center gap-2 text-pink-600 font-semibold">
-                <Sparkles className="w-5 h-5" />
-                Keep the momentum going!
-              </div>
+              {checkinAiInsight ? (
+                <>
+                  <p className="text-gray-700 text-sm leading-relaxed">{checkinAiInsight.insight}</p>
+                  {checkinAiInsight.tip && (
+                    <div className="bg-pink-50 rounded-xl p-3 text-sm text-pink-700">
+                      <Sparkles className="w-4 h-4 inline mr-1" />
+                      {checkinAiInsight.tip}
+                    </div>
+                  )}
+                  <Button
+                    className="bg-pink-500 hover:bg-pink-600 text-white mt-2"
+                    onClick={() => {
+                      setShowCheckinSuccess(false);
+                      setCheckinAiInsight(null);
+                    }}
+                  >
+                    Got it!
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <p className="text-gray-600">Your check-in is in. Zoe will review it and keep you on track!</p>
+                  <div className="flex items-center justify-center gap-2 text-pink-600 font-semibold">
+                    <Sparkles className="w-5 h-5" />
+                    Keep the momentum going!
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -2978,17 +3025,62 @@ export default function MyCoaching() {
         </div>
       </div>
 
-      {/* Workout day completion celebration */}
+      {/* Workout day completion celebration with difficulty feedback */}
       {showWorkoutCelebration && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-3xl p-8 mx-6 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-500">
+          <div className="bg-white rounded-3xl p-8 mx-6 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-500 max-w-sm">
             <div className="text-6xl animate-bounce">💪</div>
             <h3 className="text-2xl font-bold text-gray-900">Day Complete!</h3>
-            <p className="text-gray-600">You crushed every exercise today. Zoe would be proud!</p>
-            <div className="flex items-center justify-center gap-2 text-pink-600 font-semibold">
-              <Flame className="w-5 h-5" />
-              You're on fire — keep it up!
-            </div>
+            <p className="text-gray-600">You crushed every exercise today!</p>
+
+            {/* Difficulty feedback */}
+            {showDifficultyFeedback ? (
+              <div className="space-y-3 pt-2">
+                <p className="text-sm text-gray-500">How was today's workout?</p>
+                <div className="flex gap-2 justify-center">
+                  {[
+                    { value: "too_hard", emoji: "😅", label: "Too Hard" },
+                    { value: "just_right", emoji: "👌", label: "Just Right" },
+                    { value: "too_easy", emoji: "💪", label: "Too Easy" },
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      disabled={difficultySubmitting}
+                      className="flex flex-col items-center gap-1 px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-pink-300 hover:bg-pink-50 transition-all text-sm"
+                      onClick={async () => {
+                        setDifficultySubmitting(true);
+                        try {
+                          await coachingApiRequest("POST", "/api/coaching/workout-difficulty", {
+                            ...showDifficultyFeedback,
+                            difficulty: option.value,
+                          });
+                        } catch {}
+                        setDifficultySubmitting(false);
+                        setShowDifficultyFeedback(null);
+                        setShowWorkoutCelebration(false);
+                      }}
+                    >
+                      <span className="text-2xl">{option.emoji}</span>
+                      <span className="text-xs text-gray-600">{option.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <button
+                  className="text-xs text-gray-400 hover:text-gray-600"
+                  onClick={() => {
+                    setShowDifficultyFeedback(null);
+                    setShowWorkoutCelebration(false);
+                  }}
+                >
+                  Skip
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2 text-pink-600 font-semibold">
+                <Flame className="w-5 h-5" />
+                You're on fire — keep it up!
+              </div>
+            )}
           </div>
         </div>
       )}

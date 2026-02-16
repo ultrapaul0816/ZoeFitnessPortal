@@ -637,6 +637,7 @@ export interface IStorage {
   // Coaching Workout Completions
   getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]>;
   upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion>;
+  updateCoachingWorkoutCompletion(id: string, updates: Partial<{ difficulty: string; feedbackNote: string | null }>): Promise<CoachingWorkoutCompletion | undefined>;
   bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]>;
 
   // Shopify Orders
@@ -2511,6 +2512,7 @@ export class MemStorage implements IStorage {
   async upsertCoachingFormResponse(data: InsertCoachingFormResponse): Promise<CoachingFormResponse> { throw new Error("Not implemented"); }
   async getCoachingWorkoutCompletions(clientId: string, weekNumber?: number, dayNumber?: number): Promise<CoachingWorkoutCompletion[]> { return []; }
   async upsertCoachingWorkoutCompletion(completion: InsertCoachingWorkoutCompletion): Promise<CoachingWorkoutCompletion> { throw new Error("Not implemented"); }
+  async updateCoachingWorkoutCompletion(id: string, updates: Partial<{ difficulty: string; feedbackNote: string | null }>): Promise<CoachingWorkoutCompletion | undefined> { return undefined; }
   async bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]> { return []; }
   async getShopifyOrders(): Promise<ShopifyOrder[]> { return []; }
   async getShopifyOrderById(id: string): Promise<ShopifyOrder | undefined> { return undefined; }
@@ -5913,6 +5915,14 @@ class DatabaseStorage implements IStorage {
       completedAt: completion.completed ? new Date() : null,
     }).returning();
     return created;
+  }
+
+  async updateCoachingWorkoutCompletion(id: string, updates: Partial<{ difficulty: string; feedbackNote: string | null }>): Promise<CoachingWorkoutCompletion | undefined> {
+    const [updated] = await this.db.update(coachingWorkoutCompletions)
+      .set(updates)
+      .where(eq(coachingWorkoutCompletions.id, id))
+      .returning();
+    return updated;
   }
 
   async bulkUpsertCoachingWorkoutCompletions(completions: InsertCoachingWorkoutCompletion[]): Promise<CoachingWorkoutCompletion[]> {

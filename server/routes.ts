@@ -9179,19 +9179,72 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
 
       // Check if today's check-in already exists — update instead of creating duplicate
       const existing = await storage.getTodayCoachingCheckin(client.id);
+      let checkin;
       if (existing) {
-        const updated = await storage.updateCoachingCheckin(existing.id, req.body);
-        return res.json(updated);
+        checkin = await storage.updateCoachingCheckin(existing.id, req.body);
+      } else {
+        checkin = await storage.createCoachingCheckin({
+          clientId: client.id,
+          userId: user.id,
+          date: new Date(),
+          ...req.body,
+        });
       }
 
-      const checkin = await storage.createCoachingCheckin({
-        clientId: client.id,
-        userId: user.id,
-        date: new Date(),
-        ...req.body,
-      });
+      // Generate AI insight from recent check-ins (fire-and-forget style, but include in response)
+      let aiInsight: { insight: string; tip?: string } | null = null;
+      try {
+        const recentCheckins = await storage.getCoachingCheckins(client.id);
+        const last7 = recentCheckins.slice(0, 7);
 
-      res.json(checkin);
+        if (last7.length >= 1 && process.env.AI_INTEGRATIONS_OPENAI_API_KEY) {
+          const OpenAILib = (await import("openai")).default;
+          const openai = new OpenAILib({
+            baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+            apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+          });
+
+          const checkinSummary = last7.map((c: any, i: number) => {
+            const meals = c.mealsLogged ? Object.values(c.mealsLogged as Record<string, string>).filter(v => v && v.trim()).length : 0;
+            return `Day ${i + 1}: mood=${c.mood || 'unknown'}, energy=${c.energyLevel || '?'}/10, sleep=${c.sleepHours || '?'}h, water=${c.waterGlasses || 0} glasses, meals=${meals}/4, workout=${c.workoutCompleted ? 'yes' : 'no'}${c.notes ? `, notes: "${c.notes}"` : ''}`;
+          }).join("\n");
+
+          const isWeekly = last7.length >= 7;
+          const currentMood = req.body.mood || '';
+          const currentEnergy = req.body.energyLevel || 5;
+
+          const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: `You are Zoe, a warm fitness coach. Generate a brief, personalized check-in insight for your client ${user.firstName}. ${isWeekly ? 'This is their 7th consecutive check-in — include a weekly pattern observation.' : 'Keep it to 1-2 sentences.'} ${currentMood === 'struggling' || currentEnergy < 4 ? 'The client seems to be having a tough day — be extra supportive and offer a specific recovery tip.' : 'Be encouraging and highlight something positive.'} Return JSON: { "insight": "...", "tip": "..." } where tip is optional.`
+              },
+              {
+                role: "user",
+                content: `Recent check-ins (most recent first):\n${checkinSummary}\n\nToday's check-in: mood=${currentMood}, energy=${currentEnergy}/10, sleep=${req.body.sleepHours || '?'}h, workout=${req.body.workoutCompleted ? 'yes' : 'no'}`
+              }
+            ],
+            max_tokens: 200,
+            temperature: 0.7,
+            response_format: { type: "json_object" },
+          });
+
+          const content = response.choices[0]?.message?.content;
+          if (content) {
+            aiInsight = JSON.parse(content);
+            // Store the insight on the check-in
+            if (checkin && aiInsight?.insight) {
+              await storage.updateCoachingCheckin(checkin.id, { aiInsight: aiInsight.insight } as any);
+            }
+          }
+        }
+      } catch (aiError) {
+        console.error("[Coaching] AI check-in insight generation failed:", aiError);
+        // Non-blocking — return check-in without insight
+      }
+
+      res.json({ ...checkin, aiInsight });
     } catch (error) {
       res.status(500).json({ message: "Failed to submit check-in" });
     }
@@ -9320,6 +9373,174 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
       res.json(results);
     } catch (error) {
       res.status(500).json({ message: "Failed to save workout completions" });
+    }
+  });
+
+  // Client-facing: Get pillar scores calculated from real data
+  app.get("/api/coaching/pillar-scores", async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      // Calculate from last 7 days of data
+      const checkins = await storage.getCoachingCheckins(client.id);
+      const recentCheckins = checkins.filter((c: any) => {
+        const d = new Date(c.date || c.createdAt);
+        return (Date.now() - d.getTime()) < 7 * 24 * 60 * 60 * 1000;
+      });
+
+      // Training: % of days with workout completed
+      const workoutDays = recentCheckins.filter((c: any) => c.workoutCompleted).length;
+      const training = recentCheckins.length > 0 ? Math.round((workoutDays / Math.min(recentCheckins.length, 7)) * 100) : 0;
+
+      // Nutrition: % of meals logged (4 per day target)
+      let totalMeals = 0;
+      let loggedMeals = 0;
+      for (const c of recentCheckins) {
+        totalMeals += 4;
+        const meals = c.mealsLogged as any;
+        if (meals) {
+          loggedMeals += Object.values(meals).filter((v: any) => v && String(v).trim()).length;
+        }
+      }
+      const nutrition = totalMeals > 0 ? Math.round((loggedMeals / totalMeals) * 100) : 0;
+
+      // Mindset: average mood (1-5 mapped to %) + energy (1-10 mapped to %), averaged
+      const moodMap: Record<string, number> = { struggling: 1, tired: 2, okay: 3, good: 4, amazing: 5 };
+      let moodTotal = 0, moodCount = 0, energyTotal = 0, energyCount = 0;
+      for (const c of recentCheckins) {
+        if (c.mood && moodMap[c.mood]) { moodTotal += moodMap[c.mood]; moodCount++; }
+        if (c.energyLevel) { energyTotal += c.energyLevel; energyCount++; }
+      }
+      const avgMood = moodCount > 0 ? (moodTotal / moodCount) / 5 * 100 : 0;
+      const avgEnergy = energyCount > 0 ? (energyTotal / energyCount) / 10 * 100 : 0;
+      const mindset = Math.round((avgMood + avgEnergy) / 2);
+
+      // Relationships: based on messages sent (simple engagement proxy)
+      const messages = await storage.getDirectMessages(client.id);
+      const recentMessages = messages.filter((m: any) => {
+        const d = new Date(m.createdAt);
+        return (Date.now() - d.getTime()) < 7 * 24 * 60 * 60 * 1000 && m.senderId === user.id;
+      });
+      const relationships = Math.min(Math.round(recentMessages.length * 15), 100); // cap at 100
+
+      // Purpose: streak consistency + notes rate
+      const streak = await storage.getCoachingCheckinStreak(client.id);
+      const notesCount = recentCheckins.filter((c: any) => c.notes && c.notes.trim()).length;
+      const notesRate = recentCheckins.length > 0 ? notesCount / recentCheckins.length : 0;
+      const purpose = Math.min(Math.round((Math.min(streak, 7) / 7 * 60) + (notesRate * 40)), 100);
+
+      res.json({ training, nutrition, mindset, relationships, purpose });
+    } catch (error) {
+      console.error("Error calculating pillar scores:", error);
+      res.status(500).json({ message: "Failed to calculate pillar scores" });
+    }
+  });
+
+  // Client-facing: Get plan narrative
+  app.get("/api/coaching/plan-narrative", async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      // Return cached narrative if exists
+      if (client.planNarrative) {
+        return res.json(client.planNarrative);
+      }
+
+      // Generate narrative with AI
+      try {
+        const OpenAILib = (await import("openai")).default;
+        const openai = new OpenAILib({
+          baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+          apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+        });
+
+        const formResponses = await storage.getCoachingFormResponses(client.id);
+        const workoutPlans = await storage.getCoachingWorkoutPlans(client.id);
+        const nutritionPlans = await storage.getCoachingNutritionPlans(client.id);
+
+        const formSummary = formResponses.map((f: any) => `${f.formType}: ${JSON.stringify(f.responses)}`).join("\n");
+        const workoutSummary = workoutPlans.slice(0, 7).map((w: any) => `Day ${w.dayNumber}: ${w.title} (${w.dayType})`).join(", ");
+        const nutritionSummary = nutritionPlans.map((n: any) => n.mealType).join(", ");
+
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are Zoe, a warm and professional fitness coach. Write a brief, personalized 3-4 sentence welcome message that introduces the client's plan. Reference their specific goals, any health considerations, and what they can expect. Be encouraging but professional. Do not use emojis."
+            },
+            {
+              role: "user",
+              content: `Client: ${user.firstName} ${user.lastName}\nCoaching type: ${client.coachingType}\nPlan duration: ${client.planDurationWeeks || 4} weeks\nIntake data: ${formSummary}\nWorkout plan: ${workoutSummary}\nNutrition covers: ${nutritionSummary}`
+            }
+          ],
+          max_tokens: 300,
+          temperature: 0.7,
+        });
+
+        const summary = response.choices[0]?.message?.content || "";
+        const narrative = { summary };
+
+        // Cache it
+        await storage.updateCoachingClient(client.id, { planNarrative: narrative } as any);
+
+        res.json(narrative);
+      } catch (aiError) {
+        console.error("AI narrative generation failed:", aiError);
+        // Return a generic narrative as fallback
+        res.json({
+          summary: `Welcome to your ${client.planDurationWeeks || 4}-week coaching program, ${user.firstName}! I've designed a progressive plan tailored to your goals and fitness level. Each week builds on the last, helping you get stronger while staying safe and supported. Let's get started!`
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching plan narrative:", error);
+      res.status(500).json({ message: "Failed to fetch plan narrative" });
+    }
+  });
+
+  // Client-facing: Submit workout day difficulty feedback
+  app.post("/api/coaching/workout-difficulty", async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const { planId, weekNumber, dayNumber, difficulty, feedbackNote } = req.body;
+      if (!planId || !weekNumber || !dayNumber || !difficulty) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Update all completions for this day with the difficulty rating
+      const completions = await storage.getCoachingWorkoutCompletions(client.id, weekNumber, dayNumber);
+      for (const completion of completions) {
+        if (completion.planId === planId) {
+          await storage.updateCoachingWorkoutCompletion(completion.id, {
+            difficulty,
+            feedbackNote: feedbackNote || null,
+          });
+        }
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error saving difficulty feedback:", error);
+      res.status(500).json({ message: "Failed to save difficulty feedback" });
     }
   });
 

@@ -1070,6 +1070,11 @@ export const coachingClients = pgTable("coaching_clients", {
   notes: text("notes"),
   coachRemarks: jsonb("coach_remarks"),
   weeklyPlanOutlines: jsonb("weekly_plan_outlines"), // Structured week-by-week plan outlines before full workout generation
+  automationEnabled: boolean("automation_enabled").default(true),
+  plansGeneratedAt: timestamp("plans_generated_at"),
+  planNarrative: jsonb("plan_narrative"), // AI-generated plan introduction for Plan Reveal
+  activatedAt: timestamp("activated_at"),
+  automationErrors: jsonb("automation_errors"),
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 }, (table) => [
@@ -1150,6 +1155,7 @@ export const coachingCheckins = pgTable("coaching_checkins", {
   mealsLogged: jsonb("meals_logged"),
   weight: text("weight"),
   notes: text("notes"),
+  aiInsight: text("ai_insight"), // AI-generated insight returned after check-in submission
   createdAt: timestamp("created_at").default(sql`now()`),
 }, (table) => [
   index("coaching_checkins_client_id_idx").on(table.clientId),
@@ -1178,6 +1184,8 @@ export const coachingWorkoutCompletions = pgTable("coaching_workout_completions"
   completed: boolean("completed").default(false),
   skipped: boolean("skipped").default(false),
   completedAt: timestamp("completed_at"),
+  difficulty: text("difficulty"), // "too_hard" | "just_right" | "too_easy"
+  feedbackNote: text("feedback_note"),
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
