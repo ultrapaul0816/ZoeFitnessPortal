@@ -7651,6 +7651,91 @@ ${JSON.stringify(allFormData, null, 2)}`,
     }
   });
 
+  // Send intake form request email (Unit 5)
+  app.post("/api/admin/coaching/clients/:clientId/request-intake-form", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const clientId = req.params.clientId;
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const user = await storage.getUser(client.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Determine which form they need based on coaching type
+      const coachingType = (client as any).coachingType || "pregnancy_coaching";
+      const formType = coachingType === "private_coaching"
+        ? "Private Coaching Questionnaire"
+        : "Pregnancy Coaching Intake Forms";
+
+      // Generate form URL based on coaching type
+      const formUrl = coachingType === "private_coaching"
+        ? `${process.env.CLIENT_URL || "http://localhost:5000"}/coaching/private-intake`
+        : `${process.env.CLIENT_URL || "http://localhost:5000"}/coaching/intake`;
+
+      // Send email via EmailService
+      const emailService = new EmailService();
+      await emailService.sendEmail({
+        to: user.email,
+        subject: `Action Required: Complete Your ${formType}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #ec4899;">Hi ${user.firstName}! 👋</h2>
+
+            <p style="font-size: 16px; line-height: 1.6;">
+              To get started with your personalized coaching plan, I need you to complete your intake form.
+            </p>
+
+            <p style="font-size: 16px; line-height: 1.6;">
+              This helps me understand your unique needs, goals, and any special considerations so I can create
+              the perfect plan for you.
+            </p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${formUrl}"
+                 style="background: linear-gradient(to right, #ec4899, #8b5cf6);
+                        color: white;
+                        padding: 14px 32px;
+                        text-decoration: none;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        display: inline-block;">
+                Complete Intake Form
+              </a>
+            </div>
+
+            <p style="font-size: 14px; color: #666; line-height: 1.6;">
+              <strong>What to expect:</strong><br>
+              • Takes about 10-15 minutes<br>
+              • Questions about your fitness level, health history, and goals<br>
+              • Helps me personalize your workouts and nutrition guidance
+            </p>
+
+            <p style="font-size: 16px; line-height: 1.6; margin-top: 30px;">
+              Once you submit the form, I'll review your information and create your customized plan within 24-48 hours.
+            </p>
+
+            <p style="font-size: 16px; line-height: 1.6;">
+              Can't wait to work with you!<br>
+              <strong>- Zoe</strong>
+            </p>
+
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+
+            <p style="font-size: 12px; color: #9ca3af;">
+              If you have any questions, just reply to this email. I'm here to help!
+            </p>
+          </div>
+        `,
+      });
+
+      console.log(`[Coaching] Intake form request sent to ${user.email} for client ${clientId}`);
+      res.json({ success: true, message: "Form request email sent" });
+    } catch (error) {
+      console.error("Error sending form request:", error);
+      res.status(500).json({ message: "Failed to send form request email" });
+    }
+  });
+
   // Generate AI workout plan for a specific week
   app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {

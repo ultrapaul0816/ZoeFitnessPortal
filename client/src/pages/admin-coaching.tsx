@@ -56,6 +56,7 @@ import {
   UserPlus,
   LayoutGrid,
   Table2,
+  Mail,
 } from "lucide-react";
 import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-responses";
 import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCard";
@@ -382,6 +383,19 @@ export default function AdminCoaching() {
     },
     onError: (err: Error) => {
       toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const requestIntakeFormMutation = useMutation({
+    mutationFn: async (clientId: string) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/request-intake-form`);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Form request sent", description: "Client will receive an email with the intake form link." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error sending request", description: err.message, variant: "destructive" });
     },
   });
 
@@ -781,6 +795,17 @@ export default function AdminCoaching() {
                       })}
                     </SelectContent>
                   </Select>
+                )}
+                {selectedClient.status === "enrolled" && (
+                  <Button
+                    onClick={() => requestIntakeFormMutation.mutate(selectedClient.id)}
+                    disabled={requestIntakeFormMutation.isPending}
+                    variant="outline"
+                    className="border-yellow-300 text-yellow-700 hover:bg-yellow-50"
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    {requestIntakeFormMutation.isPending ? "Sending..." : "Request Intake Form"}
+                  </Button>
                 )}
                 {selectedClient.status === "intake_complete" && (
                   <Button
