@@ -7236,7 +7236,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       } as any);
 
       // Send welcome email with login credentials
-      const appUrl = process.env.APP_URL || "https://zoefitness.replit.app";
+      const appUrl = process.env.APP_URL || "https://app.strongerwithzoe.com";
       try {
         const { emailService } = await import("./email/service");
         await emailService.sendEmail({
@@ -7668,7 +7668,7 @@ ${JSON.stringify(allFormData, null, 2)}`,
         : "Pregnancy Coaching Intake Forms";
 
       // Generate form URL - points to client's coaching dashboard where intake forms are available
-      const baseUrl = process.env.APP_URL || "https://zoefitness.replit.app";
+      const baseUrl = process.env.APP_URL || "https://app.strongerwithzoe.com";
       const formUrl = `${baseUrl}/my-coaching`;
 
       // Send email via emailService singleton
@@ -8559,7 +8559,7 @@ Rules:
                   <p><strong>${user?.firstName} ${user?.lastName}</strong> (${user?.email}) has completed both intake forms.</p>
                   <p>Please review their responses and generate their Week 1 plan.</p>
                   <div style="text-align: center; margin: 30px 0;">
-                    <a href="${process.env.APP_URL || 'https://zoefitness.replit.app'}/admin/coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">Review Client</a>
+                    <a href="${process.env.APP_URL || 'https://app.strongerwithzoe.com'}/admin/coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">Review Client</a>
                   </div>
                 </div>
               `,
@@ -8663,7 +8663,7 @@ Rules:
                 <p>Hi ${user.firstName},</p>
                 <p>Great news — your personalized workout and nutrition plan is ready! Log in to view your Week 1 plan and get started.</p>
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="${process.env.APP_URL || 'https://zoefitness.replit.app'}/my-coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">View Your Plan</a>
+                  <a href="${process.env.APP_URL || 'https://app.strongerwithzoe.com'}/my-coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">View Your Plan</a>
                 </div>
                 <p style="color: #666; margin-top: 30px;">Warm regards,<br>Zoe & Team</p>
               </div>
