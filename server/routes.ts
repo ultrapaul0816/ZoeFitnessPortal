@@ -7458,6 +7458,54 @@ Keep it professional, concise, and actionable for the coach.`,
     return summaryResponse.choices[0]?.message?.content || "";
   }
 
+  // Helper function to generate AI coach remarks
+  async function generateCoachRemarksFromIntake(clientId: string, userId: number) {
+    const client = await storage.getCoachingClient(clientId);
+    if (!client) throw new Error("Client not found");
+
+    const user = await storage.getUser(userId);
+    if (!user) throw new Error("User not found");
+
+    // Get all form responses
+    const allResponses = await storage.getCoachingFormResponses(clientId);
+    const allFormData = allResponses.reduce((acc: any, r: any) => {
+      acc[r.formType] = r.responses;
+      return acc;
+    }, {});
+
+    // Call OpenAI GPT-4o with structured JSON output
+    const OpenAI = (await import("openai")).default;
+    const openai = new OpenAI({
+      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
+      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+    });
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes. Return a JSON object with exactly these fields:
+- trainingFocus: Specific training priorities, modifications, and focus areas (2-4 sentences)
+- nutritionalGuidance: Dietary needs, preferences, restrictions, macro goals (2-4 sentences)
+- thingsToWatch: Red flags, conditions to monitor, exercise modifications needed (2-4 sentences)
+- personalityNotes: Communication style, motivation drivers, coaching approach recommendations (2-4 sentences)
+
+Be specific to THIS client's data. Reference their actual medical history, goals, and constraints.`,
+        },
+        {
+          role: "user",
+          content: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
+        },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 1500,
+    });
+
+    const remarks = JSON.parse(response.choices[0]?.message?.content || "{}");
+    console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
+    return remarks;
+  }
+
   // Regenerate AI assessment summary
   app.post("/api/admin/coaching/clients/:clientId/regenerate-ai-summary", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
@@ -7483,46 +7531,7 @@ Keep it professional, concise, and actionable for the coach.`,
       const client = await storage.getCoachingClient(clientId);
       if (!client) return res.status(404).json({ message: "Client not found" });
 
-      const user = await storage.getUser(client.userId);
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      // Get all form responses
-      const allResponses = await storage.getCoachingFormResponses(clientId);
-      const allFormData = allResponses.reduce((acc: any, r: any) => {
-        acc[r.formType] = r.responses;
-        return acc;
-      }, {});
-
-      // Call OpenAI GPT-4o with structured JSON output
-      const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
-      });
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes. Return a JSON object with exactly these fields:
-- trainingFocus: Specific training priorities, modifications, and focus areas (2-4 sentences)
-- nutritionalGuidance: Dietary needs, preferences, restrictions, macro goals (2-4 sentences)
-- thingsToWatch: Red flags, conditions to monitor, exercise modifications needed (2-4 sentences)
-- personalityNotes: Communication style, motivation drivers, coaching approach recommendations (2-4 sentences)
-
-Be specific to THIS client's data. Reference their actual medical history, goals, and constraints.`,
-          },
-          {
-            role: "user",
-            content: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
-          },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 1500,
-      });
-
-      const remarks = JSON.parse(response.choices[0]?.message?.content || "{}");
-      console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
+      const remarks = await generateCoachRemarksFromIntake(clientId, client.userId);
       res.json({ success: true, remarks });
     } catch (error: any) {
       console.error("Error generating coach remarks:", error);
@@ -7592,14 +7601,16 @@ Be specific to THIS client's data. Reference their actual medical history, goals
           {
             role: "system",
             content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Generate a weekly plan outline BEFORE creating the full detailed workout. Return a JSON object with:
-- philosophy: Overall approach for this week (2-3 sentences)
-- focusAreas: Array of 2-4 key focus areas (strings)
-- dayOutlines: Array of 7 objects with { dayNumber, dayName, dayType, briefDescription }
-- progressionFromLastWeek: How this week builds on previous week (1-2 sentences)
-- safetyConsiderations: Any special precautions or modifications needed (1-2 sentences)
+- philosophy: Overall approach for this week (2-3 sentences) - Use an ENCOURAGING, POSITIVE, and MOTIVATING tone
+- focusAreas: Array of 2-4 key focus areas (strings) - Frame these as exciting opportunities for growth
+- dayOutlines: Array of 7 objects with { dayNumber, dayName, dayType, briefDescription } - Brief descriptions should be uplifting and energizing
+- progressionFromLastWeek: How this week builds on previous week (1-2 sentences) - Celebrate progress and emphasize positive momentum
+- safetyConsiderations: Any special precautions or modifications needed (1-2 sentences) - Frame as supportive adaptations rather than limitations
 
 Day types can be: Strength, Cardio, Recovery, Mobility, HIIT, Rest
-Be specific to THIS client's needs, trimester/stage, and goals.`,
+Be specific to THIS client's needs, trimester/stage, and goals.
+
+IMPORTANT: Write in a positive, encouraging, warm tone that makes the client feel excited and capable. Avoid clinical or overly cautious language. Focus on what they CAN do and how strong they're becoming.`,
           },
           {
             role: "user",
@@ -8630,6 +8641,16 @@ Rules:
         } catch (aiErr) {
           console.error("Failed to generate AI summary:", aiErr);
           // Non-fatal — Zoe can still review forms manually
+        }
+
+        // Auto-generate coach remarks from intake forms
+        try {
+          const coachRemarks = await generateCoachRemarksFromIntake(client.id, userId);
+          await storage.updateCoachingClient(client.id, { coachRemarks } as any);
+          console.log(`[Coaching] Coach remarks auto-generated for client ${client.id}`);
+        } catch (remarksErr) {
+          console.error("Failed to auto-generate coach remarks:", remarksErr);
+          // Non-fatal — Zoe can generate them manually later
         }
       }
 

@@ -57,6 +57,7 @@ import {
   LayoutGrid,
   Table2,
   Mail,
+  Check,
 } from "lucide-react";
 import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-responses";
 import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCard";
@@ -1040,13 +1041,37 @@ export default function AdminCoaching() {
                                 <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
                                   Use the Plan Builder wizard to create a complete 4-week program with your strategic input at every step
                                 </p>
-                                <Button
-                                  onClick={() => setPlanBuilderOpen(true)}
-                                  size="lg"
-                                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                                >
-                                  Start Building Program
-                                </Button>
+                                {(() => {
+                                  const hasCoachRemarks = (selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim());
+                                  const hasAiSummary = !!(selectedClient as any).aiSummary;
+                                  const coachRemarksApproved = !!(selectedClient as any).coachRemarksApproved;
+                                  const aiSummaryApproved = !!(selectedClient as any).aiSummaryApproved;
+                                  const canStartBuilding = hasCoachRemarks && hasAiSummary && coachRemarksApproved && aiSummaryApproved;
+
+                                  return (
+                                    <>
+                                      {!canStartBuilding && (
+                                        <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                                          <p className="font-medium mb-1">Approval Required:</p>
+                                          <ul className="space-y-1 text-xs">
+                                            {!hasCoachRemarks && <li>• Generate Coach's Notes & Direction</li>}
+                                            {hasCoachRemarks && !coachRemarksApproved && <li>• Approve Coach's Notes & Direction</li>}
+                                            {!hasAiSummary && <li>• AI Assessment will be generated automatically</li>}
+                                            {hasAiSummary && !aiSummaryApproved && <li>• Approve AI Assessment & Recommendations</li>}
+                                          </ul>
+                                        </div>
+                                      )}
+                                      <Button
+                                        onClick={() => setPlanBuilderOpen(true)}
+                                        size="lg"
+                                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                                        disabled={!canStartBuilding}
+                                      >
+                                        Start Building Program
+                                      </Button>
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </CardContent>
                           </Card>
@@ -1128,18 +1153,54 @@ export default function AdminCoaching() {
                                 <CardTitle className="text-base flex items-center gap-2">
                                   <Sparkles className="w-4 h-4 text-gray-600" />
                                   Coach's Notes & Direction
+                                  {(selectedClient as any).coachRemarksApproved && (
+                                    <Badge className="bg-green-100 text-green-700 text-[10px]">
+                                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                                      Approved
+                                    </Badge>
+                                  )}
                                 </CardTitle>
                                 <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit mt-1">These notes are used by AI when generating workouts and nutrition plans</p>
                               </div>
-                              <Button
-                                variant="outline" size="sm"
-                                className="text-violet-600 border-violet-300 hover:bg-violet-50"
-                                onClick={() => generateCoachRemarksMutation.mutate(selectedClient.id)}
-                                disabled={generateCoachRemarksMutation.isPending}
-                              >
-                                <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
-                                {generateCoachRemarksMutation.isPending ? "Generating..." : "Generate with AI"}
-                              </Button>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline" size="sm"
+                                  className="text-violet-600 border-violet-300 hover:bg-violet-50"
+                                  onClick={() => generateCoachRemarksMutation.mutate(selectedClient.id)}
+                                  disabled={generateCoachRemarksMutation.isPending}
+                                >
+                                  <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
+                                  {generateCoachRemarksMutation.isPending ? "Generating..." : "Generate with AI"}
+                                </Button>
+                                {((selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim())) && (
+                                  <Button
+                                    size="sm"
+                                    className={cn(
+                                      (selectedClient as any).coachRemarksApproved
+                                        ? "bg-green-600 hover:bg-green-700"
+                                        : "bg-blue-600 hover:bg-blue-700"
+                                    )}
+                                    onClick={() => {
+                                      updateClientMutation.mutate({
+                                        clientId: selectedClient.id,
+                                        updates: { coachRemarksApproved: !(selectedClient as any).coachRemarksApproved }
+                                      });
+                                    }}
+                                  >
+                                    {(selectedClient as any).coachRemarksApproved ? (
+                                      <>
+                                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                                        Approved
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Check className="w-3.5 h-3.5 mr-1.5" />
+                                        Approve Notes
+                                      </>
+                                    )}
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </CardHeader>
                           <CardContent>
@@ -1153,8 +1214,8 @@ export default function AdminCoaching() {
                                 <div key={field.key}>
                                   <Label className="text-xs text-gray-500 font-medium">{field.label}</Label>
                                   <Textarea
-                                    className="mt-1 text-sm min-h-[60px] focus:ring-violet-200 focus:border-violet-300"
-                                    rows={2}
+                                    className="mt-1 text-sm min-h-[100px] focus:ring-violet-200 focus:border-violet-300 resize-y"
+                                    rows={4}
                                     placeholder={field.placeholder}
                                     defaultValue={((selectedClient as any).coachRemarks as any)?.[field.key] || ''}
                                     onBlur={(e) => {
@@ -1172,8 +1233,8 @@ export default function AdminCoaching() {
                               <div className="md:col-span-2">
                                 <Label className="text-xs text-gray-500 font-medium">Additional Notes</Label>
                                 <Textarea
-                                  className="mt-1 text-sm min-h-[60px] focus:ring-violet-200 focus:border-violet-300"
-                                  rows={2}
+                                  className="mt-1 text-sm min-h-[100px] focus:ring-violet-200 focus:border-violet-300 resize-y"
+                                  rows={4}
                                   placeholder="Any other coaching directions, goals, special requirements..."
                                   defaultValue={((selectedClient as any).coachRemarks as any)?.customNotes || ''}
                                   onBlur={(e) => {
@@ -1249,17 +1310,51 @@ export default function AdminCoaching() {
                               <div className="flex items-center justify-between">
                                 <CardTitle className="text-base flex items-center gap-2">
                                   <Brain className="w-4 h-4 text-gray-600" />
-                                  AI Assessment Summary
+                                  AI Assessment & Recommendations
+                                  {(selectedClient as any).aiSummaryApproved && (
+                                    <Badge className="bg-green-100 text-green-700 text-[10px]">
+                                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                                      Approved
+                                    </Badge>
+                                  )}
                                 </CardTitle>
-                                <Button
-                                  variant="ghost" size="sm"
-                                  onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
-                                  disabled={regenerateAiSummaryMutation.isPending}
-                                  className="text-xs text-violet-600 hover:text-gray-900"
-                                >
-                                  <RefreshCw className={cn("w-3 h-3 mr-1", regenerateAiSummaryMutation.isPending && "animate-spin")} />
-                                  {regenerateAiSummaryMutation.isPending ? "Regenerating..." : "Regenerate"}
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="ghost" size="sm"
+                                    onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
+                                    disabled={regenerateAiSummaryMutation.isPending}
+                                    className="text-xs text-violet-600 hover:text-gray-900"
+                                  >
+                                    <RefreshCw className={cn("w-3 h-3 mr-1", regenerateAiSummaryMutation.isPending && "animate-spin")} />
+                                    {regenerateAiSummaryMutation.isPending ? "Regenerating..." : "Regenerate"}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    className={cn(
+                                      (selectedClient as any).aiSummaryApproved
+                                        ? "bg-green-600 hover:bg-green-700"
+                                        : "bg-blue-600 hover:bg-blue-700"
+                                    )}
+                                    onClick={() => {
+                                      updateClientMutation.mutate({
+                                        clientId: selectedClient.id,
+                                        updates: { aiSummaryApproved: !(selectedClient as any).aiSummaryApproved }
+                                      });
+                                    }}
+                                  >
+                                    {(selectedClient as any).aiSummaryApproved ? (
+                                      <>
+                                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                                        Approved
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Check className="w-3.5 h-3.5 mr-1.5" />
+                                        Approve Assessment
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
                               </div>
                             </CardHeader>
                             <CardContent>
