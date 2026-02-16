@@ -7668,7 +7668,7 @@ ${JSON.stringify(allFormData, null, 2)}`,
         : "Pregnancy Coaching Intake Forms";
 
       // Generate form URL - points to client's coaching dashboard where intake forms are available
-      const baseUrl = process.env.APP_URL || process.env.CLIENT_URL || "http://localhost:5000";
+      const baseUrl = process.env.APP_URL || "https://zoefitness.replit.app";
       const formUrl = `${baseUrl}/my-coaching`;
 
       // Send email via emailService singleton
