@@ -815,20 +815,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Mark the magic link as used
       await storage.markMagicLinkAsUsed(magicLink.id);
 
-      // Update user terms and last login
-      const updates: any = {
+      // Update last login only (do NOT auto-accept terms/disclaimer)
+      await storage.updateUser(user.id, {
         lastLoginAt: new Date(),
-      };
-      if (!user.termsAccepted) {
-        updates.termsAccepted = true;
-        updates.termsAcceptedAt = new Date();
-      }
-      if (!user.disclaimerAccepted) {
-        updates.disclaimerAccepted = true;
-        updates.disclaimerAcceptedAt = new Date();
-      }
-
-      await storage.updateUser(user.id, updates);
+      });
 
       // Create session
       req.session.userId = user.id;
@@ -7552,6 +7542,11 @@ Be specific to THIS client's data. Reference their actual medical history, goals
   // Generate weekly plan outline (Unit 4 - Plan Preview Step)
   app.post("/api/admin/coaching/clients/:clientId/generate-plan-outline", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
+      // Validate OpenAI API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables." });
+      }
+
       const clientId = req.params.clientId;
       const { weekNumber } = req.body;
 
@@ -7773,6 +7768,11 @@ ${JSON.stringify(allFormData, null, 2)}`,
   // Generate AI workout plan for a specific week
   app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
+      // Validate OpenAI API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables." });
+      }
+
       const client = await storage.getCoachingClient(req.params.clientId);
       if (!client) return res.status(404).json({ message: "Client not found" });
 
@@ -8472,8 +8472,19 @@ Rules:
       const client = await storage.getCoachingClient(req.params.clientId);
       if (!client) return res.status(404).json({ message: "Client not found" });
 
-      // Mark all workout plans as approved
+      // Validate that plans exist before activation
       const workoutPlans = await storage.getCoachingWorkoutPlans(client.id);
+      if (workoutPlans.length === 0) {
+        return res.status(400).json({ message: "Cannot approve: No workout plans exist. Generate at least Week 1 first." });
+      }
+
+      // Validate that at least Week 1 (7 days) exists
+      const week1Plans = workoutPlans.filter(p => p.weekNumber === 1);
+      if (week1Plans.length < 7) {
+        return res.status(400).json({ message: `Cannot approve: Week 1 only has ${week1Plans.length} days. Need all 7 days generated.` });
+      }
+
+      // Mark all workout plans as approved
       for (const plan of workoutPlans) {
         await storage.updateCoachingWorkoutPlan(plan.id, { isApproved: true });
       }
@@ -8530,7 +8541,7 @@ Rules:
         return res.status(400).json({ message: "formType and responses are required" });
       }
 
-      const validFormTypes = ["lifestyle_questionnaire", "health_evaluation"];
+      const validFormTypes = ["lifestyle_questionnaire", "health_evaluation", "private_coaching_questionnaire"];
       if (!validFormTypes.includes(formType)) {
         return res.status(400).json({ message: "Invalid form type" });
       }
@@ -8542,13 +8553,16 @@ Rules:
         responses,
       });
 
-      // Check if both forms are now submitted
+      // Check if intake forms are complete (pregnancy needs 2 forms, private needs 1)
       const allResponses = await storage.getCoachingFormResponses(client.id);
       const hasLifestyle = allResponses.some((r: any) => r.formType === "lifestyle_questionnaire");
       const hasHealth = allResponses.some((r: any) => r.formType === "health_evaluation");
+      const hasPrivateQ = allResponses.some((r: any) => r.formType === "private_coaching_questionnaire");
 
-      if (hasLifestyle && hasHealth && client.status === "enrolled") {
-        // Both forms complete → update status
+      const isIntakeComplete = (hasLifestyle && hasHealth) || hasPrivateQ;
+
+      if (isIntakeComplete && client.status === "enrolled") {
+        // Intake forms complete → update status
         await storage.updateCoachingClient(client.id, {
           status: "intake_complete",
           formSubmissionDate: new Date(),
@@ -8655,6 +8669,17 @@ Rules:
 
       if (client.status !== "plan_ready") {
         return res.status(400).json({ message: "Plan must be generated and reviewed before activation" });
+      }
+
+      // Validate that workout plans exist
+      const workoutPlans = await storage.getCoachingWorkoutPlans(client.id);
+      if (workoutPlans.length === 0) {
+        return res.status(400).json({ message: "Cannot activate: No workout plans exist" });
+      }
+
+      const week1Plans = workoutPlans.filter(p => p.weekNumber === 1);
+      if (week1Plans.length < 7) {
+        return res.status(400).json({ message: `Cannot activate: Week 1 incomplete (${week1Plans.length}/7 days)` });
       }
 
       // Activate client, set start date to next Monday if not already set
