@@ -773,11 +773,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const magicLinkUrl = `${baseUrl}/api/auth/magic-link/${token}`;
       
       // Send magic link email
-      await emailService.sendMagicLinkEmail(
+      console.log(`[MAGIC-LINK] Attempting to send to: ${email}, url: ${magicLinkUrl}`);
+      const result = await emailService.sendMagicLinkEmail(
         user.email,
         user.firstName,
         magicLinkUrl
       );
+
+      if (!result.success) {
+        console.error(`[MAGIC-LINK] Email send failed for ${email}:`, result.error);
+        return res.status(500).json({ message: `Failed to send magic link: ${result.error}` });
+      }
 
       console.log(`[MAGIC-LINK] Sent to: ${email}`);
       res.json({ message: "If an account exists, a magic link has been sent to your email" });
@@ -7235,10 +7241,17 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         planDurationWeeks: 4,
       } as any);
 
-      // Send welcome email with login credentials
+      // Send welcome email with magic link for auto-login
       const appUrl = process.env.APP_URL || "https://app.strongerwithzoe.com";
       try {
         const { emailService } = await import("./email/service");
+        const cryptoModule = await import('crypto');
+        const welcomeToken = cryptoModule.randomBytes(32).toString('hex');
+        const welcomeExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+        await storage.deleteMagicLinks(user.email);
+        await storage.createMagicLink(user.email, welcomeToken, welcomeExpiry);
+        const welcomeUrl = `${appUrl}/api/auth/magic-link/${welcomeToken}`;
+
         await emailService.sendEmail({
           to: user.email,
           subject: "Welcome to Private Coaching with Zoe!",
@@ -7249,17 +7262,17 @@ Keep it to 2-4 sentences, warm and encouraging.`;
               </div>
               <p>Hi ${user.firstName},</p>
               <p>Thank you for enrolling in Private Coaching with Zoe! Your payment has been received.</p>
-              <p><strong>Your next step:</strong> Please log in and complete your intake forms so we can create your personalized plan.</p>
+              <p><strong>Your next step:</strong> Click the button below to log in and complete your intake forms so we can create your personalized plan.</p>
               ${wasNewUser ? `
               <div style="background: #fdf2f8; padding: 20px; border-radius: 12px; margin: 20px 0;">
                 <p style="margin: 0 0 8px 0; font-weight: 600;">Your Login Details:</p>
                 <p style="margin: 0 0 4px 0;">Email: <strong>${user.email}</strong></p>
                 <p style="margin: 0 0 4px 0;">Password: <strong>${autoPassword}</strong></p>
-                <p style="margin: 8px 0 0 0; font-size: 13px; color: #666;">Please change your password after your first login.</p>
+                <p style="margin: 8px 0 0 0; font-size: 13px; color: #666;">You can also use these credentials to log in at any time.</p>
               </div>
               ` : ''}
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${appUrl}/my-coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">Start Your Intake Forms</a>
+                <a href="${welcomeUrl}" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">Start Your Intake Forms</a>
               </div>
               <p>We're excited to work with you on your fitness journey!</p>
               <p style="color: #666; margin-top: 30px;">Warm regards,<br>Zoe & Team</p>
@@ -7667,12 +7680,17 @@ ${JSON.stringify(allFormData, null, 2)}`,
         ? "Private Coaching Questionnaire"
         : "Pregnancy Coaching Intake Forms";
 
-      // Generate form URL - points to client's coaching dashboard where intake forms are available
+      // Generate a magic link so client is auto-logged-in when they click
       const baseUrl = process.env.APP_URL || "https://app.strongerwithzoe.com";
-      const formUrl = `${baseUrl}/my-coaching`;
+      const crypto = await import('crypto');
+      const magicToken = crypto.randomBytes(32).toString('hex');
+      const magicExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days for intake form
+      await storage.deleteMagicLinks(user.email);
+      await storage.createMagicLink(user.email, magicToken, magicExpiry);
+      const formUrl = `${baseUrl}/api/auth/magic-link/${magicToken}`;
 
       // Send email via emailService singleton
-      console.log(`[Coaching] Attempting to send intake form request to ${user.email} for client ${clientId}`);
+      console.log(`[Coaching] Attempting to send intake form request to ${user.email} for client ${clientId} (magic link included)`);
       const result = await emailService.sendEmail({
         to: user.email,
         subject: `Action Required: Complete Your ${formType}`,
@@ -9036,12 +9054,18 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
   app.get("/api/coaching/my-plan", async (req, res) => {
     try {
       const userId = req.session?.userId || (req as any)._tokenUserId;
+      console.log(`[My-Plan] Checking coaching plan for session userId=${userId}`);
       if (!userId) return res.status(401).json({ message: "Not authenticated" });
       const user = await storage.getUser(userId);
       if (!user) return res.status(401).json({ message: "Not authenticated" });
 
+      console.log(`[My-Plan] User found: id=${user.id}, email=${user.email}`);
       const client = await storage.getCoachingClientByUserId(user.id);
-      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+      if (!client) {
+        console.log(`[My-Plan] No coaching client found for userId=${user.id} (${user.email})`);
+        return res.status(404).json({ message: "No coaching enrollment found" });
+      }
+      console.log(`[My-Plan] Coaching client found: clientId=${client.id}, status=${client.status}`);
 
       const workoutPlan = await storage.getCoachingWorkoutPlans(client.id);
       const nutritionPlan = await storage.getCoachingNutritionPlans(client.id);

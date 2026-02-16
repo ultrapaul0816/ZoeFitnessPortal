@@ -12,6 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BottomNav from "@/components/bottom-nav";
 import { StrategicWelcome } from "@/components/onboarding/StrategicWelcome";
 import {
@@ -893,6 +894,11 @@ export default function MyCoaching() {
     return localStorage.getItem(`welcome_completed_${user.id}`) === 'true';
   });
 
+  // Terms and Disclaimer acceptance tracking
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+
   const [checkinForm, setCheckinForm] = useState({
     mood: "",
     energyLevel: 5,
@@ -1443,6 +1449,142 @@ export default function MyCoaching() {
 
   const client = planData.client;
   const coachingType = client.coachingType;
+
+  // Check if user needs to accept terms/disclaimer
+  useEffect(() => {
+    if (user && (!user.termsAccepted || !user.disclaimerAccepted)) {
+      setShowTermsModal(true);
+    }
+  }, [user]);
+
+  // Terms/Disclaimer Modal
+  if (showTermsModal && user) {
+    const canProceed = termsAccepted && disclaimerAccepted;
+
+    const handleAcceptTerms = async () => {
+      if (!canProceed) {
+        toast({
+          title: "Please accept both agreements",
+          description: "You must accept the Terms & Conditions and acknowledge the Disclaimer to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/auth/update-user", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            termsAccepted: true,
+            disclaimerAccepted: true,
+            termsAcceptedAt: new Date().toISOString(),
+            disclaimerAcceptedAt: new Date().toISOString(),
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to update preferences");
+
+        // Update local user state
+        const updatedUser = { ...user, termsAccepted: true, disclaimerAccepted: true };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setShowTermsModal(false);
+
+        toast({
+          title: "Thank you!",
+          description: "Your preferences have been saved.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save your preferences. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    return (
+      <Dialog open={showTermsModal} onOpenChange={() => {}}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-900">Welcome to Private Coaching!</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Before we begin, please review and accept our terms and conditions.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Terms & Conditions */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <Shield className="w-5 h-5 text-pink-500" />
+                Terms & Conditions
+              </h3>
+              <div className="text-sm text-gray-700 space-y-2 bg-gray-50 p-4 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
+                <p>By using this coaching program, you agree to:</p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Follow the personalized workout and nutrition plans provided</li>
+                  <li>Communicate openly and honestly about your progress and challenges</li>
+                  <li>Respect the coach's time and expertise</li>
+                  <li>Not share or redistribute the program content without permission</li>
+                  <li>Pay all fees as agreed upon for the coaching services</li>
+                </ul>
+              </div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <Checkbox
+                  checked={termsAccepted}
+                  onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                  className="mt-1"
+                />
+                <span className="text-sm text-gray-700">
+                  I have read and agree to the Terms & Conditions
+                </span>
+              </label>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <Heart className="w-5 h-5 text-pink-500" />
+                Health & Safety Disclaimer
+              </h3>
+              <div className="text-sm text-gray-700 space-y-2 bg-pink-50 p-4 rounded-lg border border-pink-200 max-h-48 overflow-y-auto">
+                <p className="font-semibold">Important Health Information:</p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Always consult with your healthcare provider before starting any exercise program</li>
+                  <li>Stop exercising immediately if you experience pain, dizziness, or discomfort</li>
+                  <li>This program is not a substitute for medical advice or treatment</li>
+                  <li>You are responsible for your own health and safety during workouts</li>
+                  <li>Modifications may be necessary based on your individual health conditions</li>
+                </ul>
+              </div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <Checkbox
+                  checked={disclaimerAccepted}
+                  onCheckedChange={(checked) => setDisclaimerAccepted(checked as boolean)}
+                  className="mt-1"
+                />
+                <span className="text-sm text-gray-700">
+                  I acknowledge and understand the health and safety information
+                </span>
+              </label>
+            </div>
+
+            {/* Action Button */}
+            <Button
+              onClick={handleAcceptTerms}
+              disabled={!canProceed}
+              className="w-full bg-pink-500 hover:bg-pink-600 text-white py-6 text-lg"
+            >
+              Continue to My Coaching Dashboard
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   // Show Strategic Welcome for new private coaching clients (before intake)
   if ((client.status === "enrolled" || client.status === "pending") && coachingType === "private_coaching" && !welcomeCompleted) {
