@@ -559,18 +559,18 @@ export default function AdminCoaching() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label>First Name</Label>
-                      <Input 
-                        placeholder="First name" 
-                        value={newClientFirstName} 
+                      <Label>First Name <span className="text-red-400">*</span></Label>
+                      <Input
+                        placeholder="First name"
+                        value={newClientFirstName}
                         onChange={e => setNewClientFirstName(e.target.value)}
                       />
                     </div>
                     <div>
-                      <Label>Last Name</Label>
-                      <Input 
-                        placeholder="Last name" 
-                        value={newClientLastName} 
+                      <Label>Last Name <span className="text-red-400">*</span></Label>
+                      <Input
+                        placeholder="Last name"
+                        value={newClientLastName}
                         onChange={e => setNewClientLastName(e.target.value)}
                       />
                     </div>
@@ -617,15 +617,25 @@ export default function AdminCoaching() {
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setShowNewClientDialog(false)}>Cancel</Button>
                   <Button
-                    onClick={() => createClientMutation.mutate({
-                      email: newClientEmail,
-                      firstName: newClientFirstName || undefined,
-                      lastName: newClientLastName || undefined,
-                      phone: newClientPhone || undefined,
-                      notes: newClientNotes,
-                      paymentAmount: parseInt(newClientPaymentAmount) * 100,
-                      coachingType: newClientCoachingType,
-                    })}
+                    onClick={() => {
+                      if (!newClientEmail) {
+                        toast({ title: "Error", description: "Email is required", variant: "destructive" });
+                        return;
+                      }
+                      if (!newClientFirstName || !newClientLastName) {
+                        toast({ title: "Error", description: "First name and last name are required for new clients", variant: "destructive" });
+                        return;
+                      }
+                      createClientMutation.mutate({
+                        email: newClientEmail,
+                        firstName: newClientFirstName,
+                        lastName: newClientLastName,
+                        phone: newClientPhone || undefined,
+                        notes: newClientNotes,
+                        paymentAmount: newClientPaymentAmount ? parseInt(newClientPaymentAmount) * 100 : 0,
+                        coachingType: newClientCoachingType,
+                      });
+                    }}
                     disabled={!newClientEmail || createClientMutation.isPending}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
