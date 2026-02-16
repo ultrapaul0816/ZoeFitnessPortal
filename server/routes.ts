@@ -7531,9 +7531,21 @@ Be specific to THIS client's data. Reference their actual medical history, goals
       const remarks = JSON.parse(response.choices[0]?.message?.content || "{}");
       console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
       res.json({ success: true, remarks });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating coach remarks:", error);
-      res.status(500).json({ message: "Failed to generate coach remarks" });
+      const errorMessage = error?.message || "Unknown error";
+      const detailedError = error?.response?.data?.error?.message || errorMessage;
+      console.error(`[Coaching] Detailed error: ${detailedError}`);
+
+      // Check for specific error types
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ message: "OpenAI API key not configured" });
+      }
+      if (errorMessage.includes("API key")) {
+        return res.status(500).json({ message: "Invalid OpenAI API key" });
+      }
+
+      res.status(500).json({ message: `Failed to generate coach remarks: ${detailedError}` });
     }
   });
 
