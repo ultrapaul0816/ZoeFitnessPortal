@@ -63,6 +63,7 @@ import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCar
 import { CoachingClientsTable } from "@/components/admin/CoachingClientsTable";
 import { CoachingWorkoutTable } from "@/components/admin/CoachingWorkoutTable";
 import { CoachingSidebar } from "@/components/admin/CoachingSidebar";
+import { PlanBuilderWizard } from "@/components/admin/PlanBuilderWizard";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
 type CoachingClientWithUser = CoachingClient & {
@@ -135,6 +136,7 @@ export default function AdminCoaching() {
   const [sortMode, setSortMode] = useState<"urgent" | "recent" | "alpha">("urgent");
   const [messageInput, setMessageInput] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
+  const [planBuilderOpen, setPlanBuilderOpen] = useState(false);
   const [expandedAdminDay, setExpandedAdminDay] = useState<string | null>(null);
   const [editingDayData, setEditingDayData] = useState<any>(null);
   const [editingCoachNotes, setEditingCoachNotes] = useState<string>("");
@@ -1010,6 +1012,41 @@ export default function AdminCoaching() {
                             </CardContent>
                           </Card>
                         </div>
+
+                        {/* === PLAN BUILDER === */}
+                        {(selectedClient.status === "intake_complete" || selectedClient.status === "plan_generating") && (
+                          <Card className="border-0 shadow-sm border-l-4 border-l-blue-400">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-base flex items-center gap-2">
+                                <Brain className="w-4 h-4 text-gray-600" />
+                                Program Builder
+                              </CardTitle>
+                              <p className="text-xs text-gray-600 mt-1">
+                                Create weekly overviews, then generate workouts and nutrition for all 4 weeks
+                              </p>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="text-center py-6">
+                                <div className="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
+                                  <FileText className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2">
+                                  Build {selectedClient.user.firstName}'s Program
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+                                  Use the Plan Builder wizard to create a complete 4-week program with your strategic input at every step
+                                </p>
+                                <Button
+                                  onClick={() => setPlanBuilderOpen(true)}
+                                  size="lg"
+                                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                                >
+                                  Start Building Program
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
 
                         {/* === QUICK ACTIONS === */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -2466,6 +2503,16 @@ export default function AdminCoaching() {
           })()}
         </DialogContent>
       </Dialog>
+
+      {/* Plan Builder Wizard */}
+      {selectedClient && (
+        <PlanBuilderWizard
+          clientId={selectedClient.id}
+          clientName={`${selectedClient.user.firstName} ${selectedClient.user.lastName}`}
+          open={planBuilderOpen}
+          onClose={() => setPlanBuilderOpen(false)}
+        />
+      )}
     </AdminLayout>
   );
 }
