@@ -291,6 +291,20 @@ export default function AdminCoaching() {
     },
   });
 
+  const regenerateAiSummaryMutation = useMutation({
+    mutationFn: async (clientId: string) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/regenerate-ai-summary`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: "AI summary regenerated" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error regenerating summary", description: err.message, variant: "destructive" });
+    },
+  });
+
   const approvePlanMutation = useMutation({
     mutationFn: async (clientId: string) => {
       const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/approve-plan`);
@@ -1173,13 +1187,24 @@ export default function AdminCoaching() {
                         )}
 
                         {/* === AI ASSESSMENT SUMMARY === */}
-                        {(selectedClient as any).aiSummary && (
+                        {(selectedClient as any).aiSummary ? (
                           <Card className="border-0 shadow-sm">
                             <CardHeader>
-                              <CardTitle className="text-base flex items-center gap-2">
-                                <Brain className="w-4 h-4 text-violet-500" />
-                                AI Assessment Summary
-                              </CardTitle>
+                              <div className="flex items-center justify-between">
+                                <CardTitle className="text-base flex items-center gap-2">
+                                  <Brain className="w-4 h-4 text-violet-500" />
+                                  AI Assessment Summary
+                                </CardTitle>
+                                <Button
+                                  variant="ghost" size="sm"
+                                  onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
+                                  disabled={regenerateAiSummaryMutation.isPending}
+                                  className="text-xs text-violet-600 hover:text-violet-700"
+                                >
+                                  <RefreshCw className={cn("w-3 h-3 mr-1", regenerateAiSummaryMutation.isPending && "animate-spin")} />
+                                  {regenerateAiSummaryMutation.isPending ? "Regenerating..." : "Regenerate"}
+                                </Button>
+                              </div>
                             </CardHeader>
                             <CardContent>
                               <div className="bg-violet-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
@@ -1187,7 +1212,21 @@ export default function AdminCoaching() {
                               </div>
                             </CardContent>
                           </Card>
-                        )}
+                        ) : selectedClient.status !== "enrolled" ? (
+                          <Card className="border-0 shadow-sm border-dashed border-2 border-violet-200">
+                            <CardContent className="py-6 text-center">
+                              <Brain className="w-8 h-8 text-violet-300 mx-auto mb-2" />
+                              <p className="text-sm text-gray-500 mb-3">AI summary will be generated when intake forms are submitted</p>
+                              <Button
+                                variant="outline" size="sm" className="text-violet-600 border-violet-300"
+                                onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
+                                disabled={regenerateAiSummaryMutation.isPending}
+                              >
+                                {regenerateAiSummaryMutation.isPending ? "Generating..." : "Generate Now"}
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        ) : null}
 
                         {/* Client details moved to CoachingClientInfoCard above tabs */}
                         {/* Intake forms moved to dedicated "Intake Forms" tab */}

@@ -7414,6 +7414,65 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }
   });
 
+  // Helper function: Generate AI assessment summary from intake forms
+  async function generateAiAssessmentSummary(clientId: string, userId: string): Promise<string> {
+    const client = await storage.getCoachingClient(clientId);
+    if (!client) throw new Error("Client not found");
+
+    const user = await storage.getUser(userId);
+    if (!user) throw new Error("User not found");
+
+    const allResponses = await storage.getCoachingFormResponses(clientId);
+    const allFormData = allResponses.reduce((acc: any, r: any) => {
+      acc[r.formType] = r.responses;
+      return acc;
+    }, {});
+
+    const OpenAI = (await import("openai")).default;
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const summaryResponse = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are a prenatal/postnatal fitness expert assistant. Analyze the client's intake form responses and provide a concise clinical summary for the coach (Zoe). Include:
+1. KEY HEALTH FLAGS: Any medical conditions, restrictions, or concerns that need attention
+2. PREGNANCY STATUS: Trimester, due date, pregnancy history
+3. FITNESS ASSESSMENT: Current activity level, movement comfort, exercise history
+4. PRIORITY AREAS: Specific needs (pelvic floor, back pain, core rehab, etc.)
+5. RECOMMENDED APPROACH: Brief recommendation for exercise intensity, modifications needed
+6. SUPPLEMENT SUGGESTIONS: Based on their medications/supplements and pregnancy stage
+Keep it professional, concise, and actionable for the coach.`,
+        },
+        {
+          role: "user",
+          content: `Client: ${user.firstName} ${user.lastName}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
+        },
+      ],
+      max_tokens: 1500,
+    });
+
+    return summaryResponse.choices[0]?.message?.content || "";
+  }
+
+  // Regenerate AI assessment summary
+  app.post("/api/admin/coaching/clients/:clientId/regenerate-ai-summary", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const clientId = req.params.clientId;
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const aiSummary = await generateAiAssessmentSummary(clientId, client.userId);
+      await storage.updateCoachingClient(clientId, { aiSummary } as any);
+
+      console.log(`[Coaching] AI summary regenerated for client ${clientId}`);
+      res.json({ success: true, aiSummary });
+    } catch (error) {
+      console.error("Error regenerating AI summary:", error);
+      res.status(500).json({ message: "Failed to regenerate AI summary" });
+    }
+  });
+
   // Generate AI workout plan for a specific week
   app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
@@ -8245,37 +8304,7 @@ Rules:
 
         // Trigger AI summary generation in background
         try {
-          const user = await storage.getUser(userId);
-          const allFormData = allResponses.reduce((acc: any, r: any) => {
-            acc[r.formType] = r.responses;
-            return acc;
-          }, {});
-
-          const OpenAI = (await import("openai")).default;
-          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-          const summaryResponse = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-              {
-                role: "system",
-                content: `You are a prenatal/postnatal fitness expert assistant. Analyze the client's intake form responses and provide a concise clinical summary for the coach (Zoe). Include:
-1. KEY HEALTH FLAGS: Any medical conditions, restrictions, or concerns that need attention
-2. PREGNANCY STATUS: Trimester, due date, pregnancy history
-3. FITNESS ASSESSMENT: Current activity level, movement comfort, exercise history
-4. PRIORITY AREAS: Specific needs (pelvic floor, back pain, core rehab, etc.)
-5. RECOMMENDED APPROACH: Brief recommendation for exercise intensity, modifications needed
-6. SUPPLEMENT SUGGESTIONS: Based on their medications/supplements and pregnancy stage
-Keep it professional, concise, and actionable for the coach.`,
-              },
-              {
-                role: "user",
-                content: `Client: ${user?.firstName} ${user?.lastName}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
-              },
-            ],
-            max_tokens: 1500,
-          });
-
-          const aiSummary = summaryResponse.choices[0]?.message?.content || "";
+          const aiSummary = await generateAiAssessmentSummary(client.id, userId);
           await storage.updateCoachingClient(client.id, { aiSummary } as any);
           console.log(`[Coaching] AI summary generated for client ${client.id}`);
         } catch (aiErr) {
