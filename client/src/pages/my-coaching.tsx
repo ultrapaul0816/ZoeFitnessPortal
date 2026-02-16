@@ -288,6 +288,580 @@ function extractQuestionnaireData(formResponses?: FormResponse[], coachingType?:
   return null;
 }
 
+// ============================================================================
+// INTAKE FORM WIZARD - Shown to newly enrolled clients
+// ============================================================================
+
+const MEDICAL_CONDITIONS = [
+  "Shortness of breath",
+  "Chest pain",
+  "Vaginal bleeding",
+  "Dizziness or faintness",
+  "Headaches",
+  "Muscle weakness",
+  "Calf pain or swelling",
+  "Preterm labor signs",
+  "Decreased fetal movement",
+  "Leaking amniotic fluid",
+  "Heart palpitations",
+  "Severe nausea/vomiting",
+  "Abdominal pain",
+  "Blurred vision",
+  "Swelling (face/hands)",
+  "High blood pressure",
+  "Gestational diabetes",
+  "Placenta previa",
+  "Pre-eclampsia",
+  "Cervical insufficiency",
+  "Multiple pregnancy (twins+)",
+  "Epilepsy",
+  "Anemia",
+];
+
+const MEDICAL_FLAGS = [
+  "Pelvic girdle pain",
+  "Sciatica",
+  "High blood pressure",
+  "Gestational diabetes",
+  "Cervical concerns",
+];
+
+const DISCOMFORT_AREAS = [
+  "Lower back",
+  "Hips",
+  "Neck/shoulders",
+  "Knees",
+  "Feet/ankles",
+  "Wrists/hands",
+  "Ribs",
+  "Round ligament",
+  "General fatigue",
+  "Pelvic pain",
+];
+
+const DISCOMFORT_TIMING = [
+  "In the morning",
+  "After sitting for long",
+  "After standing for long",
+  "During sleep",
+  "At end of day",
+  "During workouts",
+  "Random/unpredictable",
+];
+
+const EXERCISE_HISTORY = [
+  "Sedentary (little or no exercise)",
+  "Light (walking, yoga, 1-2x/week)",
+  "Moderate (regular exercise 3-4x/week)",
+  "Active (daily exercise, varied)",
+  "Athletic (competitive/high intensity)",
+];
+
+const CORE_SYMPTOMS = [
+  "Heaviness or pressure in pelvic area",
+  "Leaking when coughing, sneezing, or laughing",
+  "Difficulty holding in urine",
+  "Doming or coning of the belly during movement",
+  "None of the above",
+];
+
+const HELP_AREAS = [
+  "Pain relief & comfort",
+  "Strength & muscle tone",
+  "Posture improvement",
+  "Birth preparation",
+  "Staying active safely",
+  "General comfort & wellbeing",
+];
+
+function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
+  clientId: string;
+  onComplete: () => void;
+  onLogout: () => void;
+  userName: string;
+}) {
+  const { toast } = useToast();
+  const [currentForm, setCurrentForm] = useState<"lifestyle" | "health">("lifestyle");
+  const [currentStep, setCurrentStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Lifestyle form state
+  const [lifestyle, setLifestyle] = useState({
+    fullName: "",
+    age: "",
+    whatsappNumber: "",
+    email: "",
+    emergencyContactName: "",
+    emergencyRelationship: "",
+    emergencyContactNumber: "",
+    pregnancyNumber: "",
+    dueDate: "",
+    trimester: "",
+    medicalConditions: [] as string[],
+    medicalConditionsOther: "",
+    medicalFlags: [] as string[],
+    medicalFlagsOther: "",
+    discomfortAreas: [] as string[],
+    discomfortTiming: "",
+    exerciseHistory: [] as string[],
+    movementFeels: "",
+    coreSymptoms: [] as string[],
+    helpAreas: [] as string[],
+    takingMedications: "",
+    medicationDetails: "",
+    previousPregnancies: "",
+    mainConcerns: "",
+    mainGoals: "",
+    currentLifestyle: "",
+    hearAbout: "",
+    referredBy: "",
+    usingPrograms: "",
+    programDetails: "",
+    consent: false,
+  });
+
+  // Health evaluation form state
+  const [health, setHealth] = useState({
+    fullName: "",
+    age: "",
+    phone: "",
+    email: "",
+    dueDate: "",
+    trimester: "",
+    participantDeclaration: "",
+    doctorName: "",
+    doctorQualification: "",
+    clinicName: "",
+    doctorContact: "",
+    clearanceDecision: "",
+    restrictionDetails: "",
+  });
+
+  const updateLifestyle = (field: string, value: any) => setLifestyle(prev => ({ ...prev, [field]: value }));
+  const updateHealth = (field: string, value: any) => setHealth(prev => ({ ...prev, [field]: value }));
+
+  const toggleArrayField = (setter: any, field: string, value: string) => {
+    setter((prev: any) => {
+      const arr = prev[field] as string[];
+      return { ...prev, [field]: arr.includes(value) ? arr.filter((v: string) => v !== value) : [...arr, value] };
+    });
+  };
+
+  const submitForm = async (formType: string, responses: any) => {
+    setSubmitting(true);
+    try {
+      const res = await apiRequest("POST", "/api/coaching/form-responses", { formType, responses });
+      const data = await res.json();
+      if (formType === "lifestyle_questionnaire") {
+        setCurrentForm("health");
+        setCurrentStep(0);
+        toast({ title: "Form saved!", description: "Now please complete the Health Evaluation form." });
+      } else {
+        toast({ title: "All forms submitted!", description: "Zoe will review your information and create your plan." });
+        onComplete();
+      }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to submit form", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const lifestyleSteps = [
+    { title: "Personal Info", fields: ["fullName", "age", "whatsappNumber", "email"] },
+    { title: "Emergency Contact", fields: ["emergencyContactName", "emergencyRelationship", "emergencyContactNumber"] },
+    { title: "Pregnancy Info", fields: ["pregnancyNumber", "dueDate", "trimester"] },
+    { title: "Medical History", fields: ["medicalConditions", "medicalFlags"] },
+    { title: "Discomfort & Movement", fields: ["discomfortAreas", "discomfortTiming", "exerciseHistory", "movementFeels"] },
+    { title: "Core & Goals", fields: ["coreSymptoms", "helpAreas"] },
+    { title: "Additional Info", fields: ["takingMedications", "previousPregnancies", "mainConcerns", "mainGoals", "currentLifestyle"] },
+    { title: "Final Details", fields: ["hearAbout", "usingPrograms", "consent"] },
+  ];
+
+  const healthSteps = [
+    { title: "Your Details", fields: ["fullName", "age", "phone", "email", "dueDate", "trimester"] },
+    { title: "Declaration", fields: ["participantDeclaration"] },
+    { title: "Medical Clearance", fields: ["doctorName", "doctorQualification", "clinicName", "doctorContact", "clearanceDecision"] },
+  ];
+
+  const steps = currentForm === "lifestyle" ? lifestyleSteps : healthSteps;
+  const totalSteps = steps.length;
+  const progress = ((currentStep + 1) / totalSteps) * 100;
+
+  const renderLifestyleStep = () => {
+    switch (currentStep) {
+      case 0: return (
+        <div className="space-y-4">
+          <div><label className="text-sm font-medium text-gray-700">Full Name *</label><Input value={lifestyle.fullName} onChange={e => updateLifestyle("fullName", e.target.value)} placeholder="Your full name" /></div>
+          <div><label className="text-sm font-medium text-gray-700">Age *</label><Input value={lifestyle.age} onChange={e => updateLifestyle("age", e.target.value)} placeholder="Your age" /></div>
+          <div><label className="text-sm font-medium text-gray-700">WhatsApp Number *</label><Input value={lifestyle.whatsappNumber} onChange={e => updateLifestyle("whatsappNumber", e.target.value)} placeholder="+91 ..." /></div>
+          <div><label className="text-sm font-medium text-gray-700">Email Address *</label><Input value={lifestyle.email} onChange={e => updateLifestyle("email", e.target.value)} placeholder="your@email.com" type="email" /></div>
+        </div>
+      );
+      case 1: return (
+        <div className="space-y-4">
+          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Name *</label><Input value={lifestyle.emergencyContactName} onChange={e => updateLifestyle("emergencyContactName", e.target.value)} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Relationship to You *</label><Input value={lifestyle.emergencyRelationship} onChange={e => updateLifestyle("emergencyRelationship", e.target.value)} placeholder="e.g., Husband, Mother" /></div>
+          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Number *</label><Input value={lifestyle.emergencyContactNumber} onChange={e => updateLifestyle("emergencyContactNumber", e.target.value)} /></div>
+        </div>
+      );
+      case 2: return (
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700">Is this your: *</label>
+            <div className="space-y-2 mt-2">
+              {["First pregnancy", "Second pregnancy", "Third or more"].map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${lifestyle.pregnancyNumber === opt ? "border-pink-400 bg-pink-50" : "border-gray-200 hover:border-gray-300"}`}>
+                  <input type="radio" name="pregnancyNumber" value={opt} checked={lifestyle.pregnancyNumber === opt} onChange={() => updateLifestyle("pregnancyNumber", opt)} className="accent-pink-500" />
+                  <span className="text-sm">{opt}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div><label className="text-sm font-medium text-gray-700">Expected Due Date *</label><Input type="date" value={lifestyle.dueDate} onChange={e => updateLifestyle("dueDate", e.target.value)} /></div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Current Trimester *</label>
+            <div className="space-y-2 mt-2">
+              {["First trimester (0–12 weeks)", "Second trimester (13–26 weeks)", "Third trimester (27–40 weeks)"].map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${lifestyle.trimester === opt ? "border-pink-400 bg-pink-50" : "border-gray-200 hover:border-gray-300"}`}>
+                  <input type="radio" name="trimester" value={opt} checked={lifestyle.trimester === opt} onChange={() => updateLifestyle("trimester", opt)} className="accent-pink-500" />
+                  <span className="text-sm">{opt}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+      case 3: return (
+        <div className="space-y-5">
+          <div>
+            <label className="text-sm font-medium text-gray-700">Have you experienced any of the following? *</label>
+            <p className="text-xs text-gray-500 mb-2">Select all that apply</p>
+            <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-2">
+              {MEDICAL_CONDITIONS.map(cond => (
+                <label key={cond} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalConditions.includes(cond) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.medicalConditions.includes(cond)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", cond)} />
+                  {cond}
+                </label>
+              ))}
+              <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalConditions.includes("None of the above") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                <Checkbox checked={lifestyle.medicalConditions.includes("None of the above")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", "None of the above")} />
+                None of the above
+              </label>
+            </div>
+            <Input className="mt-2" value={lifestyle.medicalConditionsOther} onChange={e => updateLifestyle("medicalConditionsOther", e.target.value)} placeholder="Other (please specify)" />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Any medical flags your doctor has mentioned? *</label>
+            <div className="grid grid-cols-1 gap-2 mt-2">
+              {MEDICAL_FLAGS.map(flag => (
+                <label key={flag} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalFlags.includes(flag) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.medicalFlags.includes(flag)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", flag)} />
+                  {flag}
+                </label>
+              ))}
+              <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalFlags.includes("None") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                <Checkbox checked={lifestyle.medicalFlags.includes("None")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", "None")} />
+                None
+              </label>
+            </div>
+            <Input className="mt-2" value={lifestyle.medicalFlagsOther} onChange={e => updateLifestyle("medicalFlagsOther", e.target.value)} placeholder="Other (please specify)" />
+          </div>
+        </div>
+      );
+      case 4: return (
+        <div className="space-y-5">
+          <div>
+            <label className="text-sm font-medium text-gray-700">Where do you feel discomfort most days? *</label>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {DISCOMFORT_AREAS.map(area => (
+                <label key={area} className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.discomfortAreas.includes(area) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.discomfortAreas.includes(area)} onCheckedChange={() => toggleArrayField(setLifestyle, "discomfortAreas", area)} />
+                  {area}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">When is it usually worse? *</label>
+            <div className="space-y-2 mt-2">
+              {DISCOMFORT_TIMING.map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.discomfortTiming === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="discomfortTiming" checked={lifestyle.discomfortTiming === opt} onChange={() => updateLifestyle("discomfortTiming", opt)} className="accent-pink-500" />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Movement & exercise history *</label>
+            <div className="space-y-2 mt-2">
+              {EXERCISE_HISTORY.map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.exerciseHistory.includes(opt) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.exerciseHistory.includes(opt)} onCheckedChange={() => toggleArrayField(setLifestyle, "exerciseHistory", opt)} />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Right now, movement feels: *</label>
+            <div className="space-y-2 mt-2">
+              {["Comforting", "Neutral", "Intimidating", "Pain-provoking"].map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.movementFeels === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="movementFeels" checked={lifestyle.movementFeels === opt} onChange={() => updateLifestyle("movementFeels", opt)} className="accent-pink-500" />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+      case 5: return (
+        <div className="space-y-5">
+          <div>
+            <label className="text-sm font-medium text-gray-700">Pressure & core awareness check *</label>
+            <div className="space-y-2 mt-2">
+              {CORE_SYMPTOMS.map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.coreSymptoms.includes(opt) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.coreSymptoms.includes(opt)} onCheckedChange={() => toggleArrayField(setLifestyle, "coreSymptoms", opt)} />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">What do you want help with right now? *</label>
+            <div className="grid grid-cols-1 gap-2 mt-2">
+              {HELP_AREAS.map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.helpAreas.includes(opt) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.helpAreas.includes(opt)} onCheckedChange={() => toggleArrayField(setLifestyle, "helpAreas", opt)} />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+      case 6: return (
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700">Are you currently taking any medications or supplements? *</label>
+            <div className="flex gap-3 mt-2">
+              {["Yes", "No"].map(opt => (
+                <label key={opt} className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer text-sm transition-all ${lifestyle.takingMedications === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="medications" checked={lifestyle.takingMedications === opt} onChange={() => updateLifestyle("takingMedications", opt)} className="accent-pink-500" />
+                  {opt}
+                </label>
+              ))}
+            </div>
+            {lifestyle.takingMedications === "Yes" && (
+              <Textarea className="mt-2" value={lifestyle.medicationDetails} onChange={e => updateLifestyle("medicationDetails", e.target.value)} placeholder="Please state the name and dosage" rows={3} />
+            )}
+          </div>
+          <div><label className="text-sm font-medium text-gray-700">Previous pregnancies, births, or postnatal experiences? *</label><Textarea value={lifestyle.previousPregnancies} onChange={e => updateLifestyle("previousPregnancies", e.target.value)} placeholder="Share any relevant history..." rows={3} /></div>
+          <div><label className="text-sm font-medium text-gray-700">What concerns you most? *</label><Textarea value={lifestyle.mainConcerns} onChange={e => updateLifestyle("mainConcerns", e.target.value)} placeholder="About pregnancy, delivery, or postnatal phase..." rows={3} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Main goals with coaching? *</label><Textarea value={lifestyle.mainGoals} onChange={e => updateLifestyle("mainGoals", e.target.value)} placeholder="What do you want to achieve?" rows={3} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Describe your current lifestyle *</label><Textarea value={lifestyle.currentLifestyle} onChange={e => updateLifestyle("currentLifestyle", e.target.value)} placeholder="Daily routine, activity level, work..." rows={3} /></div>
+        </div>
+      );
+      case 7: return (
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700">How did you hear about Zoe?</label>
+            <div className="space-y-2 mt-2">
+              {["Instagram", "YouTube", "Website", "Friend/word of mouth"].map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.hearAbout === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="hearAbout" checked={lifestyle.hearAbout === opt} onChange={() => updateLifestyle("hearAbout", opt)} className="accent-pink-500" />
+                  {opt}
+                </label>
+              ))}
+            </div>
+            {lifestyle.hearAbout === "Friend/word of mouth" && (
+              <Input className="mt-2" value={lifestyle.referredBy} onChange={e => updateLifestyle("referredBy", e.target.value)} placeholder="Who referred you?" />
+            )}
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Are you using any of Zoe's online programs?</label>
+            <div className="flex gap-3 mt-2">
+              {["Yes", "No"].map(opt => (
+                <label key={opt} className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer text-sm transition-all ${lifestyle.usingPrograms === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="usingPrograms" checked={lifestyle.usingPrograms === opt} onChange={() => updateLifestyle("usingPrograms", opt)} className="accent-pink-500" />
+                  {opt}
+                </label>
+              ))}
+            </div>
+            {lifestyle.usingPrograms === "Yes" && (
+              <Input className="mt-2" value={lifestyle.programDetails} onChange={e => updateLifestyle("programDetails", e.target.value)} placeholder="Which program?" />
+            )}
+          </div>
+          <label className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${lifestyle.consent ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+            <Checkbox checked={lifestyle.consent} onCheckedChange={(checked) => updateLifestyle("consent", !!checked)} className="mt-0.5" />
+            <span className="text-sm">I consent to being contacted by Zoe via WhatsApp and email for coaching purposes. *</span>
+          </label>
+        </div>
+      );
+      default: return null;
+    }
+  };
+
+  const renderHealthStep = () => {
+    switch (currentStep) {
+      case 0: return (
+        <div className="space-y-4">
+          <div><label className="text-sm font-medium text-gray-700">Full Name *</label><Input value={health.fullName} onChange={e => updateHealth("fullName", e.target.value)} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Age *</label><Input value={health.age} onChange={e => updateHealth("age", e.target.value)} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Phone Number *</label><Input value={health.phone} onChange={e => updateHealth("phone", e.target.value)} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Email Address *</label><Input value={health.email} onChange={e => updateHealth("email", e.target.value)} type="email" /></div>
+          <div><label className="text-sm font-medium text-gray-700">Expected Due Date *</label><Input type="date" value={health.dueDate} onChange={e => updateHealth("dueDate", e.target.value)} /></div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Current Trimester *</label>
+            <div className="space-y-2 mt-2">
+              {["First (0–12 weeks)", "Second (13–26 weeks)", "Third (27–40 weeks)"].map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${health.trimester === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="healthTrimester" checked={health.trimester === opt} onChange={() => updateHealth("trimester", opt)} className="accent-pink-500" />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+      case 1: return (
+        <div className="space-y-4">
+          <div className="bg-pink-50 p-4 rounded-xl">
+            <h3 className="font-semibold text-gray-900 mb-2">Participant Declaration</h3>
+            <p className="text-sm text-gray-600 mb-4">I understand that I am voluntarily participating in a prenatal/postnatal fitness program. I confirm that I have consulted with my healthcare provider and have been cleared for exercise. I take full responsibility for my participation and will inform my coach of any changes in my health status.</p>
+          </div>
+          <div className="space-y-2">
+            {["I agree", "I do not agree"].map(opt => (
+              <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${health.participantDeclaration === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                <input type="radio" name="declaration" checked={health.participantDeclaration === opt} onChange={() => updateHealth("participantDeclaration", opt)} className="accent-pink-500" />
+                <span className="text-sm font-medium">{opt}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      );
+      case 2: return (
+        <div className="space-y-4">
+          <div className="bg-blue-50 p-4 rounded-xl mb-2">
+            <h3 className="font-semibold text-gray-900 mb-1">Medical Clearance</h3>
+            <p className="text-sm text-gray-600">Please have your doctor/medical professional complete this section, or enter their details and clearance decision.</p>
+          </div>
+          <div><label className="text-sm font-medium text-gray-700">Doctor's Name *</label><Input value={health.doctorName} onChange={e => updateHealth("doctorName", e.target.value)} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Qualification / Speciality *</label><Input value={health.doctorQualification} onChange={e => updateHealth("doctorQualification", e.target.value)} placeholder="e.g., OB-GYN" /></div>
+          <div><label className="text-sm font-medium text-gray-700">Clinic / Hospital Name *</label><Input value={health.clinicName} onChange={e => updateHealth("clinicName", e.target.value)} /></div>
+          <div><label className="text-sm font-medium text-gray-700">Doctor's Contact (phone or email) *</label><Input value={health.doctorContact} onChange={e => updateHealth("doctorContact", e.target.value)} /></div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Medical Clearance Decision *</label>
+            <div className="space-y-2 mt-2">
+              {["Cleared with no restrictions", "Cleared with restrictions/considerations", "Not cleared"].map(opt => (
+                <label key={opt} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${health.clearanceDecision === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="clearance" checked={health.clearanceDecision === opt} onChange={() => updateHealth("clearanceDecision", opt)} className="accent-pink-500" />
+                  <span className="text-sm">{opt}</span>
+                </label>
+              ))}
+            </div>
+            {health.clearanceDecision === "Cleared with restrictions/considerations" && (
+              <Textarea className="mt-2" value={health.restrictionDetails} onChange={e => updateHealth("restrictionDetails", e.target.value)} placeholder="Please describe the restrictions or considerations..." rows={3} />
+            )}
+          </div>
+        </div>
+      );
+      default: return null;
+    }
+  };
+
+  const handleNext = () => {
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(prev => prev + 1);
+      window.scrollTo(0, 0);
+    } else {
+      // Submit the current form
+      if (currentForm === "lifestyle") {
+        submitForm("lifestyle_questionnaire", lifestyle);
+      } else {
+        submitForm("health_evaluation", health);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+      <div className="max-w-lg mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">
+              {currentForm === "lifestyle" ? "Lifestyle & Goals" : "Health Evaluation"}
+            </h1>
+            <p className="text-sm text-gray-500">
+              Form {currentForm === "lifestyle" ? "1" : "2"} of 2
+            </p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={onLogout} className="text-gray-400">
+            <LogOut className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {/* Progress */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+            <span>Step {currentStep + 1} of {totalSteps}: {steps[currentStep].title}</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
+
+        {/* Welcome banner on first step */}
+        {currentForm === "lifestyle" && currentStep === 0 && (
+          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-5 rounded-2xl mb-6">
+            <h2 className="font-bold text-lg mb-1">Welcome, {userName}!</h2>
+            <p className="text-sm text-pink-100">Let's get to know you better so Zoe can create your personalized coaching plan. This takes about 5-10 minutes.</p>
+          </div>
+        )}
+
+        {/* Form Content */}
+        <Card className="border-0 shadow-lg rounded-2xl">
+          <CardContent className="p-6">
+            {currentForm === "lifestyle" ? renderLifestyleStep() : renderHealthStep()}
+          </CardContent>
+        </Card>
+
+        {/* Navigation */}
+        <div className="flex gap-3 mt-6">
+          {currentStep > 0 && (
+            <Button variant="outline" onClick={handleBack} className="flex-1 rounded-xl">
+              Back
+            </Button>
+          )}
+          <Button
+            onClick={handleNext}
+            disabled={submitting}
+            className="flex-1 bg-pink-500 hover:bg-pink-600 text-white rounded-xl"
+          >
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+            ) : currentStep === totalSteps - 1 ? (
+              currentForm === "lifestyle" ? "Save & Continue to Health Form" : "Submit All Forms"
+            ) : (
+              "Next"
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MyCoaching() {
   const [, setLocation] = useLocation();
   const [user, setUser] = useState<UserType | null>(null);
@@ -308,6 +882,9 @@ export default function MyCoaching() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [magicLinkMode, setMagicLinkMode] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+
+  const [showCheckinSuccess, setShowCheckinSuccess] = useState(false);
+  const [showWorkoutCelebration, setShowWorkoutCelebration] = useState(false);
 
   const [checkinForm, setCheckinForm] = useState({
     mood: "",
@@ -447,24 +1024,48 @@ export default function MyCoaching() {
     return res;
   };
 
-  const { data: planData, isLoading: planLoading } = useQuery<MyPlanResponse>({
+  const { data: planData, isLoading: planLoading } = useQuery({
     queryKey: ["/api/coaching/my-plan"],
-    queryFn: coachingQueryFn,
+    queryFn: coachingQueryFn as unknown as () => Promise<MyPlanResponse | null>,
     enabled: !!user,
   });
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery<DirectMessage[]>({
+  const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ["/api/coaching/messages"],
-    queryFn: coachingQueryFn,
+    queryFn: coachingQueryFn as unknown as () => Promise<DirectMessage[]>,
     enabled: !!user && !!planData?.client,
     refetchInterval: 10000,
   });
 
-  const { data: checkins = [] } = useQuery<CoachingCheckin[]>({
+  const { data: checkins = [] } = useQuery({
     queryKey: ["/api/coaching/checkins"],
-    queryFn: coachingQueryFn,
+    queryFn: coachingQueryFn as unknown as () => Promise<CoachingCheckin[]>,
     enabled: !!user && !!planData?.client,
   });
+
+  const { data: todayCheckinData } = useQuery({
+    queryKey: ["/api/coaching/checkins/today"],
+    queryFn: coachingQueryFn as unknown as () => Promise<{ checkin: CoachingCheckin | null; streak: number }>,
+    enabled: !!user && !!planData?.client,
+  });
+
+  // Pre-fill check-in form if today's check-in exists
+  useEffect(() => {
+    if (todayCheckinData?.checkin) {
+      const c = todayCheckinData.checkin;
+      setCheckinForm({
+        mood: c.mood || "",
+        energyLevel: c.energyLevel || 5,
+        sleepHours: c.sleepHours || 7,
+        waterGlasses: c.waterGlasses || 0,
+        workoutCompleted: c.workoutCompleted || false,
+        workoutNotes: c.workoutNotes || "",
+        mealsLogged: (c.mealsLogged as any) || { breakfast: "", lunch: "", snack: "", dinner: "" },
+        weight: c.weight || "",
+        notes: c.notes || "",
+      });
+    }
+  }, [todayCheckinData?.checkin]);
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
@@ -488,17 +1089,14 @@ export default function MyCoaching() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/coaching/checkins"] });
-      toast({ title: "Check-in submitted! ✨", description: "Your coach Zoe will review it soon." });
-      setCheckinForm({
-        mood: "",
-        energyLevel: 5,
-        sleepHours: 7,
-        waterGlasses: 0,
-        workoutCompleted: false,
-        workoutNotes: "",
-        mealsLogged: { breakfast: "", lunch: "", snack: "", dinner: "" },
-        weight: "",
-        notes: "",
+      queryClient.invalidateQueries({ queryKey: ["/api/coaching/checkins/today"] });
+      const isUpdate = !!todayCheckinData?.checkin;
+      // Show celebration overlay
+      setShowCheckinSuccess(true);
+      setTimeout(() => setShowCheckinSuccess(false), 3500);
+      toast({
+        title: isUpdate ? "Check-in updated! ✨" : "Check-in submitted! 🎉",
+        description: "Zoe will review it soon. You're doing amazing!",
       });
     },
     onError: () => {
@@ -523,12 +1121,28 @@ export default function MyCoaching() {
     enabled: !!user && !!planData?.client,
   });
 
+  const pendingCompletionRef = useRef<{ planId: string; dayNumber: number; wasCompleting: boolean } | null>(null);
+
   const toggleCompletionMutation = useMutation({
     mutationFn: async (data: { planId: string; weekNumber: number; dayNumber: number; sectionIndex: number; exerciseIndex: number; exerciseName: string; completed: boolean }) => {
+      pendingCompletionRef.current = { planId: data.planId, dayNumber: data.dayNumber, wasCompleting: data.completed };
       await coachingApiRequest("POST", "/api/coaching/workout-completions", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/coaching/workout-completions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/coaching/workout-completions"] }).then(() => {
+        // Check if the day is now fully complete after data refresh
+        const pending = pendingCompletionRef.current;
+        if (pending?.wasCompleting) {
+          const workout = (planData?.workoutPlan || []).find((w: any) => w.id === pending.planId && w.dayNumber === pending.dayNumber);
+          if (workout) {
+            const stats = getDayCompletionStats(workout);
+            if (stats.total > 0 && stats.completed === stats.total) {
+              setShowWorkoutCelebration(true);
+              setTimeout(() => setShowWorkoutCelebration(false), 3500);
+            }
+          }
+        }
+      });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to update exercise completion", variant: "destructive" });
@@ -815,32 +1429,57 @@ export default function MyCoaching() {
 
   const client = planData.client;
 
+  // Show intake form for enrolled clients
+  if (client.status === "enrolled" || client.status === "pending") {
+    return <IntakeFormWizard clientId={client.id} onComplete={() => queryClient.invalidateQueries({ queryKey: ["/api/coaching/my-plan"] })} onLogout={handleLogout} userName={planData.userProfile?.firstName || "there"} />;
+  }
+
+  // Show waiting screens for non-active statuses
   if (client.status !== "active") {
-    const statusMessages: Record<string, { title: string; description: string }> = {
-      pending: {
-        title: "Your Plan is Being Prepared 🎯",
+    const statusMessages: Record<string, { title: string; description: string; icon: React.ReactNode }> = {
+      intake_complete: {
+        title: "Zoe is Reviewing Your Information",
+        description: "Thanks for completing your intake forms! Zoe will review your information and create your personalized plan. You'll be notified when it's ready.",
+        icon: <Eye className="w-10 h-10 text-indigo-500" />,
+      },
+      plan_generating: {
+        title: "Your Plan is Being Created",
+        description: "Zoe has reviewed your information and is now creating your personalized workout and nutrition plan. Almost there!",
+        icon: <Brain className="w-10 h-10 text-violet-500" />,
+      },
+      plan_ready: {
+        title: "Your Plan is Almost Ready!",
+        description: "Your personalized plan has been created and Zoe is doing a final review. You'll be notified very soon!",
+        icon: <Sparkles className="w-10 h-10 text-pink-500" />,
+      },
+      pending_plan: {
+        title: "Your Plan is Being Prepared",
         description: "Zoe is crafting your personalized coaching plan. You'll be notified as soon as it's ready!",
+        icon: <Sparkles className="w-10 h-10 text-pink-500" />,
       },
       paused: {
-        title: "Coaching Paused ⏸️",
+        title: "Coaching Paused",
         description: "Your coaching program is currently paused. Reach out to Zoe to resume.",
+        icon: <Clock className="w-10 h-10 text-orange-500" />,
       },
       completed: {
-        title: "Program Completed 🎉",
+        title: "Program Completed!",
         description: "Congratulations on completing your coaching program! What an incredible journey.",
+        icon: <Star className="w-10 h-10 text-yellow-500" />,
       },
     };
 
     const msg = statusMessages[client.status] || {
       title: "Coaching Status",
       description: "Please contact Zoe for more information about your coaching program.",
+      icon: <Sparkles className="w-10 h-10 text-pink-500" />,
     };
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <div className="max-w-lg mx-auto px-4 pt-12 text-center">
           <div className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Sparkles className="w-10 h-10 text-pink-500" />
+            {msg.icon}
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">{msg.title}</h1>
           <p className="text-gray-600 mb-6">{msg.description}</p>
@@ -1252,6 +1891,28 @@ export default function MyCoaching() {
 
                 {isExpanded && (
                   <div className="px-4 pb-4 border-t border-pink-50">
+                    {/* Personalization Note - from AI coach remarks */}
+                    {exercisesData.personalizationNote && (
+                      <div className="mt-3 mb-3 bg-violet-50 border border-violet-200 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Wand2 className="w-3.5 h-3.5 text-violet-500" />
+                          <span className="text-xs font-bold text-violet-700">Personalized For You</span>
+                        </div>
+                        <p className="text-xs text-gray-700">{exercisesData.personalizationNote}</p>
+                      </div>
+                    )}
+
+                    {/* Personalization Tags */}
+                    {exercisesData.personalizationTags && Array.isArray(exercisesData.personalizationTags) && exercisesData.personalizationTags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2 mb-3">
+                        {exercisesData.personalizationTags.map((tag: string, tagIdx: number) => (
+                          <Badge key={tagIdx} variant="outline" className="text-[9px] bg-violet-50 text-violet-600 border-violet-200 rounded-full px-2">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+
                     {dayStats.total > 0 && (
                       <div className="mt-3 mb-3">
                         <div className="flex items-center justify-between mb-1">
@@ -1341,6 +2002,12 @@ export default function MyCoaching() {
                                                 <span className="text-xs text-gray-400">Rest: {ex.restSeconds}s</span>
                                               )}
                                             </div>
+                                            {ex.reason && (
+                                              <div className="flex items-start gap-1.5 mt-1.5 bg-violet-50/80 rounded-md px-2 py-1">
+                                                <Wand2 className="w-3 h-3 text-violet-400 mt-0.5 shrink-0" />
+                                                <p className="text-[11px] text-violet-700 leading-snug">{ex.reason}</p>
+                                              </div>
+                                            )}
                                             {ex.notes && (
                                               <p className="text-xs text-gray-400 mt-1 italic">{ex.notes}</p>
                                             )}
@@ -1647,6 +2314,14 @@ export default function MyCoaching() {
             ) : (
               messages.map((msg) => {
                 const isFromCoach = msg.senderId !== user?.id;
+                const msgDate = new Date(msg.createdAt);
+                const now = new Date();
+                const isToday = msgDate.toDateString() === now.toDateString();
+                const yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const isYesterday = msgDate.toDateString() === yesterday.toDateString();
+                const timeStr = msgDate.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+                const dateLabel = isToday ? `Today ${timeStr}` : isYesterday ? `Yesterday ${timeStr}` : msgDate.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
                 return (
                   <div
                     key={msg.id}
@@ -1660,18 +2335,12 @@ export default function MyCoaching() {
                       }`}
                     >
                       <p className="text-sm">{msg.content}</p>
-                      <p
-                        className={`text-xs mt-1 ${
-                          isFromCoach ? "text-pink-100" : "text-gray-500"
-                        }`}
-                      >
-                        {new Date(msg.createdAt).toLocaleString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                      <div className={`flex items-center gap-1 mt-1 ${isFromCoach ? "text-pink-100" : "text-gray-500"}`}>
+                        <span className="text-xs">{dateLabel}</span>
+                        {!isFromCoach && msg.isRead && (
+                          <span className="text-xs font-medium text-blue-500 ml-1">Seen ✓</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -1711,257 +2380,336 @@ export default function MyCoaching() {
     </div>
   );
 
-  const renderCheckinView = () => (
-    <div className="space-y-6">
-      <div className="mb-4">
-        <h2 className="text-lg font-bold text-gray-900 mb-1">Daily Check-in</h2>
-        <p className="text-sm text-gray-500">How are you doing today?</p>
-      </div>
+  const renderCheckinView = () => {
+    const streak = todayCheckinData?.streak || 0;
+    const hasCheckedInToday = !!todayCheckinData?.checkin;
+    const meals = checkinForm.mealsLogged;
+    const filledMeals = Object.values(meals).filter(v => v.trim()).length;
 
-      <Card className="border-pink-100 rounded-2xl shadow-sm">
-        <CardContent className="p-5 space-y-5">
+    return (
+      <div className="space-y-4">
+        {/* Header with streak */}
+        <div className="flex items-center justify-between mb-2">
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">How's your mood?</label>
-            <div className="flex gap-2 flex-wrap">
-              {MOOD_OPTIONS.map((mood) => (
+            <h2 className="text-lg font-bold text-gray-900">Daily Check-in</h2>
+            <p className="text-sm text-gray-500">
+              {hasCheckedInToday ? "You've checked in today! Tap to update." : "How are you doing today?"}
+            </p>
+          </div>
+          {streak > 0 && (
+            <div className="flex items-center gap-1.5 bg-gradient-to-r from-orange-100 to-amber-100 px-3 py-1.5 rounded-full">
+              <Flame className="w-4 h-4 text-orange-500" />
+              <span className="text-sm font-bold text-orange-700">{streak}</span>
+              <span className="text-xs text-orange-600">day{streak !== 1 ? "s" : ""}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Workout status — quick tap */}
+        <Card className="border-0 shadow-sm rounded-2xl overflow-hidden">
+          <CardContent className="p-0">
+            <div className="grid grid-cols-2">
+              <button
+                onClick={() => setCheckinForm(f => ({ ...f, workoutCompleted: true }))}
+                className={`p-4 flex flex-col items-center gap-2 transition-all ${
+                  checkinForm.workoutCompleted
+                    ? "bg-green-50 border-b-3 border-green-500"
+                    : "bg-white hover:bg-green-50/50"
+                }`}
+              >
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  checkinForm.workoutCompleted ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
+                }`}>
+                  <Dumbbell className="w-6 h-6" />
+                </div>
+                <span className={`text-sm font-semibold ${
+                  checkinForm.workoutCompleted ? "text-green-700" : "text-gray-500"
+                }`}>
+                  Workout Done
+                </span>
+              </button>
+              <button
+                onClick={() => setCheckinForm(f => ({ ...f, workoutCompleted: false, workoutNotes: "" }))}
+                className={`p-4 flex flex-col items-center gap-2 transition-all border-l border-gray-100 ${
+                  !checkinForm.workoutCompleted
+                    ? "bg-blue-50 border-b-3 border-blue-500"
+                    : "bg-white hover:bg-blue-50/50"
+                }`}
+              >
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  !checkinForm.workoutCompleted ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-400"
+                }`}>
+                  <Heart className="w-6 h-6" />
+                </div>
+                <span className={`text-sm font-semibold ${
+                  !checkinForm.workoutCompleted ? "text-blue-700" : "text-gray-500"
+                }`}>
+                  Rest Day
+                </span>
+              </button>
+            </div>
+            {checkinForm.workoutCompleted && (
+              <div className="p-3 border-t border-gray-100">
+                <Input
+                  placeholder="Quick note about your workout (optional)"
+                  value={checkinForm.workoutNotes}
+                  onChange={(e) => setCheckinForm(f => ({ ...f, workoutNotes: e.target.value }))}
+                  className="border-green-200 focus-visible:ring-green-300 text-sm"
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Food log */}
+        <Card className="border-0 shadow-sm rounded-2xl">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                <Utensils className="w-4 h-4 text-pink-500" />
+                What did you eat today?
+              </label>
+              <span className="text-xs text-gray-400">{filledMeals}/4 meals</span>
+            </div>
+            <div className="space-y-2.5">
+              {(["breakfast", "lunch", "snack", "dinner"] as const).map((meal) => (
+                <div key={meal} className="flex items-center gap-2">
+                  <span className="text-lg w-7 text-center shrink-0">
+                    {meal === "breakfast" ? "🌅" : meal === "lunch" ? "☀️" : meal === "snack" ? "🍎" : "🌙"}
+                  </span>
+                  <Input
+                    placeholder={`${meal.charAt(0).toUpperCase() + meal.slice(1)} — what did you have?`}
+                    value={checkinForm.mealsLogged[meal]}
+                    onChange={(e) =>
+                      setCheckinForm(f => ({
+                        ...f,
+                        mealsLogged: { ...f.mealsLogged, [meal]: e.target.value },
+                      }))
+                    }
+                    className="border-pink-100 focus-visible:ring-pink-300 text-sm"
+                  />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Water tracker */}
+        <Card className="border-0 shadow-sm rounded-2xl">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                <Droplets className="w-4 h-4 text-blue-500" />
+                Water Intake
+              </label>
+              <span className="text-sm font-bold text-blue-600">{checkinForm.waterGlasses} glasses</span>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((glass) => (
                 <button
-                  key={mood.value}
-                  onClick={() => setCheckinForm((f) => ({ ...f, mood: mood.value }))}
-                  className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
-                    checkinForm.mood === mood.value
-                      ? "border-pink-500 bg-pink-50 scale-105"
-                      : "border-gray-200 hover:border-pink-200"
+                  key={glass}
+                  onClick={() => setCheckinForm(f => ({ ...f, waterGlasses: glass === f.waterGlasses ? glass - 1 : glass }))}
+                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
+                    glass <= checkinForm.waterGlasses
+                      ? "bg-blue-500 text-white shadow-sm"
+                      : "bg-blue-50 text-blue-300 hover:bg-blue-100"
                   }`}
                 >
-                  <span className="text-2xl">{mood.emoji}</span>
-                  <span className="text-xs text-gray-600">{mood.label}</span>
+                  {glass}
                 </button>
               ))}
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-              <Zap className="w-4 h-4 text-yellow-500" />
-              Energy Level: {checkinForm.energyLevel}/10
-            </label>
-            <Slider
-              value={[checkinForm.energyLevel]}
-              onValueChange={([val]) => setCheckinForm((f) => ({ ...f, energyLevel: val }))}
-              max={10}
-              min={1}
-              step={1}
-              className="py-2"
-            />
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>Low</span>
-              <span>High</span>
-            </div>
-          </div>
+        {/* Mood & Energy — compact row */}
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="border-0 shadow-sm rounded-2xl">
+            <CardContent className="p-4">
+              <label className="text-sm font-semibold text-gray-900 mb-2 block">Mood</label>
+              <div className="flex gap-1">
+                {MOOD_OPTIONS.map((mood) => (
+                  <button
+                    key={mood.value}
+                    onClick={() => setCheckinForm(f => ({ ...f, mood: mood.value }))}
+                    className={`flex-1 flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition-all ${
+                      checkinForm.mood === mood.value
+                        ? "bg-pink-100 ring-2 ring-pink-400 scale-110"
+                        : "hover:bg-gray-50"
+                    }`}
+                    title={mood.label}
+                  >
+                    <span className="text-xl">{mood.emoji}</span>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
-                <Moon className="w-4 h-4 text-indigo-500" />
-                Sleep (hours)
+          <Card className="border-0 shadow-sm rounded-2xl">
+            <CardContent className="p-4">
+              <label className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1">
+                <Zap className="w-3.5 h-3.5 text-yellow-500" />
+                Energy
               </label>
-              <Input
-                type="number"
-                min={0}
-                max={24}
-                value={checkinForm.sleepHours}
-                onChange={(e) =>
-                  setCheckinForm((f) => ({ ...f, sleepHours: parseInt(e.target.value) || 0 }))
-                }
-                className="border-pink-200 focus-visible:ring-pink-300"
-              />
-            </div>
+              <div className="flex items-center gap-2">
+                <Slider
+                  value={[checkinForm.energyLevel]}
+                  onValueChange={([val]) => setCheckinForm(f => ({ ...f, energyLevel: val }))}
+                  max={10}
+                  min={1}
+                  step={1}
+                  className="flex-1"
+                />
+                <span className="text-sm font-bold text-gray-700 w-6 text-center">{checkinForm.energyLevel}</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
-                <Droplets className="w-4 h-4 text-blue-500" />
-                Water (glasses)
+        {/* Sleep & Weight — compact row */}
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="border-0 shadow-sm rounded-2xl">
+            <CardContent className="p-4">
+              <label className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1">
+                <Moon className="w-3.5 h-3.5 text-indigo-500" />
+                Sleep
               </label>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9 border-pink-200"
-                  onClick={() =>
-                    setCheckinForm((f) => ({
-                      ...f,
-                      waterGlasses: Math.max(0, f.waterGlasses - 1),
-                    }))
-                  }
+                  className="h-8 w-8 border-gray-200 shrink-0"
+                  onClick={() => setCheckinForm(f => ({ ...f, sleepHours: Math.max(0, f.sleepHours - 1) }))}
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="w-3 h-3" />
                 </Button>
-                <span className="text-lg font-semibold text-gray-900 w-8 text-center">
-                  {checkinForm.waterGlasses}
-                </span>
+                <span className="text-lg font-bold text-gray-900 w-12 text-center">{checkinForm.sleepHours}h</span>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9 border-pink-200"
-                  onClick={() =>
-                    setCheckinForm((f) => ({
-                      ...f,
-                      waterGlasses: f.waterGlasses + 1,
-                    }))
-                  }
+                  className="h-8 w-8 border-gray-200 shrink-0"
+                  onClick={() => setCheckinForm(f => ({ ...f, sleepHours: Math.min(24, f.sleepHours + 1) }))}
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3 h-3" />
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm rounded-2xl">
+            <CardContent className="p-4">
+              <label className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1">
+                <Scale className="w-3.5 h-3.5 text-gray-500" />
+                Weight
+              </label>
+              <Input
+                placeholder="e.g. 65kg"
+                value={checkinForm.weight}
+                onChange={(e) => setCheckinForm(f => ({ ...f, weight: e.target.value }))}
+                className="border-gray-200 focus-visible:ring-pink-300 text-sm h-9"
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Notes */}
+        <Card className="border-0 shadow-sm rounded-2xl">
+          <CardContent className="p-4">
+            <label className="text-sm font-semibold text-gray-900 mb-2 block">Notes for Zoe</label>
+            <Textarea
+              placeholder="Anything else you'd like to share? How are you feeling overall?"
+              value={checkinForm.notes}
+              onChange={(e) => setCheckinForm(f => ({ ...f, notes: e.target.value }))}
+              className="border-gray-200 focus-visible:ring-pink-300 text-sm"
+              rows={2}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Submit button */}
+        <Button
+          className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-6 rounded-2xl shadow-md"
+          onClick={handleSubmitCheckin}
+          disabled={submitCheckinMutation.isPending}
+        >
+          {submitCheckinMutation.isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Submitting...
+            </>
+          ) : hasCheckedInToday ? (
+            "Update Check-in"
+          ) : (
+            "Submit Check-in"
+          )}
+        </Button>
+
+        {/* Check-in success celebration */}
+        {showCheckinSuccess && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white rounded-3xl p-8 mx-6 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-500">
+              <div className="text-6xl animate-bounce">🎉</div>
+              <h3 className="text-2xl font-bold text-gray-900">Great job!</h3>
+              <p className="text-gray-600">Your check-in is in. Zoe will review it and keep you on track!</p>
+              <div className="flex items-center justify-center gap-2 text-pink-600 font-semibold">
+                <Sparkles className="w-5 h-5" />
+                Keep the momentum going!
               </div>
             </div>
           </div>
+        )}
 
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              <Dumbbell className="w-4 h-4 text-pink-500" />
-              Workout Completed
-            </label>
-            <Switch
-              checked={checkinForm.workoutCompleted}
-              onCheckedChange={(checked) =>
-                setCheckinForm((f) => ({ ...f, workoutCompleted: checked }))
-              }
-            />
-          </div>
-
-          {checkinForm.workoutCompleted && (
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-                Workout Notes
-              </label>
-              <Textarea
-                placeholder="How was your workout?"
-                value={checkinForm.workoutNotes}
-                onChange={(e) =>
-                  setCheckinForm((f) => ({ ...f, workoutNotes: e.target.value }))
-                }
-                className="border-pink-200 focus-visible:ring-pink-300"
-                rows={2}
-              />
-            </div>
-          )}
-
+        {/* Recent check-ins */}
+        {checkins.length > 0 && (
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Meals Logged</label>
+            <h3 className="font-bold text-gray-900 mb-3 text-sm">Recent Check-ins</h3>
             <div className="space-y-2">
-              {(["breakfast", "lunch", "snack", "dinner"] as const).map((meal) => (
-                <Input
-                  key={meal}
-                  placeholder={meal.charAt(0).toUpperCase() + meal.slice(1)}
-                  value={checkinForm.mealsLogged[meal]}
-                  onChange={(e) =>
-                    setCheckinForm((f) => ({
-                      ...f,
-                      mealsLogged: { ...f.mealsLogged, [meal]: e.target.value },
-                    }))
-                  }
-                  className="border-pink-200 focus-visible:ring-pink-300"
-                />
-              ))}
+              {checkins.slice(0, 5).map((checkin) => {
+                const mealData = checkin.mealsLogged as any;
+                const mealCount = mealData ? Object.values(mealData).filter((v: any) => v && String(v).trim()).length : 0;
+                return (
+                  <Card key={checkin.id} className="border-0 shadow-sm rounded-2xl">
+                    <CardContent className="p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">
+                            {MOOD_OPTIONS.find((m) => m.value === checkin.mood)?.emoji || "📝"}
+                          </span>
+                          <div>
+                            <span className="text-sm font-medium text-gray-900">
+                              {new Date(checkin.date).toLocaleDateString(undefined, {
+                                weekday: "short",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </span>
+                            <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
+                              {checkin.workoutCompleted && <span className="text-green-600">Workout done</span>}
+                              {checkin.waterGlasses !== undefined && checkin.waterGlasses > 0 && (
+                                <span>{checkin.waterGlasses} glasses</span>
+                              )}
+                              {mealCount > 0 && <span>{mealCount} meals</span>}
+                            </div>
+                          </div>
+                        </div>
+                        {checkin.energyLevel && (
+                          <div className="flex items-center gap-1 text-xs text-yellow-600">
+                            <Zap className="w-3 h-3" />
+                            {checkin.energyLevel}/10
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
-
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
-              <Scale className="w-4 h-4 text-gray-500" />
-              Weight (optional)
-            </label>
-            <Input
-              placeholder="e.g. 65kg"
-              value={checkinForm.weight}
-              onChange={(e) => setCheckinForm((f) => ({ ...f, weight: e.target.value }))}
-              className="border-pink-200 focus-visible:ring-pink-300"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1.5 block">Notes</label>
-            <Textarea
-              placeholder="Anything else you'd like to share with Zoe?"
-              value={checkinForm.notes}
-              onChange={(e) => setCheckinForm((f) => ({ ...f, notes: e.target.value }))}
-              className="border-pink-200 focus-visible:ring-pink-300"
-              rows={3}
-            />
-          </div>
-
-          <Button
-            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-6"
-            onClick={handleSubmitCheckin}
-            disabled={submitCheckinMutation.isPending}
-          >
-            {submitCheckinMutation.isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              "Submit Check-in ✨"
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {checkins.length > 0 && (
-        <div>
-          <h3 className="font-bold text-gray-900 mb-3">Recent Check-ins</h3>
-          <div className="space-y-2">
-            {checkins.slice(0, 7).map((checkin) => (
-              <Card key={checkin.id} className="border-pink-100/50 rounded-2xl">
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-900">
-                      {new Date(checkin.date).toLocaleDateString(undefined, {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                    <span className="text-lg">
-                      {MOOD_OPTIONS.find((m) => m.value === checkin.mood)?.emoji || "📝"}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                    {checkin.energyLevel && (
-                      <span className="flex items-center gap-0.5">
-                        <Zap className="w-3 h-3 text-yellow-500" />
-                        Energy: {checkin.energyLevel}/10
-                      </span>
-                    )}
-                    {checkin.sleepHours && (
-                      <span className="flex items-center gap-0.5">
-                        <Moon className="w-3 h-3 text-indigo-500" />
-                        {checkin.sleepHours}h sleep
-                      </span>
-                    )}
-                    {checkin.waterGlasses !== undefined && checkin.waterGlasses > 0 && (
-                      <span className="flex items-center gap-0.5">
-                        <Droplets className="w-3 h-3 text-blue-500" />
-                        {checkin.waterGlasses} glasses
-                      </span>
-                    )}
-                    {checkin.workoutCompleted && (
-                      <Badge className="bg-green-100 text-green-700 text-xs rounded-full">
-                        ✓ Workout done
-                      </Badge>
-                    )}
-                  </div>
-                  {checkin.notes && (
-                    <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{checkin.notes}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   const navItems: { view: ActiveView; icon: typeof Calendar; label: string; badge?: number }[] = [
     { view: "today", icon: Calendar, label: "Today" },
@@ -2023,6 +2771,21 @@ export default function MyCoaching() {
           </div>
         </div>
       </div>
+
+      {/* Workout day completion celebration */}
+      {showWorkoutCelebration && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl p-8 mx-6 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-500">
+            <div className="text-6xl animate-bounce">💪</div>
+            <h3 className="text-2xl font-bold text-gray-900">Day Complete!</h3>
+            <p className="text-gray-600">You crushed every exercise today. Zoe would be proud!</p>
+            <div className="flex items-center justify-center gap-2 text-pink-600 font-semibold">
+              <Flame className="w-5 h-5" />
+              You're on fire — keep it up!
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </div>

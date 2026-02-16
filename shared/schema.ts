@@ -355,7 +355,9 @@ export const userCheckins = pgTable("user_checkins", {
   notes: text("notes"),
   isPartial: boolean("is_partial").default(false), // true if user didn't complete all steps
   createdAt: timestamp("created_at").default(sql`now()`),
-});
+}, (table) => [
+  index("user_checkins_user_id_idx").on(table.userId),
+]);
 
 // Daily performance check-ins for tracking habits and wellness
 export const dailyCheckins = pgTable("daily_checkins", {
@@ -372,7 +374,9 @@ export const dailyCheckins = pgTable("daily_checkins", {
   energyLevel: integer("energy_level"), // 1-5 scale
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
-});
+}, (table) => [
+  index("daily_checkins_user_id_idx").on(table.userId),
+]);
 
 // Weekly workout sessions - tracks 4 workouts + 2 cardio per week for progressive tracking
 export const weeklyWorkoutSessions = pgTable("weekly_workout_sessions", {
@@ -1045,9 +1049,10 @@ export const coachingClients = pgTable("coaching_clients", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   coachingType: text("coaching_type").default("pregnancy_coaching"),
-  status: text("status").default("pending"),
+  status: text("status").default("enrolled"), // enrolled, intake_complete, plan_generating, plan_ready, active, paused, completed, cancelled
   formData: jsonb("form_data"),
   healthNotes: text("health_notes"),
+  aiSummary: text("ai_summary"), // AI-generated summary of intake form data
   purchaseDate: timestamp("purchase_date"),
   formSubmissionDate: timestamp("form_submission_date"),
   startDate: timestamp("start_date"),
@@ -1063,9 +1068,13 @@ export const coachingClients = pgTable("coaching_clients", {
   dueDate: timestamp("due_date"),
   pregnancyNotes: text("pregnancy_notes"),
   notes: text("notes"),
+  coachRemarks: jsonb("coach_remarks"),
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
-});
+}, (table) => [
+  index("coaching_clients_user_id_idx").on(table.userId),
+  index("coaching_clients_status_idx").on(table.status),
+]);
 
 export const coachingWorkoutPlans = pgTable("coaching_workout_plans", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1090,6 +1099,7 @@ export const coachingNutritionPlans = pgTable("coaching_nutrition_plans", {
   mealType: text("meal_type").notNull(),
   options: jsonb("options").notNull(),
   tips: text("tips"),
+  supplements: jsonb("supplements"), // Supplement recommendations [{name, dosage, timing, notes}]
   isApproved: boolean("is_approved").default(false),
   isAiGenerated: boolean("is_ai_generated").default(false),
   orderIndex: integer("order_index").default(0),
@@ -1119,7 +1129,10 @@ export const directMessages = pgTable("direct_messages", {
   isRead: boolean("is_read").default(false),
   readAt: timestamp("read_at"),
   createdAt: timestamp("created_at").default(sql`now()`),
-});
+}, (table) => [
+  index("direct_messages_client_id_idx").on(table.clientId),
+  index("direct_messages_sender_id_idx").on(table.senderId),
+]);
 
 export const coachingCheckins = pgTable("coaching_checkins", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1136,7 +1149,10 @@ export const coachingCheckins = pgTable("coaching_checkins", {
   weight: text("weight"),
   notes: text("notes"),
   createdAt: timestamp("created_at").default(sql`now()`),
-});
+}, (table) => [
+  index("coaching_checkins_client_id_idx").on(table.clientId),
+  index("coaching_checkins_user_id_idx").on(table.userId),
+]);
 
 export const coachingFormResponses = pgTable("coaching_form_responses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1397,7 +1413,7 @@ export const insertCoachingClientSchema = createInsertSchema(coachingClients).om
   createdAt: true,
   updatedAt: true,
 }).extend({
-  status: z.enum(['pending', 'pending_plan', 'active', 'paused', 'completed', 'cancelled']).default('pending'),
+  status: z.enum(['enrolled', 'intake_complete', 'plan_generating', 'plan_ready', 'active', 'paused', 'completed', 'cancelled']).default('enrolled'),
   paymentStatus: z.enum(['pending', 'completed', 'refunded']).default('pending'),
 });
 

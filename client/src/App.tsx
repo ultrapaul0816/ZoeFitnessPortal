@@ -25,8 +25,6 @@ const Progress = lazy(() => import("@/pages/progress"));
 const AdminLogin = lazy(() => import("@/pages/admin-login"));
 const Admin = lazy(() => import("@/pages/admin"));
 const AdminAnalytics = lazy(() => import("@/pages/admin-analytics"));
-const AdminEmailCampaigns = lazy(() => import("@/pages/admin-email-campaigns"));
-const AdminEmailAnalytics = lazy(() => import("@/pages/admin-email-analytics"));
 const AdminAutomationSettings = lazy(() => import("@/pages/admin-automation-settings"));
 const AdminCourses = lazy(() => import("@/pages/admin-courses"));
 const AdminModuleEditor = lazy(() => import("@/pages/admin-module-editor"));
@@ -115,8 +113,6 @@ function Router() {
       <Route path="/admin/login" component={() => <LazyRoute component={AdminLogin} message="Loading admin login..." />} />
       <Route path="/admin" component={() => <LazyRoute component={Admin} message="Loading admin..." />} />
       <Route path="/admin/analytics" component={() => <LazyRoute component={AdminAnalytics} message="Loading analytics..." />} />
-      <Route path="/admin-email-campaigns" component={() => <LazyRoute component={AdminEmailCampaigns} message="Loading..." />} />
-      <Route path="/admin-email-analytics" component={() => <LazyRoute component={AdminEmailAnalytics} message="Loading..." />} />
       <Route path="/admin-automation-settings" component={() => <LazyRoute component={AdminAutomationSettings} message="Loading..." />} />
       <Route path="/admin/courses" component={() => <LazyRoute component={AdminCourses} message="Loading courses..." />} />
       <Route path="/admin/modules" component={() => <LazyRoute component={AdminCourses} message="Loading modules..." />} />

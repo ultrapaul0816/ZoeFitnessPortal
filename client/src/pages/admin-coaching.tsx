@@ -42,6 +42,18 @@ import {
   Video,
   RefreshCw,
   Pencil,
+  Flame,
+  Filter,
+  Activity,
+  TrendingUp,
+  BarChart3,
+  FileText,
+  Wand2,
+  Zap,
+  CircleDot,
+  Circle,
+  ArrowRight,
+  UserPlus,
 } from "lucide-react";
 import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-responses";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
@@ -50,26 +62,39 @@ type CoachingClientWithUser = CoachingClient & {
   user: { id: string; firstName: string; lastName: string; email: string; phone: string | null; profilePictureUrl: string | null };
   unreadMessages: number;
   lastCheckinDate: string | null;
+  lastMessagePreview: string | null;
+  lastMessageDate: string | null;
+  missedCheckinDays: number;
 };
 
 type CoachingView = "clients" | "client-detail";
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  pending_plan: "bg-blue-100 text-blue-700 border-blue-200",
+  enrolled: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  intake_complete: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  plan_generating: "bg-blue-100 text-blue-700 border-blue-200",
+  plan_ready: "bg-cyan-100 text-cyan-700 border-cyan-200",
   active: "bg-green-100 text-green-700 border-green-200",
   paused: "bg-orange-100 text-orange-700 border-orange-200",
   completed: "bg-gray-100 text-gray-700 border-gray-200",
   cancelled: "bg-red-100 text-red-700 border-red-200",
+  // Legacy fallbacks
+  pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  pending_plan: "bg-blue-100 text-blue-700 border-blue-200",
 };
 
 const statusLabels: Record<string, string> = {
-  pending: "Pending",
-  pending_plan: "Plan In Progress",
+  enrolled: "Enrolled",
+  intake_complete: "Intake Complete",
+  plan_generating: "Generating Plan",
+  plan_ready: "Plan Ready",
   active: "Active",
   paused: "Paused",
   completed: "Completed",
   cancelled: "Cancelled",
+  // Legacy fallbacks
+  pending: "Enrolled",
+  pending_plan: "Plan In Progress",
 };
 
 export default function AdminCoaching() {
@@ -85,6 +110,8 @@ export default function AdminCoaching() {
   const [newClientNotes, setNewClientNotes] = useState("");
   const [newClientPaymentAmount, setNewClientPaymentAmount] = useState("5000");
   const [newClientCoachingType, setNewClientCoachingType] = useState("pregnancy_coaching");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [sortMode, setSortMode] = useState<"urgent" | "recent" | "alpha">("urgent");
   const [messageInput, setMessageInput] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedAdminDay, setExpandedAdminDay] = useState<string | null>(null);
@@ -274,6 +301,34 @@ export default function AdminCoaching() {
     },
   });
 
+  const approveIntakeMutation = useMutation({
+    mutationFn: async (clientId: string) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/approve-intake`);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: "Intake approved", description: "Status changed to 'Generating Plan'. Use the Generate Workout button to create Week 1." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const activateClientMutation = useMutation({
+    mutationFn: async (clientId: string) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/activate`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: "Client activated!", description: "The client can now see their plan and start working out." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
   const updateClientMutation = useMutation({
     mutationFn: async ({ clientId, updates }: { clientId: string; updates: Record<string, any> }) => {
       const res = await apiRequest("PATCH", `/api/admin/coaching/clients/${clientId}`, updates);
@@ -316,6 +371,13 @@ export default function AdminCoaching() {
   });
 
   const filteredClients = clients.filter(c => {
+    // Status filter
+    if (statusFilter !== "all") {
+      if (statusFilter === "needs_action") {
+        if (!["enrolled", "intake_complete", "plan_ready"].includes(c.status || "")) return false;
+      } else if (c.status !== statusFilter) return false;
+    }
+    // Search filter
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -323,13 +385,31 @@ export default function AdminCoaching() {
       c.user.lastName.toLowerCase().includes(q) ||
       c.user.email.toLowerCase().includes(q)
     );
+  }).sort((a, b) => {
+    if (sortMode === "alpha") {
+      return `${a.user.firstName} ${a.user.lastName}`.localeCompare(`${b.user.firstName} ${b.user.lastName}`);
+    }
+    if (sortMode === "recent") {
+      const dateA = a.lastMessageDate || a.lastCheckinDate || a.createdAt || 0;
+      const dateB = b.lastMessageDate || b.lastCheckinDate || b.createdAt || 0;
+      return new Date(dateB as string | number).getTime() - new Date(dateA as string | number).getTime();
+    }
+    // "urgent" — needs attention first, then by missed check-in days
+    const priority: Record<string, number> = { intake_complete: 0, plan_ready: 1, enrolled: 2, plan_generating: 3, active: 4, paused: 5, completed: 6, cancelled: 7 };
+    const pa = priority[a.status || "enrolled"] ?? 4;
+    const pb = priority[b.status || "enrolled"] ?? 4;
+    if (pa !== pb) return pa - pb;
+    return (b.missedCheckinDays || 0) - (a.missedCheckinDays || 0);
   });
 
+  const needsAction = clients.filter(c => ["enrolled", "intake_complete", "plan_ready"].includes(c.status || "")).length;
   const stats = {
     total: clients.length,
     active: clients.filter(c => c.status === "active").length,
-    pendingPlan: clients.filter(c => c.status === "pending_plan" || c.status === "pending").length,
+    needsAction,
+    pendingPlan: clients.filter(c => c.status === "enrolled" || c.status === "intake_complete" || c.status === "plan_generating" || c.status === "plan_ready" || c.status === "pending" || c.status === "pending_plan").length,
     completed: clients.filter(c => c.status === "completed").length,
+    avgCheckinRate: clients.length > 0 ? Math.round(clients.filter(c => c.lastCheckinDate && new Date(c.lastCheckinDate) > new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)).length / Math.max(1, clients.filter(c => c.status === "active").length) * 100) : 0,
   };
 
   const openClientDetail = (clientId: string) => {
@@ -464,7 +544,7 @@ export default function AdminCoaching() {
 
         {activeView === "clients" && (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
               <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-gray-50">
                 <CardContent className="pt-5 pb-4 px-5">
                   <div className="flex items-center justify-between">
@@ -478,8 +558,8 @@ export default function AdminCoaching() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-green-50/30">
-                <CardContent className="pt-5 pb-4 px-5">
+              <Card className={cn("border-0 shadow-sm bg-gradient-to-br from-white to-green-50/30", statusFilter === "active" && "ring-2 ring-green-400")} onClick={() => setStatusFilter(statusFilter === "active" ? "all" : "active")} role="button">
+                <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Active</p>
@@ -491,21 +571,34 @@ export default function AdminCoaching() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-blue-50/30">
-                <CardContent className="pt-5 pb-4 px-5">
+              <Card className={cn("border-0 shadow-sm bg-gradient-to-br from-white to-amber-50/30", statusFilter === "needs_action" && "ring-2 ring-amber-400")} onClick={() => setStatusFilter(statusFilter === "needs_action" ? "all" : "needs_action")} role="button">
+                <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Pending Plan</p>
-                      <p className="text-2xl font-bold text-blue-600 mt-1">{stats.pendingPlan}</p>
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Needs Action</p>
+                      <p className="text-2xl font-bold text-amber-600 mt-1">{stats.needsAction}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-blue-600" />
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                      <AlertCircle className="w-5 h-5 text-amber-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-gray-50/30">
+              <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-blue-50/30">
                 <CardContent className="pt-5 pb-4 px-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-in Rate</p>
+                      <p className="text-2xl font-bold text-blue-600 mt-1">{stats.avgCheckinRate}%</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <Activity className="w-5 h-5 text-blue-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className={cn("border-0 shadow-sm bg-gradient-to-br from-white to-gray-50/30", statusFilter === "completed" && "ring-2 ring-gray-400")} onClick={() => setStatusFilter(statusFilter === "completed" ? "all" : "completed")} role="button">
+                <CardContent className="pt-5 pb-4 px-5 cursor-pointer">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Completed</p>
@@ -522,15 +615,33 @@ export default function AdminCoaching() {
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Coaching Clients</CardTitle>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input 
-                      placeholder="Search clients..." 
-                      className="pl-9 w-64"
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                    />
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg">Coaching Clients</CardTitle>
+                    {statusFilter !== "all" && (
+                      <Badge variant="outline" className="text-xs cursor-pointer hover:bg-gray-100" onClick={() => setStatusFilter("all")}>
+                        {statusFilter === "needs_action" ? "Needs Action" : statusFilter} <X className="w-3 h-3 ml-1 inline" />
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={sortMode}
+                      onChange={e => setSortMode(e.target.value as "urgent" | "recent" | "alpha")}
+                      className="text-xs border border-gray-200 rounded-lg px-2 py-2 bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                    >
+                      <option value="urgent">Most urgent</option>
+                      <option value="recent">Recently active</option>
+                      <option value="alpha">A → Z</option>
+                    </select>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Input
+                        placeholder="Search clients..."
+                        className="pl-9 w-64"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -545,44 +656,107 @@ export default function AdminCoaching() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {filteredClients.map(client => (
-                      <button
-                        key={client.id}
-                        onClick={() => openClientDetail(client.id)}
-                        className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all text-left group border border-transparent hover:border-gray-200"
-                      >
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                          {client.user.firstName[0]}{client.user.lastName[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-900 truncate">
-                              {client.user.firstName} {client.user.lastName}
-                            </p>
-                            <Badge variant="outline" className={cn("text-[10px] shrink-0", statusColors[client.status || "pending"])}>
-                              {statusLabels[client.status || "pending"]}
-                            </Badge>
-                            <Badge variant="outline" className={cn("text-[10px] shrink-0", (client as any).coachingType === "private_coaching" ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-pink-50 text-pink-600 border-pink-200")}>
-                              {(client as any).coachingType === "private_coaching" ? "Private" : "Pregnancy"}
-                            </Badge>
+                    {filteredClients.map(client => {
+                      const missed = (client as any).missedCheckinDays || 0;
+                      const unread = client.unreadMessages || 0;
+                      const isInactive = ["paused", "completed", "cancelled"].includes(client.status || "");
+                      const urgencyBorder = isInactive ? "border-l-gray-300" :
+                        (missed >= 3 || unread >= 3) ? "border-l-red-400" :
+                        (missed >= 1 || unread >= 1) ? "border-l-amber-400" :
+                        client.status === "active" ? "border-l-green-400" : "border-l-transparent";
+
+                      return (
+                        <button
+                          key={client.id}
+                          onClick={() => openClientDetail(client.id)}
+                          className={cn(
+                            "w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all text-left group border border-transparent hover:border-gray-200 border-l-4",
+                            urgencyBorder
+                          )}
+                        >
+                          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                            {client.user.firstName[0]}{client.user.lastName[0]}
                           </div>
-                          <p className="text-sm text-gray-500 truncate">{client.user.email}</p>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          {client.unreadMessages > 0 && (
-                            <Badge className="bg-pink-500 text-white text-[10px]">
-                              {client.unreadMessages} new
-                            </Badge>
-                          )}
-                          {client.startDate && (
-                            <span className="text-xs text-gray-400">
-                              Started {new Date(client.startDate).toLocaleDateString()}
-                            </span>
-                          )}
-                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-pink-500 transition-colors" />
-                        </div>
-                      </button>
-                    ))}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="font-semibold text-gray-900 truncate">
+                                {client.user.firstName} {client.user.lastName}
+                              </p>
+                              <Badge variant="outline" className={cn("text-[10px] shrink-0", statusColors[client.status || "enrolled"])}>
+                                {statusLabels[client.status || "enrolled"]}
+                              </Badge>
+                              {(client.status === "enrolled" || client.status === "intake_complete") && (
+                                <Badge className="text-[9px] bg-amber-500 text-white animate-pulse shrink-0">
+                                  ACTION NEEDED
+                                </Badge>
+                              )}
+                              <Badge variant="outline" className={cn("text-[10px] shrink-0", (client as any).coachingType === "private_coaching" ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-pink-50 text-pink-600 border-pink-200")}>
+                                {(client as any).coachingType === "private_coaching" ? "Private" : "Pregnancy"}
+                              </Badge>
+                            </div>
+                            {/* Last message preview */}
+                            {(client as any).lastMessagePreview ? (
+                              <p className="text-xs text-gray-400 truncate mt-0.5 italic">"{(client as any).lastMessagePreview}..."</p>
+                            ) : (
+                              <p className="text-sm text-gray-500 truncate">{client.user.email}</p>
+                            )}
+                            {/* Onboarding hint for new clients */}
+                            {client.status === "enrolled" && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <FileText className="w-3 h-3 text-amber-500" />
+                                <span className="text-[10px] text-amber-600 font-medium">Waiting for intake forms</span>
+                              </div>
+                            )}
+                            {client.status === "intake_complete" && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <Brain className="w-3 h-3 text-indigo-500" />
+                                <span className="text-[10px] text-indigo-600 font-medium">Ready for plan generation</span>
+                              </div>
+                            )}
+                            {client.status === "plan_ready" && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <Zap className="w-3 h-3 text-cyan-500" />
+                                <span className="text-[10px] text-cyan-600 font-medium">Plan ready — activate client</span>
+                              </div>
+                            )}
+                            {/* Check-in status line */}
+                            {client.status === "active" && (
+                              <div className="flex items-center gap-2 mt-1">
+                                {missed === 0 ? (
+                                  <span className="text-[10px] text-green-600 font-medium">Checked in today</span>
+                                ) : missed <= 2 ? (
+                                  <span className="text-[10px] text-amber-600">Last check-in: {missed}d ago</span>
+                                ) : missed < 999 ? (
+                                  <span className="text-[10px] text-red-600 font-medium">No check-in for {missed} days</span>
+                                ) : (
+                                  <span className="text-[10px] text-red-500">No check-ins yet</span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            {unread > 0 && (
+                              <Badge className={cn("text-white text-[10px]", unread >= 3 ? "bg-red-500" : "bg-pink-500")}>
+                                {unread} new
+                              </Badge>
+                            )}
+                            <div className="text-right">
+                              {client.lastCheckinDate && (
+                                <span className="text-[10px] text-gray-400 block">
+                                  Check-in: {new Date(client.lastCheckinDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                </span>
+                              )}
+                              {client.startDate && (
+                                <span className="text-[10px] text-gray-400 block">
+                                  Started {new Date(client.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                </span>
+                              )}
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-pink-500 transition-colors" />
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
@@ -598,21 +772,27 @@ export default function AdminCoaching() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={cn("text-xs", statusColors[selectedClient.status || "pending"])}>
-                    {statusLabels[selectedClient.status || "pending"]}
+                  <Badge variant="outline" className={cn("text-xs", statusColors[selectedClient.status || "enrolled"])}>
+                    {statusLabels[selectedClient.status || "enrolled"]}
                   </Badge>
                 </div>
                 <p className="text-sm text-gray-500">{selectedClient.user.email}</p>
               </div>
               <div className="flex gap-2">
-                {(selectedClient.status === "pending" || selectedClient.status === "pending_plan") && (
+                {(selectedClient.status === "plan_generating" || selectedClient.status === "plan_ready" || selectedClient.status === "active") && (
                   <Select
                     onValueChange={(week) => generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: parseInt(week) })}
                     disabled={generateWorkoutMutation.isPending}
                   >
-                    <SelectTrigger className="w-[200px] bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-lg [&>span]:text-white">
+                    <SelectTrigger className="w-[240px] bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-lg [&>span]:text-white font-medium">
                       <Brain className="w-4 h-4 mr-2" />
-                      {generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : "Generate Workout"}
+                      {generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : (() => {
+                        const weeksGen = new Set((clientWorkoutPlan as any[]).map((p: any) => p.weekNumber)).size;
+                        return `Generate Workout (${weeksGen}/4)`;
+                      })()}
+                      {!generateWorkoutMutation.isPending && new Set((clientWorkoutPlan as any[]).map((p: any) => p.weekNumber)).size < 4 && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full animate-ping" />
+                      )}
                     </SelectTrigger>
                     <SelectContent>
                       {[1, 2, 3, 4].map(week => {
@@ -626,34 +806,133 @@ export default function AdminCoaching() {
                     </SelectContent>
                   </Select>
                 )}
-                {selectedClient.status === "pending_plan" && (
-                  <Button 
-                    onClick={() => approvePlanMutation.mutate(selectedClient.id)}
-                    disabled={approvePlanMutation.isPending}
+                {selectedClient.status === "intake_complete" && (
+                  <Button
+                    onClick={() => approveIntakeMutation.mutate(selectedClient.id)}
+                    disabled={approveIntakeMutation.isPending}
+                    className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg"
+                  >
+                    <Brain className="w-4 h-4 mr-2" />
+                    {approveIntakeMutation.isPending ? "Approving..." : "Approve & Generate Plan"}
+                  </Button>
+                )}
+                {selectedClient.status === "plan_ready" && (
+                  <Button
+                    onClick={() => activateClientMutation.mutate(selectedClient.id)}
+                    disabled={activateClientMutation.isPending}
                     className="bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
                   >
                     <CheckCircle2 className="w-4 h-4 mr-2" />
-                    {approvePlanMutation.isPending ? "Approving..." : "Approve Plan"}
+                    {activateClientMutation.isPending ? "Activating..." : "Activate Client"}
                   </Button>
                 )}
                 <Select
-                  value={selectedClient.status || "pending"}
+                  value={selectedClient.status || "enrolled"}
                   onValueChange={(status) => updateStatusMutation.mutate({ clientId: selectedClient.id, status })}
                 >
-                  <SelectTrigger className="w-[160px]">
+                  <SelectTrigger className="w-[180px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="pending_plan">Plan In Progress</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="paused">Paused</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    {[
+                      { value: "enrolled", label: "Enrolled" },
+                      { value: "intake_complete", label: "Intake Complete" },
+                      { value: "plan_generating", label: "Generating Plan" },
+                      { value: "plan_ready", label: "Plan Ready" },
+                      { value: "active", label: "Active" },
+                      { value: "paused", label: "Paused" },
+                      { value: "completed", label: "Completed" },
+                      { value: "cancelled", label: "Cancelled" },
+                    ].map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
+
+            {/* === ONBOARDING STEPPER === */}
+            {(() => {
+              const status = selectedClient.status || "enrolled";
+              const hasFormData = !!(clientCheckins as any[])?.length || !!(selectedClient as any).notes;
+              const hasCoachRemarks = !!(selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim());
+              const hasPlan = (clientWorkoutPlan as any[])?.length > 0;
+              const isPreActive = ["enrolled", "intake_complete", "plan_generating", "plan_ready"].includes(status);
+
+              // Determine step states
+              const steps = [
+                { label: "Enrolled", key: "enrolled", done: true, icon: UserPlus },
+                { label: "Forms Filled", key: "forms", done: status !== "enrolled", icon: FileText,
+                  action: status === "enrolled" ? "Client needs to complete intake forms" : undefined },
+                { label: "Coach Notes", key: "remarks", done: hasCoachRemarks, icon: Pencil,
+                  action: !hasCoachRemarks && status !== "enrolled" ? "Add your training direction" : undefined },
+                { label: "Plan Generated", key: "plan", done: hasPlan, icon: Brain,
+                  action: !hasPlan && (status === "intake_complete" || status === "plan_generating") ? "Generate workout plan" : undefined },
+                { label: "Active", key: "active", done: status === "active" || status === "completed", icon: Zap,
+                  action: status === "plan_ready" ? "Activate the client" : undefined },
+              ];
+
+              const currentStepIdx = steps.findIndex(s => !s.done);
+              const isFullyOnboarded = currentStepIdx === -1;
+
+              if (!isPreActive && isFullyOnboarded) return null; // Hide for fully active clients
+
+              return (
+                <Card className={cn("border-0 shadow-sm", isPreActive ? "bg-gradient-to-r from-amber-50 to-orange-50 ring-1 ring-amber-200" : "bg-gradient-to-r from-green-50 to-emerald-50 ring-1 ring-green-200")}>
+                  <CardContent className="py-4 px-5">
+                    {isPreActive && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <AlertCircle className="w-4 h-4 text-amber-600" />
+                        <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">Onboarding In Progress</span>
+                        {currentStepIdx >= 0 && (
+                          <span className="text-xs text-amber-600 ml-auto">
+                            Next: {steps[currentStepIdx]?.action || steps[currentStepIdx]?.label}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1">
+                      {steps.map((step, idx) => {
+                        const StepIcon = step.icon;
+                        const isCurrent = idx === currentStepIdx;
+                        const isDone = step.done;
+                        return (
+                          <div key={step.key} className="flex items-center flex-1">
+                            <div className={cn(
+                              "flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium transition-all flex-1 min-w-0",
+                              isDone ? "bg-green-100 text-green-700" :
+                              isCurrent ? "bg-amber-100 text-amber-800 ring-1 ring-amber-300 shadow-sm" :
+                              "bg-gray-100 text-gray-400"
+                            )}
+                              onClick={() => {
+                                if (step.key === "remarks") setActiveTab("overview");
+                                else if (step.key === "plan") setActiveTab("workout");
+                                else if (step.key === "forms") setActiveTab("overview");
+                              }}
+                              style={{ cursor: "pointer" }}
+                            >
+                              {isDone ? (
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-green-600" />
+                              ) : isCurrent ? (
+                                <CircleDot className="w-3.5 h-3.5 shrink-0 text-amber-600 animate-pulse" />
+                              ) : (
+                                <Circle className="w-3.5 h-3.5 shrink-0" />
+                              )}
+                              <span className="truncate">{step.label}</span>
+                            </div>
+                            {idx < steps.length - 1 && (
+                              <ArrowRight className={cn("w-3 h-3 shrink-0 mx-0.5", isDone ? "text-green-400" : "text-gray-300")} />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="bg-gray-100 p-1 rounded-xl">
@@ -678,202 +957,510 @@ export default function AdminCoaching() {
               </TabsList>
 
               <TabsContent value="overview" className="mt-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card className="border-0 shadow-sm">
-                    <CardHeader>
-                      <CardTitle className="text-base">Client Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Name</span>
-                        <span className="text-sm font-medium">{selectedClient.user.firstName} {selectedClient.user.lastName}</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Email</span>
-                        <span className="text-sm font-medium">{selectedClient.user.email}</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Phone</span>
-                        <span className="text-sm font-medium">{selectedClient.user.phone || "Not provided"}</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Program Duration</span>
-                        <span className="text-sm font-medium">{selectedClient.planDurationWeeks || 4} weeks</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Purchase Date</span>
-                        <Input
-                          type="date"
-                          className="w-40 h-8 text-sm"
-                          value={selectedClient.purchaseDate ? new Date(selectedClient.purchaseDate).toISOString().split('T')[0] : ''}
-                          onChange={(e) => updateClientMutation.mutate({
-                            clientId: selectedClient.id,
-                            updates: { purchaseDate: e.target.value ? new Date(e.target.value).toISOString() : null }
-                          })}
-                        />
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Form Submission Date</span>
-                        <Input
-                          type="date"
-                          className="w-40 h-8 text-sm"
-                          value={selectedClient.formSubmissionDate ? new Date(selectedClient.formSubmissionDate).toISOString().split('T')[0] : ''}
-                          onChange={(e) => updateClientMutation.mutate({
-                            clientId: selectedClient.id,
-                            updates: { formSubmissionDate: e.target.value ? new Date(e.target.value).toISOString() : null }
-                          })}
-                        />
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Start Date</span>
-                        <Input
-                          type="date"
-                          className="w-40 h-8 text-sm"
-                          value={selectedClient.startDate ? new Date(selectedClient.startDate).toISOString().split('T')[0] : ''}
-                          onChange={(e) => updateClientMutation.mutate({
-                            clientId: selectedClient.id,
-                            updates: { startDate: e.target.value ? new Date(e.target.value).toISOString() : null }
-                          })}
-                        />
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">End Date</span>
-                        <Input
-                          type="date"
-                          className="w-40 h-8 text-sm"
-                          value={selectedClient.endDate ? new Date(selectedClient.endDate).toISOString().split('T')[0] : ''}
-                          onChange={(e) => updateClientMutation.mutate({
-                            clientId: selectedClient.id,
-                            updates: { endDate: e.target.value ? new Date(e.target.value).toISOString() : null }
-                          })}
-                        />
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-500">Payment</span>
-                        <span className="text-sm font-medium">
-                          ₹{((selectedClient.paymentAmount || 0) / 100).toLocaleString()} 
-                          <Badge variant="outline" className={cn("ml-2 text-[10px]", 
-                            selectedClient.paymentStatus === "completed" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                          )}>
-                            {selectedClient.paymentStatus || "pending"}
-                          </Badge>
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
+                <div className="space-y-6">
+                  {/* === PROGRESS METRIC CARDS === */}
+                  {(() => {
+                    const workoutPlans = clientWorkoutPlan as any[];
+                    const completions = clientCompletions as any[];
+                    const checkins = clientCheckins as any[];
 
-                  <CoachingFormResponsesSection clientId={selectedClient.id} coachingType={(selectedClient as any).coachingType || "pregnancy_coaching"} />
+                    // Calculate current week from start date
+                    const startDate = selectedClient.startDate ? new Date(selectedClient.startDate) : null;
+                    const daysSinceStart = startDate ? Math.max(0, Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
+                    const currentWeek = Math.min(4, Math.max(1, Math.ceil(daysSinceStart / 7) || 1));
+                    const totalDays = (selectedClient.planDurationWeeks || 4) * 7;
 
-                  <Card className="border-0 shadow-sm lg:col-span-2">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-base flex items-center gap-2">
-                          Pregnancy Information
-                          {selectedClient.isPregnant && (
-                            <Badge className="bg-pink-100 text-pink-700 border-pink-200 text-[10px]">
-                              {selectedClient.dueDate ? (() => {
-                                const daysLeft = Math.max(0, Math.ceil((new Date(selectedClient.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
-                                const weeksPregnant = Math.max(0, Math.floor((280 - daysLeft) / 7));
-                                return `Trimester ${weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3}`;
-                              })() : "Pregnant"}
-                            </Badge>
-                          )}
-                        </CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                          <Label className="text-xs text-gray-500">Pregnancy Status</Label>
-                          <Select
-                            value={selectedClient.isPregnant ? "yes" : "no"}
-                            onValueChange={(val) => updateClientMutation.mutate({
-                              clientId: selectedClient.id,
-                              updates: { isPregnant: val === "yes" }
-                            })}
+                    // Workout completion for current week
+                    const currentWeekPlans = workoutPlans.filter((p: any) => p.weekNumber === currentWeek);
+                    const totalExercises = currentWeekPlans.reduce((sum: number, p: any) => {
+                      const sections = p.exercises?.sections || [];
+                      return sum + sections.reduce((s: number, sec: any) => s + (sec.exercises?.length || 0), 0);
+                    }, 0);
+                    const completedExercises = completions.filter((c: any) => c.weekNumber === currentWeek && c.completed).length;
+                    const workoutPercent = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 0;
+
+                    // Check-in streak
+                    let streak = 0;
+                    if (checkins.length > 0) {
+                      const sorted = [...checkins].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                      const today = new Date(); today.setHours(0,0,0,0);
+                      let checkDate = today;
+                      for (const ci of sorted) {
+                        const ciDate = new Date(ci.date); ciDate.setHours(0,0,0,0);
+                        const diff = Math.round((checkDate.getTime() - ciDate.getTime()) / (1000*60*60*24));
+                        if (diff <= 1) { streak++; checkDate = ciDate; }
+                        else break;
+                      }
+                    }
+
+                    // Last check-in
+                    const lastCheckin = checkins.length > 0 ? (checkins as any[])[0] : null;
+                    const lastCheckinAge = lastCheckin ? Math.round((Date.now() - new Date(lastCheckin.date).getTime()) / (1000*60*60)) : null;
+
+                    // Phase names
+                    const phaseNames: Record<number, string> = { 1: "Foundation", 2: "Build & Strengthen", 3: "Optimize", 4: "Peak Performance" };
+
+                    // Weeks generated
+                    const weeksGenerated = new Set(workoutPlans.map((p: any) => p.weekNumber)).size;
+                    const nextUngenWeek = [1,2,3,4].find(w => !workoutPlans.some((p: any) => p.weekNumber === w));
+
+                    return (
+                      <>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                          <Card className="border-0 shadow-sm bg-gradient-to-br from-violet-50 to-purple-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Dumbbell className="w-4 h-4 text-violet-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Workout</span>
+                              </div>
+                              <div className="text-xl font-bold text-violet-700">{workoutPercent}%</div>
+                              <div className="text-[11px] text-gray-500">Week {currentWeek} progress</div>
+                              <div className="mt-2 h-1.5 bg-violet-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${workoutPercent}%` }} />
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-50 to-amber-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Flame className="w-4 h-4 text-orange-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Streak</span>
+                              </div>
+                              <div className="text-xl font-bold text-orange-700">{streak} days</div>
+                              <div className="text-[11px] text-gray-500">Check-in streak</div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className={cn("border-0 shadow-sm", selectedClient.unreadMessages > 0 ? "bg-gradient-to-br from-pink-50 to-rose-50 ring-2 ring-pink-200" : "bg-gradient-to-br from-pink-50 to-rose-50")}>
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2 mb-1">
+                                <MessageSquare className="w-4 h-4 text-pink-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Messages</span>
+                              </div>
+                              <div className="text-xl font-bold text-pink-700">{selectedClient.unreadMessages}</div>
+                              <div className="text-[11px] text-gray-500">{selectedClient.unreadMessages > 0 ? "unread messages" : "all caught up"}</div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-sky-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Calendar className="w-4 h-4 text-blue-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Active</span>
+                              </div>
+                              <div className="text-xl font-bold text-blue-700">Day {daysSinceStart || 0}</div>
+                              <div className="text-[11px] text-gray-500">of {totalDays} days</div>
+                              <div className="mt-2 h-1.5 bg-blue-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${Math.min(100, (daysSinceStart / totalDays) * 100)}%` }} />
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="border-0 shadow-sm bg-gradient-to-br from-emerald-50 to-green-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2 mb-1">
+                                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Phase</span>
+                              </div>
+                              <div className="text-lg font-bold text-emerald-700">Week {currentWeek}</div>
+                              <div className="text-[11px] text-gray-500">{phaseNames[currentWeek] || "Active"}</div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="border-0 shadow-sm bg-gradient-to-br from-cyan-50 to-teal-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2 mb-1">
+                                <ClipboardList className="w-4 h-4 text-cyan-500" />
+                                <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Last Check-in</span>
+                              </div>
+                              {lastCheckin ? (
+                                <>
+                                  <div className="text-lg font-bold text-cyan-700">
+                                    {lastCheckin.mood === "great" ? "🤩" : lastCheckin.mood === "good" ? "😊" : lastCheckin.mood === "okay" ? "😐" : lastCheckin.mood === "tired" ? "😴" : lastCheckin.mood === "struggling" ? "😣" : "📋"}
+                                    <span className="ml-1 text-sm">{lastCheckin.energyLevel}/5</span>
+                                  </div>
+                                  <div className="text-[11px] text-gray-500">{lastCheckinAge !== null && lastCheckinAge < 24 ? `${lastCheckinAge}h ago` : lastCheckinAge !== null ? `${Math.floor(lastCheckinAge / 24)}d ago` : ""}</div>
+                                </>
+                              ) : (
+                                <div className="text-sm text-gray-400">No check-ins yet</div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* === QUICK ACTIONS === */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <Button
+                            variant="outline"
+                            className="h-auto py-3 px-4 justify-start gap-3 border-gray-200 hover:border-pink-200 hover:bg-pink-50 transition-all"
+                            onClick={() => setActiveTab("checkins")}
                           >
-                            <SelectTrigger className="mt-1 h-9">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="no">Not Pregnant</SelectItem>
-                              <SelectItem value="yes">Pregnant</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            <div className="w-9 h-9 rounded-lg bg-cyan-100 flex items-center justify-center">
+                              <ClipboardList className="w-5 h-5 text-cyan-600" />
+                            </div>
+                            <div className="text-left">
+                              <div className="text-sm font-medium">Review Check-ins</div>
+                              <div className="text-[11px] text-gray-500">{checkins.length} total check-ins</div>
+                            </div>
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            className={cn("h-auto py-3 px-4 justify-start gap-3 border-gray-200 hover:border-pink-200 hover:bg-pink-50 transition-all", selectedClient.unreadMessages > 0 && "ring-2 ring-pink-200 border-pink-200")}
+                            onClick={() => setActiveTab("messages")}
+                          >
+                            <div className="w-9 h-9 rounded-lg bg-pink-100 flex items-center justify-center relative">
+                              <MessageSquare className="w-5 h-5 text-pink-600" />
+                              {selectedClient.unreadMessages > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">{selectedClient.unreadMessages}</span>
+                              )}
+                            </div>
+                            <div className="text-left">
+                              <div className="text-sm font-medium">Messages</div>
+                              <div className="text-[11px] text-gray-500">{selectedClient.unreadMessages > 0 ? `${selectedClient.unreadMessages} unread` : "All caught up"}</div>
+                            </div>
+                          </Button>
+
+                          {nextUngenWeek ? (
+                            <Button
+                              className="h-auto py-3 px-4 justify-start gap-3 bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg hover:from-violet-600 hover:to-purple-600 transition-all"
+                              onClick={() => selectedClient && generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: nextUngenWeek })}
+                              disabled={generateWorkoutMutation.isPending}
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
+                                <Brain className="w-5 h-5 text-white" />
+                              </div>
+                              <div className="text-left">
+                                <div className="text-sm font-medium">{generateWorkoutMutation.isPending ? `Generating...` : `Generate Week ${nextUngenWeek}`}</div>
+                                <div className="text-[11px] text-white/80">{weeksGenerated} of 4 weeks ready</div>
+                              </div>
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              className="h-auto py-3 px-4 justify-start gap-3 border-gray-200"
+                              onClick={() => setActiveTab("workout")}
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center">
+                                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                              </div>
+                              <div className="text-left">
+                                <div className="text-sm font-medium">All Weeks Generated</div>
+                                <div className="text-[11px] text-gray-500">View workout plan</div>
+                              </div>
+                            </Button>
+                          )}
                         </div>
-                        <div>
-                          <Label className="text-xs text-gray-500">Due Date</Label>
-                          <Input
-                            type="date"
-                            className="mt-1 h-9"
-                            value={selectedClient.dueDate ? new Date(selectedClient.dueDate).toISOString().split('T')[0] : ''}
-                            onChange={(e) => updateClientMutation.mutate({
-                              clientId: selectedClient.id,
-                              updates: { dueDate: e.target.value ? new Date(e.target.value).toISOString() : null }
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs text-gray-500">Auto-Calculated Trimester</Label>
-                          <div className="mt-1 h-9 flex items-center">
-                            {selectedClient.isPregnant && selectedClient.dueDate ? (() => {
-                              const now = new Date();
-                              const due = new Date(selectedClient.dueDate);
-                              const totalDays = 280;
-                              const daysLeft = Math.max(0, Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-                              const weeksPregnant = Math.max(0, Math.floor((totalDays - daysLeft) / 7));
-                              const trimester = weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3;
-                              const trimesterColors = { 1: "bg-blue-100 text-blue-700", 2: "bg-amber-100 text-amber-700", 3: "bg-pink-100 text-pink-700" };
-                              return (
-                                <div className="flex items-center gap-2">
-                                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${trimesterColors[trimester as 1|2|3]}`}>
-                                    Trimester {trimester}
+
+                        {/* === COACH'S NOTES & DIRECTION === */}
+                        <Card className="border-0 shadow-sm border-l-4 border-l-violet-400">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-base flex items-center gap-2">
+                              <Sparkles className="w-4 h-4 text-violet-500" />
+                              Coach's Notes & Direction
+                            </CardTitle>
+                            <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit">These notes are used by AI when generating workouts and nutrition plans</p>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {[
+                                { key: "trainingFocus", label: "Training Focus", placeholder: "e.g., Pelvic floor strengthening, glute activation, avoid overhead pressing..." },
+                                { key: "nutritionalGuidance", label: "Nutritional Guidance", placeholder: "e.g., Vegetarian, needs more plant protein, avoids dairy..." },
+                                { key: "thingsToWatch", label: "Things to Watch", placeholder: "e.g., Lower back pain after deadlifts — modify to sumo stance..." },
+                                { key: "personalityNotes", label: "Client Personality", placeholder: "e.g., Prefers encouraging tone, motivated by progress data..." },
+                              ].map(field => (
+                                <div key={field.key}>
+                                  <Label className="text-xs text-gray-500 font-medium">{field.label}</Label>
+                                  <Textarea
+                                    className="mt-1 text-sm min-h-[60px] focus:ring-violet-200 focus:border-violet-300"
+                                    rows={2}
+                                    placeholder={field.placeholder}
+                                    defaultValue={((selectedClient as any).coachRemarks as any)?.[field.key] || ''}
+                                    onBlur={(e) => {
+                                      const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
+                                      if (e.target.value !== (currentRemarks[field.key] || '')) {
+                                        updateClientMutation.mutate({
+                                          clientId: selectedClient.id,
+                                          updates: { coachRemarks: { ...currentRemarks, [field.key]: e.target.value || "" } }
+                                        });
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                              <div className="md:col-span-2">
+                                <Label className="text-xs text-gray-500 font-medium">Additional Notes</Label>
+                                <Textarea
+                                  className="mt-1 text-sm min-h-[60px] focus:ring-violet-200 focus:border-violet-300"
+                                  rows={2}
+                                  placeholder="Any other coaching directions, goals, special requirements..."
+                                  defaultValue={((selectedClient as any).coachRemarks as any)?.customNotes || ''}
+                                  onBlur={(e) => {
+                                    const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
+                                    if (e.target.value !== (currentRemarks.customNotes || '')) {
+                                      updateClientMutation.mutate({
+                                        clientId: selectedClient.id,
+                                        updates: { coachRemarks: { ...currentRemarks, customNotes: e.target.value || "" } }
+                                      });
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* === LATEST CHECK-IN SUMMARY === */}
+                        {lastCheckin && (
+                          <Card className="border-0 shadow-sm">
+                            <CardHeader className="pb-2">
+                              <div className="flex items-center justify-between">
+                                <CardTitle className="text-base flex items-center gap-2">
+                                  <ClipboardList className="w-4 h-4 text-cyan-500" />
+                                  Latest Check-in
+                                </CardTitle>
+                                <Button variant="ghost" size="sm" className="text-xs text-pink-600 hover:text-pink-700" onClick={() => setActiveTab("checkins")}>
+                                  View all check-ins →
+                                </Button>
+                              </div>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="bg-gray-50 rounded-xl p-4">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <span className="text-2xl">
+                                    {lastCheckin.mood === "great" ? "🤩" : lastCheckin.mood === "good" ? "😊" : lastCheckin.mood === "okay" ? "😐" : lastCheckin.mood === "tired" ? "😴" : lastCheckin.mood === "struggling" ? "😣" : "📋"}
                                   </span>
-                                  <span className="text-xs text-gray-500">
-                                    Week {weeksPregnant} · {Math.ceil(daysLeft / 7)}w remaining
+                                  <div>
+                                    <div className="text-sm font-medium">{new Date(lastCheckin.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</div>
+                                    <div className="text-[11px] text-gray-500">{lastCheckin.workoutCompleted ? "Workout completed ✓" : "Rest day"}</div>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-4 gap-3">
+                                  <div className="bg-white rounded-lg p-2 text-center">
+                                    <div className="text-[10px] text-gray-500 uppercase">Energy</div>
+                                    <div className="text-sm font-bold text-orange-600">{lastCheckin.energyLevel || '-'}/5</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-2 text-center">
+                                    <div className="text-[10px] text-gray-500 uppercase">Sleep</div>
+                                    <div className="text-sm font-bold text-blue-600">{lastCheckin.sleepHours || '-'}h</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-2 text-center">
+                                    <div className="text-[10px] text-gray-500 uppercase">Water</div>
+                                    <div className="text-sm font-bold text-cyan-600">{lastCheckin.waterGlasses || 0} glasses</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-2 text-center">
+                                    <div className="text-[10px] text-gray-500 uppercase">Weight</div>
+                                    <div className="text-sm font-bold text-gray-600">{lastCheckin.weight || '-'}</div>
+                                  </div>
+                                </div>
+                                {lastCheckin.notes && (
+                                  <div className="mt-3 text-sm text-gray-600 bg-white rounded-lg p-3 italic">"{lastCheckin.notes}"</div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+
+                        {/* === AI ASSESSMENT SUMMARY === */}
+                        {(selectedClient as any).aiSummary && (
+                          <Card className="border-0 shadow-sm">
+                            <CardHeader>
+                              <CardTitle className="text-base flex items-center gap-2">
+                                <Brain className="w-4 h-4 text-violet-500" />
+                                AI Assessment Summary
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="bg-violet-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                {(selectedClient as any).aiSummary}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+
+                        {/* === COLLAPSIBLE: Client Details & Forms === */}
+                        <details className="group">
+                          <summary className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-600 hover:text-gray-900 py-2">
+                            <ChevronRight className="w-4 h-4 transition-transform group-open:rotate-90" />
+                            Client Details & Intake Forms
+                            {selectedClient.isPregnant && (
+                              <Badge className="bg-pink-100 text-pink-700 border-pink-200 text-[10px]">
+                                {selectedClient.dueDate ? (() => {
+                                  const daysLeft = Math.max(0, Math.ceil((new Date(selectedClient.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
+                                  const weeksPregnant = Math.max(0, Math.floor((280 - daysLeft) / 7));
+                                  return `T${weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3} · Week ${weeksPregnant}`;
+                                })() : "Pregnant"}
+                              </Badge>
+                            )}
+                          </summary>
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                            {/* Client Info */}
+                            <Card className="border-0 shadow-sm">
+                              <CardHeader>
+                                <CardTitle className="text-base">Client Information</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-3">
+                                {[
+                                  { label: "Name", value: `${selectedClient.user.firstName} ${selectedClient.user.lastName}` },
+                                  { label: "Email", value: selectedClient.user.email },
+                                  { label: "Phone", value: selectedClient.user.phone || "Not provided" },
+                                  { label: "Program", value: `${selectedClient.planDurationWeeks || 4} weeks` },
+                                ].map((item, i) => (
+                                  <div key={i}>
+                                    <div className="flex justify-between">
+                                      <span className="text-sm text-gray-500">{item.label}</span>
+                                      <span className="text-sm font-medium">{item.value}</span>
+                                    </div>
+                                    {i < 3 && <Separator className="mt-3" />}
+                                  </div>
+                                ))}
+                                <Separator />
+                                {[
+                                  { label: "Purchase Date", field: "purchaseDate" },
+                                  { label: "Form Submission", field: "formSubmissionDate" },
+                                  { label: "Start Date", field: "startDate" },
+                                  { label: "End Date", field: "endDate" },
+                                ].map((item) => (
+                                  <div key={item.field}>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-sm text-gray-500">{item.label}</span>
+                                      <Input
+                                        type="date"
+                                        className="w-40 h-8 text-sm"
+                                        value={(selectedClient as any)[item.field] ? new Date((selectedClient as any)[item.field]).toISOString().split('T')[0] : ''}
+                                        onChange={(e) => updateClientMutation.mutate({
+                                          clientId: selectedClient.id,
+                                          updates: { [item.field]: e.target.value ? new Date(e.target.value).toISOString() : null }
+                                        })}
+                                      />
+                                    </div>
+                                    <Separator className="mt-3" />
+                                  </div>
+                                ))}
+                                <div className="flex justify-between">
+                                  <span className="text-sm text-gray-500">Payment</span>
+                                  <span className="text-sm font-medium">
+                                    ₹{((selectedClient.paymentAmount || 0) / 100).toLocaleString()}
+                                    <Badge variant="outline" className={cn("ml-2 text-[10px]",
+                                      selectedClient.paymentStatus === "completed" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                                    )}>
+                                      {selectedClient.paymentStatus || "pending"}
+                                    </Badge>
                                   </span>
                                 </div>
-                              );
-                            })() : (
-                              <span className="text-xs text-gray-400">
-                                {selectedClient.isPregnant ? "Set due date to calculate" : "Not pregnant"}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="lg:col-span-3">
-                          <Label className="text-xs text-gray-500">Pregnancy Notes</Label>
-                          <Textarea
-                            className="mt-1 text-sm min-h-[36px]"
-                            rows={1}
-                            placeholder="Any pregnancy-related notes..."
-                            defaultValue={selectedClient.pregnancyNotes || ''}
-                            onBlur={(e) => {
-                              if (e.target.value !== (selectedClient.pregnancyNotes || '')) {
-                                updateClientMutation.mutate({
-                                  clientId: selectedClient.id,
-                                  updates: { pregnancyNotes: e.target.value || null }
-                                });
-                              }
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                                {/* Pregnancy Info inline */}
+                                {selectedClient.isPregnant && (
+                                  <>
+                                    <Separator />
+                                    <div className="space-y-3 pt-2">
+                                      <div className="text-sm font-medium text-pink-600">Pregnancy Details</div>
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                          <Label className="text-xs text-gray-500">Due Date</Label>
+                                          <Input
+                                            type="date"
+                                            className="mt-1 h-8 text-sm"
+                                            value={selectedClient.dueDate ? new Date(selectedClient.dueDate).toISOString().split('T')[0] : ''}
+                                            onChange={(e) => updateClientMutation.mutate({
+                                              clientId: selectedClient.id,
+                                              updates: { dueDate: e.target.value ? new Date(e.target.value).toISOString() : null }
+                                            })}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label className="text-xs text-gray-500">Trimester</Label>
+                                          <div className="mt-1 h-8 flex items-center">
+                                            {selectedClient.dueDate ? (() => {
+                                              const daysLeft = Math.max(0, Math.ceil((new Date(selectedClient.dueDate).getTime() - Date.now()) / (1000*60*60*24)));
+                                              const wp = Math.max(0, Math.floor((280 - daysLeft) / 7));
+                                              const t = wp <= 12 ? 1 : wp <= 26 ? 2 : 3;
+                                              const tc: Record<number,string> = { 1: "bg-blue-100 text-blue-700", 2: "bg-amber-100 text-amber-700", 3: "bg-pink-100 text-pink-700" };
+                                              return <Badge className={cn("text-[10px]", tc[t])}>T{t} · Week {wp}</Badge>;
+                                            })() : <span className="text-xs text-gray-400">Set due date</span>}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs text-gray-500">Pregnancy Notes</Label>
+                                        <Textarea
+                                          className="mt-1 text-sm min-h-[36px]"
+                                          rows={1}
+                                          placeholder="Pregnancy-related notes..."
+                                          defaultValue={selectedClient.pregnancyNotes || ''}
+                                          onBlur={(e) => {
+                                            if (e.target.value !== (selectedClient.pregnancyNotes || '')) {
+                                              updateClientMutation.mutate({ clientId: selectedClient.id, updates: { pregnancyNotes: e.target.value || null } });
+                                            }
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+                              </CardContent>
+                            </Card>
 
+                            {/* Form Responses */}
+                            <CoachingFormResponsesSection clientId={selectedClient.id} coachingType={(selectedClient as any).coachingType || "pregnancy_coaching"} />
+                          </div>
+                        </details>
+                      </>
+                    );
+                  })()}
+                </div>
               </TabsContent>
 
               <TabsContent value="workout" className="mt-6">
+                {/* Week Generation Status Banner */}
+                <div className="grid grid-cols-4 gap-3 mb-6">
+                  {[1, 2, 3, 4].map(week => {
+                    const weekPlan = (clientWorkoutPlan as any[]).filter(p => p.weekNumber === week);
+                    const hasWeek = weekPlan.length > 0;
+                    const isGenerating = generateWorkoutMutation.isPending && generatingWeek === week;
+                    const approved = weekPlan.some(p => p.isApproved);
+                    return (
+                      <Card key={week} className={cn(
+                        "border shadow-sm cursor-pointer transition-all hover:shadow-md",
+                        isGenerating ? "border-purple-300 bg-purple-50" :
+                        hasWeek && approved ? "border-green-300 bg-green-50" :
+                        hasWeek ? "border-blue-300 bg-blue-50" :
+                        "border-dashed border-gray-300 bg-gray-50"
+                      )}>
+                        <CardContent className="p-3 text-center">
+                          <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Week {week}</div>
+                          {isGenerating ? (
+                            <div className="mt-1">
+                              <Sparkles className="w-5 h-5 text-purple-500 animate-pulse mx-auto" />
+                              <div className="text-[10px] text-purple-600 mt-1">Generating...</div>
+                            </div>
+                          ) : hasWeek ? (
+                            <div className="mt-1">
+                              <CheckCircle2 className={cn("w-5 h-5 mx-auto", approved ? "text-green-500" : "text-blue-500")} />
+                              <div className="text-[10px] text-gray-600 mt-1">{weekPlan.length} days{approved ? " · Approved" : ""}</div>
+                            </div>
+                          ) : (
+                            <div className="mt-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 text-xs text-violet-600 hover:text-violet-700 hover:bg-violet-100 px-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
+                                }}
+                                disabled={generateWorkoutMutation.isPending}
+                              >
+                                <Sparkles className="w-3 h-3 mr-1" /> Generate
+                              </Button>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+
                 <Card className="border-0 shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-base">4-Week Workout Plan</CardTitle>
@@ -1660,6 +2247,25 @@ export default function AdminCoaching() {
                         </div>
                       )}
                     </ScrollArea>
+                    {/* Quick-reply templates */}
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {[
+                        { label: "Great job!", text: "Great job this week! Keep up the amazing work 💪" },
+                        { label: "Check-in reminder", text: "Hey! Don't forget to submit your daily check-in when you get a chance 🙂" },
+                        { label: "How are you?", text: "Hi! How are you feeling today? Any updates you'd like to share?" },
+                        { label: "Workout tips", text: "Remember to warm up properly before your workout and stay hydrated throughout! 💧" },
+                        { label: "Rest day", text: "It's okay to take a rest day when your body needs it. Recovery is just as important as training! 🧘‍♀️" },
+                        { label: "You've got this!", text: "I believe in you! Every small step counts towards your goals. You've got this! ✨" },
+                      ].map((tpl) => (
+                        <button
+                          key={tpl.label}
+                          onClick={() => setMessageInput(tpl.text)}
+                          className="text-xs px-2.5 py-1 rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors border border-pink-100"
+                        >
+                          {tpl.label}
+                        </button>
+                      ))}
+                    </div>
                     <div className="flex gap-2">
                       <Input
                         placeholder="Type a message..."
@@ -1716,10 +2322,10 @@ export default function AdminCoaching() {
                                 )}
                               </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-3 text-xs">
+                            <div className="grid grid-cols-4 gap-3 text-xs">
                               <div>
                                 <span className="text-gray-500">Energy</span>
-                                <p className="font-medium">{checkin.energyLevel ? `${checkin.energyLevel}/5` : "-"}</p>
+                                <p className="font-medium">{checkin.energyLevel ? `${checkin.energyLevel}/10` : "-"}</p>
                               </div>
                               <div>
                                 <span className="text-gray-500">Sleep</span>
@@ -1729,9 +2335,33 @@ export default function AdminCoaching() {
                                 <span className="text-gray-500">Water</span>
                                 <p className="font-medium">{checkin.waterGlasses || 0} glasses</p>
                               </div>
+                              <div>
+                                <span className="text-gray-500">Weight</span>
+                                <p className="font-medium">{checkin.weight || "-"}</p>
+                              </div>
                             </div>
+                            {checkin.mealsLogged && (
+                              <div className="mt-2 text-xs">
+                                <span className="text-gray-500 font-medium">Meals:</span>
+                                <div className="grid grid-cols-2 gap-1 mt-1">
+                                  {['breakfast', 'lunch', 'snack', 'dinner'].map((meal) => {
+                                    const val = (checkin.mealsLogged as any)?.[meal];
+                                    if (!val) return null;
+                                    return (
+                                      <div key={meal} className="flex gap-1">
+                                        <span className="text-gray-400 capitalize">{meal}:</span>
+                                        <span className="text-gray-700 truncate">{val}</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                            {checkin.workoutNotes && (
+                              <p className="text-xs text-gray-600 mt-2 italic">Workout: {checkin.workoutNotes}</p>
+                            )}
                             {checkin.notes && (
-                              <p className="text-xs text-gray-600 mt-2">{checkin.notes}</p>
+                              <p className="text-xs text-gray-600 mt-1">{checkin.notes}</p>
                             )}
                           </div>
                         ))}

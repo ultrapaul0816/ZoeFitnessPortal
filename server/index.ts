@@ -1,12 +1,15 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { startWhatsAppReminderScheduler } from "./schedulers/whatsapp-reminder";
+import { startInactivityScheduler } from "./schedulers/email-inactivity";
 
 const app = express();
 app.set('trust proxy', true);
+app.use(compression()); // gzip compress all responses
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
@@ -109,5 +112,6 @@ app.use((req, res, next) => {
     
     // Start scheduled tasks
     startWhatsAppReminderScheduler();
+    startInactivityScheduler();
   });
 })();

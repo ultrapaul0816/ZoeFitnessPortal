@@ -137,6 +137,9 @@ import { neon } from "@neondatabase/serverless";
 import { eq, and, desc, sql, count, asc, gte, lte, or, isNull, lt, notInArray, inArray, type SQL } from "drizzle-orm";
 
 export interface IStorage {
+  // Health check
+  ping(): Promise<boolean>;
+
   // Users
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
@@ -414,6 +417,7 @@ export interface IStorage {
   // Daily Performance Check-ins (habits & wellness tracking)
   createDailyCheckin(checkin: InsertDailyCheckin): Promise<DailyCheckin>;
   updateDailyCheckin(id: string, userId: string, updates: Partial<InsertDailyCheckin>): Promise<DailyCheckin | undefined>;
+  getDailyCheckinsInRange(startDate: Date): Promise<DailyCheckin[]>;
   getDailyCheckin(userId: string, date: Date): Promise<DailyCheckin | undefined>;
   getTodayDailyCheckin(userId: string): Promise<DailyCheckin | undefined>;
   getWeeklyDailyCheckins(userId: string, weekStartDate: Date): Promise<DailyCheckin[]>;
@@ -620,7 +624,10 @@ export interface IStorage {
   
   // Coaching Check-ins
   getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]>;
+  getTodayCoachingCheckin(clientId: string): Promise<CoachingCheckin | undefined>;
+  getCoachingCheckinStreak(clientId: string): Promise<number>;
   createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin>;
+  updateCoachingCheckin(id: string, updates: Partial<InsertCoachingCheckin>): Promise<CoachingCheckin | undefined>;
 
   // Coaching Form Responses
   getCoachingFormResponses(clientId: string): Promise<CoachingFormResponse[]>;
@@ -2487,7 +2494,10 @@ export class MemStorage implements IStorage {
   async markMessagesAsRead(clientId: string, receiverId: string): Promise<void> {}
   async getUnreadMessageCount(clientId: string, receiverId: string): Promise<number> { return 0; }
   async getCoachingCheckins(clientId: string): Promise<CoachingCheckin[]> { return []; }
+  async getTodayCoachingCheckin(clientId: string): Promise<CoachingCheckin | undefined> { return undefined; }
+  async getCoachingCheckinStreak(clientId: string): Promise<number> { return 0; }
   async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> { throw new Error("Not implemented"); }
+  async updateCoachingCheckin(id: string, updates: Partial<InsertCoachingCheckin>): Promise<CoachingCheckin | undefined> { return undefined; }
   async getCoachingFormResponses(clientId: string): Promise<CoachingFormResponse[]> { return []; }
   async getCoachingFormResponse(clientId: string, formType: string): Promise<CoachingFormResponse | undefined> { return undefined; }
   async upsertCoachingFormResponse(data: InsertCoachingFormResponse): Promise<CoachingFormResponse> { throw new Error("Not implemented"); }
@@ -2575,6 +2585,11 @@ class DatabaseStorage implements IStorage {
   }
 
   // Admin functions
+  async ping(): Promise<boolean> {
+    await this.db.execute(sql`SELECT 1`);
+    return true;
+  }
+
   async getAllUsers(): Promise<User[]> {
     return await this.db.select().from(users);
   }
@@ -3714,7 +3729,11 @@ class DatabaseStorage implements IStorage {
     }
 
     if (audienceFilter.country) {
-      conditions.push(eq(users.country, audienceFilter.country));
+      if (Array.isArray(audienceFilter.country)) {
+        conditions.push(inArray(users.country, audienceFilter.country));
+      } else {
+        conditions.push(eq(users.country, audienceFilter.country));
+      }
     }
 
     if (audienceFilter.pendingSignup) {
@@ -4274,12 +4293,16 @@ class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async getDailyCheckinsInRange(startDate: Date): Promise<DailyCheckin[]> {
+    return this.db.select().from(dailyCheckins).where(gte(dailyCheckins.date, startDate));
+  }
+
   async getDailyCheckin(userId: string, date: Date): Promise<DailyCheckin | undefined> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-    
+
     const result = await this.db
       .select()
       .from(dailyCheckins)
@@ -5557,38 +5580,86 @@ class DatabaseStorage implements IStorage {
   // ============================================================================
 
   async getCoachingClients(): Promise<any[]> {
-    const clients = await this.db.select().from(coachingClients).orderBy(sql`${coachingClients.createdAt} DESC`);
-    const result = [];
-    for (const client of clients) {
-      const [user] = await this.db.select({
-        id: users.id,
-        firstName: users.firstName,
-        lastName: users.lastName,
-        email: users.email,
-        phone: users.phone,
-        profilePictureUrl: users.profilePictureUrl,
-      }).from(users).where(eq(users.id, client.userId));
-      
-      const unreadCount = await this.db.select({ count: sql<number>`count(*)::int` })
-        .from(directMessages)
-        .where(sql`${directMessages.clientId} = ${client.id} AND ${directMessages.senderId} = ${client.userId} AND ${directMessages.isRead} = false`);
-      
-      const lastCheckin = await this.db.select({ date: coachingCheckins.date })
-        .from(coachingCheckins)
-        .where(eq(coachingCheckins.clientId, client.id))
-        .orderBy(sql`${coachingCheckins.date} DESC`)
-        .limit(1);
-      
-      if (user) {
-        result.push({
-          ...client,
-          user,
-          unreadMessages: unreadCount[0]?.count || 0,
-          lastCheckinDate: lastCheckin[0]?.date || null,
-        });
-      }
-    }
-    return result;
+    // Single query with LEFT JOINs and subqueries — replaces the N+1 loop (was 4 queries per client)
+    const rows = await this.db.execute(sql`
+      SELECT
+        cc.*,
+        u.id AS u_id, u.first_name AS u_first_name, u.last_name AS u_last_name,
+        u.email AS u_email, u.phone AS u_phone, u.profile_picture_url AS u_profile_picture_url,
+        COALESCE(unread.cnt, 0)::int AS unread_messages,
+        last_ci.last_checkin_date,
+        last_msg.last_msg_content,
+        last_msg.last_msg_created_at,
+        CASE
+          WHEN last_ci.last_checkin_date IS NOT NULL
+            THEN GREATEST(0, EXTRACT(EPOCH FROM (now() - last_ci.last_checkin_date)) / 86400)::int
+          WHEN cc.status = 'active' THEN 999
+          ELSE 0
+        END AS missed_checkin_days
+      FROM coaching_clients cc
+      JOIN users u ON u.id = cc.user_id
+      LEFT JOIN LATERAL (
+        SELECT count(*)::int AS cnt
+        FROM direct_messages dm
+        WHERE dm.client_id = cc.id AND dm.sender_id = cc.user_id AND dm.is_read = false
+      ) unread ON true
+      LEFT JOIN LATERAL (
+        SELECT ck.date AS last_checkin_date
+        FROM coaching_checkins ck
+        WHERE ck.client_id = cc.id
+        ORDER BY ck.date DESC
+        LIMIT 1
+      ) last_ci ON true
+      LEFT JOIN LATERAL (
+        SELECT dm2.content AS last_msg_content, dm2.created_at AS last_msg_created_at
+        FROM direct_messages dm2
+        WHERE dm2.client_id = cc.id
+        ORDER BY dm2.created_at DESC
+        LIMIT 1
+      ) last_msg ON true
+      ORDER BY cc.created_at DESC
+    `);
+
+    return (rows.rows || rows).map((r: any) => ({
+      id: r.id,
+      userId: r.user_id,
+      coachingType: r.coaching_type,
+      status: r.status,
+      formData: r.form_data,
+      healthNotes: r.health_notes,
+      aiSummary: r.ai_summary,
+      purchaseDate: r.purchase_date,
+      formSubmissionDate: r.form_submission_date,
+      startDate: r.start_date,
+      endDate: r.end_date,
+      planDurationWeeks: r.plan_duration_weeks,
+      paymentAmount: r.payment_amount,
+      paymentStatus: r.payment_status,
+      paymentId: r.payment_id,
+      credentialsSentAt: r.credentials_sent_at,
+      thankYouSentAt: r.thank_you_sent_at,
+      isPregnant: r.is_pregnant,
+      trimester: r.trimester,
+      dueDate: r.due_date,
+      pregnancyNotes: r.pregnancy_notes,
+      notes: r.notes,
+      coachRemarks: r.coach_remarks,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+      user: {
+        id: r.u_id,
+        firstName: r.u_first_name,
+        lastName: r.u_last_name,
+        email: r.u_email,
+        phone: r.u_phone,
+        profilePictureUrl: r.u_profile_picture_url,
+      },
+      unreadMessages: r.unread_messages || 0,
+      lastCheckinDate: r.last_checkin_date || null,
+      lastMessagePreview: r.last_msg_content ? r.last_msg_content.substring(0, 60) : null,
+      lastMessageDate: r.last_msg_created_at || null,
+      missedCheckinDays: r.missed_checkin_days || 0,
+    }));
   }
 
   async getCoachingClient(id: string): Promise<CoachingClient | undefined> {
@@ -5714,9 +5785,59 @@ class DatabaseStorage implements IStorage {
       .orderBy(sql`${coachingCheckins.date} DESC`);
   }
 
+  async getTodayCoachingCheckin(clientId: string): Promise<CoachingCheckin | undefined> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const [checkin] = await this.db.select().from(coachingCheckins)
+      .where(sql`${coachingCheckins.clientId} = ${clientId} AND ${coachingCheckins.date} >= ${today} AND ${coachingCheckins.date} < ${tomorrow}`)
+      .limit(1);
+    return checkin;
+  }
+
+  async getCoachingCheckinStreak(clientId: string): Promise<number> {
+    const checkins = await this.db.select({ date: coachingCheckins.date })
+      .from(coachingCheckins)
+      .where(eq(coachingCheckins.clientId, clientId))
+      .orderBy(sql`${coachingCheckins.date} DESC`)
+      .limit(60);
+    if (checkins.length === 0) return 0;
+    let streak = 0;
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    // Check if today has a check-in
+    const firstDate = new Date(checkins[0].date);
+    firstDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((now.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24));
+    // Allow gap of 1 day (today might not be checked in yet)
+    if (diffDays > 1) return 0;
+    let expectedDate = new Date(firstDate);
+    for (const c of checkins) {
+      const cDate = new Date(c.date);
+      cDate.setHours(0, 0, 0, 0);
+      const diff = Math.floor((expectedDate.getTime() - cDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (diff === 0) {
+        streak++;
+        expectedDate.setDate(expectedDate.getDate() - 1);
+      } else if (diff === 1) {
+        // Skip duplicate same-day entries
+        continue;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
   async createCoachingCheckin(checkin: InsertCoachingCheckin): Promise<CoachingCheckin> {
     const [created] = await this.db.insert(coachingCheckins).values(checkin).returning();
     return created;
+  }
+
+  async updateCoachingCheckin(id: string, updates: Partial<InsertCoachingCheckin>): Promise<CoachingCheckin | undefined> {
+    const [updated] = await this.db.update(coachingCheckins).set(updates).where(eq(coachingCheckins.id, id)).returning();
+    return updated;
   }
 
   async getCoachingFormResponses(clientId: string): Promise<CoachingFormResponse[]> {

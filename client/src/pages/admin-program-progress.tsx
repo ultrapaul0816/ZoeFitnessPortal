@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   TrendingUp,
   Users,
@@ -16,11 +18,16 @@ import {
   CameraOff,
   RefreshCw,
   Loader2,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  Dumbbell,
+  Star,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { apiRequest } from "@/lib/queryClient";
-import jsPDF from "jspdf";
+// jsPDF is lazy-loaded in generatePDF to save 408KB from initial bundle
 
 interface UserProgress {
   userId: string;
@@ -107,7 +114,8 @@ function StatCard({ icon: Icon, label, value, color }: { icon: any; label: strin
   );
 }
 
-function generatePDF(data: ProgramProgress) {
+async function generatePDF(data: ProgramProgress) {
+  const { default: jsPDF } = await import("jspdf");
   const doc = new jsPDF({ orientation: "landscape" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const date = new Date(data.generatedAt).toLocaleDateString();
@@ -195,8 +203,150 @@ function generatePDF(data: ProgramProgress) {
   doc.save(`heal-your-core-progress-${new Date().toISOString().split("T")[0]}.pdf`);
 }
 
+function PhotoModal({ userId, userName, open, onClose }: { userId: string; userName: string; open: boolean; onClose: () => void }) {
+  const { data: photos = [], isLoading } = useQuery<Array<{ id: string; photoUrl: string; photoType: string; week: number | null; createdAt: string | null }>>({
+    queryKey: ["/api/admin/program-progress/photos", userId],
+    enabled: open && !!userId,
+  });
+
+  const startPhotos = photos.filter(p => p.photoType === "start");
+  const finishPhotos = photos.filter(p => p.photoType === "finish" || p.photoType === "end");
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Progress Photos - {userName}</DialogTitle>
+        </DialogHeader>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin text-pink-500" />
+          </div>
+        ) : photos.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <CameraOff className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p>No progress photos uploaded yet</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {startPhotos.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-sm text-gray-700 mb-2 flex items-center gap-1.5">
+                  <Camera className="w-4 h-4 text-blue-500" /> Start Photos
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {startPhotos.map(p => (
+                    <div key={p.id} className="relative rounded-xl overflow-hidden border border-gray-200 aspect-[3/4]">
+                      <img src={p.photoUrl} alt="Start" className="w-full h-full object-cover" />
+                      {p.createdAt && (
+                        <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                          {new Date(p.createdAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {finishPhotos.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-sm text-gray-700 mb-2 flex items-center gap-1.5">
+                  <Camera className="w-4 h-4 text-emerald-500" /> Finish Photos
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {finishPhotos.map(p => (
+                    <div key={p.id} className="relative rounded-xl overflow-hidden border border-gray-200 aspect-[3/4]">
+                      <img src={p.photoUrl} alt="Finish" className="w-full h-full object-cover" />
+                      {p.createdAt && (
+                        <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                          {new Date(p.createdAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ExpandedUserDetails({ userId }: { userId: string }) {
+  const { data, isLoading } = useQuery<{ completions: any[]; checkins: any[] }>({
+    queryKey: ["/api/admin/program-progress/details", userId],
+    enabled: !!userId,
+  });
+
+  if (isLoading) return <div className="p-4 text-center"><Loader2 className="w-4 h-4 animate-spin mx-auto" /></div>;
+  if (!data) return null;
+
+  const { completions = [], checkins = [] } = data;
+  const recentCheckins = checkins.slice(0, 5);
+  const recentCompletions = completions.slice(-10);
+
+  return (
+    <div className="bg-gray-50 p-4 border-t border-gray-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+            <Dumbbell className="w-3.5 h-3.5 text-pink-500" /> Recent Workouts
+          </h4>
+          {recentCompletions.length === 0 ? (
+            <p className="text-xs text-gray-400">No workouts completed</p>
+          ) : (
+            <div className="space-y-1.5">
+              {recentCompletions.map((c: any, i: number) => (
+                <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-2 border border-gray-100">
+                  <div>
+                    <span className="font-medium text-gray-700">Week {c.weekNumber} Day {c.dayNumber}</span>
+                    {c.rating && (
+                      <span className="ml-2 text-yellow-500">
+                        {Array.from({ length: c.rating }, (_, i) => "★").join("")}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-gray-400">
+                    {c.completedAt ? new Date(c.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+            <Star className="w-3.5 h-3.5 text-amber-500" /> Recent Check-ins
+          </h4>
+          {recentCheckins.length === 0 ? (
+            <p className="text-xs text-gray-400">No check-ins recorded</p>
+          ) : (
+            <div className="space-y-1.5">
+              {recentCheckins.map((c: any, i: number) => (
+                <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-2 border border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">{c.mood === "great" ? "🤩" : c.mood === "good" ? "😊" : c.mood === "okay" ? "😐" : c.mood === "tired" ? "😴" : c.mood === "struggling" ? "😣" : "📝"}</span>
+                    <span className="text-gray-600">Energy: {c.energyLevel || "-"}/5</span>
+                  </div>
+                  <span className="text-gray-400">
+                    {c.createdAt ? new Date(c.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminProgramProgress() {
   const { isAdmin, isLoading: authLoading } = useAdminAuth();
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
+  const [photoModalUser, setPhotoModalUser] = useState<{ id: string; name: string } | null>(null);
 
   const { data, isLoading, refetch, isFetching } = useQuery<ProgramProgress>({
     queryKey: ["/api/admin/program-progress"],
@@ -299,55 +449,86 @@ export default function AdminProgramProgress() {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.users.map((user) => (
-                          <tr key={user.userId} className="border-b border-gray-100 hover:bg-gray-50/50">
-                            <td className="py-3 px-2">
-                              <div>
-                                <p className="font-medium text-gray-900">{user.firstName} {user.lastName}</p>
-                                <p className="text-xs text-gray-500">{user.email}</p>
-                                <p className="text-xs text-gray-400">
-                                  Enrolled: {user.enrolledAt ? new Date(user.enrolledAt).toLocaleDateString() : "N/A"}
-                                </p>
-                              </div>
-                            </td>
-                            {[1, 2, 3, 4, 5, 6].map((w) => (
-                              <td key={w} className="text-center py-3 px-1">
-                                <WeekBadge count={user.weeks[w] || 0} />
+                        {data.users.map((user) => {
+                          const isExpanded = expandedUserId === user.userId;
+                          return (<>
+                            <tr key={user.userId} className="border-b border-gray-100 hover:bg-gray-50/50 group">
+                              <td className="py-3 px-2">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => setExpandedUserId(isExpanded ? null : user.userId)}
+                                    className="text-gray-400 hover:text-pink-500 transition-colors shrink-0"
+                                  >
+                                    {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                  </button>
+                                  <div>
+                                    <p className="font-medium text-gray-900">{user.firstName} {user.lastName}</p>
+                                    <p className="text-xs text-gray-500">{user.email}</p>
+                                    <p className="text-xs text-gray-400">
+                                      Enrolled: {user.enrolledAt ? new Date(user.enrolledAt).toLocaleDateString() : "N/A"}
+                                    </p>
+                                  </div>
+                                </div>
                               </td>
-                            ))}
-                            <td className="py-3 px-2">
-                              <div className="space-y-1">
-                                <ProgressBar value={user.totalCompletions} max={24} />
-                                <p className="text-xs text-gray-500 text-center">{user.totalCompletions}/24 workouts</p>
-                              </div>
-                            </td>
-                            <td className="text-center py-3 px-2">
-                              <div className="flex items-center justify-center gap-1">
-                                {user.hasStartPhoto ? (
-                                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-[10px] px-1.5">
-                                    <Camera className="w-3 h-3 mr-0.5" /> Start
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="secondary" className="bg-gray-100 text-gray-400 text-[10px] px-1.5">
-                                    <CameraOff className="w-3 h-3 mr-0.5" /> Start
-                                  </Badge>
-                                )}
-                                {user.hasFinishPhoto ? (
-                                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-[10px] px-1.5">
-                                    <Camera className="w-3 h-3 mr-0.5" /> Finish
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="secondary" className="bg-gray-100 text-gray-400 text-[10px] px-1.5">
-                                    <CameraOff className="w-3 h-3 mr-0.5" /> Finish
-                                  </Badge>
-                                )}
-                              </div>
-                            </td>
-                            <td className="py-3 px-2 text-xs text-gray-500">
-                              {user.lastActivity ? new Date(user.lastActivity).toLocaleDateString() : "No activity"}
-                            </td>
-                          </tr>
-                        ))}
+                              {[1, 2, 3, 4, 5, 6].map((w) => (
+                                <td key={w} className="text-center py-3 px-1">
+                                  <WeekBadge count={user.weeks[w] || 0} />
+                                </td>
+                              ))}
+                              <td className="py-3 px-2">
+                                <div className="space-y-1">
+                                  <ProgressBar value={user.totalCompletions} max={24} />
+                                  <p className="text-xs text-gray-500 text-center">{user.totalCompletions}/24 workouts</p>
+                                </div>
+                              </td>
+                              <td className="text-center py-3 px-2">
+                                <div className="flex items-center justify-center gap-1">
+                                  {(user.hasStartPhoto || user.hasFinishPhoto) ? (
+                                    <button
+                                      onClick={() => setPhotoModalUser({ id: user.userId, name: `${user.firstName} ${user.lastName}` })}
+                                      className="flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                    >
+                                      {user.hasStartPhoto ? (
+                                        <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 cursor-pointer">
+                                          <Camera className="w-3 h-3 mr-0.5" /> Start
+                                        </Badge>
+                                      ) : (
+                                        <Badge variant="secondary" className="bg-gray-100 text-gray-400 text-[10px] px-1.5">
+                                          <CameraOff className="w-3 h-3 mr-0.5" /> Start
+                                        </Badge>
+                                      )}
+                                      {user.hasFinishPhoto ? (
+                                        <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 cursor-pointer">
+                                          <Camera className="w-3 h-3 mr-0.5" /> Finish
+                                        </Badge>
+                                      ) : (
+                                        <Badge variant="secondary" className="bg-gray-100 text-gray-400 text-[10px] px-1.5">
+                                          <CameraOff className="w-3 h-3 mr-0.5" /> Finish
+                                        </Badge>
+                                      )}
+                                    </button>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <Badge variant="secondary" className="bg-gray-100 text-gray-400 text-[10px] px-1.5">
+                                        <CameraOff className="w-3 h-3 mr-0.5" /> None
+                                      </Badge>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-3 px-2 text-xs text-gray-500">
+                                {user.lastActivity ? new Date(user.lastActivity).toLocaleDateString() : "No activity"}
+                              </td>
+                            </tr>
+                            {isExpanded && (
+                              <tr key={`${user.userId}-details`}>
+                                <td colSpan={10} className="p-0">
+                                  <ExpandedUserDetails userId={user.userId} />
+                                </td>
+                              </tr>
+                            )}
+                          </>);
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -356,6 +537,14 @@ export default function AdminProgramProgress() {
             </Card>
           </>
         ) : null}
+        {photoModalUser && (
+          <PhotoModal
+            userId={photoModalUser.id}
+            userName={photoModalUser.name}
+            open={!!photoModalUser}
+            onClose={() => setPhotoModalUser(null)}
+          />
+        )}
       </div>
     </AdminLayout>
   );

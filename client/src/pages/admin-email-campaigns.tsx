@@ -103,10 +103,18 @@ export default function AdminEmailCampaigns() {
   });
 
   // Fetch campaigns - MUST be called before any conditional returns
+  // Auto-refetch every 5s when any campaign is in 'sending' or 'scheduled' status
   const { data: campaigns = [], isError: isCampaignsError, error: campaignsError } = useQuery<EmailCampaign[]>({
     queryKey: ["/api/admin/email-campaigns"],
     retry: false,
     enabled: !sessionLoading && user !== null,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (data && Array.isArray(data) && data.some(c => c.status === 'sending' || c.status === 'scheduled')) {
+        return 5000; // Poll every 5 seconds when campaigns are actively sending
+      }
+      return false;
+    },
   });
 
   const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
@@ -305,7 +313,7 @@ export default function AdminEmailCampaigns() {
       audienceFilter.hasWhatsAppSupport = audienceFilters.hasWhatsAppSupport === "true";
     }
     if (audienceFilters.countries.length > 0 && audienceFilters.countries.length < availableCountries.length) {
-      audienceFilter.country = audienceFilters.countries[0];
+      audienceFilter.country = audienceFilters.countries;
     }
     if (audienceFilters.pendingSignup) {
       audienceFilter.pendingSignup = true;
@@ -326,7 +334,7 @@ export default function AdminEmailCampaigns() {
       audienceFilter.hasWhatsAppSupport = audienceFilters.hasWhatsAppSupport === "true";
     }
     if (audienceFilters.countries.length > 0 && audienceFilters.countries.length < availableCountries.length) {
-      audienceFilter.country = audienceFilters.countries[0];
+      audienceFilter.country = audienceFilters.countries;
     }
     if (audienceFilters.pendingSignup) {
       audienceFilter.pendingSignup = true;
@@ -593,8 +601,16 @@ export default function AdminEmailCampaigns() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold">{campaign.name}</h3>
-                        <Badge className="bg-green-500 text-white text-xs">
-                          {campaign.status}
+                        <Badge className={`text-white text-xs ${
+                          campaign.status === 'sent' ? 'bg-green-500' :
+                          campaign.status === 'sending' ? 'bg-blue-500 animate-pulse' :
+                          campaign.status === 'scheduled' ? 'bg-amber-500' :
+                          campaign.status === 'failed' ? 'bg-red-500' :
+                          'bg-gray-500'
+                        }`}>
+                          {campaign.status === 'sending' ? 'Sending...' :
+                           campaign.status === 'scheduled' ? 'Scheduled' :
+                           campaign.status}
                         </Badge>
                       </div>
                       

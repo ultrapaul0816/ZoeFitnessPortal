@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Users, Search, Download, ChevronDown, FileText, FileSpreadsheet, Mail, Phone, Calendar, CheckCircle, XCircle, Send, Loader2, Paperclip, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState, useRef } from "react";
-import jsPDF from "jspdf";
+// jsPDF is lazy-loaded in exportToPDF to save 408KB from initial bundle
 import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 import RichTextEditor from "@/components/rich-text-editor";
@@ -82,7 +82,8 @@ export default function AdminMembers() {
            phone.includes(searchQuery.toLowerCase());
   });
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const doc = new jsPDF('landscape');
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
     

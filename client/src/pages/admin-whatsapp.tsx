@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, MessageSquare, Search, Download, ChevronDown, FileText, FileSpreadsheet, Calendar, Phone, Mail } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-import jsPDF from "jspdf";
+// jsPDF is lazy-loaded in exportToPDF to save 408KB from initial bundle
 import type { User } from "@shared/schema";
 
 export default function AdminWhatsApp() {
@@ -52,10 +52,11 @@ export default function AdminWhatsApp() {
     return { label: 'Active', color: 'green' };
   };
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const doc = new jsPDF('landscape');
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    
+
     doc.setFontSize(18);
     doc.setTextColor(59, 130, 246);
     doc.text('WhatsApp Community Support Members', 14, 20);

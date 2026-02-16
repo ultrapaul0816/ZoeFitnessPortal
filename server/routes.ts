@@ -13,7 +13,6 @@ import {
   insertCommunityPostSchema,
   insertPostCommentSchema,
   passwordSchema,
-  insertEmailCampaignSchema,
   insertUserCheckinSchema,
   insertDailyCheckinSchema,
 } from "@shared/schema";
@@ -26,6 +25,7 @@ import bcrypt from "bcrypt";
 import rateLimit from "express-rate-limit";
 import { emailService } from "./email/service";
 import { replaceTemplateVariables, generateUserVariables, generateSampleVariables } from "./email/template-variables";
+import { triggerAutomation } from "./email/automation-trigger";
 import OpenAI from "openai";
 import { getSpotifyClient, isSpotifyConnected, workoutPlaylists, getPlaylistDetails, getPlaybackState, controlPlayback } from "./spotify";
 
@@ -201,6 +201,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   });
   
+  // Health check endpoint — lightweight ping for uptime monitoring
+  app.get("/api/health", async (_req, res) => {
+    try {
+      await storage.ping();
+      res.json({ status: "ok", timestamp: new Date().toISOString() });
+    } catch (e) {
+      res.status(503).json({ status: "error", message: "Database unreachable" });
+    }
+  });
+
   // Serve attached assets (use different path to avoid conflict with built assets)
   app.get("/attached-assets/:filename(*)", (req, res) => {
     try {
@@ -347,7 +357,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let isCoachingClient = false;
       try {
         const coachingClient = await storage.getCoachingClientByUserId(updatedUser.id);
-        if (coachingClient && (coachingClient.status === 'active' || coachingClient.status === 'pending_plan')) {
+        if (coachingClient && (coachingClient.status !== 'cancelled' && coachingClient.status !== 'completed')) {
           isCoachingClient = true;
         }
       } catch (e) {
@@ -426,7 +436,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let isCoachingClient = false;
       try {
         const coachingClient = await storage.getCoachingClientByUserId(user.id);
-        if (coachingClient && (coachingClient.status === 'active' || coachingClient.status === 'pending_plan')) {
+        if (coachingClient && (coachingClient.status !== 'cancelled' && coachingClient.status !== 'completed')) {
           isCoachingClient = true;
         }
       } catch (e) {
@@ -823,7 +833,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let redirectUrl = '/dashboard';
       try {
         const coachingClient = await storage.getCoachingClientByUserId(user.id);
-        if (coachingClient && (coachingClient.status === 'active' || coachingClient.status === 'pending_plan')) {
+        if (coachingClient && (coachingClient.status !== 'cancelled' && coachingClient.status !== 'completed')) {
           redirectUrl = '/my-coaching';
         }
       } catch (e) {}
@@ -2907,49 +2917,49 @@ RESPONSE GUIDELINES:
   app.get("/api/admin/checkin-analytics", async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
-      
-      // Get all daily checkins from all users
-      const users = await storage.getAllUsers();
-      
-      // Aggregate mood data
-      const moodCounts: Record<string, number> = {};
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
       const moodEmojis: Record<string, string> = {
         great: '😊', good: '🙂', okay: '😐', tired: '😴', struggling: '😔'
       };
+
+      // Single aggregated query — replaces N+1 loop over all users
+      const allCheckins = await storage.getDailyCheckinsInRange(startDate);
+
+      // Aggregate mood distribution
+      const moodCounts: Record<string, number> = {};
+      const dailyData: Record<string, { totalEnergy: number; count: number }> = {};
       let totalEnergy = 0;
       let energyCount = 0;
-      const energyByDay: { date: string; avgEnergy: number; checkins: number }[] = [];
-      const dailyData: Record<string, { totalEnergy: number; count: number }> = {};
-      
-      // Gather all user stats
-      for (const user of users) {
-        const stats = await storage.getDailyCheckinStats(user.id, days);
-        
-        // Aggregate mood distribution
-        for (const moodItem of stats.moodDistribution) {
-          moodCounts[moodItem.mood] = (moodCounts[moodItem.mood] || 0) + moodItem.count;
+      const userEnergies = new Map<string, number[]>();
+
+      for (const c of allCheckins) {
+        if (c.mood) {
+          moodCounts[c.mood] = (moodCounts[c.mood] || 0) + 1;
         }
-        
-        // Aggregate energy
-        if (stats.avgEnergyLevel > 0) {
-          totalEnergy += stats.avgEnergyLevel;
-          energyCount++;
-        }
-        
-        // Get recent moods for daily trends
-        for (const m of stats.recentMoods) {
-          if (m.energyLevel) {
-            const dateKey = m.date.split('T')[0];
-            if (!dailyData[dateKey]) {
-              dailyData[dateKey] = { totalEnergy: 0, count: 0 };
-            }
-            dailyData[dateKey].totalEnergy += m.energyLevel;
-            dailyData[dateKey].count++;
-          }
+        if (c.energyLevel != null) {
+          const dateKey = (c.date instanceof Date ? c.date.toISOString() : String(c.date)).split('T')[0];
+          if (!dailyData[dateKey]) dailyData[dateKey] = { totalEnergy: 0, count: 0 };
+          dailyData[dateKey].totalEnergy += c.energyLevel;
+          dailyData[dateKey].count++;
+
+          if (!userEnergies.has(c.userId)) userEnergies.set(c.userId, []);
+          userEnergies.get(c.userId)!.push(c.energyLevel);
         }
       }
-      
-      // Convert daily data to array
+
+      // Per-user avg energy, then global avg
+      for (const levels of userEnergies.values()) {
+        const avg = levels.reduce((a, b) => a + b, 0) / levels.length;
+        totalEnergy += avg;
+        energyCount++;
+      }
+
+      const moodDistribution = Object.entries(moodCounts)
+        .map(([mood, count]) => ({ mood, count, emoji: moodEmojis[mood] || '🙂' }))
+        .sort((a, b) => b.count - a.count);
+
       const energyTrend = Object.entries(dailyData)
         .map(([date, data]) => ({
           date,
@@ -2957,20 +2967,12 @@ RESPONSE GUIDELINES:
           checkins: data.count,
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
-      
-      // Convert mood counts to array
-      const moodDistribution = Object.entries(moodCounts)
-        .map(([mood, count]) => ({
-          mood,
-          count,
-          emoji: moodEmojis[mood] || '🙂',
-        }))
-        .sort((a, b) => b.count - a.count);
-      
+
       const avgEnergyLevel = energyCount > 0 ? Math.round((totalEnergy / energyCount) * 10) / 10 : 0;
-      
+      const distinctUsers = new Set(allCheckins.map(c => c.userId));
+
       res.json({
-        totalUsers: users.length,
+        totalUsers: distinctUsers.size,
         moodDistribution,
         avgEnergyLevel,
         energyTrend,
@@ -3431,178 +3433,6 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Get all email campaigns
-  app.get("/api/admin/email-campaigns", requireAdmin, async (req, res) => {
-    try {
-      const campaigns = await storage.getEmailCampaigns();
-      res.json(campaigns);
-    } catch (error) {
-      console.error("Error fetching campaigns:", error);
-      res.status(500).json({ message: "Failed to fetch campaigns" });
-    }
-  });
-
-  // Create email campaign
-  app.post("/api/admin/email-campaigns", adminOperationLimiter, async (req, res) => {
-    try {
-      if (!req.isAuthenticated() || req.user?.role !== "admin") {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Validate request body with Zod schema (omit createdBy since server controls it)
-      const validationResult = insertEmailCampaignSchema.omit({ createdBy: true }).safeParse(req.body);
-      if (!validationResult.success) {
-        return res.status(400).json({ 
-          message: "Invalid campaign data", 
-          errors: validationResult.error.errors 
-        });
-      }
-
-      // Use server-side user ID for audit trail (server controls createdBy)
-      const campaignData = {
-        ...validationResult.data,
-        createdBy: req.user.id,
-      };
-
-      const campaign = await storage.createEmailCampaign(campaignData);
-
-      res.json(campaign);
-    } catch (error) {
-      console.error("Error creating campaign:", error);
-      res.status(500).json({ message: "Failed to create campaign" });
-    }
-  });
-
-  // Send email campaign
-  app.post("/api/admin/email-campaigns/:id/send", adminOperationLimiter, async (req, res) => {
-    try {
-      if (!req.isAuthenticated() || req.user?.role !== "admin") {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const { id } = req.params;
-      const campaign = await storage.getEmailCampaign(id);
-
-      if (!campaign) {
-        return res.status(404).json({ message: "Campaign not found" });
-      }
-
-      if (campaign.status !== "draft") {
-        return res.status(400).json({ message: "Campaign has already been sent or is not in draft status" });
-      }
-
-      // Update status to sending
-      await storage.updateEmailCampaign(id, { status: "sending" });
-
-      // Get targeted users based on audience filter
-      const targetedUsers = await storage.getTargetedUsers(campaign.audienceFilter);
-
-      if (targetedUsers.length === 0) {
-        await storage.updateEmailCampaign(id, { status: "failed", recipientCount: 0 });
-        return res.status(400).json({ message: "No users match the target audience" });
-      }
-
-      // Create recipient records
-      const recipients = targetedUsers.map(user => ({
-        campaignId: id,
-        userId: user.id,
-        email: user.email,
-        status: "pending" as const,
-      }));
-
-      const createdRecipients = await storage.createCampaignRecipients(recipients);
-
-      // Update campaign with recipient count
-      await storage.updateEmailCampaign(id, {
-        recipientCount: targetedUsers.length,
-      });
-
-      // Send emails asynchronously (fire and forget) with error handling
-      setImmediate(async () => {
-        try {
-          let sentCount = 0;
-          let failedCount = 0;
-
-          for (const recipient of createdRecipients) {
-            try {
-              const user = targetedUsers.find(u => u.id === recipient.userId);
-              if (!user) continue;
-
-              let result;
-              switch (campaign.templateType) {
-                case "welcome":
-                  result = await emailService.sendWelcomeEmail(user, "Heal Your Core");
-                  break;
-                case "re-engagement":
-                  result = await emailService.sendReEngagementEmail(user, {
-                    lastLoginDays: Math.floor((Date.now() - (user.lastLoginAt?.getTime() || Date.now())) / (1000 * 60 * 60 * 24)),
-                    programProgress: undefined,
-                  });
-                  break;
-                case "program-reminder":
-                  result = await emailService.sendProgramReminderEmail(user, {
-                    programName: "Heal Your Core",
-                    weekNumber: 1,
-                    workoutsCompleted: 0,
-                    totalWorkouts: 3,
-                  });
-                  break;
-                case "completion-celebration":
-                  result = await emailService.sendCompletionCelebrationEmail(user, {
-                    programName: "Your Postpartum Strength Recovery Program",
-                    completionDate: new Date(),
-                    weeksCompleted: 6,
-                  });
-                  break;
-                default:
-                  result = { success: false, error: "Unknown template type" };
-              }
-
-              if (result.success) {
-                sentCount++;
-                await storage.updateRecipientStatus(recipient.id!, "sent", new Date(), undefined, result.messageId);
-              } else {
-                failedCount++;
-                await storage.updateRecipientStatus(recipient.id!, "failed", undefined, result.error);
-              }
-            } catch (error) {
-              failedCount++;
-              console.error(`Error sending email to ${recipient.email}:`, error);
-              await storage.updateRecipientStatus(recipient.id!, "failed", undefined, error instanceof Error ? error.message : "Unknown error");
-            }
-          }
-
-          // Update campaign final status
-          await storage.updateEmailCampaign(id, {
-            status: failedCount === targetedUsers.length ? "failed" : "sent",
-            sentAt: new Date(),
-            sentCount,
-            failedCount,
-          });
-          
-          console.log(`Campaign ${id} completed: ${sentCount} sent, ${failedCount} failed`);
-        } catch (error) {
-          // Catch any unexpected errors in the email sending process
-          console.error(`Fatal error in campaign ${id} send process:`, error);
-          await storage.updateEmailCampaign(id, {
-            status: "failed",
-            sentAt: new Date(),
-            failedCount: targetedUsers.length,
-          }).catch(err => console.error("Failed to update campaign status after error:", err));
-        }
-      });
-
-      res.json({ 
-        success: true,
-        message: "Campaign is being sent",
-        recipientCount: targetedUsers.length
-      });
-    } catch (error) {
-      console.error("Error sending campaign:", error);
-      await storage.updateEmailCampaign(req.params.id, { status: "failed" });
-      res.status(500).json({ message: "Failed to send campaign" });
-    }
-  });
 
   // Email Template Management Routes
 
@@ -3696,78 +3526,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Preview campaign (get recipients and email preview without sending)
-  app.post("/api/admin/email-templates/:id/preview-campaign", requireAdmin, async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { audienceFilter } = req.body;
-
-      if (!audienceFilter) {
-        return res.status(400).json({ message: "Audience filter is required" });
-      }
-
-      const template = await storage.getEmailTemplate(id);
-
-      if (!template) {
-        return res.status(404).json({ message: "Template not found" });
-      }
-
-      const targetedUsers = await storage.getTargetedUsers(audienceFilter);
-
-      if (targetedUsers.length === 0) {
-        return res.status(400).json({ 
-          message: "No users match the target audience",
-          recipientCount: 0,
-          recipients: [],
-        });
-      }
-
-      // Generate preview with first user's data
-      const baseUrl = process.env.APP_URL || 'https://strongerwithzoe.com';
-      const firstUser = targetedUsers[0];
-      const userVariables = generateUserVariables(firstUser, {
-        programName: 'Your Postpartum Strength Recovery Program',
-        campaignId: 'preview',
-        recipientId: 'preview',
-        baseUrl,
-      });
-
-      const previewSubject = replaceTemplateVariables(template.subject, userVariables);
-      const previewHtml = replaceTemplateVariables(template.htmlContent, userVariables);
-
-      // Return recipient list and preview
-      const recipients = targetedUsers.map(user => ({
-        id: user.id,
-        email: user.email,
-        name: `${user.firstName} ${user.lastName}`,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      }));
-
-      res.json({
-        recipientCount: targetedUsers.length,
-        recipients,
-        preview: {
-          subject: previewSubject,
-          html: previewHtml,
-          sampleRecipient: {
-            name: `${firstUser.firstName} ${firstUser.lastName}`,
-            email: firstUser.email,
-          },
-        },
-        template: {
-          id: template.id,
-          name: template.name,
-          type: template.type,
-        },
-      });
-    } catch (error) {
-      console.error("Error previewing campaign:", error);
-      res.status(500).json({ message: "Failed to preview campaign" });
-    }
-  });
-
-  // Send campaign to targeted users
+  // Send campaign to targeted users (legacy - kept for template testing)
   app.post("/api/admin/email-templates/:id/send-campaign", requireAdmin, adminOperationLimiter, async (req: any, res: any) => {
     try {
       const { id } = req.params;
@@ -3944,44 +3703,6 @@ RESPONSE GUIDELINES:
     }
   });
 
-  // Tracking pixel endpoint
-  app.get("/api/email-track/:campaignId/:recipientId", async (req, res) => {
-    try {
-      const { campaignId, recipientId } = req.params;
-
-      await storage.recordEmailOpen({
-        campaignId,
-        recipientId,
-        openedAt: new Date(),
-      });
-
-      const pixel = Buffer.from(
-        'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-        'base64'
-      );
-
-      res.writeHead(200, {
-        'Content-Type': 'image/gif',
-        'Content-Length': pixel.length,
-        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      });
-      res.end(pixel);
-    } catch (error) {
-      console.error("Error recording email open:", error);
-      const pixel = Buffer.from(
-        'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-        'base64'
-      );
-      res.writeHead(200, {
-        'Content-Type': 'image/gif',
-        'Content-Length': pixel.length,
-      });
-      res.end(pixel);
-    }
-  });
-
   // Email Automation Rules Routes
   
   // Get all automation rules
@@ -4068,66 +3789,6 @@ RESPONSE GUIDELINES:
     } catch (error) {
       console.error("Error sending test automation email:", error);
       res.status(500).json({ message: "Failed to send test email" });
-    }
-  });
-
-  // Email Analytics Routes
-  app.get("/api/admin/analytics/email-campaigns", requireAdmin, async (req, res) => {
-    try {
-      const campaigns = await storage.getEmailCampaigns();
-      const templates = await storage.getEmailTemplates();
-
-      const totalCampaigns = campaigns.length;
-      const totalSent = campaigns.reduce((sum, c) => sum + (c.sentCount || 0), 0);
-      const totalOpens = campaigns.reduce((sum, c) => sum + (c.openCount || 0), 0);
-      const averageOpenRate = totalSent > 0 ? Math.round((totalOpens / totalSent) * 100) : 0;
-
-      const templateStats = templates.map(template => {
-        const templateCampaigns = campaigns.filter(c => c.templateType === template.type);
-        const sent = templateCampaigns.reduce((sum, c) => sum + (c.sentCount || 0), 0);
-        const opens = templateCampaigns.reduce((sum, c) => sum + (c.openCount || 0), 0);
-        const openRate = sent > 0 ? Math.round((opens / sent) * 100) : 0;
-
-        return {
-          templateId: template.id,
-          templateType: template.type,
-          templateName: template.name,
-          totalSent: sent,
-          totalOpens: opens,
-          openRate,
-          campaigns: templateCampaigns.length,
-        };
-      });
-
-      const recentCampaigns = campaigns
-        .slice(0, 10)
-        .map(campaign => ({
-          id: campaign.id,
-          name: campaign.name,
-          templateType: campaign.templateType,
-          status: campaign.status,
-          sentAt: campaign.sentAt,
-          recipientCount: campaign.recipientCount,
-          sentCount: campaign.sentCount || 0,
-          openCount: campaign.openCount || 0,
-          openRate: (campaign.sentCount || 0) > 0
-            ? Math.round(((campaign.openCount || 0) / (campaign.sentCount || 0)) * 100)
-            : 0,
-        }));
-
-      res.json({
-        overview: {
-          totalCampaigns,
-          totalSent,
-          totalOpens,
-          averageOpenRate,
-        },
-        templateStats,
-        recentCampaigns,
-      });
-    } catch (error) {
-      console.error("Error fetching email analytics:", error);
-      res.status(500).json({ message: "Failed to fetch email analytics" });
     }
   });
 
@@ -4251,6 +3912,9 @@ RESPONSE GUIDELINES:
         whatsAppSupportDuration: userData.whatsAppSupportDuration || null,
         whatsAppSupportExpiryDate: whatsAppSupportExpiryDate,
       });
+
+      // Trigger welcome automation email
+      triggerAutomation('user_signup', newUser.id, { programName: 'Stronger With Zoe' }).catch(console.error);
 
       // Return user data with password for email template
       res.json({
@@ -6781,6 +6445,14 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     'postnatal: heal your core (1 year access)': { courseId: 'heal-your-core-course', durationMonths: 12 },
   };
 
+  // Recognized Shopify product titles for private coaching (triggers coaching enrollment)
+  const SHOPIFY_COACHING_PRODUCTS: Record<string, { durationWeeks: number; planType: string }> = {
+    'private coaching - prenatal': { durationWeeks: 12, planType: 'prenatal' },
+    'private coaching - postnatal': { durationWeeks: 12, planType: 'postnatal' },
+    'private coaching': { durationWeeks: 12, planType: 'general' },
+    // Add actual Shopify product title here when created
+  };
+
   // Variant titles that include WhatsApp community access (exact matches)
   const WHATSAPP_VARIANTS = new Set([
     'heal your core + whatsapp community',
@@ -6845,8 +6517,9 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
       const lineItems = order.line_items || [];
 
-      // STEP 1: Scan all line items for recognized course products (EXACT match only)
+      // STEP 1: Scan all line items for recognized course and coaching products (EXACT match only)
       const matchedCourses: { item: any; mapping: { courseId: string; durationMonths: number }; includesWhatsApp: boolean }[] = [];
+      const matchedCoaching: { item: any; mapping: { durationWeeks: number; planType: string } }[] = [];
       const unmatchedProducts: string[] = [];
 
       for (const item of lineItems) {
@@ -6854,19 +6527,23 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         const variantTitle = (item.variant_title || '').toLowerCase().trim();
 
         const courseMapping = SHOPIFY_COURSE_PRODUCTS[productTitle];
+        const coachingMapping = SHOPIFY_COACHING_PRODUCTS[productTitle];
 
         if (courseMapping) {
           const includesWhatsApp = isWhatsAppVariant(variantTitle);
           matchedCourses.push({ item, mapping: courseMapping, includesWhatsApp });
           console.log(`[Shopify Webhook] Matched product "${item.title}" (variant: "${item.variant_title || 'default'}", raw variant: "${variantTitle}") -> course "${courseMapping.courseId}"${includesWhatsApp ? ' + WhatsApp Community' : ''}`);
+        } else if (coachingMapping) {
+          matchedCoaching.push({ item, mapping: coachingMapping });
+          console.log(`[Shopify Webhook] Matched coaching product "${item.title}" -> ${coachingMapping.planType} (${coachingMapping.durationWeeks} weeks)`);
         } else {
           unmatchedProducts.push(item.title || item.name || 'Unknown product');
           console.log(`[Shopify Webhook] Skipped non-course product: "${item.title || item.name}" (variant: "${item.variant_title || 'none'}", product title normalized: "${productTitle}")`);
         }
       }
 
-      // STEP 2: If no course products found, skip entirely (no account creation)
-      if (matchedCourses.length === 0) {
+      // STEP 2: If no recognized products found, skip entirely (no account creation)
+      if (matchedCourses.length === 0 && matchedCoaching.length === 0) {
         console.log(`[Shopify Webhook] Order ${order.id} contains no course products. Skipping account creation. Products: ${unmatchedProducts.join(', ')}`);
         if (orderLog) {
           await storage.updateShopifyOrder(orderLog.id, {
@@ -6933,6 +6610,9 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
         userId = newUser.id;
         console.log(`[Shopify Webhook] Created new user: ${email}`);
+
+        // Trigger welcome automation email for new Shopify user
+        triggerAutomation('user_signup', newUser.id, { programName: productTitle }).catch(console.error);
       }
 
       // STEP 4: Enroll user in matched courses and handle WhatsApp access
@@ -6980,6 +6660,24 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         console.log(`[Shopify Webhook] Enabled WhatsApp community access for ${email} (expires: ${whatsAppExpiry.toISOString()})`);
       }
 
+      // STEP 6: Create coaching client if coaching product was purchased
+      let coachingEnrolled = false;
+      for (const { mapping } of matchedCoaching) {
+        const existingClient = await storage.getCoachingClientByUserId(userId);
+        if (!existingClient) {
+          await storage.createCoachingClient({
+            userId,
+            status: 'enrolled',
+            planDurationWeeks: mapping.durationWeeks,
+            healthNotes: `Auto-enrolled via Shopify. Plan type: ${mapping.planType}`,
+          });
+          coachingEnrolled = true;
+          console.log(`[Shopify Webhook] Created coaching client for ${email} (${mapping.planType}, ${mapping.durationWeeks} weeks)`);
+        } else {
+          console.log(`[Shopify Webhook] ${email} already has coaching enrollment, skipping`);
+        }
+      }
+
       // Store payment record
       const totalAmount = Math.round(parseFloat(order.total_price || '0') * 100);
       const paymentId = randomUUID();
@@ -7017,6 +6715,12 @@ Keep it to 2-4 sentences, warm and encouraging.`;
                 <p>Hi ${firstName}! 👋</p>
                 
                 <p>Thank you for your purchase! Your account has been created and you're all set to begin your fitness journey.</p>
+                ${coachingEnrolled ? `
+                <div style="background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%); border-radius: 12px; padding: 16px; margin: 16px 0;">
+                  <h3 style="margin-top: 0; color: #7C3AED;">Private Coaching</h3>
+                  <p style="margin-bottom: 0;">Your private coaching enrollment is ready! Log in and visit <strong>My Coaching</strong> to complete your intake forms so Zoe can create your personalized plan.</p>
+                </div>
+                ` : ''}
                 
                 <div style="background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border-radius: 12px; padding: 20px; margin: 20px 0;">
                   <h3 style="margin-top: 0; color: #BE185D;">Your Login Details</h3>
@@ -7052,7 +6756,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       if (orderLog) {
         await storage.updateShopifyOrder(orderLog.id, {
           processingStatus: 'processed',
-          processingResult: JSON.stringify({ enrolledCourses, whatsAppEnabled: enableWhatsApp, isNewUser, skippedProducts: unmatchedProducts }),
+          processingResult: JSON.stringify({ enrolledCourses, whatsAppEnabled: enableWhatsApp, coachingEnrolled, isNewUser, skippedProducts: unmatchedProducts }),
           userId,
           courseEnrolled: enrolledCourses.join(', '),
           whatsappEnabled: enableWhatsApp,
@@ -7060,11 +6764,12 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         });
       }
 
-      res.status(200).json({ 
-        success: true, 
-        userId, 
+      res.status(200).json({
+        success: true,
+        userId,
         isNewUser,
         enrolledCourses,
+        coachingEnrolled,
         whatsAppEnabled: enableWhatsApp,
         skippedProducts: unmatchedProducts,
         message: isNewUser ? "User created and enrolled" : "Existing user - enrollment processed"
@@ -7462,11 +7167,13 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       if (!email) return res.status(400).json({ message: "Email is required" });
 
       let user = await storage.getUserByEmail(email.toLowerCase().trim());
+      let wasNewUser = false;
+      let autoPassword = "";
       if (!user) {
         if (!firstName || !lastName) {
           return res.status(400).json({ message: "First name and last name are required for new clients without an existing account." });
         }
-        const autoPassword = generateSimplePassword(firstName);
+        autoPassword = generateSimplePassword(firstName);
         const hashedAutoPassword = await bcrypt.hash(autoPassword, 10);
         user = await storage.createUser({
           email: email.toLowerCase().trim(),
@@ -7478,11 +7185,12 @@ Keep it to 2-4 sentences, warm and encouraging.`;
           termsAccepted: true,
           disclaimerAccepted: true,
         } as any);
+        wasNewUser = true;
         console.log(`[Coaching] Auto-created user account for ${email}: ${user.id}`);
       }
 
       const existing = await storage.getCoachingClientByUserId(user.id);
-      if (existing && (existing.status === "active" || existing.status === "pending" || existing.status === "pending_plan")) {
+      if (existing && existing.status !== "cancelled" && existing.status !== "completed") {
         return res.status(400).json({ message: "This user already has an active coaching enrollment." });
       }
 
@@ -7496,7 +7204,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const client = await storage.createCoachingClient({
         userId: user.id,
         coachingType: coachingType || "pregnancy_coaching",
-        status: "pending",
+        status: "enrolled",
         notes: notes || null,
         paymentAmount: paymentAmount || null,
         paymentStatus: "completed",
@@ -7505,7 +7213,8 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         planDurationWeeks: 4,
       } as any);
 
-      // Send thank you email
+      // Send welcome email with login credentials
+      const appUrl = process.env.APP_URL || "https://zoefitness.replit.app";
       try {
         const { emailService } = await import("./email/service");
         await emailService.sendEmail({
@@ -7518,16 +7227,26 @@ Keep it to 2-4 sentences, warm and encouraging.`;
               </div>
               <p>Hi ${user.firstName},</p>
               <p>Thank you for enrolling in Private Coaching with Zoe! Your payment has been received.</p>
-              <p>We're now putting together your personalized workout and nutrition plan. Please allow us a few days to formulate your custom plan.</p>
-              <p>You'll receive your login credentials on <strong>Saturday</strong>, and your program will officially start on <strong>Monday</strong>.</p>
+              <p><strong>Your next step:</strong> Please log in and complete your intake forms so we can create your personalized plan.</p>
+              ${wasNewUser ? `
+              <div style="background: #fdf2f8; padding: 20px; border-radius: 12px; margin: 20px 0;">
+                <p style="margin: 0 0 8px 0; font-weight: 600;">Your Login Details:</p>
+                <p style="margin: 0 0 4px 0;">Email: <strong>${user.email}</strong></p>
+                <p style="margin: 0 0 4px 0;">Password: <strong>${autoPassword}</strong></p>
+                <p style="margin: 8px 0 0 0; font-size: 13px; color: #666;">Please change your password after your first login.</p>
+              </div>
+              ` : ''}
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${appUrl}/my-coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">Start Your Intake Forms</a>
+              </div>
               <p>We're excited to work with you on your fitness journey!</p>
               <p style="color: #666; margin-top: 30px;">Warm regards,<br>Zoe & Team</p>
             </div>
           `,
         });
-        await storage.updateCoachingClient(client.id, { thankYouSentAt: new Date() } as any);
+        await storage.updateCoachingClient(client.id, { thankYouSentAt: new Date(), credentialsSentAt: wasNewUser ? new Date() : undefined } as any);
       } catch (emailError) {
-        console.error("Failed to send thank you email:", emailError);
+        console.error("Failed to send welcome email:", emailError);
       }
 
       res.json(client);
@@ -7542,8 +7261,15 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     try {
       const { clientId } = req.params;
       const updates = req.body;
+      const previousClient = await storage.getCoachingClient(clientId);
       const updated = await storage.updateCoachingClient(clientId, updates);
       if (!updated) return res.status(404).json({ message: "Client not found" });
+
+      // Trigger program_completion automation when status changes to completed
+      if (updates.status === "completed" && previousClient?.status !== "completed" && updated.userId) {
+        triggerAutomation('program_completion', updated.userId).catch(console.error);
+      }
+
       res.json(updated);
     } catch (error) {
       console.error("Error updating coaching client:", error);
@@ -7650,9 +7376,9 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const client = await storage.getCoachingClient(clientId);
       if (!client) return res.status(404).json({ message: "Client not found" });
 
-      const adminUser = (req as any).user;
+      const adminUserId = req.session?.userId || (req as any)._tokenUserId;
       const message = await storage.createDirectMessage({
-        senderId: adminUser.id,
+        senderId: adminUserId,
         receiverId: client.userId,
         clientId: clientId,
         content: content.trim(),
@@ -7722,6 +7448,14 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
+      const coachRemarks = (client as any).coachRemarks as Record<string, string> | null;
+      const coachRemarksStr = coachRemarks ? [
+        coachRemarks.trainingFocus && `TRAINING FOCUS: ${coachRemarks.trainingFocus}`,
+        coachRemarks.nutritionalGuidance && `NUTRITIONAL GUIDANCE: ${coachRemarks.nutritionalGuidance}`,
+        coachRemarks.thingsToWatch && `THINGS TO WATCH: ${coachRemarks.thingsToWatch}`,
+        coachRemarks.personalityNotes && `CLIENT PERSONALITY: ${coachRemarks.personalityNotes}`,
+        coachRemarks.customNotes && `ADDITIONAL COACH NOTES: ${coachRemarks.customNotes}`,
+      ].filter(Boolean).join("\n") : "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}${coachingType === "pregnancy_coaching" ? `, Postpartum weeks: ${user.postpartumWeeks || "unknown"}` : ""}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
       let calculatedTrimester: number | null = null;
       let weeksPregnant: number | null = null;
@@ -7755,6 +7489,8 @@ IMPORTANT: Return a JSON object with exactly this structure:
       "title": "Upper Body Strength",
       "description": "Focus on shoulders, back, and arms with progressive overload",
       "coachNotes": "Focus on form over speed. Rest as needed between rounds.",
+      "personalizationNote": "Today focuses on upper body strength with modifications for your lower back. Exercises chosen based on your goal of improving posture and building lean muscle.",
+      "personalizationTags": ["Back Pain Modified", "Posture Focus", "Progressive Overload"],
       "sections": [
         {
           "name": "Warmup",
@@ -7812,7 +7548,8 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "reps": "6-8",
               "durationSeconds": null,
               "restAfterSeconds": 60,
-              "notes": "Focus on controlled negative"
+              "notes": "Focus on controlled negative",
+              "reason": "Builds upper body pulling strength to improve your posture goal"
             }
           ]
         },
@@ -7887,6 +7624,7 @@ RULES:
 - "days" must be an array of exactly 7 objects (dayNumber 1=Monday through 7=Sunday)
 - "dayType" must be one of: "upper_body_strength", "lower_body_core", "full_body_strength", "cardio", "conditioning", "active_recovery", "rest", "sport_active_play"
 - Decide the mix based on the client's fitness level and goals. A typical week: 3-4 strength days, 1 cardio day, 1-2 rest/active recovery days, 1 sport/play day.
+- PERSONALIZATION: Each day MUST include a "personalizationNote" field (1-2 sentences explaining WHY these exercises were chosen for this specific client based on their profile, goals, health conditions, and coach's direction) and a "personalizationTags" field (array of 2-4 short tags like "Back Pain Modified", "Pelvic Floor Focus", "T2 Safe", "Fat Loss", "Posture Correction").
 
 SECTION RULES FOR STRENGTH DAYS (upper_body_strength, lower_body_core, full_body_strength):
 - Must include ALL 7 section types: warmup, activation, main, circuit, finisher, stretch, cooldown
@@ -7916,7 +7654,8 @@ EXERCISE SELECTION:
 - When an exercise matches one in the EXERCISE LIBRARY above, use the exact exerciseId and videoUrl from the library
 - ONLY use exercises from the EXERCISE LIBRARY above. Every exercise MUST have a valid exerciseId and videoUrl from the library. Do NOT invent exercises outside the library.
 - For warmup/cooldown flows, exerciseId and videoUrl can be null
-- Each exercise object must have: name, exerciseId, videoUrl, sets, reps, durationSeconds, restAfterSeconds, notes
+- Each exercise object must have: name, exerciseId, videoUrl, sets, reps, durationSeconds, restAfterSeconds, notes, reason
+- REASON FIELD: Every exercise MUST include a "reason" field (1 short sentence explaining WHY this exercise was chosen for THIS client). Examples: "Strengthens pelvic floor which you flagged as a priority", "Modified from barbell to dumbbell for your home setup", "Targets glute activation to support lower back recovery". Make it personal using "you/your".
 - DURATION RULE: "durationSeconds" must be a number (seconds) or null. Example: 30 means 30 seconds, 300 means 5 minutes. Do NOT use text strings like "30 seconds".
 - REST RULE: "restAfterSeconds" and section "restBetweenRoundsSeconds" must be a number (seconds) or null. Example: 60 means 60 seconds rest.
 - SECTION DURATION: Section-level "durationSeconds" must also be a number (seconds) or null. Example: 300 for a 5-minute section.
@@ -7940,7 +7679,7 @@ PREGNANCY SAFETY (if client is pregnant):
           },
           {
             role: "user",
-            content: `Create Week ${weekNumber} workout plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}\n${previousWeekSummary}${pregnancyInfo ? `\n\n⚠️ ${pregnancyInfo}` : ""}`
+            content: `Create Week ${weekNumber} workout plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}${coachRemarksStr ? `\n\nCOACH'S DIRECTION & REMARKS:\n${coachRemarksStr}` : ""}\nForm data: ${formDataStr}\n${previousWeekSummary}${pregnancyInfo ? `\n\n⚠️ ${pregnancyInfo}` : ""}`
           }
         ],
         response_format: { type: "json_object" },
@@ -7978,6 +7717,8 @@ PREGNANCY SAFETY (if client is pregnant):
           equipmentNeeded: Array.isArray(day.equipmentNeeded) ? day.equipmentNeeded : [],
           estimatedDuration: day.estimatedDuration || "45 minutes",
           difficultyLevel: day.difficultyLevel || "intermediate",
+          personalizationNote: day.personalizationNote || null,
+          personalizationTags: Array.isArray(day.personalizationTags) ? day.personalizationTags : [],
         };
 
         await storage.createCoachingWorkoutPlan({
@@ -8001,8 +7742,8 @@ PREGNANCY SAFETY (if client is pregnant):
         return res.status(500).json({ message: "AI generated an invalid workout plan. Please try again." });
       }
 
-      if (client.status === "pending") {
-        await storage.updateCoachingClient(client.id, { status: "pending_plan" });
+      if (client.status === "plan_generating" || client.status === "intake_complete") {
+        await storage.updateCoachingClient(client.id, { status: "plan_ready" });
       }
 
       res.json({ message: `Week ${weekNumber} workout plan generated`, savedDays: savedCount });
@@ -8049,6 +7790,13 @@ PREGNANCY SAFETY (if client is pregnant):
 
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
+      const nutritionCoachRemarks = (client as any).coachRemarks as Record<string, string> | null;
+      const nutritionCoachRemarksStr = nutritionCoachRemarks ? [
+        nutritionCoachRemarks.trainingFocus && `TRAINING FOCUS: ${nutritionCoachRemarks.trainingFocus}`,
+        nutritionCoachRemarks.nutritionalGuidance && `NUTRITIONAL GUIDANCE: ${nutritionCoachRemarks.nutritionalGuidance}`,
+        nutritionCoachRemarks.thingsToWatch && `THINGS TO WATCH: ${nutritionCoachRemarks.thingsToWatch}`,
+        nutritionCoachRemarks.customNotes && `ADDITIONAL COACH NOTES: ${nutritionCoachRemarks.customNotes}`,
+      ].filter(Boolean).join("\n") : "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}${coachingType === "pregnancy_coaching" ? `, Postpartum weeks: ${user.postpartumWeeks || "unknown"}` : ""}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
       let calcTrimesterNutrition: number | null = null;
       let weeksPregnantNutrition: number | null = null;
@@ -8135,7 +7883,7 @@ PREGNANCY NUTRITION (if client is pregnant):
           },
           {
             role: "user",
-            content: `Create a nutrition plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}\nForm data: ${formDataStr}${pregnancyInfoNutrition ? `\n\n⚠️ ${pregnancyInfoNutrition}` : ""}`
+            content: `Create a nutrition plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}${nutritionCoachRemarksStr ? `\n\nCOACH'S DIRECTION & REMARKS:\n${nutritionCoachRemarksStr}` : ""}\nForm data: ${formDataStr}${pregnancyInfoNutrition ? `\n\n⚠️ ${pregnancyInfoNutrition}` : ""}`
           }
         ],
         response_format: { type: "json_object" },
@@ -8207,8 +7955,8 @@ PREGNANCY NUTRITION (if client is pregnant):
         return res.status(500).json({ message: "AI generated an invalid nutrition plan. Please try again." });
       }
 
-      if (client.status === "pending") {
-        await storage.updateCoachingClient(client.id, { status: "pending_plan" });
+      if (client.status === "plan_generating" || client.status === "intake_complete") {
+        await storage.updateCoachingClient(client.id, { status: "plan_ready" });
       }
 
       res.json({ message: "Nutrition plan generated", savedMeals: savedCount });
@@ -8375,6 +8123,246 @@ Rules:
   // Token middleware moved to global level (before all API routes)
 
   // Get coaching data for logged-in user
+  // Client-facing: Get own form responses
+  app.get("/api/coaching/form-responses", async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const client = await storage.getCoachingClientByUserId(userId);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const formResponses = await storage.getCoachingFormResponses(client.id);
+      res.json(formResponses);
+    } catch (error) {
+      console.error("Error fetching form responses:", error);
+      res.status(500).json({ message: "Failed to fetch form responses" });
+    }
+  });
+
+  // Client-facing: Submit intake form responses
+  app.post("/api/coaching/form-responses", async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const client = await storage.getCoachingClientByUserId(userId);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const { formType, responses } = req.body;
+      if (!formType || !responses) {
+        return res.status(400).json({ message: "formType and responses are required" });
+      }
+
+      const validFormTypes = ["lifestyle_questionnaire", "health_evaluation"];
+      if (!validFormTypes.includes(formType)) {
+        return res.status(400).json({ message: "Invalid form type" });
+      }
+
+      // Upsert the form response
+      const formResponse = await storage.upsertCoachingFormResponse({
+        clientId: client.id,
+        formType,
+        responses,
+      });
+
+      // Check if both forms are now submitted
+      const allResponses = await storage.getCoachingFormResponses(client.id);
+      const hasLifestyle = allResponses.some((r: any) => r.formType === "lifestyle_questionnaire");
+      const hasHealth = allResponses.some((r: any) => r.formType === "health_evaluation");
+
+      if (hasLifestyle && hasHealth && client.status === "enrolled") {
+        // Both forms complete → update status
+        await storage.updateCoachingClient(client.id, {
+          status: "intake_complete",
+          formSubmissionDate: new Date(),
+        } as any);
+
+        // Extract pregnancy data from lifestyle form and update client
+        const lifestyleData = allResponses.find((r: any) => r.formType === "lifestyle_questionnaire");
+        if (lifestyleData?.responses) {
+          const lf = lifestyleData.responses as any;
+          const updates: any = {};
+          if (lf.dueDate) updates.dueDate = new Date(lf.dueDate);
+          if (lf.trimester) {
+            const trimesterMap: Record<string, number> = {
+              "First trimester (0–12 weeks)": 1,
+              "Second trimester (13–26 weeks)": 2,
+              "Third trimester (27–40 weeks)": 3,
+            };
+            updates.trimester = trimesterMap[lf.trimester] || null;
+            updates.isPregnant = true;
+          }
+          if (Object.keys(updates).length > 0) {
+            await storage.updateCoachingClient(client.id, updates);
+          }
+        }
+
+        // Send admin notification
+        try {
+          const user = await storage.getUser(userId);
+          const { emailService } = await import("./email/service");
+          const admins = (await storage.getAllUsers()).filter((u: any) => u.isAdmin);
+          for (const admin of admins) {
+            await emailService.sendEmail({
+              to: admin.email,
+              subject: `New Coaching Intake: ${user?.firstName} ${user?.lastName}`,
+              html: `
+                <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+                  <h2 style="color: #ec4899;">New Coaching Client Intake Complete</h2>
+                  <p><strong>${user?.firstName} ${user?.lastName}</strong> (${user?.email}) has completed both intake forms.</p>
+                  <p>Please review their responses and generate their Week 1 plan.</p>
+                  <div style="text-align: center; margin: 30px 0;">
+                    <a href="${process.env.APP_URL || 'https://zoefitness.replit.app'}/admin/coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">Review Client</a>
+                  </div>
+                </div>
+              `,
+            });
+          }
+        } catch (emailErr) {
+          console.error("Failed to send admin notification:", emailErr);
+        }
+
+        // Trigger AI summary generation in background
+        try {
+          const user = await storage.getUser(userId);
+          const allFormData = allResponses.reduce((acc: any, r: any) => {
+            acc[r.formType] = r.responses;
+            return acc;
+          }, {});
+
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const summaryResponse = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: `You are a prenatal/postnatal fitness expert assistant. Analyze the client's intake form responses and provide a concise clinical summary for the coach (Zoe). Include:
+1. KEY HEALTH FLAGS: Any medical conditions, restrictions, or concerns that need attention
+2. PREGNANCY STATUS: Trimester, due date, pregnancy history
+3. FITNESS ASSESSMENT: Current activity level, movement comfort, exercise history
+4. PRIORITY AREAS: Specific needs (pelvic floor, back pain, core rehab, etc.)
+5. RECOMMENDED APPROACH: Brief recommendation for exercise intensity, modifications needed
+6. SUPPLEMENT SUGGESTIONS: Based on their medications/supplements and pregnancy stage
+Keep it professional, concise, and actionable for the coach.`,
+              },
+              {
+                role: "user",
+                content: `Client: ${user?.firstName} ${user?.lastName}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
+              },
+            ],
+            max_tokens: 1500,
+          });
+
+          const aiSummary = summaryResponse.choices[0]?.message?.content || "";
+          await storage.updateCoachingClient(client.id, { aiSummary } as any);
+          console.log(`[Coaching] AI summary generated for client ${client.id}`);
+        } catch (aiErr) {
+          console.error("Failed to generate AI summary:", aiErr);
+          // Non-fatal — Zoe can still review forms manually
+        }
+      }
+
+      res.json({ formResponse, status: hasLifestyle && hasHealth ? "intake_complete" : client.status });
+    } catch (error) {
+      console.error("Error submitting form response:", error);
+      res.status(500).json({ message: "Failed to submit form response" });
+    }
+  });
+
+  // Admin: Approve intake and generate Week 1 plan
+  app.post("/api/admin/coaching/clients/:clientId/approve-intake", requireAdmin, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const { coachNotes } = req.body;
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      if (client.status !== "intake_complete") {
+        return res.status(400).json({ message: "Client must have completed intake forms first" });
+      }
+
+      // Save coach notes if provided
+      if (coachNotes) {
+        await storage.updateCoachingClient(clientId, { notes: coachNotes } as any);
+      }
+
+      // Update status to plan_generating
+      await storage.updateCoachingClient(clientId, { status: "plan_generating" } as any);
+
+      res.json({ message: "Intake approved. Generate Week 1 plan to continue.", status: "plan_generating" });
+    } catch (error) {
+      console.error("Error approving intake:", error);
+      res.status(500).json({ message: "Failed to approve intake" });
+    }
+  });
+
+  // Admin: Activate client (after plan is generated and reviewed)
+  app.post("/api/admin/coaching/clients/:clientId/activate", requireAdmin, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      if (client.status !== "plan_ready") {
+        return res.status(400).json({ message: "Plan must be generated and reviewed before activation" });
+      }
+
+      // Activate client, set start date to next Monday if not already set
+      const startDate = client.startDate || (() => {
+        const d = new Date();
+        d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7));
+        d.setHours(0, 0, 0, 0);
+        return d;
+      })();
+
+      const endDate = client.endDate || (() => {
+        const d = new Date(startDate);
+        d.setDate(d.getDate() + (client.planDurationWeeks || 4) * 7);
+        return d;
+      })();
+
+      await storage.updateCoachingClient(clientId, {
+        status: "active",
+        startDate,
+        endDate,
+      } as any);
+
+      // Send activation email to client
+      try {
+        const user = await storage.getUser(client.userId);
+        if (user) {
+          const { emailService } = await import("./email/service");
+          await emailService.sendEmail({
+            to: user.email,
+            subject: "Your Coaching Plan is Ready!",
+            html: `
+              <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                  <h1 style="color: #ec4899; margin: 0;">Your Plan is Ready! 🎉</h1>
+                </div>
+                <p>Hi ${user.firstName},</p>
+                <p>Great news — your personalized workout and nutrition plan is ready! Log in to view your Week 1 plan and get started.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${process.env.APP_URL || 'https://zoefitness.replit.app'}/my-coaching" style="background: #ec4899; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">View Your Plan</a>
+                </div>
+                <p style="color: #666; margin-top: 30px;">Warm regards,<br>Zoe & Team</p>
+              </div>
+            `,
+          });
+        }
+      } catch (emailErr) {
+        console.error("Failed to send activation email:", emailErr);
+      }
+
+      res.json({ message: "Client activated successfully", status: "active" });
+    } catch (error) {
+      console.error("Error activating client:", error);
+      res.status(500).json({ message: "Failed to activate client" });
+    }
+  });
+
   app.get("/api/coaching/my-plan", async (req, res) => {
     try {
       const userId = req.session?.userId || (req as any)._tokenUserId;
@@ -8472,7 +8460,7 @@ Rules:
     }
   });
 
-  // Submit coaching check-in from client
+  // Submit or update coaching check-in from client
   app.post("/api/coaching/checkins", async (req, res) => {
     try {
       const userId = req.session?.userId || (req as any)._tokenUserId;
@@ -8482,6 +8470,13 @@ Rules:
 
       const client = await storage.getCoachingClientByUserId(user.id);
       if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      // Check if today's check-in already exists — update instead of creating duplicate
+      const existing = await storage.getTodayCoachingCheckin(client.id);
+      if (existing) {
+        const updated = await storage.updateCoachingCheckin(existing.id, req.body);
+        return res.json(updated);
+      }
 
       const checkin = await storage.createCoachingCheckin({
         clientId: client.id,
@@ -8493,6 +8488,25 @@ Rules:
       res.json(checkin);
     } catch (error) {
       res.status(500).json({ message: "Failed to submit check-in" });
+    }
+  });
+
+  // Get today's coaching check-in
+  app.get("/api/coaching/checkins/today", async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(401).json({ message: "Not authenticated" });
+
+      const client = await storage.getCoachingClientByUserId(user.id);
+      if (!client) return res.status(404).json({ message: "No coaching enrollment found" });
+
+      const checkin = await storage.getTodayCoachingCheckin(client.id);
+      const streak = await storage.getCoachingCheckinStreak(client.id);
+      res.json({ checkin: checkin || null, streak });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch today's check-in" });
     }
   });
 
@@ -8708,6 +8722,27 @@ Rules:
     } catch (error) {
       console.error("Error fetching program progress:", error);
       res.status(500).json({ message: "Failed to fetch program progress" });
+    }
+  });
+
+  // Get progress photos for a specific user (admin)
+  app.get("/api/admin/program-progress/photos/:userId", requireAdmin, async (req, res) => {
+    try {
+      const photos = await storage.getUserProgressPhotosAdmin(req.params.userId);
+      res.json(photos);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch progress photos" });
+    }
+  });
+
+  // Get workout details for a specific user (admin - for expandable rows)
+  app.get("/api/admin/program-progress/details/:userId", requireAdmin, async (req, res) => {
+    try {
+      const completions = await storage.getWorkoutCompletions(req.params.userId);
+      const checkins = await storage.getUserCheckins(req.params.userId);
+      res.json({ completions, checkins });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user details" });
     }
   });
 

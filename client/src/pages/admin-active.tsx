@@ -16,7 +16,7 @@ import { ArrowLeft, Search, Download, ChevronDown, FileText, FileSpreadsheet, Ca
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState, useMemo } from "react";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays } from "date-fns";
-import jsPDF from "jspdf";
+// jsPDF is lazy-loaded in exportToPDF to save 408KB from initial bundle
 import type { DateRange } from "react-day-picker";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -227,7 +227,8 @@ export default function AdminActive() {
     return types.join(' | ') || 'Member';
   };
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const doc = new jsPDF('landscape');
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 

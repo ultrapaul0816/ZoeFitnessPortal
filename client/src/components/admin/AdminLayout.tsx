@@ -65,9 +65,7 @@ const navItems: NavItem[] = [
   { id: "orders", label: "Shopify Orders", icon: ShoppingBag, section: "Insights", path: "/admin/orders" },
   { id: "communications", label: "Communications", icon: Send, section: "Insights", path: "/admin/communications" },
   { id: "program-progress", label: "Program Progress", icon: TrendingUp, section: "Insights", path: "/admin/program-progress" },
-  { id: "email-campaigns", label: "Email Campaigns", icon: Mail, section: "Marketing", path: "/admin-email-campaigns" },
-  { id: "email-analytics", label: "Email Analytics", icon: BarChart3, section: "Marketing", path: "/admin-email-analytics" },
-  { id: "automation", label: "Automation", icon: Zap, section: "Marketing", path: "/admin/automation" },
+  { id: "automation", label: "Email Automation", icon: Zap, section: "Marketing", path: "/admin/automation" },
   { id: "private-coaching", label: "Private Coaching", icon: HeartHandshake, section: "Coaching", path: "/admin/coaching", badge: "New" },
 ];
 

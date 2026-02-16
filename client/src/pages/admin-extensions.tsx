@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, RefreshCw, X, ArrowRight, Sparkles, Download, FileSpreadsheet, FileText } from "lucide-react";
-import jsPDF from "jspdf";
+// jsPDF is lazy-loaded in exportToPDF to save 408KB from initial bundle
 
 export default function AdminExtensions() {
   const [, navigate] = useLocation();
@@ -41,10 +41,11 @@ export default function AdminExtensions() {
     },
   });
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const doc = new jsPDF('landscape');
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    
+
     doc.setFontSize(18);
     doc.setTextColor(16, 185, 129);
     doc.text('Recent Extensions', 14, 20);

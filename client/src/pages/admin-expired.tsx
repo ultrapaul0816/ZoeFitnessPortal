@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, Mail, Check, X, MessageSquare, Dumbbell, RefreshCw, UserMinus, UserCheck, Copy, ExternalLink, Download, FileSpreadsheet, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
-import jsPDF from "jspdf";
+// jsPDF is lazy-loaded in exportToPDF to save 408KB from initial bundle
 
 export default function AdminExpired() {
   const [, navigate] = useLocation();
@@ -149,10 +149,11 @@ Coach Zoe`;
     };
   };
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const doc = new jsPDF('landscape');
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    
+
     doc.setFontSize(18);
     doc.setTextColor(220, 38, 38);
     doc.text('Expired Members', 14, 20);
