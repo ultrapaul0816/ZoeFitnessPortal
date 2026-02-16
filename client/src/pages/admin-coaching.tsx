@@ -340,11 +340,13 @@ export default function AdminCoaching() {
       const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-plan-outline`, {
         body: JSON.stringify({ weekNumber }),
       });
-      return res.json();
+      return { ...(await res.json()), weekNumber };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Plan outline generated", description: "Review the weekly approach before generating the full workout." });
+      // Open the dialog after successful generation
+      setOutlinePreviewWeek(data.weekNumber);
     },
     onError: (err: Error) => {
       toast({ title: "Error generating outline", description: err.message, variant: "destructive" });
@@ -1114,7 +1116,6 @@ export default function AdminCoaching() {
                               onClick={() => {
                                 if (selectedClient) {
                                   generatePlanOutlineMutation.mutate({ clientId: selectedClient.id, weekNumber: nextUngenWeek });
-                                  setOutlinePreviewWeek(nextUngenWeek);
                                 }
                               }}
                               disabled={generatePlanOutlineMutation.isPending || generateWorkoutMutation.isPending}
@@ -1464,7 +1465,6 @@ export default function AdminCoaching() {
                                   } else {
                                     // First time: generate outline first
                                     generatePlanOutlineMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
-                                    setOutlinePreviewWeek(week);
                                   }
                                 }}
                                 disabled={generateWorkoutMutation.isPending || generatePlanOutlineMutation.isPending || !previousWeekExists}
