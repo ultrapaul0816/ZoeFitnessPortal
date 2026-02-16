@@ -7495,7 +7495,10 @@ Keep it professional, concise, and actionable for the coach.`,
 
       // Call OpenAI GPT-4o with structured JSON output
       const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+      });
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
@@ -7528,11 +7531,12 @@ Be specific to THIS client's data. Reference their actual medical history, goals
       console.error(`[Coaching] Detailed error: ${detailedError}`);
 
       // Check for specific error types
-      if (!process.env.OPENAI_API_KEY) {
-        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY to your environment variables." });
+      const hasApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+      if (!hasApiKey) {
+        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY or configure Replit AI Integrations." });
       }
-      if (errorMessage.includes("API key") || errorMessage.includes("authentication")) {
-        return res.status(500).json({ message: "Invalid OpenAI API key" });
+      if (errorMessage.includes("API key") || errorMessage.includes("authentication") || errorMessage.includes("401")) {
+        return res.status(500).json({ message: "Invalid OpenAI API key. Please check your configuration." });
       }
 
       res.status(500).json({ message: `Failed to generate coach remarks: ${detailedError}` });
@@ -7543,8 +7547,9 @@ Be specific to THIS client's data. Reference their actual medical history, goals
   app.post("/api/admin/coaching/clients/:clientId/generate-plan-outline", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       // Validate OpenAI API key is configured
-      if (!process.env.OPENAI_API_KEY) {
-        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables." });
+      const hasApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+      if (!hasApiKey) {
+        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY or configure Replit AI Integrations." });
       }
 
       const clientId = req.params.clientId;
@@ -7577,7 +7582,10 @@ Be specific to THIS client's data. Reference their actual medical history, goals
 
       // Call OpenAI for plan outline
       const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+      });
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
@@ -7769,8 +7777,9 @@ ${JSON.stringify(allFormData, null, 2)}`,
   app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       // Validate OpenAI API key is configured
-      if (!process.env.OPENAI_API_KEY) {
-        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables." });
+      const hasApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+      if (!hasApiKey) {
+        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY or configure Replit AI Integrations." });
       }
 
       const client = await storage.getCoachingClient(req.params.clientId);
