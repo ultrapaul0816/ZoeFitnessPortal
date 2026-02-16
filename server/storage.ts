@@ -982,6 +982,10 @@ export class MemStorage implements IStorage {
     });
   }
 
+  async ping(): Promise<boolean> {
+    return true;
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
@@ -2189,6 +2193,10 @@ export class MemStorage implements IStorage {
 
   async updateDailyCheckin(id: string, userId: string, updates: Partial<InsertDailyCheckin>): Promise<DailyCheckin | undefined> {
     return undefined;
+  }
+
+  async getDailyCheckinsInRange(startDate: Date): Promise<DailyCheckin[]> {
+    return [];
   }
 
   async getDailyCheckin(userId: string, date: Date): Promise<DailyCheckin | undefined> {

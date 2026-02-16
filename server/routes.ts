@@ -1702,6 +1702,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Failed to log workout session:', sessionError);
       }
 
+      // Fire-and-forget: trigger workout_completion automation email
+      triggerAutomation('workout_completion', completionData.userId).catch(console.error);
+
       res.json(completion);
     } catch (error) {
       res.status(500).json({ message: "Failed to complete workout" });

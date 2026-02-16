@@ -6,6 +6,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { startWhatsAppReminderScheduler } from "./schedulers/whatsapp-reminder";
 import { startInactivityScheduler } from "./schedulers/email-inactivity";
+import { startCampaignScheduler } from "./schedulers/email-campaign";
 
 const app = express();
 app.set('trust proxy', true);
@@ -113,5 +114,6 @@ app.use((req, res, next) => {
     // Start scheduled tasks
     startWhatsAppReminderScheduler();
     startInactivityScheduler();
+    startCampaignScheduler();
   });
 })();

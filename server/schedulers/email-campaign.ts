@@ -58,7 +58,7 @@ export async function processScheduledCampaigns() {
             const html = replaceTemplateVariables(campaign.htmlContent, userVariables);
 
             // Retry logic: up to 3 attempts with exponential backoff
-            let result = { success: false, error: '', messageId: undefined as string | undefined };
+            let result: { success: boolean; error?: string; messageId?: string } = { success: false };
             for (let attempt = 1; attempt <= 3; attempt++) {
               result = await emailService.send(
                 {
