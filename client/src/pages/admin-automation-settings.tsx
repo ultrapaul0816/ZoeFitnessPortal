@@ -272,14 +272,6 @@ export default function AdminAutomationSettings() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Admin
             </Button>
-            <Button
-              variant="ghost"
-              onClick={() => setLocation("/admin-email-campaigns")}
-              data-testid="button-back-campaigns"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Campaigns
-            </Button>
           </div>
           
           <div className="flex items-center gap-3 mb-2">
