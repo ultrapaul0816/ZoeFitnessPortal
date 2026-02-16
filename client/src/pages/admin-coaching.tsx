@@ -356,7 +356,7 @@ export default function AdminCoaching() {
   const generatePlanOutlineMutation = useMutation({
     mutationFn: async ({ clientId, weekNumber }: { clientId: string; weekNumber: number }) => {
       const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-plan-outline`, {
-        body: JSON.stringify({ weekNumber }),
+        weekNumber
       });
       return { ...(await res.json()), weekNumber };
     },
@@ -374,7 +374,8 @@ export default function AdminCoaching() {
   const approveOutlineAndGenerateMutation = useMutation({
     mutationFn: async ({ clientId, weekNumber, editedOutline }: { clientId: string; weekNumber: number; editedOutline?: string }) => {
       const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/approve-outline-and-generate`, {
-        body: JSON.stringify({ weekNumber, editedOutline }),
+        weekNumber,
+        editedOutline
       });
       return res.json();
     },
