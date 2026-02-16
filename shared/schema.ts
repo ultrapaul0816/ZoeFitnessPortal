@@ -1097,6 +1097,7 @@ export const coachingWorkoutPlans = pgTable("coaching_workout_plans", {
 export const coachingNutritionPlans = pgTable("coaching_nutrition_plans", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   clientId: varchar("client_id").notNull(),
+  weekNumber: integer("week_number").notNull().default(1), // Week 1-4 for weekly nutrition progression
   mealType: text("meal_type").notNull(),
   options: jsonb("options").notNull(),
   tips: text("tips"),
