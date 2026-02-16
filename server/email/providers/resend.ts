@@ -3,7 +3,18 @@ import type { IEmailProvider, SendEmailParams, EmailSendResult, EmailAddress } f
 
 let connectionSettings: any;
 
+const DEFAULT_FROM_EMAIL = 'Your Postpartum Strength <noreply@yourpostpartumstrength.com>';
+
 async function getCredentials() {
+  // First, try direct RESEND_API_KEY env var (works everywhere)
+  if (process.env.RESEND_API_KEY) {
+    return {
+      apiKey: process.env.RESEND_API_KEY,
+      fromEmail: process.env.RESEND_FROM_EMAIL || DEFAULT_FROM_EMAIL
+    };
+  }
+
+  // Fallback: try Replit connectors
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY
     ? 'repl ' + process.env.REPL_IDENTITY
@@ -11,8 +22,8 @@ async function getCredentials() {
     ? 'depl ' + process.env.WEB_REPL_RENEWAL
     : null;
 
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  if (!xReplitToken || !hostname) {
+    throw new Error('No Resend API key found. Set RESEND_API_KEY env var or connect via Replit.');
   }
 
   connectionSettings = await fetch(
@@ -28,10 +39,10 @@ async function getCredentials() {
   if (!connectionSettings || !connectionSettings.settings.api_key) {
     throw new Error('Resend not connected');
   }
-  
+
   return {
     apiKey: connectionSettings.settings.api_key,
-    fromEmail: connectionSettings.settings.from_email
+    fromEmail: connectionSettings.settings.from_email || DEFAULT_FROM_EMAIL
   };
 }
 

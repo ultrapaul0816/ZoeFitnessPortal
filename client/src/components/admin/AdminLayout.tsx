@@ -49,6 +49,7 @@ interface AdminLayoutProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onNavigate?: (path: string) => void;
+  noPadding?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -80,7 +81,7 @@ function getInitialCollapsedSections(): Record<string, boolean> {
   return {};
 }
 
-export default function AdminLayout({ children, activeTab, onTabChange, onNavigate }: AdminLayoutProps) {
+export default function AdminLayout({ children, activeTab, onTabChange, onNavigate, noPadding = false }: AdminLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(getInitialCollapsedSections);
@@ -400,9 +401,13 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
           isCollapsed ? "lg:pl-[72px]" : "lg:pl-72"
         )}
       >
-        <div className="p-4 lg:p-6 max-w-[1600px] mx-auto">
-          {children}
-        </div>
+        {noPadding ? (
+          children
+        ) : (
+          <div className="p-4 lg:p-6 max-w-[1600px] mx-auto">
+            {children}
+          </div>
+        )}
       </main>
     </div>
   );

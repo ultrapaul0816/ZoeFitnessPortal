@@ -60,6 +60,16 @@ class EmailService {
     return result;
   }
 
+  // Convenience method for routes that pass a raw email string instead of EmailAddress object
+  async sendEmail(params: { to: string; subject: string; html: string; text?: string }, logContext?: { messageType?: string; userId?: string }): Promise<EmailSendResult> {
+    return this.send({
+      to: { email: params.to },
+      subject: params.subject,
+      html: params.html,
+      text: params.text,
+    }, logContext);
+  }
+
   async validateConnection(): Promise<boolean> {
     return this.provider.validateConnection();
   }

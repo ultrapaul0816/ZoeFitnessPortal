@@ -534,7 +534,7 @@ export default function AdminCoaching() {
   };
 
   return (
-    <AdminLayout activeTab="private-coaching" onTabChange={() => {}} onNavigate={setLocation}>
+    <AdminLayout activeTab="private-coaching" onTabChange={() => {}} onNavigate={setLocation} noPadding>
       {/* New Client Dialog - Always available */}
       <Dialog open={showNewClientDialog} onOpenChange={setShowNewClientDialog}>
               <DialogTrigger asChild>
@@ -646,7 +646,7 @@ export default function AdminCoaching() {
       </Dialog>
 
       {/* Sidebar + Main Panel Layout */}
-      <div className="flex h-[calc(100vh-120px)] overflow-hidden">
+      <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
         <CoachingSidebar
           clients={filteredClients as any}
