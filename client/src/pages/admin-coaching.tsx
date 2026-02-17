@@ -1155,111 +1155,130 @@ export default function AdminCoaching() {
                         </div>
 
                         {/* === COACH'S NOTES & DIRECTION === */}
-                        <Card className="border-0 shadow-sm border-l-4 border-l-violet-400">
-                          <CardHeader className="pb-2">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <CardTitle className="text-base flex items-center gap-2">
-                                  <Sparkles className="w-4 h-4 text-gray-600" />
-                                  Coach's Notes & Direction
-                                  {(selectedClient as any).coachRemarksApproved && (
-                                    <Badge className="bg-green-100 text-green-700 text-[10px]">
-                                      <CheckCircle2 className="w-3 h-3 mr-1" />
-                                      Approved
-                                    </Badge>
-                                  )}
-                                </CardTitle>
-                                <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit mt-1">These notes are used by AI when generating workouts and nutrition plans</p>
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="outline" size="sm"
-                                  className="text-violet-600 border-violet-300 hover:bg-violet-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  onClick={() => generateCoachRemarksMutation.mutate(selectedClient.id)}
-                                  disabled={generateCoachRemarksMutation.isPending || !!(selectedClient as any).coachRemarksApproved}
-                                >
-                                  <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
-                                  {generateCoachRemarksMutation.isPending ? "Generating..." : "Generate with AI"}
-                                </Button>
-                                {((selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim())) && (
-                                  <Button
-                                    size="sm"
-                                    className={cn(
-                                      (selectedClient as any).coachRemarksApproved
-                                        ? "bg-green-600 hover:bg-green-700"
-                                        : "bg-blue-600 hover:bg-blue-700"
-                                    )}
-                                    onClick={() => {
-                                      updateClientMutation.mutate({
-                                        clientId: selectedClient.id,
-                                        updates: { coachRemarksApproved: !(selectedClient as any).coachRemarksApproved }
-                                      });
-                                    }}
-                                  >
-                                    {(selectedClient as any).coachRemarksApproved ? (
-                                      <>
-                                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                                        Approved
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Check className="w-3.5 h-3.5 mr-1.5" />
-                                        Approve Notes
-                                      </>
-                                    )}
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {[
-                                { key: "trainingFocus", label: "Training Focus", placeholder: "e.g., Pelvic floor strengthening, glute activation, avoid overhead pressing..." },
-                                { key: "nutritionalGuidance", label: "Nutritional Guidance", placeholder: "e.g., Vegetarian, needs more plant protein, avoids dairy..." },
-                                { key: "thingsToWatch", label: "Things to Watch", placeholder: "e.g., Lower back pain after deadlifts — modify to sumo stance..." },
-                                { key: "personalityNotes", label: "Client Personality", placeholder: "e.g., Prefers encouraging tone, motivated by progress data..." },
-                              ].map(field => (
-                                <div key={field.key}>
-                                  <Label className="text-xs text-gray-500 font-medium">{field.label}</Label>
-                                  <Textarea
-                                    className="mt-1 text-sm min-h-[100px] focus:ring-violet-200 focus:border-violet-300 resize-y"
-                                    rows={4}
-                                    placeholder={field.placeholder}
-                                    defaultValue={((selectedClient as any).coachRemarks as any)?.[field.key] || ''}
-                                    onBlur={(e) => {
-                                      const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
-                                      if (e.target.value !== (currentRemarks[field.key] || '')) {
-                                        updateClientMutation.mutate({
+                        {(() => {
+                          const remarksApproved = !!(selectedClient as any).coachRemarksApproved;
+                          const hasRemarks = (selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim());
+                          return (
+                            <Card className={cn("border-0 shadow-sm border-l-4", remarksApproved ? "border-l-green-400 bg-gray-50/50" : "border-l-violet-400")}>
+                              <CardHeader className="pb-2">
+                                <div className="flex items-start justify-between">
+                                  <div>
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                      <Sparkles className="w-4 h-4 text-gray-600" />
+                                      Coach's Notes & Direction
+                                      {remarksApproved && (
+                                        <Badge className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5">
+                                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                                          Approved & Locked
+                                        </Badge>
+                                      )}
+                                    </CardTitle>
+                                    <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit mt-1">These notes are used by AI when generating workouts and nutrition plans</p>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    {remarksApproved ? (
+                                      // When approved: show Edit (to unapprove/unlock) button only
+                                      <Button
+                                        variant="outline" size="sm"
+                                        className="text-gray-600 border-gray-300 hover:bg-gray-100"
+                                        onClick={() => updateClientMutation.mutate({
                                           clientId: selectedClient.id,
-                                          updates: { coachRemarks: { ...currentRemarks, [field.key]: e.target.value || "" } }
-                                        });
-                                      }
-                                    }}
-                                  />
+                                          updates: { coachRemarksApproved: false }
+                                        })}
+                                      >
+                                        <Edit3 className="w-3.5 h-3.5 mr-1.5" />
+                                        Edit & Re-approve
+                                      </Button>
+                                    ) : (
+                                      // When not approved: show Generate + Approve buttons
+                                      <>
+                                        <Button
+                                          variant="outline" size="sm"
+                                          className="text-violet-600 border-violet-300 hover:bg-violet-50"
+                                          onClick={() => generateCoachRemarksMutation.mutate(selectedClient.id)}
+                                          disabled={generateCoachRemarksMutation.isPending}
+                                        >
+                                          <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
+                                          {generateCoachRemarksMutation.isPending ? "Generating..." : "Generate with AI"}
+                                        </Button>
+                                        {hasRemarks && (
+                                          <Button
+                                            size="sm"
+                                            className="bg-blue-600 hover:bg-blue-700"
+                                            onClick={() => updateClientMutation.mutate({
+                                              clientId: selectedClient.id,
+                                              updates: { coachRemarksApproved: true }
+                                            })}
+                                          >
+                                            <Check className="w-3.5 h-3.5 mr-1.5" />
+                                            Approve Notes
+                                          </Button>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
-                              ))}
-                              <div className="md:col-span-2">
-                                <Label className="text-xs text-gray-500 font-medium">Additional Notes</Label>
-                                <Textarea
-                                  className="mt-1 text-sm min-h-[100px] focus:ring-violet-200 focus:border-violet-300 resize-y"
-                                  rows={4}
-                                  placeholder="Any other coaching directions, goals, special requirements..."
-                                  defaultValue={((selectedClient as any).coachRemarks as any)?.customNotes || ''}
-                                  onBlur={(e) => {
-                                    const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
-                                    if (e.target.value !== (currentRemarks.customNotes || '')) {
-                                      updateClientMutation.mutate({
-                                        clientId: selectedClient.id,
-                                        updates: { coachRemarks: { ...currentRemarks, customNotes: e.target.value || "" } }
-                                      });
-                                    }
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                              </CardHeader>
+                              <CardContent>
+                                <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4", remarksApproved && "opacity-60 pointer-events-none select-none")}>
+                                  {[
+                                    { key: "trainingFocus", label: "Training Focus", placeholder: "e.g., Pelvic floor strengthening, glute activation, avoid overhead pressing..." },
+                                    { key: "nutritionalGuidance", label: "Nutritional Guidance", placeholder: "e.g., Vegetarian, needs more plant protein, avoids dairy..." },
+                                    { key: "thingsToWatch", label: "Things to Watch", placeholder: "e.g., Lower back pain after deadlifts — modify to sumo stance..." },
+                                    { key: "personalityNotes", label: "Client Personality", placeholder: "e.g., Prefers encouraging tone, motivated by progress data..." },
+                                  ].map(field => (
+                                    <div key={field.key}>
+                                      <Label className="text-xs text-gray-500 font-medium">{field.label}</Label>
+                                      <Textarea
+                                        className={cn("mt-1 text-sm min-h-[100px] resize-y", remarksApproved ? "bg-gray-100 border-gray-200 cursor-not-allowed" : "focus:ring-violet-200 focus:border-violet-300")}
+                                        rows={4}
+                                        readOnly={remarksApproved}
+                                        placeholder={field.placeholder}
+                                        defaultValue={((selectedClient as any).coachRemarks as any)?.[field.key] || ''}
+                                        onBlur={(e) => {
+                                          if (remarksApproved) return;
+                                          const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
+                                          if (e.target.value !== (currentRemarks[field.key] || '')) {
+                                            updateClientMutation.mutate({
+                                              clientId: selectedClient.id,
+                                              updates: { coachRemarks: { ...currentRemarks, [field.key]: e.target.value || "" } }
+                                            });
+                                          }
+                                        }}
+                                      />
+                                    </div>
+                                  ))}
+                                  <div className="md:col-span-2">
+                                    <Label className="text-xs text-gray-500 font-medium">Additional Notes</Label>
+                                    <Textarea
+                                      className={cn("mt-1 text-sm min-h-[100px] resize-y", remarksApproved ? "bg-gray-100 border-gray-200 cursor-not-allowed" : "focus:ring-violet-200 focus:border-violet-300")}
+                                      rows={4}
+                                      readOnly={remarksApproved}
+                                      placeholder="Any other coaching directions, goals, special requirements..."
+                                      defaultValue={((selectedClient as any).coachRemarks as any)?.customNotes || ''}
+                                      onBlur={(e) => {
+                                        if (remarksApproved) return;
+                                        const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
+                                        if (e.target.value !== (currentRemarks.customNotes || '')) {
+                                          updateClientMutation.mutate({
+                                            clientId: selectedClient.id,
+                                            updates: { coachRemarks: { ...currentRemarks, customNotes: e.target.value || "" } }
+                                          });
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                {remarksApproved && (
+                                  <p className="text-xs text-gray-400 mt-3 flex items-center gap-1">
+                                    <CheckCircle2 className="w-3 h-3 text-green-500" />
+                                    Notes locked. Click "Edit & Re-approve" to make changes.
+                                  </p>
+                                )}
+                              </CardContent>
+                            </Card>
+                          );
+                        })()}
 
                         {/* === LATEST CHECK-IN SUMMARY === */}
                         {lastCheckin && (
@@ -1313,80 +1332,93 @@ export default function AdminCoaching() {
                         )}
 
                         {/* === AI ASSESSMENT SUMMARY === */}
-                        {(selectedClient as any).aiSummary ? (
-                          <Card className="border-0 shadow-sm">
-                            <CardHeader>
-                              <div className="flex items-center justify-between">
-                                <CardTitle className="text-base flex items-center gap-2">
-                                  <Brain className="w-4 h-4 text-gray-600" />
-                                  AI Assessment & Recommendations
-                                  {(selectedClient as any).aiSummaryApproved && (
-                                    <Badge className="bg-green-100 text-green-700 text-[10px]">
-                                      <CheckCircle2 className="w-3 h-3 mr-1" />
-                                      Approved
-                                    </Badge>
-                                  )}
-                                </CardTitle>
-                                <div className="flex gap-2">
-                                  <Button
-                                    variant="ghost" size="sm"
-                                    onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
-                                    disabled={regenerateAiSummaryMutation.isPending || !!(selectedClient as any).aiSummaryApproved}
-                                    className="text-xs text-violet-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    <RefreshCw className={cn("w-3 h-3 mr-1", regenerateAiSummaryMutation.isPending && "animate-spin")} />
-                                    {regenerateAiSummaryMutation.isPending ? "Regenerating..." : "Regenerate"}
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    className={cn(
-                                      (selectedClient as any).aiSummaryApproved
-                                        ? "bg-green-600 hover:bg-green-700"
-                                        : "bg-blue-600 hover:bg-blue-700"
+                        {(() => {
+                          const summaryApproved = !!(selectedClient as any).aiSummaryApproved;
+                          const hasSummary = !!(selectedClient as any).aiSummary;
+                          return hasSummary ? (
+                            <Card className={cn("border-0 shadow-sm border-l-4", summaryApproved ? "border-l-green-400 bg-gray-50/50" : "border-l-blue-400")}>
+                              <CardHeader>
+                                <div className="flex items-center justify-between">
+                                  <CardTitle className="text-base flex items-center gap-2">
+                                    <Brain className="w-4 h-4 text-gray-600" />
+                                    AI Assessment & Recommendations
+                                    {summaryApproved && (
+                                      <Badge className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5">
+                                        <CheckCircle2 className="w-3 h-3 mr-1" />
+                                        Approved & Locked
+                                      </Badge>
                                     )}
-                                    onClick={() => {
-                                      updateClientMutation.mutate({
-                                        clientId: selectedClient.id,
-                                        updates: { aiSummaryApproved: !(selectedClient as any).aiSummaryApproved }
-                                      });
-                                    }}
-                                  >
-                                    {(selectedClient as any).aiSummaryApproved ? (
-                                      <>
-                                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                                        Approved
-                                      </>
+                                  </CardTitle>
+                                  <div className="flex gap-2">
+                                    {summaryApproved ? (
+                                      // When approved: show Edit button only
+                                      <Button
+                                        variant="outline" size="sm"
+                                        className="text-gray-600 border-gray-300 hover:bg-gray-100"
+                                        onClick={() => updateClientMutation.mutate({
+                                          clientId: selectedClient.id,
+                                          updates: { aiSummaryApproved: false }
+                                        })}
+                                      >
+                                        <Edit3 className="w-3.5 h-3.5 mr-1.5" />
+                                        Edit & Re-approve
+                                      </Button>
                                     ) : (
+                                      // When not approved: show Regenerate + Approve buttons
                                       <>
-                                        <Check className="w-3.5 h-3.5 mr-1.5" />
-                                        Approve Assessment
+                                        <Button
+                                          variant="ghost" size="sm"
+                                          onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
+                                          disabled={regenerateAiSummaryMutation.isPending}
+                                          className="text-xs text-violet-600 hover:text-gray-900"
+                                        >
+                                          <RefreshCw className={cn("w-3 h-3 mr-1", regenerateAiSummaryMutation.isPending && "animate-spin")} />
+                                          {regenerateAiSummaryMutation.isPending ? "Regenerating..." : "Regenerate"}
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          className="bg-blue-600 hover:bg-blue-700"
+                                          onClick={() => updateClientMutation.mutate({
+                                            clientId: selectedClient.id,
+                                            updates: { aiSummaryApproved: true }
+                                          })}
+                                        >
+                                          <Check className="w-3.5 h-3.5 mr-1.5" />
+                                          Approve Assessment
+                                        </Button>
                                       </>
                                     )}
-                                  </Button>
+                                  </div>
                                 </div>
-                              </div>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="bg-violet-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                {(selectedClient as any).aiSummary}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ) : selectedClient.status !== "enrolled" ? (
-                          <Card className="border-0 shadow-sm border-dashed border-2 border-violet-200">
-                            <CardContent className="py-6 text-center">
-                              <Brain className="w-8 h-8 text-violet-300 mx-auto mb-2" />
-                              <p className="text-sm text-gray-500 mb-3">AI summary will be generated when intake forms are submitted</p>
-                              <Button
-                                variant="outline" size="sm" className="text-violet-600 border-violet-300"
-                                onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
-                                disabled={regenerateAiSummaryMutation.isPending}
-                              >
-                                {regenerateAiSummaryMutation.isPending ? "Generating..." : "Generate Now"}
-                              </Button>
-                            </CardContent>
-                          </Card>
-                        ) : null}
+                              </CardHeader>
+                              <CardContent>
+                                <div className={cn("bg-violet-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed", summaryApproved && "opacity-60 bg-gray-100")}>
+                                  {(selectedClient as any).aiSummary}
+                                </div>
+                                {summaryApproved && (
+                                  <p className="text-xs text-gray-400 mt-3 flex items-center gap-1">
+                                    <CheckCircle2 className="w-3 h-3 text-green-500" />
+                                    Assessment locked. Click "Edit & Re-approve" to make changes.
+                                  </p>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ) : selectedClient.status !== "enrolled" ? (
+                            <Card className="border-0 shadow-sm border-dashed border-2 border-violet-200">
+                              <CardContent className="py-6 text-center">
+                                <Brain className="w-8 h-8 text-violet-300 mx-auto mb-2" />
+                                <p className="text-sm text-gray-500 mb-3">AI summary will be generated when intake forms are submitted</p>
+                                <Button
+                                  variant="outline" size="sm" className="text-violet-600 border-violet-300"
+                                  onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
+                                  disabled={regenerateAiSummaryMutation.isPending}
+                                >
+                                  {regenerateAiSummaryMutation.isPending ? "Generating..." : "Generate Now"}
+                                </Button>
+                              </CardContent>
+                            </Card>
+                          ) : null;
+                        })()}
 
                         {/* Client details moved to CoachingClientInfoCard above tabs */}
                         {/* Intake forms moved to dedicated "Intake Forms" tab */}

@@ -376,6 +376,7 @@ export function PlanBuilderWizard({
             {currentStep.type === 'overview' && (
               <WeekOverviewForm
                 weekNumber={currentStep.weekNumber}
+                clientId={clientId}
                 initialOverview={weekOverviews[currentStep.weekNumber]}
                 onSave={handleSaveOverview}
                 isSaving={isSavingOverview}

@@ -3,11 +3,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Wand2, RefreshCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import type { WeekOverview } from "./PlanBuilderWizard";
 
 interface WeekOverviewFormProps {
   weekNumber: 1 | 2 | 3 | 4;
+  clientId: number | string;
   initialOverview?: WeekOverview;
   onSave: (overview: WeekOverview) => void;
   isSaving?: boolean;
@@ -15,6 +17,7 @@ interface WeekOverviewFormProps {
 
 export function WeekOverviewForm({
   weekNumber,
+  clientId,
   initialOverview,
   onSave,
   isSaving = false,
@@ -23,6 +26,54 @@ export function WeekOverviewForm({
   const [focusAreas, setFocusAreas] = useState(initialOverview?.focusAreas || '');
   const [safety, setSafety] = useState(initialOverview?.safety || '');
   const [progression, setProgression] = useState(initialOverview?.progression || '');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+
+  const handleGenerateWithAI = async () => {
+    setIsGenerating(true);
+    try {
+      const response = await fetch(`/api/admin/coaching/clients/${clientId}/generate-plan-outline`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weekNumber }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || 'Failed to generate overview');
+      }
+
+      const data = await response.json();
+      const outline = data.outline;
+
+      // Map the AI outline fields to form fields
+      if (outline.philosophy) setPhilosophy(outline.philosophy);
+      if (outline.focusAreas) {
+        // focusAreas can be array or string
+        const fa = Array.isArray(outline.focusAreas)
+          ? outline.focusAreas.map((f: string) => `- ${f}`).join('\n')
+          : outline.focusAreas;
+        setFocusAreas(fa);
+      }
+      if (outline.safetyConsiderations) setSafety(outline.safetyConsiderations);
+      if (outline.progressionFromLastWeek && weekNumber > 1) setProgression(outline.progressionFromLastWeek);
+
+      toast({
+        title: "Overview generated!",
+        description: `Week ${weekNumber} overview has been filled in. Review and edit before saving.`,
+      });
+    } catch (error: any) {
+      console.error('Failed to generate overview:', error);
+      toast({
+        title: "Generation failed",
+        description: error.message || "Failed to generate overview. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleSubmit = () => {
     const overview: WeekOverview = {
@@ -37,9 +88,46 @@ export function WeekOverviewForm({
   };
 
   const isValid = philosophy.trim().length > 0 && focusAreas.trim().length > 0 && safety.trim().length > 0;
+  const hasAnyContent = philosophy || focusAreas || safety;
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      {/* AI Generate Button - prominent at top */}
+      <div className="flex items-center justify-between p-4 bg-violet-50 border border-violet-200 rounded-xl">
+        <div className="flex items-start gap-3">
+          <Wand2 className="w-5 h-5 text-violet-600 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-violet-800">Generate with AI</p>
+            <p className="text-xs text-violet-600 mt-0.5">
+              AI will use the client's intake forms and coach notes to draft Week {weekNumber}'s overview. You can edit before saving.
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={handleGenerateWithAI}
+          disabled={isGenerating}
+          className="bg-violet-600 hover:bg-violet-700 text-white shrink-0 ml-4"
+          size="sm"
+        >
+          {isGenerating ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              Generating...
+            </>
+          ) : hasAnyContent ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+              Regenerate
+            </>
+          ) : (
+            <>
+              <Wand2 className="w-3.5 h-3.5 mr-1.5" />
+              Generate Week {weekNumber} Overview
+            </>
+          )}
+        </Button>
+      </div>
+
       <Alert>
         <Lightbulb className="w-4 h-4" />
         <AlertDescription>
