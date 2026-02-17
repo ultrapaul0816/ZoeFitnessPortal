@@ -5682,11 +5682,24 @@ class DatabaseStorage implements IStorage {
   }
 
   async getCoachingClientByUserId(userId: string): Promise<CoachingClient | undefined> {
-    const [client] = await this.db.select().from(coachingClients)
+    // Prefer active enrollments first; exclude cancelled/completed so that
+    // re-enrolled users see their current enrollment, not a stale one.
+    const [active] = await this.db.select().from(coachingClients)
+      .where(and(
+        eq(coachingClients.userId, userId),
+        notInArray(coachingClients.status, ["cancelled", "completed"]),
+      ))
+      .orderBy(sql`${coachingClients.createdAt} DESC`)
+      .limit(1);
+    if (active) return active;
+
+    // Fall back to the most recent record (even if cancelled/completed)
+    // so the user still sees a meaningful status rather than "not enrolled".
+    const [any] = await this.db.select().from(coachingClients)
       .where(eq(coachingClients.userId, userId))
       .orderBy(sql`${coachingClients.createdAt} DESC`)
       .limit(1);
-    return client;
+    return any;
   }
 
   async createCoachingClient(client: InsertCoachingClient): Promise<CoachingClient> {

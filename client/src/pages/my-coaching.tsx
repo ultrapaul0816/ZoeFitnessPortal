@@ -921,16 +921,27 @@ export default function MyCoaching() {
         return;
       }
       try {
-        const response = await fetch("/api/auth/session", { credentials: "include" });
+        const token = localStorage.getItem("coaching_auth_token");
+        const headers: Record<string, string> = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const response = await fetch("/api/auth/session", { credentials: "include", headers });
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
           localStorage.setItem("user", JSON.stringify(data.user));
+        } else if (response.status === 401) {
+          // Session and token expired — clear stale data and force re-login
+          localStorage.removeItem("user");
+          localStorage.removeItem("coaching_auth_token");
+          localStorage.removeItem("coaching_auth_token_expiry");
+          setUser(null);
         } else {
+          // Non-auth error (e.g. network issue) — use cached user as fallback
           const parsedUser = JSON.parse(userData);
           setUser(parsedUser);
         }
       } catch {
+        // Network error — use cached user as fallback so offline access works
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
       }
@@ -1022,7 +1033,18 @@ export default function MyCoaching() {
   const coachingQueryFn = async ({ queryKey }: { queryKey: string[] }) => {
     const res = await coachingFetch(queryKey[0]);
     if (!res.ok) {
-      if (res.status === 401) return null;
+      if (res.status === 401) {
+        // Auth expired — clear stale credentials and force re-login
+        localStorage.removeItem("user");
+        localStorage.removeItem("coaching_auth_token");
+        localStorage.removeItem("coaching_auth_token_expiry");
+        setUser(null);
+        return null;
+      }
+      if (res.status === 404) {
+        // Genuinely not enrolled — return empty object so we can distinguish from auth failure
+        return { client: null, notEnrolled: true };
+      }
       throw new Error(`${res.status}: ${res.statusText}`);
     }
     return res.json();
@@ -1427,7 +1449,10 @@ export default function MyCoaching() {
     );
   }
 
-  if (!planData?.client) {
+  // If planData is null (auth failure cleared user), the !user check above will show login screen.
+  // Only show "not enrolled" when we have a definitive 404 response (notEnrolled flag) or
+  // when planData loaded but has no client.
+  if (planData && !planData.client) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <div className="max-w-lg mx-auto px-4 pt-12 text-center">
@@ -1445,6 +1470,16 @@ export default function MyCoaching() {
             Sign Out
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  // Still loading or no data yet — show loading state
+  if (!planData?.client) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-50 to-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4" />
+        <p className="text-gray-600 font-medium">Loading your coaching plan...</p>
       </div>
     );
   }
