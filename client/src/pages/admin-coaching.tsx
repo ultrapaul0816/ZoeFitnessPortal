@@ -58,6 +58,8 @@ import {
   Table2,
   Mail,
   Check,
+  BookOpen,
+  Download,
 } from "lucide-react";
 import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-responses";
 import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCard";
@@ -65,6 +67,9 @@ import { CoachingClientsTable } from "@/components/admin/CoachingClientsTable";
 import { CoachingWorkoutTable } from "@/components/admin/CoachingWorkoutTable";
 import { CoachingSidebar } from "@/components/admin/CoachingSidebar";
 import { PlanBuilderWizard } from "@/components/admin/PlanBuilderWizard";
+import { WellnessBlueprintViewer } from "@/components/admin/WellnessBlueprintViewer";
+import { generateBlueprintPDF } from "@/components/admin/WellnessBlueprintPDF";
+import type { BlueprintData } from "@/components/admin/WellnessBlueprintTypes";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
 type CoachingClientWithUser = CoachingClient & {
@@ -487,6 +492,63 @@ export default function AdminCoaching() {
     },
   });
 
+  // === WELLNESS BLUEPRINT MUTATIONS ===
+  const generateBlueprintMutation = useMutation({
+    mutationFn: async (clientId: string) => {
+      console.log("[Blueprint] Starting generation for clientId:", clientId, typeof clientId);
+      const url = `/api/admin/coaching/clients/${encodeURIComponent(clientId)}/generate-wellness-blueprint`;
+      console.log("[Blueprint] Fetching URL:", url);
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({}),
+        });
+        console.log("[Blueprint] Response status:", res.status);
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("[Blueprint] Error response body:", text);
+          let errMsg = "Failed to generate blueprint";
+          try {
+            const errData = JSON.parse(text);
+            errMsg = errData.message || errMsg;
+          } catch { errMsg = text || res.statusText; }
+          throw new Error(errMsg);
+        }
+        return res.json();
+      } catch (fetchErr: any) {
+        console.error("[Blueprint] Fetch error:", fetchErr.name, fetchErr.message, fetchErr);
+        throw fetchErr;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({ title: "Wellness Blueprint generated!", description: "Review the blueprint and approve before sharing with the client." });
+    },
+    onError: (err: Error) => {
+      console.error("[Blueprint] Mutation error:", err);
+      toast({ title: "Error generating blueprint", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const approveBlueprintMutation = useMutation({
+    mutationFn: async ({ clientId, approved }: { clientId: string; approved: boolean }) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/approve-wellness-blueprint`, { approved });
+      return res.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      toast({
+        title: variables.approved ? "Blueprint approved & shared!" : "Blueprint unapproved",
+        description: variables.approved ? "The client can now view their Wellness Blueprint." : "Blueprint is back in draft mode.",
+      });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error updating blueprint", description: err.message, variant: "destructive" });
+    },
+  });
+
   const filteredClients = clients.filter(c => {
     // Status filter
     if (statusFilter !== "all") {
@@ -878,6 +940,12 @@ export default function AdminCoaching() {
                 <TabsTrigger value="checkins" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
                   <ClipboardList className="w-4 h-4" /> Check-ins
                 </TabsTrigger>
+                <TabsTrigger value="blueprint" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <BookOpen className="w-4 h-4" /> Blueprint
+                  {(selectedClient as any).blueprintApproved && (
+                    <Badge className="bg-emerald-500 text-white text-[9px] ml-1 px-1.5"><Check className="w-2.5 h-2.5" /></Badge>
+                  )}
+                </TabsTrigger>
                 <TabsTrigger value="intake" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
                   <FileText className="w-4 h-4" /> Intake Forms
                   {selectedClient.status === "intake_complete" && (
@@ -1078,6 +1146,36 @@ export default function AdminCoaching() {
                                       >
                                         Start Building Program
                                       </Button>
+
+                                      {/* Blueprint generation prompt */}
+                                      {canStartBuilding && !(selectedClient as any).wellnessBlueprint && (
+                                        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-3">
+                                          <div className="flex items-start gap-2">
+                                            <BookOpen className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                                            <div>
+                                              <p className="text-xs font-semibold text-amber-800">Generate Wellness Blueprint</p>
+                                              <p className="text-[10px] text-amber-600 mt-0.5">
+                                                Create a premium personalized report for {selectedClient.user?.firstName || "this client"} with mindset roadmap, nutrition philosophy, and recipe cards.
+                                              </p>
+                                            </div>
+                                          </div>
+                                          <Button
+                                            size="sm"
+                                            className="bg-amber-600 hover:bg-amber-700 text-white shrink-0"
+                                            onClick={() => {
+                                              generateBlueprintMutation.mutate(selectedClient.id);
+                                              setActiveTab("blueprint");
+                                            }}
+                                            disabled={generateBlueprintMutation.isPending}
+                                          >
+                                            {generateBlueprintMutation.isPending ? (
+                                              <><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Generating...</>
+                                            ) : (
+                                              <><Wand2 className="w-3 h-3 mr-1" /> Generate</>
+                                            )}
+                                          </Button>
+                                        </div>
+                                      )}
                                     </>
                                   );
                                 })()}
@@ -2463,6 +2561,91 @@ export default function AdminCoaching() {
                     )}
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* ===== WELLNESS BLUEPRINT TAB ===== */}
+              <TabsContent value="blueprint" className="mt-6">
+                {(() => {
+                  const blueprint = (selectedClient as any).wellnessBlueprint as BlueprintData | null;
+                  const isApproved = (selectedClient as any).blueprintApproved || false;
+                  const isGenerating = generateBlueprintMutation.isPending;
+                  const hasCoachRemarks = !!(selectedClient as any).coachRemarks;
+                  const hasAiSummary = !!selectedClient.aiSummary;
+
+                  if (!blueprint) {
+                    return (
+                      <Card className="border-0 shadow-sm">
+                        <CardContent className="p-8 text-center">
+                          <div className="max-w-md mx-auto">
+                            <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+                              <BookOpen className="w-8 h-8 text-amber-500" />
+                            </div>
+                            <h3 className="font-serif text-xl font-bold text-stone-800 mb-2">
+                              Boutique Wellness Blueprint
+                            </h3>
+                            <p className="text-sm text-stone-500 mb-6">
+                              Generate a premium, personalized wellness report for {selectedClient.user?.firstName || "this client"}.
+                              The AI will create a complete blueprint including mindset roadmap, medical adaptations,
+                              structural protocols, nutrition philosophy, and signature recipe cards.
+                            </p>
+
+                            {(!hasCoachRemarks || !hasAiSummary) && (
+                              <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-700">
+                                <AlertCircle className="w-4 h-4 inline mr-1.5" />
+                                {!hasCoachRemarks && !hasAiSummary
+                                  ? "Generate Coach's Notes and AI Assessment first to create the blueprint."
+                                  : !hasCoachRemarks
+                                    ? "Generate Coach's Notes first to create the blueprint."
+                                    : "Generate AI Assessment first to create the blueprint."}
+                              </div>
+                            )}
+
+                            <Button
+                              onClick={() => generateBlueprintMutation.mutate(selectedClient.id)}
+                              disabled={isGenerating || (!hasCoachRemarks && !hasAiSummary)}
+                              className="bg-amber-600 hover:bg-amber-700 text-white"
+                              size="lg"
+                            >
+                              {isGenerating ? (
+                                <>
+                                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                                  Generating Blueprint...
+                                </>
+                              ) : (
+                                <>
+                                  <Wand2 className="w-4 h-4 mr-2" />
+                                  Generate Wellness Blueprint
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  }
+
+                  return (
+                    <WellnessBlueprintViewer
+                      blueprint={blueprint}
+                      isAdmin={true}
+                      isApproved={isApproved}
+                      isGenerating={isGenerating}
+                      onRegenerate={() => generateBlueprintMutation.mutate(selectedClient.id)}
+                      onApprove={() => approveBlueprintMutation.mutate({
+                        clientId: selectedClient.id,
+                        approved: !isApproved,
+                      })}
+                      onExportPDF={() => {
+                        const clientName = `${selectedClient.user?.firstName || ''} ${selectedClient.user?.lastName || ''}`.trim();
+                        generateBlueprintPDF(blueprint, clientName).then(() => {
+                          toast({ title: "PDF exported!", description: "Blueprint PDF has been downloaded." });
+                        }).catch((err) => {
+                          toast({ title: "PDF export failed", description: err.message, variant: "destructive" });
+                        });
+                      }}
+                    />
+                  );
+                })()}
               </TabsContent>
 
               <TabsContent value="intake" className="mt-6">

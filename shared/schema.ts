@@ -1072,6 +1072,9 @@ export const coachingClients = pgTable("coaching_clients", {
   coachRemarksApproved: boolean("coach_remarks_approved").default(false),
   aiSummaryApproved: boolean("ai_summary_approved").default(false),
   weeklyPlanOutlines: jsonb("weekly_plan_outlines"), // Structured week-by-week plan outlines before full workout generation
+  wellnessBlueprint: jsonb("wellness_blueprint"), // Boutique Wellness Blueprint report data (structured JSON)
+  blueprintGeneratedAt: timestamp("blueprint_generated_at"),
+  blueprintApproved: boolean("blueprint_approved").default(false),
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 }, (table) => [

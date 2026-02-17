@@ -57,10 +57,12 @@ import {
   Crown,
   Star,
   LogOut,
+  BookOpen,
 } from "lucide-react";
+import { MyWellnessBlueprint } from "@/components/coaching/MyWellnessBlueprint";
 import type { User as UserType } from "@shared/schema";
 
-type ActiveView = "today" | "workouts" | "nutrition" | "messages" | "checkin";
+type ActiveView = "today" | "workouts" | "nutrition" | "messages" | "checkin" | "blueprint";
 
 interface Exercise {
   name: string;
@@ -2921,6 +2923,7 @@ export default function MyCoaching() {
     { view: "today", icon: Calendar, label: "Today" },
     { view: "workouts", icon: Dumbbell, label: "Workouts" },
     { view: "nutrition", icon: Apple, label: "Nutrition" },
+    { view: "blueprint", icon: BookOpen, label: "Blueprint" },
     { view: "messages", icon: MessageCircle, label: "Messages", badge: planData.unreadMessages || 0 },
     { view: "checkin", icon: ClipboardCheck, label: "Check-in" },
   ];
@@ -2946,6 +2949,9 @@ export default function MyCoaching() {
         {activeView === "today" && renderTodayView()}
         {activeView === "workouts" && renderWorkoutsView()}
         {activeView === "nutrition" && renderNutritionView()}
+        {activeView === "blueprint" && (
+          <MyWellnessBlueprint clientName={`${planData?.userProfile?.firstName || ''} ${planData?.userProfile?.lastName || ''}`.trim()} />
+        )}
         {activeView === "messages" && renderMessagesView()}
         {activeView === "checkin" && renderCheckinView()}
 

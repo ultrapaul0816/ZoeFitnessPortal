@@ -5655,6 +5655,9 @@ class DatabaseStorage implements IStorage {
       coachRemarksApproved: r.coach_remarks_approved ?? false,
       aiSummaryApproved: r.ai_summary_approved ?? false,
       weeklyPlanOutlines: r.weekly_plan_outlines,
+      wellnessBlueprint: r.wellness_blueprint,
+      blueprintGeneratedAt: r.blueprint_generated_at,
+      blueprintApproved: r.blueprint_approved ?? false,
       createdAt: r.created_at,
       updatedAt: r.updated_at,
       user: {

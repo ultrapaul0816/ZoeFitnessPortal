@@ -9394,6 +9394,292 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
     }
   });
 
+  // ============================================================================
+  // WELLNESS BLUEPRINT - Boutique Wellness Blueprint report generation
+  // ============================================================================
+
+  // Helper: Assemble all client data for blueprint generation
+  async function assembleClientDataForBlueprint(clientId: string) {
+    const client = await storage.getCoachingClient(clientId);
+    if (!client) throw new Error("Client not found");
+
+    const user = await storage.getUser(client.userId);
+    if (!user) throw new Error("User not found");
+
+    // Fetch all form responses
+    const formResponses = await storage.getCoachingFormResponses(clientId);
+    const allFormData = formResponses.reduce((acc: any, r: any) => {
+      acc[r.formType] = r.responses;
+      return acc;
+    }, {});
+
+    // Fetch workout plans & nutrition plans (if available)
+    const workoutPlans = await storage.getCoachingWorkoutPlans(clientId);
+    const nutritionPlans = await storage.getCoachingNutritionPlans(clientId);
+
+    return {
+      client: {
+        id: client.id,
+        coachingType: (client as any).coachingType || "pregnancy_coaching",
+        status: client.status,
+        planDurationWeeks: client.planDurationWeeks || 4,
+        isPregnant: client.isPregnant,
+        trimester: client.trimester,
+        dueDate: client.dueDate,
+        pregnancyNotes: client.pregnancyNotes,
+        notes: client.notes,
+        healthNotes: client.healthNotes,
+        startDate: client.startDate,
+        endDate: client.endDate,
+      },
+      user: {
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email,
+        phone: user.phone,
+        goals: (user as any).goals || [],
+      },
+      intakeForms: allFormData,
+      coachRemarks: (client as any).coachRemarks || {},
+      aiSummary: client.aiSummary || "",
+      weeklyPlanOutlines: (client as any).weeklyPlanOutlines || {},
+      workoutPlans: workoutPlans.map((wp: any) => ({
+        weekNumber: wp.weekNumber,
+        dayNumber: wp.dayNumber,
+        dayType: wp.dayType,
+        title: wp.title,
+        description: wp.description,
+      })),
+      nutritionPlans: nutritionPlans.map((np: any) => ({
+        weekNumber: np.weekNumber,
+        mealType: np.mealType,
+        options: np.options,
+        tips: np.tips,
+      })),
+    };
+  }
+
+  // Generate Wellness Blueprint
+  app.post("/api/admin/coaching/clients/:clientId/generate-wellness-blueprint", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      console.log(`[Blueprint] Generate request for clientId: ${clientId}`);
+
+      const client = await storage.getCoachingClient(clientId);
+      if (!client) {
+        console.log(`[Blueprint] Client not found: ${clientId}`);
+        return res.status(404).json({ message: "Client not found" });
+      }
+      console.log(`[Blueprint] Client found, userId: ${client.userId}, status: ${client.status}`);
+
+      // Assemble all data
+      const clientData = await assembleClientDataForBlueprint(clientId);
+      console.log(`[Blueprint] Data assembled. Has AI summary: ${!!clientData.aiSummary}, Has remarks: ${!!Object.keys(clientData.coachRemarks).length}, Forms: ${Object.keys(clientData.intakeForms).join(', ')}`);
+
+      // Validate minimum data
+      if (!clientData.aiSummary && !Object.keys(clientData.coachRemarks).length) {
+        return res.status(400).json({ message: "AI summary or coach remarks required before generating blueprint" });
+      }
+
+      console.log(`[Blueprint] Calling OpenAI GPT-4o...`);
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+      });
+      console.log(`[Blueprint] OpenAI configured. API Key present: ${!!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY)}`);
+
+      const currentYear = new Date().getFullYear();
+      const clientName = `${clientData.user.firstName} ${clientData.user.lastName}`.trim();
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are Zoe Modgill, an elite boutique wellness architect. Generate a premium "Boutique Wellness Blueprint" report for a coaching client. This is a high-end, magazine-quality strategic document that feels like a luxury personal brand experience.
+
+TONE: Warm, empowering, aspirational. Use boutique/luxury language. Frame everything positively — as exciting transformations, not clinical assessments. Make the client feel like they're investing in a premium life upgrade.
+
+Return a JSON object with exactly these sections:
+
+{
+  "coverPage": {
+    "clientName": "Client's full name",
+    "subtitle": "A personalized 3-5 word identity shift tagline (e.g., 'From Cautious to Courageous', 'The Strength Renaissance')",
+    "coachingType": "Private Coaching or Pregnancy Coaching",
+    "tagline": "Strategic Performance Architecture ${currentYear}"
+  },
+  "executiveArchitecture": {
+    "mission": "2-3 powerful sentences about the client's transformation mission. Reference their specific goals and make it feel aspirational.",
+    "identityShift": "2-3 sentences describing who they're becoming. Frame it as an identity evolution, not just fitness goals.",
+    "keyInsight": "One powerful, personalized insight drawn from their intake data that will anchor their entire journey."
+  },
+  "mindsetRoadmap": {
+    "week1": { "theme": "A 2-3 word theme (e.g., 'Awareness & Foundation')", "focus": "2-3 sentences on the psychological focus", "actionItem": "One specific mindset practice for the week" },
+    "week2": { "theme": "Theme name", "focus": "Focus description", "actionItem": "Action item" },
+    "week3": { "theme": "Theme name", "focus": "Focus description", "actionItem": "Action item" },
+    "week4": { "theme": "Theme name", "focus": "Focus description", "actionItem": "Action item" }
+  },
+  "medicalPillar": {
+    "overview": "2-3 sentences summarizing their health context in an empowering way (not clinical). Frame health considerations as data we're using to optimize their experience.",
+    "considerations": ["Array of 3-5 medical/health considerations — written positively"],
+    "adaptations": ["Array of 3-5 specific ways the plan adapts to their health — framed as smart personalization"],
+    "doctorClearance": "Summary of doctor clearance status (if available from health evaluation form)"
+  },
+  "structuralIntegrity": {
+    "title": "A personalized title based on their primary physical focus (e.g., 'Core Renaissance Protocol', 'Shoulder-Safe Strength Blueprint', 'Lower Back Liberation Strategy')",
+    "primaryConcerns": ["Array of 2-4 physical areas we're addressing"],
+    "protocols": ["Array of 3-5 specific exercise modifications or protocols"],
+    "whatToAvoid": ["Array of 2-4 movements or patterns to avoid — framed gently"],
+    "whatToEmbrace": ["Array of 3-5 movements or patterns to embrace — framed excitingly"]
+  },
+  "equipmentAudit": {
+    "overview": "1-2 sentences about their ideal training environment based on their fitness level and goals.",
+    "essentialEquipment": [
+      { "name": "Equipment name", "purpose": "Why they need it", "category": "Core|Mobility|Strength|Recovery" }
+    ],
+    "recommendations": ["Array of 2-4 equipment or environment recommendations based on their goals and constraints"]
+  },
+  "nutritionBlueprint": {
+    "philosophy": "2-3 sentences about their personalized nutrition philosophy. Reference their specific needs, lifestyle, and goals.",
+    "coreTenets": [
+      { "tenet": "Short tenet name (2-4 words)", "explanation": "1-2 sentences explaining why this matters for them specifically" }
+    ],
+    "dailyTargets": { "calories": "Calorie range (e.g., '1800-2100')", "protein": "Protein target (e.g., '120-140g')", "hydration": "Water target (e.g., '2.5-3L')" },
+    "restrictions": ["Array of any dietary restrictions or allergies from their intake"]
+  },
+  "recipeCards": [
+    {
+      "name": "Recipe name — creative and appetizing",
+      "mealType": "breakfast|lunch|dinner|snack",
+      "tagline": "A fun 3-5 word tagline (e.g., 'Post-Training Reward', 'Morning Power Ritual')",
+      "whyItWorks": "1-2 sentences on why this meal is perfect for them specifically",
+      "ingredients": ["Array of ingredients with quantities"],
+      "instructions": "Brief cooking instructions (3-5 steps)",
+      "macros": { "calories": 350, "protein": "28g", "carbs": "35g", "fat": "12g" },
+      "prepTime": "Prep time (e.g., '15 mins')"
+    }
+  ]
+}
+
+IMPORTANT RULES:
+- Generate exactly 4-6 recipe cards covering different meal types
+- Generate 4-6 equipment items
+- Generate 4-5 nutrition tenets
+- All content must be HIGHLY SPECIFIC to this client's actual data — no generic filler
+- If pregnancy data exists, incorporate trimester-specific guidance
+- Reference actual medical conditions, goals, and constraints from their intake
+- Make the client name possessive in the cover subtitle (e.g., "Sarah's Identity Shift")
+- Be creative with section titles — each client should feel uniquely served`,
+          },
+          {
+            role: "user",
+            content: `Generate the Boutique Wellness Blueprint for this client:
+
+CLIENT PROFILE:
+Name: ${clientName}
+Coaching Type: ${clientData.client.coachingType}
+Plan Duration: ${clientData.client.planDurationWeeks} weeks
+${clientData.client.isPregnant ? `Pregnant: Yes, Trimester: ${clientData.client.trimester}, Due Date: ${clientData.client.dueDate}` : ""}
+${clientData.client.pregnancyNotes ? `Pregnancy Notes: ${clientData.client.pregnancyNotes}` : ""}
+${clientData.client.healthNotes ? `Health Notes: ${clientData.client.healthNotes}` : ""}
+${clientData.client.notes ? `Coach Notes: ${clientData.client.notes}` : ""}
+
+COACH'S ASSESSMENT:
+${JSON.stringify(clientData.coachRemarks, null, 2)}
+
+AI CLINICAL SUMMARY:
+${clientData.aiSummary}
+
+INTAKE FORM DATA:
+${JSON.stringify(clientData.intakeForms, null, 2)}
+
+${clientData.workoutPlans.length > 0 ? `WORKOUT PLAN OUTLINE:\n${JSON.stringify(clientData.workoutPlans.slice(0, 14), null, 2)}` : ""}
+${clientData.nutritionPlans.length > 0 ? `NUTRITION PLAN OUTLINE:\n${JSON.stringify(clientData.nutritionPlans.slice(0, 8), null, 2)}` : ""}`,
+          },
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 6000,
+      });
+
+      const rawContent = response.choices[0]?.message?.content || "{}";
+      console.log(`[Blueprint] OpenAI response received. Length: ${rawContent.length} chars`);
+
+      const blueprint = JSON.parse(rawContent);
+      console.log(`[Blueprint] Parsed OK. Sections: ${Object.keys(blueprint).join(', ')}`);
+
+      // Store the blueprint
+      await storage.updateCoachingClient(clientId, {
+        wellnessBlueprint: blueprint,
+        blueprintGeneratedAt: new Date(),
+        blueprintApproved: false,
+      } as any);
+
+      console.log(`[Blueprint] Stored successfully for client ${clientId}`);
+      res.json({ blueprint });
+    } catch (error: any) {
+      console.error("[Blueprint] ERROR:", error.message || error);
+      console.error("[Blueprint] Stack:", error.stack);
+      res.status(500).json({ message: error.message || "Failed to generate wellness blueprint" });
+    }
+  });
+
+  // Get Wellness Blueprint
+  app.get("/api/admin/coaching/clients/:clientId/wellness-blueprint", requireAdmin, async (req, res) => {
+    try {
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      res.json({
+        blueprint: (client as any).wellnessBlueprint || null,
+        generatedAt: (client as any).blueprintGeneratedAt || null,
+        approved: (client as any).blueprintApproved || false,
+      });
+    } catch (error: any) {
+      console.error("Error fetching wellness blueprint:", error);
+      res.status(500).json({ message: "Failed to fetch wellness blueprint" });
+    }
+  });
+
+  // Approve Wellness Blueprint
+  app.post("/api/admin/coaching/clients/:clientId/approve-wellness-blueprint", requireAdmin, async (req, res) => {
+    try {
+      const { clientId } = req.params;
+      const { approved } = req.body;
+      await storage.updateCoachingClient(clientId, {
+        blueprintApproved: approved !== false,
+      } as any);
+      res.json({ success: true, approved: approved !== false });
+    } catch (error: any) {
+      console.error("Error approving wellness blueprint:", error);
+      res.status(500).json({ message: "Failed to approve wellness blueprint" });
+    }
+  });
+
+  // Client-facing: Get my Wellness Blueprint (only if approved)
+  app.get("/api/coaching/my-wellness-blueprint", async (req, res) => {
+    try {
+      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
+      const userId = req.session.userId.toString();
+
+      const client = await storage.getCoachingClientByUserId(userId);
+      if (!client) return res.status(404).json({ message: "No coaching client found" });
+
+      if (!(client as any).blueprintApproved) {
+        return res.json({ blueprint: null, message: "Your coach is preparing your personalized blueprint" });
+      }
+
+      res.json({
+        blueprint: (client as any).wellnessBlueprint || null,
+        generatedAt: (client as any).blueprintGeneratedAt || null,
+      });
+    } catch (error: any) {
+      console.error("Error fetching client wellness blueprint:", error);
+      res.status(500).json({ message: "Failed to fetch wellness blueprint" });
+    }
+  });
+
   // Program Progress - Heal Your Core 6-week tracking
   app.get("/api/admin/program-progress", requireAdmin, async (req, res) => {
     try {
