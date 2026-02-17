@@ -55,6 +55,7 @@ interface AdminLayoutProps {
 const navItems: NavItem[] = [
   { id: "overview", label: "Dashboard", icon: LayoutDashboard, section: "Main" },
   { id: "preview", label: "Preview as User", icon: Eye, section: "Main", path: "/admin/preview", badge: "New" },
+  { id: "private-coaching", label: "Private Coaching", icon: HeartHandshake, section: "Members", path: "/admin/coaching" },
   { id: "members", label: "All Members", icon: Users, section: "Members" },
   { id: "deactivated", label: "Deactivated", icon: UserX, section: "Members" },
   { id: "courses", label: "Courses", icon: GraduationCap, section: "Content", path: "/admin/courses" },
@@ -68,7 +69,6 @@ const navItems: NavItem[] = [
   { id: "communications", label: "Communications", icon: Send, section: "Insights", path: "/admin/communications" },
   { id: "program-progress", label: "Program Progress", icon: TrendingUp, section: "Insights", path: "/admin/program-progress" },
   { id: "automation", label: "Email Automation", icon: Zap, section: "Marketing", path: "/admin/automation" },
-  { id: "private-coaching", label: "Private Coaching", icon: HeartHandshake, section: "Coaching", path: "/admin/coaching", badge: "New" },
 ];
 
 const STORAGE_KEY = "admin-collapsed-sections";
@@ -115,7 +115,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
     return acc;
   }, {} as Record<string, NavItem[]>);
 
-  const sectionOrder = ["Main", "Members", "Content", "Insights", "Marketing", "Coaching"];
+  const sectionOrder = ["Main", "Members", "Content", "Insights", "Marketing"];
 
   const sectionIcons: Record<string, React.ElementType> = {
     Main: LayoutDashboard,
@@ -123,7 +123,6 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
     Content: GraduationCap,
     Insights: BarChart3,
     Marketing: Mail,
-    Coaching: HeartHandshake,
   };
 
   const SidebarContent = () => (
