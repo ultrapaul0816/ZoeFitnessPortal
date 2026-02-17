@@ -5652,6 +5652,9 @@ class DatabaseStorage implements IStorage {
       pregnancyNotes: r.pregnancy_notes,
       notes: r.notes,
       coachRemarks: r.coach_remarks,
+      coachRemarksApproved: r.coach_remarks_approved ?? false,
+      aiSummaryApproved: r.ai_summary_approved ?? false,
+      weeklyPlanOutlines: r.weekly_plan_outlines,
       createdAt: r.created_at,
       updatedAt: r.updated_at,
       user: {
