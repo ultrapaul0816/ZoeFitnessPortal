@@ -2525,7 +2525,7 @@ export class MemStorage implements IStorage {
 
 // Database Storage Implementation using PostgreSQL
 class DatabaseStorage implements IStorage {
-  private db;
+  public db;
   private static instance: DatabaseStorage;
   public assetDisplayNames: Map<string, string> = new Map();
 
