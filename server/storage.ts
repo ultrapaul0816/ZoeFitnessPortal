@@ -1535,6 +1535,7 @@ export class MemStorage implements IStorage {
       userId: string;
       userName: string;
       userEmail: string;
+      userPhone: string | null;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
@@ -1882,6 +1883,8 @@ export class MemStorage implements IStorage {
       duration: insertExercise.duration ?? null,
       instructions: insertExercise.instructions ?? null,
       difficulty: insertExercise.difficulty ?? null,
+      orderIndex: insertExercise.orderIndex ?? null,
+      displayId: insertExercise.displayId ?? null,
     };
     this.exercises.set(id, exercise);
     return exercise;
@@ -2612,6 +2615,7 @@ class DatabaseStorage implements IStorage {
       userId: string;
       userName: string;
       userEmail: string;
+      userPhone: string | null;
       programExpiring: boolean;
       whatsAppExpiring: boolean;
       programExpiryDate?: Date;
