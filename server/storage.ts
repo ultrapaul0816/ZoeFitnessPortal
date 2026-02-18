@@ -132,8 +132,8 @@ import {
   authTokens,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
 import { eq, and, desc, sql, count, asc, gte, lte, or, isNull, lt, notInArray, inArray, type SQL } from "drizzle-orm";
 
 export interface IStorage {
@@ -2545,8 +2545,8 @@ class DatabaseStorage implements IStorage {
     if (!connectionString) {
       throw new Error("DATABASE_URL environment variable is required");
     }
-    const sql = neon(connectionString);
-    this.db = drizzle(sql);
+    const pool = new pg.Pool({ connectionString });
+    this.db = drizzle(pool);
   }
 
   static getInstance(): DatabaseStorage {
