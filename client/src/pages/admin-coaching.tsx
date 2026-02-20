@@ -45,8 +45,6 @@ import {
   Flame,
   Filter,
   Activity,
-  TrendingUp,
-  BarChart3,
   FileText,
   Wand2,
   Zap,
@@ -751,7 +749,7 @@ export default function AdminCoaching() {
                       <Brain className="w-4 h-4 mr-2" />
                       {generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : (() => {
                         const weeksGen = new Set((clientWorkoutPlan as any[]).map((p: any) => p.weekNumber)).size;
-                        return `Generate Workout (${weeksGen}/4)`;
+                        return `Generate Workout (${weeksGen}/${(selectedClient as any)?.planDurationWeeks || 4})`;
                       })()}
                     </SelectTrigger>
                     <SelectContent>
