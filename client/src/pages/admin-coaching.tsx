@@ -955,7 +955,7 @@ export default function AdminCoaching() {
                     // Calculate current week from start date
                     const startDate = selectedClient.startDate ? new Date(selectedClient.startDate) : null;
                     const daysSinceStart = startDate ? Math.max(0, Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
-                    const currentWeek = Math.min(4, Math.max(1, Math.ceil(daysSinceStart / 7) || 1));
+                    const currentWeek = Math.min(selectedClient.planDurationWeeks || 4, Math.max(1, Math.ceil(daysSinceStart / 7) || 1));
                     const totalDays = (selectedClient.planDurationWeeks || 4) * 7;
 
                     // Workout completion for current week
@@ -990,7 +990,8 @@ export default function AdminCoaching() {
 
                     // Weeks generated
                     const weeksGenerated = new Set(workoutPlans.map((p: any) => p.weekNumber)).size;
-                    const nextUngenWeek = [1,2,3,4].find(w => !workoutPlans.some((p: any) => p.weekNumber === w));
+                    const totalWeeks = (selectedClient as any)?.planDurationWeeks || 4;
+                    const nextUngenWeek = Array.from({ length: totalWeeks }, (_, i) => i + 1).find(w => !workoutPlans.some((p: any) => p.weekNumber === w));
 
                     return (
                       <>
