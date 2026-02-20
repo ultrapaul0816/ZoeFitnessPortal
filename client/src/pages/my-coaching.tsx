@@ -1029,9 +1029,9 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
             {submitting ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
             ) : currentStep === totalSteps - 1 ? (
-              currentForm === "lifestyle" ? "Save & Continue to Health Form" : "Submit All Forms"
+              currentForm === "lifestyle" ? "Save & Continue" : "Submit & Finish"
             ) : (
-              "Next"
+              <>Next: {steps[currentStep + 1]?.title}</>
             )}
           </Button>
         </div>
