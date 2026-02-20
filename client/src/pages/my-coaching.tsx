@@ -316,6 +316,9 @@ const MEDICAL_CONDITIONS = [
   "Multiple pregnancy (twins+)",
   "Epilepsy",
   "Anemia",
+  "Thyroid condition",
+  "SPD (Symphysis Pubis Dysfunction)",
+  "Back injury (current or past)",
 ];
 
 const MEDICAL_FLAGS = [
@@ -324,10 +327,14 @@ const MEDICAL_FLAGS = [
   "High blood pressure",
   "Gestational diabetes",
   "Cervical concerns",
+  "Low-lying placenta",
+  "Restricted activity / bed rest advised",
+  "Iron deficiency",
 ];
 
 const DISCOMFORT_AREAS = [
   "Lower back",
+  "Upper back",
   "Hips",
   "Neck/shoulders",
   "Knees",
@@ -335,8 +342,10 @@ const DISCOMFORT_AREAS = [
   "Wrists/hands",
   "Ribs",
   "Round ligament",
+  "Tailbone/coccyx",
   "General fatigue",
   "Pelvic pain",
+  "No discomfort",
 ];
 
 const DISCOMFORT_TIMING = [
@@ -347,6 +356,7 @@ const DISCOMFORT_TIMING = [
   "At end of day",
   "During workouts",
   "Random/unpredictable",
+  "It varies day to day",
 ];
 
 const EXERCISE_HISTORY = [
@@ -362,6 +372,8 @@ const CORE_SYMPTOMS = [
   "Leaking when coughing, sneezing, or laughing",
   "Difficulty holding in urine",
   "Doming or coning of the belly during movement",
+  "Lower belly feels unsupported",
+  "Pain or discomfort during core movements",
   "None of the above",
 ];
 
@@ -371,26 +383,30 @@ const HELP_AREAS = [
   "Posture improvement",
   "Birth preparation",
   "Staying active safely",
+  "Energy & stamina",
+  "Pelvic floor support",
+  "Stress & anxiety relief",
+  "Sleep quality",
   "General comfort & wellbeing",
 ];
 
 const LIFESTYLE_STEP_META = [
-  { icon: "Heart", subtitle: "Let's start with the basics", desc: "We'll use this to personalise your experience." },
-  { icon: "Shield", subtitle: "Just in case", desc: "Someone we can reach if needed during sessions." },
-  { icon: "Calendar", subtitle: "Your pregnancy journey", desc: "This helps Zoe tailor everything to your stage." },
-  { icon: "Activity", subtitle: "Your health background", desc: "Select anything you've experienced — no judgement, just safety." },
-  { icon: "Activity", subtitle: "Doctor's notes", desc: "Anything your healthcare provider has flagged for us to know." },
-  { icon: "Dumbbell", subtitle: "Body & movement", desc: "Understanding where you're at helps us meet you there." },
-  { icon: "Target", subtitle: "Core health & goals", desc: "Let's understand what matters most to you right now." },
-  { icon: "ClipboardCheck", subtitle: "Medications & history", desc: "This ensures your plan is safe and personalised." },
-  { icon: "Sparkles", subtitle: "Your goals & lifestyle", desc: "Tell us what you'd love to achieve with coaching." },
-  { icon: "Star", subtitle: "Almost done!", desc: "A few final details to complete your profile." },
+  { icon: "Heart", subtitle: "Let's start with the basics", desc: "Your details help Zoe personalise every part of your experience. Everything you share is kept confidential." },
+  { icon: "Shield", subtitle: "Your safety net", desc: "Just in case we ever need to reach someone on your behalf — this is purely a precaution so you can feel safe." },
+  { icon: "Calendar", subtitle: "Your pregnancy journey", desc: "Every stage of pregnancy is different. This helps Zoe design a plan that's perfect for exactly where you are right now." },
+  { icon: "Activity", subtitle: "Your health background", desc: "No judgement here — this is about keeping you safe. Select anything you've experienced so Zoe can adapt your plan accordingly." },
+  { icon: "Activity", subtitle: "Doctor's notes", desc: "If your healthcare provider has mentioned anything to be mindful of, share it here. This helps Zoe make smarter choices for your workouts." },
+  { icon: "Dumbbell", subtitle: "Body & movement", desc: "There's no wrong answer here. Understanding where you're at helps Zoe meet you exactly where you are — and build from there." },
+  { icon: "Target", subtitle: "Core health & goals", desc: "These are really common experiences. Being honest here helps Zoe give you the right support from day one." },
+  { icon: "ClipboardCheck", subtitle: "Medications & history", desc: "This ensures your plan accounts for everything that matters. Your info stays between you and Zoe." },
+  { icon: "Sparkles", subtitle: "Your dreams & lifestyle", desc: "This is the exciting part! Tell Zoe what you'd love to achieve — there's no goal too big or too small." },
+  { icon: "Star", subtitle: "Almost done!", desc: "Just a few final touches. You're doing great — Zoe can't wait to start working with you!" },
 ];
 
 const HEALTH_STEP_META = [
-  { icon: "Heart", subtitle: "Your details", desc: "We'll pre-fill what we can from your earlier answers." },
-  { icon: "Shield", subtitle: "Participant declaration", desc: "A standard acknowledgement for your safety." },
-  { icon: "ClipboardCheck", subtitle: "Medical clearance", desc: "Your doctor's confirmation that exercise is safe for you." },
+  { icon: "Heart", subtitle: "Your details", desc: "We've pre-filled what we can from Part 1 — just double-check everything looks right." },
+  { icon: "Shield", subtitle: "Participant declaration", desc: "This is a standard safety acknowledgement. It helps protect both you and Zoe during your coaching journey." },
+  { icon: "ClipboardCheck", subtitle: "Medical clearance", desc: "Zoe works alongside your healthcare team. This step ensures your doctor is comfortable with you exercising — your safety always comes first." },
 ];
 
 function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
@@ -608,9 +624,10 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
       );
       case 1: return (
         <div className="space-y-4">
-          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Name *</label><Input value={lifestyle.emergencyContactName} onChange={e => updateLifestyle("emergencyContactName", e.target.value)} /></div>
-          <div><label className="text-sm font-medium text-gray-700">Relationship to You *</label><Input value={lifestyle.emergencyRelationship} onChange={e => updateLifestyle("emergencyRelationship", e.target.value)} placeholder="e.g., Husband, Mother" /></div>
-          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Number *</label><Input value={lifestyle.emergencyContactNumber} onChange={e => updateLifestyle("emergencyContactNumber", e.target.value)} /></div>
+          <p className="text-xs text-gray-500 bg-pink-50/50 rounded-lg p-3">This person will only be contacted in case of a medical emergency during a session. We hope we never need it!</p>
+          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Name *</label><Input value={lifestyle.emergencyContactName} onChange={e => updateLifestyle("emergencyContactName", e.target.value)} placeholder="Their full name" /></div>
+          <div><label className="text-sm font-medium text-gray-700">Relationship to You *</label><Input value={lifestyle.emergencyRelationship} onChange={e => updateLifestyle("emergencyRelationship", e.target.value)} placeholder="e.g., Husband, Mother, Sister" /></div>
+          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Number *</label><Input value={lifestyle.emergencyContactNumber} onChange={e => updateLifestyle("emergencyContactNumber", e.target.value)} placeholder="+91 ..." /></div>
         </div>
       );
       case 2: return (
@@ -643,7 +660,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
       case 3: return (
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700">Have you experienced any of the following? *</label>
-          <p className="text-xs text-gray-500">Select all that apply</p>
+          <p className="text-xs text-gray-500">Select all that apply — even if it happened once or was mild. This helps Zoe know what to watch for and how to keep your workouts safe.</p>
           <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-2">
             {MEDICAL_CONDITIONS.map(cond => (
               <label key={cond} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalConditions.includes(cond) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -662,6 +679,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
       case 4: return (
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700">Any medical flags your doctor has mentioned? *</label>
+          <p className="text-xs text-gray-500">These are conditions your OB-GYN or midwife may have noted during check-ups. If you're unsure, "None" is perfectly fine — you can always update this later.</p>
           <div className="grid grid-cols-1 gap-2 mt-2">
             {MEDICAL_FLAGS.map(flag => (
               <label key={flag} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalFlags.includes(flag) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -681,6 +699,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
         <div className="space-y-5">
           <div>
             <label className="text-sm font-medium text-gray-700">Where do you feel discomfort most days? *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Aches and pains are completely normal during pregnancy. Knowing where yours show up helps Zoe build in the right modifications.</p>
             <div className="grid grid-cols-2 gap-2 mt-2">
               {DISCOMFORT_AREAS.map(area => (
                 <label key={area} className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.discomfortAreas.includes(area) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -703,6 +722,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
           <div>
             <label className="text-sm font-medium text-gray-700">Movement & exercise history *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Think about your overall activity level before and during pregnancy — there's no wrong answer.</p>
             <div className="space-y-2 mt-2">
               {EXERCISE_HISTORY.map(opt => (
                 <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.exerciseHistory === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -714,6 +734,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
           <div>
             <label className="text-sm font-medium text-gray-700">Right now, movement feels: *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Be honest — Zoe will adjust your plan to match how your body feels today, not where you think you should be.</p>
             <div className="space-y-2 mt-2">
               {["Comforting", "Neutral", "Intimidating", "Pain-provoking"].map(opt => (
                 <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.movementFeels === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -729,6 +750,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
         <div className="space-y-5">
           <div>
             <label className="text-sm font-medium text-gray-700">Pressure & core awareness check *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">These are really common during and after pregnancy. Knowing about them helps Zoe give you exercises that support (not strain) your core and pelvic floor.</p>
             <div className="space-y-2 mt-2">
               {CORE_SYMPTOMS.map(opt => (
                 <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.coreSymptoms.includes(opt) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -740,6 +762,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
           <div>
             <label className="text-sm font-medium text-gray-700">What do you want help with right now? *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Pick as many as you like — Zoe will weave these into your personalised plan.</p>
             <div className="grid grid-cols-1 gap-2 mt-2">
               {HELP_AREAS.map(opt => (
                 <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.helpAreas.includes(opt) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -755,6 +778,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">Are you currently taking any medications or supplements? *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Include prenatal vitamins, iron supplements, or any prescribed medication. This helps Zoe understand your full picture.</p>
             <div className="flex gap-3 mt-2">
               {["Yes", "No"].map(opt => (
                 <label key={opt} className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer text-sm transition-all ${lifestyle.takingMedications === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
@@ -767,14 +791,30 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
               <Textarea className="mt-2" value={lifestyle.medicationDetails} onChange={e => updateLifestyle("medicationDetails", e.target.value)} placeholder="Please state the name and dosage" rows={3} />
             )}
           </div>
-          <div><label className="text-sm font-medium text-gray-700">Previous pregnancies, births, or postnatal experiences? *</label><Textarea value={lifestyle.previousPregnancies} onChange={e => updateLifestyle("previousPregnancies", e.target.value)} placeholder="Share any relevant history..." rows={3} /></div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Previous pregnancies, births, or postnatal experiences? *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Share what feels relevant — C-sections, complications, or even smooth experiences. If this is your first, just write "First pregnancy."</p>
+            <Textarea value={lifestyle.previousPregnancies} onChange={e => updateLifestyle("previousPregnancies", e.target.value)} placeholder="Share any relevant history..." rows={3} />
+          </div>
         </div>
       );
       case 8: return (
         <div className="space-y-4">
-          <div><label className="text-sm font-medium text-gray-700">What concerns you most? *</label><Textarea value={lifestyle.mainConcerns} onChange={e => updateLifestyle("mainConcerns", e.target.value)} placeholder="About pregnancy, delivery, or postnatal phase..." rows={3} /></div>
-          <div><label className="text-sm font-medium text-gray-700">Main goals with coaching? *</label><Textarea value={lifestyle.mainGoals} onChange={e => updateLifestyle("mainGoals", e.target.value)} placeholder="What do you want to achieve?" rows={3} /></div>
-          <div><label className="text-sm font-medium text-gray-700">Describe your current lifestyle *</label><Textarea value={lifestyle.currentLifestyle} onChange={e => updateLifestyle("currentLifestyle", e.target.value)} placeholder="Daily routine, activity level, work..." rows={3} /></div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">What concerns you most? *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Whether it's about your body, delivery, recovery, or anything else — share what's on your mind. No concern is too small.</p>
+            <Textarea value={lifestyle.mainConcerns} onChange={e => updateLifestyle("mainConcerns", e.target.value)} placeholder="e.g., I'm worried about back pain getting worse, staying fit for delivery..." rows={3} />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Main goals with coaching? *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">Dream big or keep it simple — Zoe will build your plan around what matters most to you.</p>
+            <Textarea value={lifestyle.mainGoals} onChange={e => updateLifestyle("mainGoals", e.target.value)} placeholder="e.g., Feel strong and confident, prepare for delivery, have more energy..." rows={3} />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Describe your current lifestyle *</label>
+            <p className="text-xs text-gray-500 mt-1 mb-1">This helps Zoe understand how to fit coaching into your daily routine realistically.</p>
+            <Textarea value={lifestyle.currentLifestyle} onChange={e => updateLifestyle("currentLifestyle", e.target.value)} placeholder="e.g., I work from home, walk 30 min daily, have a toddler..." rows={3} />
+          </div>
         </div>
       );
       case 9: return (
@@ -782,7 +822,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           <div>
             <label className="text-sm font-medium text-gray-700">How did you hear about Zoe?</label>
             <div className="space-y-2 mt-2">
-              {["Instagram", "YouTube", "Website", "Friend/word of mouth"].map(opt => (
+              {["Instagram", "YouTube", "Website", "Friend/word of mouth", "Google search", "Other"].map(opt => (
                 <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.hearAbout === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
                   <input type="radio" name="hearAbout" checked={lifestyle.hearAbout === opt} onChange={() => updateLifestyle("hearAbout", opt)} className="accent-pink-500" />
                   {opt}
@@ -809,7 +849,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
           <label className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${lifestyle.consent ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
             <Checkbox checked={lifestyle.consent} onCheckedChange={(checked) => updateLifestyle("consent", !!checked)} className="mt-0.5" />
-            <span className="text-sm">I consent to being contacted by Zoe via WhatsApp and email for coaching purposes. *</span>
+            <span className="text-sm">I consent to being contacted by Zoe via WhatsApp and email for coaching purposes. Your information is kept confidential and used only for your personalised coaching experience. *</span>
           </label>
         </div>
       );
