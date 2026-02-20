@@ -84,17 +84,17 @@ type CoachingClientWithUser = CoachingClient & {
 type CoachingView = "clients" | "client-detail";
 
 const statusColors: Record<string, string> = {
-  enrolled: "bg-gray-50 text-gray-700 border-gray-200",
-  intake_complete: "bg-gray-50 text-gray-700 border-gray-200",
-  plan_generating: "bg-gray-50 text-gray-700 border-gray-200",
-  plan_ready: "bg-gray-50 text-gray-700 border-gray-200",
-  active: "bg-gray-50 text-gray-700 border-gray-200",
-  paused: "bg-gray-50 text-gray-700 border-gray-200",
-  completed: "bg-gray-50 text-gray-700 border-gray-200",
-  cancelled: "bg-gray-50 text-gray-700 border-gray-200",
+  enrolled: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  intake_complete: "bg-blue-50 text-blue-700 border-blue-200",
+  plan_generating: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  plan_ready: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  active: "bg-green-50 text-green-700 border-green-200",
+  paused: "bg-gray-50 text-gray-500 border-gray-200",
+  completed: "bg-gray-50 text-gray-400 border-gray-200",
+  cancelled: "bg-red-50 text-red-700 border-red-200",
   // Legacy fallbacks
-  pending: "bg-gray-50 text-gray-700 border-gray-200",
-  pending_plan: "bg-gray-50 text-gray-700 border-gray-200",
+  pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  pending_plan: "bg-blue-50 text-blue-700 border-blue-200",
 };
 
 // Status dot colors for visual distinction
