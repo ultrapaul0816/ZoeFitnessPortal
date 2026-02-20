@@ -495,39 +495,29 @@ export default function AdminCoaching() {
   // === WELLNESS BLUEPRINT MUTATIONS ===
   const generateBlueprintMutation = useMutation({
     mutationFn: async (clientId: string) => {
-      console.log("[Blueprint] Starting generation for clientId:", clientId, typeof clientId);
       const url = `/api/admin/coaching/clients/${encodeURIComponent(clientId)}/generate-wellness-blueprint`;
-      console.log("[Blueprint] Fetching URL:", url);
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({}),
-        });
-        console.log("[Blueprint] Response status:", res.status);
-        if (!res.ok) {
-          const text = await res.text();
-          console.error("[Blueprint] Error response body:", text);
-          let errMsg = "Failed to generate blueprint";
-          try {
-            const errData = JSON.parse(text);
-            errMsg = errData.message || errMsg;
-          } catch { errMsg = text || res.statusText; }
-          throw new Error(errMsg);
-        }
-        return res.json();
-      } catch (fetchErr: any) {
-        console.error("[Blueprint] Fetch error:", fetchErr.name, fetchErr.message, fetchErr);
-        throw fetchErr;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({}),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        let errMsg = "Failed to generate blueprint";
+        try {
+          const errData = JSON.parse(text);
+          errMsg = errData.message || errMsg;
+        } catch { errMsg = text || res.statusText; }
+        throw new Error(errMsg);
       }
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Wellness Blueprint generated!", description: "Review the blueprint and approve before sharing with the client." });
     },
     onError: (err: Error) => {
-      console.error("[Blueprint] Mutation error:", err);
       toast({ title: "Error generating blueprint", description: err.message, variant: "destructive" });
     },
   });
@@ -765,7 +755,7 @@ export default function AdminCoaching() {
                       })()}
                     </SelectTrigger>
                     <SelectContent>
-                      {[1, 2, 3, 4].map(week => {
+                      {Array.from({ length: (selectedClient as any)?.planDurationWeeks || 4 }, (_, i) => i + 1).map(week => {
                         const hasWeek = (clientWorkoutPlan as any[]).some(p => p.weekNumber === week);
                         return (
                           <SelectItem key={week} value={String(week)}>
@@ -1060,7 +1050,7 @@ export default function AdminCoaching() {
                                   {lastCheckin ? (
                                     <div className="text-sm font-medium text-gray-900">
                                       {lastCheckin.mood === "great" ? "🤩" : lastCheckin.mood === "good" ? "😊" : lastCheckin.mood === "okay" ? "😐" : lastCheckin.mood === "tired" ? "😴" : lastCheckin.mood === "struggling" ? "😣" : "📋"}
-                                      {" "}{lastCheckin.energyLevel}/5 energy
+                                      {" "}{lastCheckin.energyLevel}/10 energy
                                       <span className="text-gray-400 ml-1">· {lastCheckinAge !== null && lastCheckinAge < 24 ? `${lastCheckinAge}h ago` : lastCheckinAge !== null ? `${Math.floor(lastCheckinAge / 24)}d ago` : ""}</span>
                                     </div>
                                   ) : (
@@ -1115,15 +1105,6 @@ export default function AdminCoaching() {
                                   const coachRemarksApproved = !!(selectedClient as any).coachRemarksApproved;
                                   const aiSummaryApproved = !!(selectedClient as any).aiSummaryApproved;
                                   const canStartBuilding = hasCoachRemarks && hasAiSummary && coachRemarksApproved && aiSummaryApproved;
-
-                                  // Debug logging
-                                  console.log('[Plan Builder Check]', {
-                                    hasCoachRemarks,
-                                    hasAiSummary,
-                                    coachRemarksApproved,
-                                    aiSummaryApproved,
-                                    canStartBuilding
-                                  });
 
                                   return (
                                     <>
@@ -1529,7 +1510,7 @@ export default function AdminCoaching() {
               <TabsContent value="workout" className="mt-6">
                 {/* Week Generation Status Banner */}
                 <div className="grid grid-cols-4 gap-3 mb-6">
-                  {[1, 2, 3, 4].map(week => {
+                  {Array.from({ length: (selectedClient as any)?.planDurationWeeks || 4 }, (_, i) => i + 1).map(week => {
                     const weekPlan = (clientWorkoutPlan as any[]).filter(p => p.weekNumber === week);
                     const hasWeek = weekPlan.length > 0;
                     const isGenerating = generateWorkoutMutation.isPending && generatingWeek === week;
@@ -1651,7 +1632,7 @@ export default function AdminCoaching() {
                       />
                     ) : (
                     <div className="space-y-6">
-                      {[1, 2, 3, 4].map(week => {
+                      {Array.from({ length: (selectedClient as any)?.planDurationWeeks || 4 }, (_, i) => i + 1).map(week => {
                         const weekPlan = (clientWorkoutPlan as any[]).filter(p => p.weekNumber === week);
                         const hasWeek = weekPlan.length > 0;
                         const isGenerating = generateWorkoutMutation.isPending && generatingWeek === week;
@@ -2631,10 +2612,18 @@ export default function AdminCoaching() {
                       isApproved={isApproved}
                       isGenerating={isGenerating}
                       onRegenerate={() => generateBlueprintMutation.mutate(selectedClient.id)}
-                      onApprove={() => approveBlueprintMutation.mutate({
-                        clientId: selectedClient.id,
-                        approved: !isApproved,
-                      })}
+                      onApprove={() => {
+                        const currentlyApproved = (selectedClient as any)?.blueprintApproved;
+                        if (currentlyApproved) {
+                          if (!window.confirm("This will hide the blueprint from the client until you re-approve. Continue?")) {
+                            return;
+                          }
+                        }
+                        approveBlueprintMutation.mutate({
+                          clientId: selectedClient.id,
+                          approved: !currentlyApproved,
+                        });
+                      }}
                       onExportPDF={() => {
                         const clientName = `${selectedClient.user?.firstName || ''} ${selectedClient.user?.lastName || ''}`.trim();
                         generateBlueprintPDF(blueprint, clientName).then(() => {
@@ -2804,11 +2793,12 @@ export default function AdminCoaching() {
                             clientId: selectedClient.id,
                             weekNumber: outlinePreviewWeek,
                             editedOutline: editingOutlineText || undefined,
+                          }, {
+                            onSuccess: () => {
+                              // Generate workout AFTER outline is confirmed saved
+                              generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: outlinePreviewWeek });
+                            },
                           });
-                          // After approval, generate the full workout
-                          setTimeout(() => {
-                            generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: outlinePreviewWeek });
-                          }, 500);
                           setOutlinePreviewWeek(null);
                           setEditingOutlineText("");
                         }
