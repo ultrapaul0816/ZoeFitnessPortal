@@ -2150,7 +2150,7 @@ export default function MyCoaching() {
             "07:00 AM",
             "Morning Ritual",
             <Coffee className="w-5 h-5 text-pink-500" />,
-            <Card className="border-pink-100 rounded-2xl shadow-sm">
+            <Card className="border-pink-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Droplets className="w-4 h-4 text-blue-500" />
@@ -2254,7 +2254,7 @@ export default function MyCoaching() {
             "04:30 PM",
             "Snack Time",
             <Apple className="w-5 h-5 text-pink-500" />,
-            <Card className="border-pink-100 rounded-2xl shadow-sm">
+            <Card className="border-pink-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 {snackPlan && snackPlan.options?.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -2275,7 +2275,7 @@ export default function MyCoaching() {
             "09:00 PM",
             "Mindset & Recovery",
             <Brain className="w-5 h-5 text-pink-500" />,
-            <Card className="border-pink-100 rounded-2xl shadow-sm">
+            <Card className="border-pink-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 {mindsetTip ? (
                   <>
@@ -3098,12 +3098,12 @@ export default function MyCoaching() {
                     <div
                       className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
                         isFromCoach
-                          ? "bg-pink-500 text-white rounded-bl-md"
-                          : "bg-gray-200 text-gray-900 rounded-br-md"
+                          ? "bg-white text-gray-900 border border-pink-100 rounded-bl-sm"
+                          : "bg-pink-500 text-white rounded-br-sm"
                       }`}
                     >
                       <p className="text-sm">{msg.content}</p>
-                      <div className={`flex items-center gap-1 mt-1 ${isFromCoach ? "text-pink-100" : "text-gray-500"}`}>
+                      <div className={`flex items-center gap-1 mt-1 ${isFromCoach ? "text-gray-400" : "text-pink-100"}`}>
                         <span className="text-xs">{dateLabel}</span>
                         {!isFromCoach && msg.isRead && (
                           <span className="text-xs font-medium text-blue-500 ml-1">Seen ✓</span>
@@ -3523,7 +3523,10 @@ export default function MyCoaching() {
               return (
                 <button
                   key={item.view}
-                  onClick={() => setActiveView(item.view)}
+                  onClick={() => {
+                    if (item.view !== "workouts") setGuidedWorkout(null);
+                    setActiveView(item.view);
+                  }}
                   className={`relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-xl transition-all ${
                     isActive
                       ? "bg-pink-500 text-white shadow-sm"
