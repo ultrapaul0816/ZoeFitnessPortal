@@ -1092,6 +1092,11 @@ export default function MyCoaching() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
+  // Guided workout mode state
+  const [guidedWorkout, setGuidedWorkout] = useState<WorkoutPlan | null>(null);
+  const [guidedExerciseIndex, setGuidedExerciseIndex] = useState(0);
+  const [guidedSectionIndex, setGuidedSectionIndex] = useState(0);
+
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -2176,7 +2181,7 @@ export default function MyCoaching() {
                 {todaysWorkout ? (
                   <>
                     <p className="text-sm font-semibold text-gray-900 mb-2">{todaysWorkout.title}</p>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 mb-2">
                       <Badge className={`text-xs rounded-full ${DAY_TYPE_COLORS[todaysWorkout.dayType] || "bg-gray-100 text-gray-700"}`}>
                         {todaysWorkout.dayType.replace(/_/g, " ")}
                       </Badge>
@@ -2187,7 +2192,23 @@ export default function MyCoaching() {
                       )}
                     </div>
                     {todaysWorkout.description && (
-                      <p className="text-xs text-gray-500 mt-2 line-clamp-2">{todaysWorkout.description}</p>
+                      <p className="text-xs text-gray-500 mb-3 line-clamp-2">{todaysWorkout.description}</p>
+                    )}
+                    {(todaysWorkout.exercises as any)?.sections && todaysWorkout.dayType !== "rest" && (
+                      <Button
+                        size="sm"
+                        className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-xs py-2.5"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGuidedWorkout(todaysWorkout);
+                          setGuidedSectionIndex(0);
+                          setGuidedExerciseIndex(0);
+                          setActiveView("workouts");
+                        }}
+                      >
+                        <Play className="w-3.5 h-3.5 mr-1.5" />
+                        Start Guided Workout
+                      </Button>
                     )}
                   </>
                 ) : (
@@ -2528,6 +2549,22 @@ export default function MyCoaching() {
                         <p className="text-xs text-gray-700 whitespace-pre-line">{workout.coachNotes}</p>
                       </div>
                     )}
+
+                    {/* Start Guided Workout button */}
+                    {isStructured && workout.dayType !== "rest" && (
+                      <Button
+                        onClick={() => {
+                          setGuidedWorkout(workout);
+                          setGuidedSectionIndex(0);
+                          setGuidedExerciseIndex(0);
+                          window.scrollTo(0, 0);
+                        }}
+                        className="w-full mt-4 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white rounded-xl py-5 text-sm font-semibold shadow-sm"
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        {isDayComplete ? "Review Workout" : "Start Guided Workout"}
+                      </Button>
+                    )}
                   </div>
                 )}
               </Card>
@@ -2559,6 +2596,266 @@ export default function MyCoaching() {
       )}
     </div>
   );
+
+  const renderGuidedWorkout = () => {
+    if (!guidedWorkout) return null;
+    const exercisesData = guidedWorkout.exercises as any;
+    if (!exercisesData?.sections) return null;
+
+    const allExercises: { exercise: any; sectionIndex: number; exerciseIndex: number; sectionName: string; sectionType: string }[] = [];
+    exercisesData.sections.forEach((section: any, sIdx: number) => {
+      if (section.exercises) {
+        section.exercises.forEach((ex: any, eIdx: number) => {
+          allExercises.push({
+            exercise: ex,
+            sectionIndex: sIdx,
+            exerciseIndex: eIdx,
+            sectionName: section.name || section.type,
+            sectionType: section.type || "main",
+          });
+        });
+      }
+    });
+
+    if (allExercises.length === 0) return null;
+
+    const flatIndex = allExercises.findIndex(
+      (e) => e.sectionIndex === guidedSectionIndex && e.exerciseIndex === guidedExerciseIndex
+    );
+    const currentIdx = flatIndex >= 0 ? flatIndex : 0;
+    const current = allExercises[currentIdx];
+    const ex = current.exercise;
+    const sConfig = SECTION_TYPE_CONFIG[current.sectionType] || SECTION_TYPE_CONFIG.main;
+    const completed = isExerciseCompleted(guidedWorkout.id, guidedWorkout.dayNumber, current.sectionIndex, current.exerciseIndex);
+    const completedCount = allExercises.filter(
+      (e) => isExerciseCompleted(guidedWorkout.id, guidedWorkout.dayNumber, e.sectionIndex, e.exerciseIndex)
+    ).length;
+    const progressPercent = Math.round((completedCount / allExercises.length) * 100);
+    const prevExercise = currentIdx > 0 ? allExercises[currentIdx - 1] : null;
+    const nextExercise = currentIdx < allExercises.length - 1 ? allExercises[currentIdx + 1] : null;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white -mx-4 -mt-6 px-4 pt-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => setGuidedWorkout(null)}
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-pink-600 transition-colors"
+          >
+            <ChevronDown className="w-4 h-4 rotate-90" />
+            Back
+          </button>
+          <div className="text-center">
+            <p className="text-sm font-bold text-gray-900">{guidedWorkout.title}</p>
+            <p className="text-xs text-pink-600">{DAY_NAMES[guidedWorkout.dayNumber - 1]}</p>
+          </div>
+          <span className="text-xs text-gray-500 font-medium">
+            {currentIdx + 1}/{allExercises.length}
+          </span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs text-gray-500">{completedCount} of {allExercises.length} done</span>
+            <span className="text-xs font-bold text-pink-600">{progressPercent}%</span>
+          </div>
+          <Progress value={progressPercent} className="h-2.5 [&>div]:bg-gradient-to-r [&>div]:from-pink-400 [&>div]:to-pink-600" />
+        </div>
+
+        {/* Section badge */}
+        <div className="flex items-center gap-2 mb-4">
+          {(() => {
+            const SIcon = sConfig.icon;
+            return (
+              <Badge className={`${sConfig.bg} ${sConfig.text} border ${sConfig.border} rounded-full text-xs px-3 py-1`}>
+                <SIcon className="w-3 h-3 mr-1" />
+                {current.sectionName}
+              </Badge>
+            );
+          })()}
+          {exercisesData.estimatedDuration && (
+            <Badge variant="outline" className="text-xs text-gray-500 rounded-full">
+              <Clock className="w-3 h-3 mr-1" />
+              {exercisesData.estimatedDuration}
+            </Badge>
+          )}
+        </div>
+
+        {/* Current exercise card */}
+        <Card className={`border-2 rounded-2xl shadow-lg mb-4 ${completed ? "border-green-300 bg-green-50/30" : "border-pink-200"}`}>
+          <CardContent className="p-6">
+            {/* Video */}
+            {ex.videoUrl && getYouTubeId(ex.videoUrl) && (
+              <div className="aspect-video rounded-xl overflow-hidden mb-4 bg-gray-100">
+                <iframe
+                  src={`https://www.youtube.com/embed/${getYouTubeId(ex.videoUrl)}`}
+                  className="w-full h-full"
+                  allowFullScreen
+                  allow="autoplay"
+                />
+              </div>
+            )}
+
+            <h2 className={`text-xl font-bold mb-3 ${completed ? "text-green-700" : "text-gray-900"}`}>
+              {completed && <CheckCircle className="w-5 h-5 inline mr-2 text-green-500" />}
+              {ex.name}
+            </h2>
+
+            {/* Exercise details */}
+            <div className="flex flex-wrap gap-3 mb-4">
+              {ex.sets && (
+                <div className="bg-pink-50 rounded-xl px-4 py-2.5 text-center">
+                  <p className="text-xs text-gray-500 uppercase">Sets</p>
+                  <p className="text-lg font-bold text-pink-700">{ex.sets}</p>
+                </div>
+              )}
+              {ex.reps && (
+                <div className="bg-pink-50 rounded-xl px-4 py-2.5 text-center">
+                  <p className="text-xs text-gray-500 uppercase">Reps</p>
+                  <p className="text-lg font-bold text-pink-700">{ex.reps}</p>
+                </div>
+              )}
+              {ex.duration && (
+                <div className="bg-pink-50 rounded-xl px-4 py-2.5 text-center">
+                  <p className="text-xs text-gray-500 uppercase">Duration</p>
+                  <p className="text-lg font-bold text-pink-700">{ex.duration}</p>
+                </div>
+              )}
+              {ex.restSeconds && (
+                <div className="bg-blue-50 rounded-xl px-4 py-2.5 text-center">
+                  <p className="text-xs text-gray-500 uppercase">Rest</p>
+                  <p className="text-lg font-bold text-blue-700">{ex.restSeconds}s</p>
+                </div>
+              )}
+            </div>
+
+            {/* Coach reason / personalization */}
+            {ex.reason && (
+              <div className="flex items-start gap-2 bg-violet-50 rounded-xl p-3 mb-3">
+                <Wand2 className="w-4 h-4 text-violet-500 mt-0.5 shrink-0" />
+                <p className="text-sm text-violet-700">{ex.reason}</p>
+              </div>
+            )}
+
+            {/* Notes / instructions */}
+            {ex.notes && (
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="text-sm text-gray-600 italic">{ex.notes}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Mark complete button */}
+        <Button
+          onClick={() => {
+            toggleCompletionMutation.mutate({
+              planId: guidedWorkout.id,
+              weekNumber: guidedWorkout.weekNumber,
+              dayNumber: guidedWorkout.dayNumber,
+              sectionIndex: current.sectionIndex,
+              exerciseIndex: current.exerciseIndex,
+              exerciseName: ex.name,
+              completed: !completed,
+            });
+          }}
+          className={`w-full rounded-xl py-6 text-base font-semibold mb-4 ${
+            completed
+              ? "bg-green-500 hover:bg-green-600 text-white"
+              : "bg-pink-500 hover:bg-pink-600 text-white"
+          }`}
+        >
+          {completed ? (
+            <><CheckCircle className="w-5 h-5 mr-2" /> Completed</>
+          ) : (
+            <><Dumbbell className="w-5 h-5 mr-2" /> Mark as Done</>
+          )}
+        </Button>
+
+        {/* Navigation */}
+        <div className="flex gap-3 mb-8">
+          <Button
+            variant="outline"
+            className="flex-1 rounded-xl py-5"
+            disabled={currentIdx === 0}
+            onClick={() => {
+              if (prevExercise) {
+                setGuidedSectionIndex(prevExercise.sectionIndex);
+                setGuidedExerciseIndex(prevExercise.exerciseIndex);
+                window.scrollTo(0, 0);
+              }
+            }}
+          >
+            <ChevronDown className="w-4 h-4 mr-1 rotate-90" />
+            <span className="truncate text-sm">
+              {prevExercise ? prevExercise.exercise.name : "Start"}
+            </span>
+          </Button>
+          <Button
+            className="flex-1 rounded-xl py-5 bg-pink-500 hover:bg-pink-600 text-white"
+            disabled={currentIdx === allExercises.length - 1}
+            onClick={() => {
+              if (nextExercise) {
+                setGuidedSectionIndex(nextExercise.sectionIndex);
+                setGuidedExerciseIndex(nextExercise.exerciseIndex);
+                window.scrollTo(0, 0);
+              }
+            }}
+          >
+            <span className="truncate text-sm">
+              {nextExercise ? nextExercise.exercise.name : "Done"}
+            </span>
+            <ChevronDown className="w-4 h-4 ml-1 -rotate-90" />
+          </Button>
+        </div>
+
+        {/* Exercise overview dots */}
+        <div className="flex flex-wrap justify-center gap-1.5 mb-6">
+          {allExercises.map((e, i) => {
+            const isDone = isExerciseCompleted(guidedWorkout.id, guidedWorkout.dayNumber, e.sectionIndex, e.exerciseIndex);
+            const isCurrent = i === currentIdx;
+            return (
+              <button
+                key={i}
+                onClick={() => {
+                  setGuidedSectionIndex(e.sectionIndex);
+                  setGuidedExerciseIndex(e.exerciseIndex);
+                  window.scrollTo(0, 0);
+                }}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  isCurrent
+                    ? "bg-pink-500 ring-2 ring-pink-200 scale-125"
+                    : isDone
+                    ? "bg-green-400"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+                title={e.exercise.name}
+              />
+            );
+          })}
+        </div>
+
+        {/* All complete celebration */}
+        {completedCount === allExercises.length && allExercises.length > 0 && (
+          <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl mb-8">
+            <CardContent className="p-6 text-center">
+              <div className="text-4xl mb-3">💪</div>
+              <h3 className="text-lg font-bold text-green-800 mb-1">Workout Complete!</h3>
+              <p className="text-sm text-green-600">Amazing work today. Zoe is proud of you!</p>
+              <Button
+                variant="outline"
+                className="mt-4 border-green-300 text-green-700 hover:bg-green-100 rounded-xl"
+                onClick={() => setGuidedWorkout(null)}
+              >
+                Back to Overview
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  };
 
   const renderNutritionView = () => (
     <div>
@@ -3210,7 +3507,7 @@ export default function MyCoaching() {
         </div>
 
         {activeView === "today" && renderTodayView()}
-        {activeView === "workouts" && renderWorkoutsView()}
+        {activeView === "workouts" && (guidedWorkout ? renderGuidedWorkout() : renderWorkoutsView())}
         {activeView === "nutrition" && renderNutritionView()}
         {activeView === "blueprint" && (
           <MyWellnessBlueprint clientName={`${planData?.userProfile?.firstName || ''} ${planData?.userProfile?.lastName || ''}`.trim()} />
