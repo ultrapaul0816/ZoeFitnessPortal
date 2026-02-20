@@ -1147,7 +1147,7 @@ export const coachingCheckins = pgTable("coaching_checkins", {
   userId: varchar("user_id").notNull(),
   date: timestamp("date").notNull(),
   mood: text("mood"),
-  energyLevel: integer("energy_level"),
+  energyLevel: integer("energy_level"), // 1-10 scale
   sleepHours: integer("sleep_hours"),
   waterGlasses: integer("water_glasses").default(0),
   workoutCompleted: boolean("workout_completed").default(false),
@@ -1453,7 +1453,7 @@ export const insertCoachingCheckinSchema = createInsertSchema(coachingCheckins).
   createdAt: true,
 }).extend({
   mood: z.enum(['great', 'good', 'okay', 'tired', 'struggling']).optional().nullable(),
-  energyLevel: z.number().int().min(1).max(5).optional().nullable(),
+  energyLevel: z.number().int().min(1).max(10).optional().nullable(),
 });
 
 // Private Coaching types

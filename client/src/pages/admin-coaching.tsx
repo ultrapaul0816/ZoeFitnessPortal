@@ -1387,7 +1387,7 @@ export default function AdminCoaching() {
                                 <div className="grid grid-cols-4 gap-3">
                                   <div className="bg-white rounded-lg p-2 text-center">
                                     <div className="text-[10px] text-gray-500 uppercase">Energy</div>
-                                    <div className="text-sm font-bold text-orange-600">{lastCheckin.energyLevel || '-'}/5</div>
+                                    <div className="text-sm font-bold text-orange-600">{lastCheckin.energyLevel || '-'}/10</div>
                                   </div>
                                   <div className="bg-white rounded-lg p-2 text-center">
                                     <div className="text-[10px] text-gray-500 uppercase">Sleep</div>
