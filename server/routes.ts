@@ -8492,6 +8492,11 @@ Rules:
       const client = await storage.getCoachingClient(req.params.clientId);
       if (!client) return res.status(404).json({ message: "Client not found" });
 
+      const validStatuses = ["plan_generating", "plan_ready", "intake_complete"];
+      if (!validStatuses.includes(client.status)) {
+        return res.status(400).json({ message: `Cannot approve plan: client is in '${client.status}' status` });
+      }
+
       // Validate that plans exist before activation
       const workoutPlans = await storage.getCoachingWorkoutPlans(client.id);
       if (workoutPlans.length === 0) {
@@ -8516,9 +8521,9 @@ Rules:
       }
 
       // Update client status to active
-      await storage.updateCoachingClient(client.id, { status: "active" });
+      await storage.updateCoachingClient(client.id, { status: "plan_ready" });
 
-      res.json({ message: "Plan approved and client is now active" });
+      res.json({ message: "Plan approved. Client is ready for activation.", status: "plan_ready" });
     } catch (error) {
       console.error("Error approving plan:", error);
       res.status(500).json({ message: "Failed to approve plan" });
@@ -9378,12 +9383,8 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
     }
   });
 
-  app.get("/api/admin/coaching/:clientId/workout-completions", async (req, res) => {
+  app.get("/api/admin/coaching/:clientId/workout-completions", requireAdmin, async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const user = await storage.getUser(req.session.userId);
-      if (!user?.isAdmin) return res.status(403).json({ message: "Admin access required" });
-
       const { clientId } = req.params;
       const weekNumber = req.query.week ? parseInt(req.query.week as string) : undefined;
 
@@ -9660,8 +9661,9 @@ ${clientData.nutritionPlans.length > 0 ? `NUTRITION PLAN OUTLINE:\n${JSON.string
   // Client-facing: Get my Wellness Blueprint (only if approved)
   app.get("/api/coaching/my-wellness-blueprint", async (req, res) => {
     try {
-      if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });
-      const userId = req.session.userId.toString();
+      const sessionUserId = req.session?.userId || (req as any)._tokenUserId;
+      if (!sessionUserId) return res.status(401).json({ message: "Not authenticated" });
+      const userId = sessionUserId.toString();
 
       const client = await storage.getCoachingClientByUserId(userId);
       if (!client) return res.status(404).json({ message: "No coaching client found" });

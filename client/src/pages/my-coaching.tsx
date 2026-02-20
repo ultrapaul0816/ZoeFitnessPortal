@@ -13,7 +13,6 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import BottomNav from "@/components/bottom-nav";
 import { StrategicWelcome } from "@/components/onboarding/StrategicWelcome";
 import {
   Dumbbell,
@@ -378,6 +377,25 @@ const HELP_AREAS = [
   "General comfort & wellbeing",
 ];
 
+const LIFESTYLE_STEP_META = [
+  { icon: "Heart", subtitle: "Let's start with the basics", desc: "We'll use this to personalise your experience." },
+  { icon: "Shield", subtitle: "Just in case", desc: "Someone we can reach if needed during sessions." },
+  { icon: "Calendar", subtitle: "Your pregnancy journey", desc: "This helps Zoe tailor everything to your stage." },
+  { icon: "Activity", subtitle: "Your health background", desc: "Select anything you've experienced — no judgement, just safety." },
+  { icon: "Activity", subtitle: "Doctor's notes", desc: "Anything your healthcare provider has flagged for us to know." },
+  { icon: "Dumbbell", subtitle: "Body & movement", desc: "Understanding where you're at helps us meet you there." },
+  { icon: "Target", subtitle: "Core health & goals", desc: "Let's understand what matters most to you right now." },
+  { icon: "ClipboardCheck", subtitle: "Medications & history", desc: "This ensures your plan is safe and personalised." },
+  { icon: "Sparkles", subtitle: "Your goals & lifestyle", desc: "Tell us what you'd love to achieve with coaching." },
+  { icon: "Star", subtitle: "Almost done!", desc: "A few final details to complete your profile." },
+];
+
+const HEALTH_STEP_META = [
+  { icon: "Heart", subtitle: "Your details", desc: "We'll pre-fill what we can from your earlier answers." },
+  { icon: "Shield", subtitle: "Participant declaration", desc: "A standard acknowledgement for your safety." },
+  { icon: "ClipboardCheck", subtitle: "Medical clearance", desc: "Your doctor's confirmation that exercise is safe for you." },
+];
+
 function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
   clientId: string;
   onComplete: () => void;
@@ -407,7 +425,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
     medicalFlagsOther: "",
     discomfortAreas: [] as string[],
     discomfortTiming: "",
-    exerciseHistory: [] as string[],
+    exerciseHistory: "",
     movementFeels: "",
     coreSymptoms: [] as string[],
     helpAreas: [] as string[],
@@ -475,10 +493,12 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
     { title: "Personal Info", fields: ["fullName", "age", "whatsappNumber", "email"] },
     { title: "Emergency Contact", fields: ["emergencyContactName", "emergencyRelationship", "emergencyContactNumber"] },
     { title: "Pregnancy Info", fields: ["pregnancyNumber", "dueDate", "trimester"] },
-    { title: "Medical History", fields: ["medicalConditions", "medicalFlags"] },
+    { title: "Medical Conditions", fields: ["medicalConditions"] },
+    { title: "Medical Flags", fields: ["medicalFlags"] },
     { title: "Discomfort & Movement", fields: ["discomfortAreas", "discomfortTiming", "exerciseHistory", "movementFeels"] },
     { title: "Core & Goals", fields: ["coreSymptoms", "helpAreas"] },
-    { title: "Additional Info", fields: ["takingMedications", "previousPregnancies", "mainConcerns", "mainGoals", "currentLifestyle"] },
+    { title: "Medications & History", fields: ["takingMedications", "previousPregnancies"] },
+    { title: "Goals & Lifestyle", fields: ["mainConcerns", "mainGoals", "currentLifestyle"] },
     { title: "Final Details", fields: ["hearAbout", "usingPrograms", "consent"] },
   ];
 
@@ -537,43 +557,43 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
         </div>
       );
       case 3: return (
-        <div className="space-y-5">
-          <div>
-            <label className="text-sm font-medium text-gray-700">Have you experienced any of the following? *</label>
-            <p className="text-xs text-gray-500 mb-2">Select all that apply</p>
-            <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-2">
-              {MEDICAL_CONDITIONS.map(cond => (
-                <label key={cond} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalConditions.includes(cond) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-                  <Checkbox checked={lifestyle.medicalConditions.includes(cond)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", cond)} />
-                  {cond}
-                </label>
-              ))}
-              <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalConditions.includes("None of the above") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-                <Checkbox checked={lifestyle.medicalConditions.includes("None of the above")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", "None of the above")} />
-                None of the above
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-gray-700">Have you experienced any of the following? *</label>
+          <p className="text-xs text-gray-500">Select all that apply</p>
+          <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-2">
+            {MEDICAL_CONDITIONS.map(cond => (
+              <label key={cond} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalConditions.includes(cond) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                <Checkbox checked={lifestyle.medicalConditions.includes(cond)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", cond)} />
+                {cond}
               </label>
-            </div>
-            <Input className="mt-2" value={lifestyle.medicalConditionsOther} onChange={e => updateLifestyle("medicalConditionsOther", e.target.value)} placeholder="Other (please specify)" />
+            ))}
+            <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalConditions.includes("None of the above") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+              <Checkbox checked={lifestyle.medicalConditions.includes("None of the above")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", "None of the above")} />
+              None of the above
+            </label>
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Any medical flags your doctor has mentioned? *</label>
-            <div className="grid grid-cols-1 gap-2 mt-2">
-              {MEDICAL_FLAGS.map(flag => (
-                <label key={flag} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalFlags.includes(flag) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-                  <Checkbox checked={lifestyle.medicalFlags.includes(flag)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", flag)} />
-                  {flag}
-                </label>
-              ))}
-              <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalFlags.includes("None") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-                <Checkbox checked={lifestyle.medicalFlags.includes("None")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", "None")} />
-                None
-              </label>
-            </div>
-            <Input className="mt-2" value={lifestyle.medicalFlagsOther} onChange={e => updateLifestyle("medicalFlagsOther", e.target.value)} placeholder="Other (please specify)" />
-          </div>
+          <Input value={lifestyle.medicalConditionsOther} onChange={e => updateLifestyle("medicalConditionsOther", e.target.value)} placeholder="Other (please specify)" />
         </div>
       );
       case 4: return (
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-gray-700">Any medical flags your doctor has mentioned? *</label>
+          <div className="grid grid-cols-1 gap-2 mt-2">
+            {MEDICAL_FLAGS.map(flag => (
+              <label key={flag} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalFlags.includes(flag) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                <Checkbox checked={lifestyle.medicalFlags.includes(flag)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", flag)} />
+                {flag}
+              </label>
+            ))}
+            <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalFlags.includes("None") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+              <Checkbox checked={lifestyle.medicalFlags.includes("None")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", "None")} />
+              None
+            </label>
+          </div>
+          <Input className="mt-2" value={lifestyle.medicalFlagsOther} onChange={e => updateLifestyle("medicalFlagsOther", e.target.value)} placeholder="Other (please specify)" />
+        </div>
+      );
+      case 5: return (
         <div className="space-y-5">
           <div>
             <label className="text-sm font-medium text-gray-700">Where do you feel discomfort most days? *</label>
@@ -601,8 +621,8 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
             <label className="text-sm font-medium text-gray-700">Movement & exercise history *</label>
             <div className="space-y-2 mt-2">
               {EXERCISE_HISTORY.map(opt => (
-                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.exerciseHistory.includes(opt) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-                  <Checkbox checked={lifestyle.exerciseHistory.includes(opt)} onCheckedChange={() => toggleArrayField(setLifestyle, "exerciseHistory", opt)} />
+                <label key={opt} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.exerciseHistory === opt ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <input type="radio" name="exerciseHistory" checked={lifestyle.exerciseHistory === opt} onChange={() => updateLifestyle("exerciseHistory", opt)} className="accent-pink-500" />
                   {opt}
                 </label>
               ))}
@@ -621,7 +641,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
         </div>
       );
-      case 5: return (
+      case 6: return (
         <div className="space-y-5">
           <div>
             <label className="text-sm font-medium text-gray-700">Pressure & core awareness check *</label>
@@ -647,7 +667,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
         </div>
       );
-      case 6: return (
+      case 7: return (
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">Are you currently taking any medications or supplements? *</label>
@@ -664,12 +684,16 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
             )}
           </div>
           <div><label className="text-sm font-medium text-gray-700">Previous pregnancies, births, or postnatal experiences? *</label><Textarea value={lifestyle.previousPregnancies} onChange={e => updateLifestyle("previousPregnancies", e.target.value)} placeholder="Share any relevant history..." rows={3} /></div>
+        </div>
+      );
+      case 8: return (
+        <div className="space-y-4">
           <div><label className="text-sm font-medium text-gray-700">What concerns you most? *</label><Textarea value={lifestyle.mainConcerns} onChange={e => updateLifestyle("mainConcerns", e.target.value)} placeholder="About pregnancy, delivery, or postnatal phase..." rows={3} /></div>
           <div><label className="text-sm font-medium text-gray-700">Main goals with coaching? *</label><Textarea value={lifestyle.mainGoals} onChange={e => updateLifestyle("mainGoals", e.target.value)} placeholder="What do you want to achieve?" rows={3} /></div>
           <div><label className="text-sm font-medium text-gray-700">Describe your current lifestyle *</label><Textarea value={lifestyle.currentLifestyle} onChange={e => updateLifestyle("currentLifestyle", e.target.value)} placeholder="Daily routine, activity level, work..." rows={3} /></div>
         </div>
       );
-      case 7: return (
+      case 9: return (
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">How did you hear about Zoe?</label>
@@ -802,13 +826,13 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <div className="max-w-lg mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-xl font-bold text-gray-900">
-              {currentForm === "lifestyle" ? "Lifestyle & Goals" : "Health Evaluation"}
+              {currentForm === "lifestyle" ? "About You" : "Medical Clearance"}
             </h1>
             <p className="text-sm text-gray-500">
-              Form {currentForm === "lifestyle" ? "1" : "2"} of 2
+              Part {currentForm === "lifestyle" ? "1" : "2"} of 2
             </p>
           </div>
           <Button variant="ghost" size="sm" onClick={onLogout} className="text-gray-400">
@@ -816,13 +840,19 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </Button>
         </div>
 
-        {/* Progress */}
+        {/* Progress dots */}
         <div className="mb-6">
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-            <span>Step {currentStep + 1} of {totalSteps}: {steps[currentStep].title}</span>
-            <span>{Math.round(progress)}%</span>
+          <div className="flex items-center gap-1.5 mb-2">
+            {steps.map((_: any, i: number) => (
+              <div
+                key={i}
+                className={`h-1.5 flex-1 rounded-full transition-all ${
+                  i < currentStep ? "bg-pink-400" : i === currentStep ? "bg-pink-500" : "bg-gray-200"
+                }`}
+              />
+            ))}
           </div>
-          <Progress value={progress} className="h-2" />
+          <p className="text-xs text-gray-400">Step {currentStep + 1} of {totalSteps}</p>
         </div>
 
         {/* Welcome banner on first step */}
@@ -836,6 +866,22 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
         {/* Form Content */}
         <Card className="border-0 shadow-lg rounded-2xl">
           <CardContent className="p-6">
+            {/* Section intro */}
+            {(() => {
+              const meta = currentForm === "lifestyle" ? LIFESTYLE_STEP_META[currentStep] : HEALTH_STEP_META[currentStep];
+              if (!meta) return null;
+              const IconMap: Record<string, any> = { Heart, Shield, Calendar, Activity, Dumbbell, Target, ClipboardCheck, Sparkles, Star };
+              const IconComp = IconMap[meta.icon];
+              return (
+                <div className="flex items-start gap-3 mb-5 pb-4 border-b border-gray-100">
+                  {IconComp && <div className="p-2 bg-pink-50 rounded-xl"><IconComp className="w-5 h-5 text-pink-500" /></div>}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-sm">{meta.subtitle}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{meta.desc}</p>
+                  </div>
+                </div>
+              );
+            })()}
             {currentForm === "lifestyle" ? renderLifestyleStep() : renderHealthStep()}
           </CardContent>
         </Card>
@@ -927,12 +973,19 @@ export default function MyCoaching() {
           setUser(data.user);
           localStorage.setItem("user", JSON.stringify(data.user));
         } else {
-          const parsedUser = JSON.parse(userData);
-          setUser(parsedUser);
+          // Session expired on server - clear stale local data
+          localStorage.removeItem("user");
+          setUser(null);
         }
       } catch {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
+        // Network error - try localStorage as temporary fallback
+        try {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+        } catch {
+          localStorage.removeItem("user");
+          setUser(null);
+        }
       }
       setAuthChecked(true);
     }
@@ -945,6 +998,13 @@ export default function MyCoaching() {
       setWelcomeCompleted(localStorage.getItem(`welcome_completed_${user.id}`) === 'true');
     }
   }, [user?.id]);
+
+  // Check if user needs to accept terms/disclaimer
+  useEffect(() => {
+    if (user && (!user.termsAccepted || !user.disclaimerAccepted)) {
+      setShowTermsModal(true);
+    }
+  }, [user]);
 
   const handleCoachingLogin = async () => {
     if (!loginEmail || !loginPassword) {
@@ -1452,13 +1512,6 @@ export default function MyCoaching() {
   const client = planData.client;
   const coachingType = client.coachingType;
 
-  // Check if user needs to accept terms/disclaimer
-  useEffect(() => {
-    if (user && (!user.termsAccepted || !user.disclaimerAccepted)) {
-      setShowTermsModal(true);
-    }
-  }, [user]);
-
   // Terms/Disclaimer Modal
   if (showTermsModal && user) {
     const canProceed = termsAccepted && disclaimerAccepted;
@@ -1474,19 +1527,23 @@ export default function MyCoaching() {
       }
 
       try {
-        const response = await fetch("/api/auth/update-user", {
-          method: "PATCH",
+        // Call existing accept-terms endpoint
+        const termsResponse = await fetch("/api/auth/accept-terms", {
+          method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({
-            termsAccepted: true,
-            disclaimerAccepted: true,
-            termsAcceptedAt: new Date().toISOString(),
-            disclaimerAcceptedAt: new Date().toISOString(),
-          }),
+          body: JSON.stringify({ userId: user!.id }),
         });
+        if (!termsResponse.ok) throw new Error("Failed to accept terms");
 
-        if (!response.ok) throw new Error("Failed to update preferences");
+        // Call existing accept-disclaimer endpoint
+        const disclaimerResponse = await fetch("/api/auth/accept-disclaimer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ userId: user!.id }),
+        });
+        if (!disclaimerResponse.ok) throw new Error("Failed to accept disclaimer");
 
         // Update local user state
         const updatedUser = { ...user, termsAccepted: true, disclaimerAccepted: true };
@@ -1846,18 +1903,17 @@ export default function MyCoaching() {
               {/* 5 Pillars Progress */}
               <div className="grid grid-cols-5 gap-3">
                 {[
-                  { icon: Dumbbell, label: "Training", progress: 85 },
-                  { icon: Apple, label: "Nutrition", progress: 72 },
-                  { icon: Brain, label: "Mindset", progress: 60 },
-                  { icon: Heart, label: "Relationships", progress: 55 },
-                  { icon: Target, label: "Purpose", progress: 68 }
+                  { icon: Dumbbell, label: "Training" },
+                  { icon: Apple, label: "Nutrition" },
+                  { icon: Brain, label: "Mindset" },
+                  { icon: Heart, label: "Relationships" },
+                  { icon: Target, label: "Purpose" }
                 ].map((pillar, i) => (
                   <div key={i} className="text-center">
                     <div className="w-12 h-12 mx-auto mb-2 rounded-lg bg-slate-700 flex items-center justify-center">
                       <pillar.icon className="w-5 h-5 text-blue-400" />
                     </div>
-                    <div className="text-xs text-slate-400 mb-1">{pillar.label}</div>
-                    <div className="text-sm font-semibold">{pillar.progress}%</div>
+                    <div className="text-xs text-slate-400">{pillar.label}</div>
                   </div>
                 ))}
               </div>
@@ -2319,7 +2375,8 @@ export default function MyCoaching() {
                   <span className="text-sm text-gray-600">Daily Protein Target</span>
                   <span className="text-sm font-bold text-pink-600">{nutritionOverview.proteinGoal}g</span>
                 </div>
-                <Progress value={70} className="h-2 [&>div]:bg-pink-500" />
+                <div className="h-2 bg-pink-100 rounded-full" />
+                <p className="text-[10px] text-gray-400 mt-1">Track via your daily check-in</p>
               </div>
             )}
 
@@ -2955,7 +3012,7 @@ export default function MyCoaching() {
         {activeView === "messages" && renderMessagesView()}
         {activeView === "checkin" && renderCheckinView()}
 
-        <div className="mt-6 mb-4">
+        <div className="fixed bottom-4 left-4 right-4 z-40">
           <div className="bg-white border border-pink-100 rounded-2xl shadow-sm p-1.5 flex items-center justify-around">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -2999,7 +3056,6 @@ export default function MyCoaching() {
         </div>
       )}
 
-      <BottomNav />
     </div>
   );
 }
