@@ -407,6 +407,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
   const [currentStep, setCurrentStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [validationError, setValidationError] = useState("");
+  const [showFormTransition, setShowFormTransition] = useState(false);
 
   // Lifestyle form state
   const [lifestyle, setLifestyle] = useState({
@@ -562,10 +563,8 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
             .replace("Second trimester", "Second")
             .replace("Third trimester", "Third"),
         }));
-        setCurrentForm("health");
-        setCurrentStep(0);
         setValidationError("");
-        toast({ title: "Form saved!", description: "Now please complete the Health Evaluation form. We've pre-filled your details." });
+        setShowFormTransition(true);
       } else {
         toast({ title: "All forms submitted!", description: "Zoe will review your information and create your plan." });
         onComplete();
@@ -916,6 +915,33 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
       window.scrollTo(0, 0);
     }
   };
+
+  if (showFormTransition) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white flex items-center justify-center px-4">
+        <div className="max-w-md text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-green-500" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Part 1 Complete!</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Great job, {userName}! One more short form to go — this one is about medical clearance
+            so Zoe can keep you safe during your sessions.
+          </p>
+          <Button
+            onClick={() => {
+              setShowFormTransition(false);
+              setCurrentForm("health");
+              setCurrentStep(0);
+            }}
+            className="bg-pink-500 hover:bg-pink-600 text-white rounded-xl px-8"
+          >
+            Continue to Part 2
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
