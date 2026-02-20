@@ -549,9 +549,23 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
       const res = await apiRequest("POST", "/api/coaching/form-responses", { formType, responses });
       const data = await res.json();
       if (formType === "lifestyle_questionnaire") {
+        // Pre-fill health form with data from lifestyle form
+        setHealth(prev => ({
+          ...prev,
+          fullName: lifestyle.fullName,
+          age: lifestyle.age,
+          phone: lifestyle.whatsappNumber,
+          email: lifestyle.email,
+          dueDate: lifestyle.dueDate,
+          trimester: lifestyle.trimester
+            .replace("First trimester", "First")
+            .replace("Second trimester", "Second")
+            .replace("Third trimester", "Third"),
+        }));
         setCurrentForm("health");
         setCurrentStep(0);
-        toast({ title: "Form saved!", description: "Now please complete the Health Evaluation form." });
+        setValidationError("");
+        toast({ title: "Form saved!", description: "Now please complete the Health Evaluation form. We've pre-filled your details." });
       } else {
         toast({ title: "All forms submitted!", description: "Zoe will review your information and create your plan." });
         onComplete();
