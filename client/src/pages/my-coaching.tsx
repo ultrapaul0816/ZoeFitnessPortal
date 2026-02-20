@@ -406,6 +406,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
   const [currentForm, setCurrentForm] = useState<"lifestyle" | "health">("lifestyle");
   const [currentStep, setCurrentStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   // Lifestyle form state
   const [lifestyle, setLifestyle] = useState({
@@ -467,6 +468,79 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
       const arr = prev[field] as string[];
       return { ...prev, [field]: arr.includes(value) ? arr.filter((v: string) => v !== value) : [...arr, value] };
     });
+  };
+
+  const validateCurrentStep = (): string | null => {
+    if (currentForm === "lifestyle") {
+      switch (currentStep) {
+        case 0:
+          if (!lifestyle.fullName.trim()) return "Please enter your full name";
+          if (!lifestyle.age.trim()) return "Please enter your age";
+          if (!lifestyle.whatsappNumber.trim()) return "Please enter your WhatsApp number";
+          if (!lifestyle.email.trim()) return "Please enter your email";
+          return null;
+        case 1:
+          if (!lifestyle.emergencyContactName.trim()) return "Please enter emergency contact name";
+          if (!lifestyle.emergencyRelationship.trim()) return "Please enter their relationship to you";
+          if (!lifestyle.emergencyContactNumber.trim()) return "Please enter emergency contact number";
+          return null;
+        case 2:
+          if (!lifestyle.pregnancyNumber) return "Please select your pregnancy number";
+          if (!lifestyle.dueDate) return "Please enter your due date";
+          if (!lifestyle.trimester) return "Please select your trimester";
+          return null;
+        case 3:
+          if (lifestyle.medicalConditions.length === 0) return "Please select at least one option or 'None of the above'";
+          return null;
+        case 4:
+          if (lifestyle.medicalFlags.length === 0) return "Please select at least one option or 'None'";
+          return null;
+        case 5:
+          if (lifestyle.discomfortAreas.length === 0) return "Please select at least one discomfort area";
+          if (!lifestyle.discomfortTiming) return "Please select when discomfort is worse";
+          if (!lifestyle.exerciseHistory) return "Please select your exercise history";
+          if (!lifestyle.movementFeels) return "Please select how movement feels";
+          return null;
+        case 6:
+          if (lifestyle.coreSymptoms.length === 0) return "Please select at least one option";
+          if (lifestyle.helpAreas.length === 0) return "Please select at least one area";
+          return null;
+        case 7:
+          if (!lifestyle.takingMedications) return "Please indicate if you take medications";
+          if (!lifestyle.previousPregnancies.trim()) return "Please share your pregnancy history (or write 'None')";
+          return null;
+        case 8:
+          if (!lifestyle.mainConcerns.trim()) return "Please share your main concerns";
+          if (!lifestyle.mainGoals.trim()) return "Please share your goals";
+          if (!lifestyle.currentLifestyle.trim()) return "Please describe your current lifestyle";
+          return null;
+        case 9:
+          if (!lifestyle.consent) return "Please accept the consent to continue";
+          return null;
+      }
+    } else {
+      switch (currentStep) {
+        case 0:
+          if (!health.fullName.trim()) return "Please enter your full name";
+          if (!health.age.trim()) return "Please enter your age";
+          if (!health.phone.trim()) return "Please enter your phone number";
+          if (!health.email.trim()) return "Please enter your email";
+          if (!health.dueDate) return "Please enter your due date";
+          if (!health.trimester) return "Please select your trimester";
+          return null;
+        case 1:
+          if (!health.participantDeclaration) return "Please select your declaration";
+          return null;
+        case 2:
+          if (!health.doctorName.trim()) return "Please enter your doctor's name";
+          if (!health.doctorQualification.trim()) return "Please enter doctor's qualification";
+          if (!health.clinicName.trim()) return "Please enter clinic/hospital name";
+          if (!health.doctorContact.trim()) return "Please enter doctor's contact";
+          if (!health.clearanceDecision) return "Please select medical clearance decision";
+          return null;
+      }
+    }
+    return null;
   };
 
   const submitForm = async (formType: string, responses: any) => {
@@ -802,11 +876,17 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
   };
 
   const handleNext = () => {
+    const error = validateCurrentStep();
+    if (error) {
+      setValidationError(error);
+      toast({ title: "Required fields", description: error, variant: "destructive" });
+      return;
+    }
+    setValidationError("");
     if (currentStep < totalSteps - 1) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
     } else {
-      // Submit the current form
       if (currentForm === "lifestyle") {
         submitForm("lifestyle_questionnaire", lifestyle);
       } else {
@@ -816,6 +896,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
   };
 
   const handleBack = () => {
+    setValidationError("");
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
       window.scrollTo(0, 0);
@@ -885,6 +966,13 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
             {currentForm === "lifestyle" ? renderLifestyleStep() : renderHealthStep()}
           </CardContent>
         </Card>
+
+        {/* Validation error */}
+        {validationError && (
+          <div className="mt-3 px-4 py-2.5 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-sm text-red-600">{validationError}</p>
+          </div>
+        )}
 
         {/* Navigation */}
         <div className="flex gap-3 mt-6">
