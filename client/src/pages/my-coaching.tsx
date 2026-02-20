@@ -148,6 +148,7 @@ interface CoachingClient {
   isPregnant?: boolean;
   trimester?: number;
   dueDate?: string;
+  blueprintApproved?: boolean;
 }
 
 interface FormResponse {
@@ -1432,6 +1433,17 @@ export default function MyCoaching() {
     }
   }, [planData?.client?.startDate, planData?.client?.planDurationWeeks]);
 
+  // Auto-show blueprint on first visit after it's approved
+  useEffect(() => {
+    if (planData?.client?.blueprintApproved && planData?.client?.status === "active" && user?.id) {
+      const seenKey = `blueprint_seen_${user.id}`;
+      if (!localStorage.getItem(seenKey)) {
+        setActiveView("blueprint");
+        localStorage.setItem(seenKey, "true");
+      }
+    }
+  }, [planData?.client?.blueprintApproved, planData?.client?.status, user?.id]);
+
   const toggleDay = (key: string) => {
     setExpandedDays((prev) => {
       const next = new Set(prev);
@@ -1831,35 +1843,40 @@ export default function MyCoaching() {
 
   // Show waiting screens for non-active statuses
   if (client.status !== "active") {
-    const statusMessages: Record<string, { title: string; description: string; icon: React.ReactNode }> = {
+    const statusMessages: Record<string, { title: string; description: string; icon: React.ReactNode; detail?: string }> = {
       intake_complete: {
         title: "Zoe is Reviewing Your Information",
-        description: "Thanks for completing your intake forms! Zoe will review your information and create your personalized plan. You'll be notified when it's ready.",
+        description: "Thanks for completing your intake forms! Zoe is carefully reviewing everything you shared to create a plan that's truly personalised to you.",
+        detail: "This usually takes 1-2 business days. You'll get a notification when your plan is ready.",
         icon: <Eye className="w-10 h-10 text-indigo-500" />,
       },
       plan_generating: {
         title: "Your Plan is Being Created",
-        description: "Zoe has reviewed your information and is now creating your personalized workout and nutrition plan. Almost there!",
+        description: "Zoe has reviewed your information and is now building your personalised workout and nutrition plan. Every detail is tailored to your goals and needs.",
+        detail: "Almost there — your plan is being crafted with care.",
         icon: <Brain className="w-10 h-10 text-violet-500" />,
       },
       plan_ready: {
         title: "Your Plan is Almost Ready!",
-        description: "Your personalized plan has been created and Zoe is doing a final review. You'll be notified very soon!",
+        description: "Your personalised plan has been created and Zoe is doing a final quality check to make sure everything is perfect for you.",
+        detail: "You'll be notified very soon!",
         icon: <Sparkles className="w-10 h-10 text-pink-500" />,
       },
       pending_plan: {
         title: "Your Plan is Being Prepared",
-        description: "Zoe is crafting your personalized coaching plan. You'll be notified as soon as it's ready!",
+        description: "Zoe is crafting your personalised coaching plan based on everything you shared. Great things take a little time!",
+        detail: "Check back soon — you'll be notified when it's ready.",
         icon: <Sparkles className="w-10 h-10 text-pink-500" />,
       },
       paused: {
         title: "Coaching Paused",
-        description: "Your coaching program is currently paused. Reach out to Zoe to resume.",
+        description: "Your coaching program is currently paused. Your progress and plan are saved and waiting for you when you're ready.",
+        detail: "Reach out to Zoe anytime to resume your journey.",
         icon: <Clock className="w-10 h-10 text-orange-500" />,
       },
       completed: {
         title: "Program Completed!",
-        description: "Congratulations on completing your coaching program! What an incredible journey.",
+        description: "Congratulations on completing your coaching program! What an incredible journey. The strength you've built is yours to keep.",
         icon: <Star className="w-10 h-10 text-yellow-500" />,
       },
     };
@@ -1872,14 +1889,17 @@ export default function MyCoaching() {
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-        <div className="max-w-lg mx-auto px-4 pt-12 text-center">
-          <div className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="max-w-lg mx-auto px-4 pt-16 text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
             {msg.icon}
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">{msg.title}</h1>
-          <p className="text-gray-600 mb-6">{msg.description}</p>
+          <p className="text-gray-600 mb-3 max-w-sm mx-auto">{msg.description}</p>
+          {msg.detail && (
+            <p className="text-sm text-pink-600 font-medium mb-6">{msg.detail}</p>
+          )}
           <Button
-            className="bg-pink-500 hover:bg-pink-600 text-white"
+            className="bg-pink-500 hover:bg-pink-600 text-white rounded-xl px-8"
             onClick={handleLogout}
           >
             Sign Out
@@ -2055,6 +2075,27 @@ export default function MyCoaching() {
     return (
       <div>
         {renderProfileCard()}
+
+        {/* Blueprint Quick Access - prominent roadmap card */}
+        {client.blueprintApproved && (
+          <button
+            onClick={() => setActiveView("blueprint")}
+            className="w-full mb-5 text-left"
+          >
+            <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
+              <CardContent className="p-5 flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
+                  <BookOpen className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-lg">Your Wellness Blueprint</h3>
+                  <p className="text-white/80 text-sm mt-0.5">Your personalised roadmap — tap to view anytime</p>
+                </div>
+                <ChevronDown className="w-5 h-5 text-white/60 shrink-0 -rotate-90" />
+              </CardContent>
+            </Card>
+          </button>
+        )}
 
         {/* Strategic Framework Card - Only for private coaching */}
         {coachingType === "private_coaching" && (

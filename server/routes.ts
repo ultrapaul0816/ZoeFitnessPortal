@@ -9156,6 +9156,7 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
           isPregnant: client.isPregnant,
           trimester: client.trimester,
           dueDate: client.dueDate,
+          blueprintApproved: (client as any).blueprintApproved || false,
         },
         workoutPlan: workoutPlan.filter(p => p.isApproved),
         nutritionPlan: nutritionPlan.filter(p => p.isApproved),
