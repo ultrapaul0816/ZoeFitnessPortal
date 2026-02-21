@@ -6224,7 +6224,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       const enrollment = currentEnrollment.rows[0];
 
       // Calculate new expiry date
-      let newExpiresAt = enrollment.expires_at;
+      let newExpiresAt: any = enrollment.expires_at;
       
       if (extendMonths) {
         const baseDate = enrollment.expires_at ? new Date(enrollment.expires_at) : new Date();
@@ -6612,7 +6612,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
         console.log(`[Shopify Webhook] Created new user: ${email}`);
 
         // Trigger welcome automation email for new Shopify user
-        triggerAutomation('user_signup', newUser.id, { programName: productTitle }).catch(console.error);
+        triggerAutomation('user_signup', newUser.id, { programName: 'Shopify Purchase' }).catch(console.error);
       }
 
       // STEP 4: Enroll user in matched courses and handle WhatsApp access
@@ -6668,9 +6668,10 @@ Keep it to 2-4 sentences, warm and encouraging.`;
           await storage.createCoachingClient({
             userId,
             status: 'enrolled',
+            paymentStatus: 'completed',
             planDurationWeeks: mapping.durationWeeks,
             healthNotes: `Auto-enrolled via Shopify. Plan type: ${mapping.planType}`,
-          });
+          } as any);
           coachingEnrolled = true;
           console.log(`[Shopify Webhook] Created coaching client for ${email} (${mapping.planType}, ${mapping.durationWeeks} weeks)`);
         } else {
@@ -7414,11 +7415,11 @@ Keep it to 2-4 sentences, warm and encouraging.`;
   });
 
   // Helper function: Generate AI assessment summary from intake forms
-  async function generateAiAssessmentSummary(clientId: string, userId: string): Promise<string> {
+  async function generateAiAssessmentSummary(clientId: string, userId: string | number): Promise<string> {
     const client = await storage.getCoachingClient(clientId);
     if (!client) throw new Error("Client not found");
 
-    const user = await storage.getUser(userId);
+    const user = await storage.getUser(String(userId));
     if (!user) throw new Error("User not found");
 
     const allResponses = await storage.getCoachingFormResponses(clientId);
@@ -7449,11 +7450,11 @@ IMPORTANT RULES:
   }
 
   // Helper function to generate AI coach remarks
-  async function generateCoachRemarksFromIntake(clientId: string, userId: number) {
+  async function generateCoachRemarksFromIntake(clientId: string, userId: string | number) {
     const client = await storage.getCoachingClient(clientId);
     if (!client) throw new Error("Client not found");
 
-    const user = await storage.getUser(userId);
+    const user = await storage.getUser(String(userId));
     if (!user) throw new Error("User not found");
 
     // Get all form responses

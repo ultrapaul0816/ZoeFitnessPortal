@@ -15,6 +15,11 @@ type CoachingClient = {
   };
   unreadMessages: number;
   coachingType?: string;
+  coachRemarks?: any;
+  coachRemarksApproved?: boolean;
+  aiSummary?: string;
+  aiSummaryApproved?: boolean;
+  wellnessBlueprint?: any;
 };
 
 type SidebarStats = {
@@ -68,13 +73,34 @@ export function CoachingSidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const [collapsed, setCollapsed] = useState(false);
 
-  // Filter clients based on search query
-  const filteredClients = clients.filter((client) => {
-    const searchLower = searchQuery.toLowerCase();
-    const fullName = `${client.user.firstName} ${client.user.lastName}`.toLowerCase();
-    const email = client.user.email.toLowerCase();
-    return fullName.includes(searchLower) || email.includes(searchLower);
-  });
+  // Pipeline stage helper
+  const getPipelineInfo = (client: CoachingClient): { label: string; color: string; priority: number } => {
+    const s = client.status || "enrolled";
+    if (s === "active" || s === "completed") return { label: "Active", color: "bg-green-100 text-green-700", priority: 5 };
+    if (s === "paused") return { label: "Paused", color: "bg-gray-100 text-gray-600", priority: 6 };
+    if (s === "cancelled") return { label: "Cancelled", color: "bg-red-100 text-red-600", priority: 7 };
+    if (s === "enrolled") return { label: "Awaiting Intake", color: "bg-yellow-100 text-yellow-700", priority: 2 };
+    if (s === "intake_complete") return { label: "Needs Review", color: "bg-orange-100 text-orange-700", priority: 1 };
+    if (s === "plan_generating") return { label: "Generating Plan", color: "bg-blue-100 text-blue-700", priority: 3 };
+    if (s === "plan_ready") return { label: "Ready to Activate", color: "bg-emerald-100 text-emerald-700", priority: 2 };
+    return { label: s, color: "bg-gray-100 text-gray-600", priority: 4 };
+  };
+
+  // Filter and sort clients — "needs attention" first
+  const filteredClients = clients
+    .filter((client) => {
+      const searchLower = searchQuery.toLowerCase();
+      const fullName = `${client.user.firstName} ${client.user.lastName}`.toLowerCase();
+      const email = client.user.email.toLowerCase();
+      return fullName.includes(searchLower) || email.includes(searchLower);
+    })
+    .sort((a, b) => {
+      // Unread messages first
+      if (a.unreadMessages > 0 && b.unreadMessages === 0) return -1;
+      if (b.unreadMessages > 0 && a.unreadMessages === 0) return 1;
+      // Then by pipeline priority
+      return getPipelineInfo(a).priority - getPipelineInfo(b).priority;
+    });
 
   // Collapsed view - narrow strip with toggle
   if (collapsed) {
@@ -215,9 +241,12 @@ export function CoachingSidebar({
                     <div className="text-sm font-medium text-gray-900 truncate">
                       {client.user.firstName} {client.user.lastName}
                     </div>
-                    <div className="text-xs text-gray-500 truncate">
-                      {statusLabels[client.status || "enrolled"]}
-                    </div>
+                    <span className={cn(
+                      "inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5",
+                      getPipelineInfo(client).color
+                    )}>
+                      {getPipelineInfo(client).label}
+                    </span>
                   </div>
 
                   {/* Unread Messages Badge */}

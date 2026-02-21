@@ -30,7 +30,7 @@ export interface WeekOverview {
 }
 
 interface PlanBuilderWizardProps {
-  clientId: number;
+  clientId: string;
   clientName: string;
   open: boolean;
   onClose: () => void;

@@ -30,6 +30,8 @@ import {
   AlertCircle,
   Search,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Calendar,
   Brain,
   Eye,
@@ -249,6 +251,7 @@ export default function AdminCoaching() {
     startTime: null,
     templateSaveName: "",
   });
+  const [journeyCollapsed, setJourneyCollapsed] = useState(false);
   const { toast } = useToast();
 
   const { data: clients = [], isLoading: isLoadingClients } = useQuery<CoachingClientWithUser[]>({
@@ -1095,123 +1098,155 @@ export default function AdminCoaching() {
               </div>
             </div>
 
-            {/* === ONBOARDING STEPPER === */}
+            {/* === CLIENT JOURNEY PROGRESS TRACKER === */}
             {(() => {
               const status = selectedClient.status || "enrolled";
-              const hasFormData = !!(clientCheckins as any[])?.length || !!(selectedClient as any).notes;
+              const hasIntake = status !== "enrolled";
               const hasCoachRemarks = (() => { const cr = (selectedClient as any).coachRemarks; if (!cr) return false; if (cr.notes) return !!cr.notes.trim(); return Object.values(cr).some((v: any) => v && String(v).trim()); })();
+              const coachRemarksApproved = !!(selectedClient as any).coachRemarksApproved;
+              const hasAiSummary = !!selectedClient.aiSummary;
+              const aiSummaryApproved = !!(selectedClient as any).aiSummaryApproved;
+              const hasBlueprint = !!(selectedClient as any).wellnessBlueprint;
               const hasPlan = (clientWorkoutPlan as any[])?.length > 0;
-              const isPreActive = ["enrolled", "intake_complete", "plan_generating", "plan_ready"].includes(status);
+              const isActive = status === "active" || status === "completed";
 
-              // Determine step states
-              const steps = [
-                { label: "Enrolled", key: "enrolled", done: true, icon: UserPlus },
-                { label: "Forms Filled", key: "forms", done: status !== "enrolled", icon: FileText,
-                  action: status === "enrolled" ? "Client needs to complete intake forms" : undefined },
-                { label: "Coach Notes", key: "remarks", done: hasCoachRemarks, icon: Pencil,
-                  action: !hasCoachRemarks && status !== "enrolled" ? "Add your training direction" : undefined },
-                { label: "Plan Generated", key: "plan", done: hasPlan, icon: Brain,
-                  action: !hasPlan && (status === "intake_complete" || status === "plan_generating") ? "Generate workout plan" : undefined },
-                { label: "Active", key: "active", done: status === "active" || status === "completed", icon: Zap,
-                  action: status === "plan_ready" ? "Activate the client" : undefined },
+              const journeySteps = [
+                { label: "Intake Forms Received", done: hasIntake, ctaLabel: "Request Intake Form →", ctaAction: () => requestIntakeFormMutation.mutate(selectedClient.id) },
+                { label: "Generate Coach's Notes", done: hasCoachRemarks, ctaLabel: "Generate →", ctaAction: () => generateCoachRemarksMutation.mutate(String(selectedClient.id)) },
+                { label: "Approve Coach's Notes", done: coachRemarksApproved, ctaLabel: "Review on Overview →", ctaAction: () => setActiveTab("overview") },
+                { label: "Generate AI Assessment", done: hasAiSummary, ctaLabel: "Generate →", ctaAction: () => regenerateAiSummaryMutation.mutate(String(selectedClient.id)) },
+                { label: "Approve AI Assessment", done: aiSummaryApproved, ctaLabel: "Review on Overview →", ctaAction: () => setActiveTab("overview") },
+                { label: "Generate Wellness Blueprint", done: hasBlueprint, ctaLabel: "Go to Blueprint →", ctaAction: () => setActiveTab("blueprint") },
+                { label: "Generate Workout Plan", done: hasPlan, ctaLabel: "Go to Workout Tab →", ctaAction: () => setActiveTab("workout") },
+                { label: "Client Active! 🎉", done: isActive, ctaLabel: "Activate Client →", ctaAction: () => activateClientMutation.mutate(selectedClient.id) },
               ];
 
-              const currentStepIdx = steps.findIndex(s => !s.done);
-              const isFullyOnboarded = currentStepIdx === -1;
+              const currentStepIdx = journeySteps.findIndex(s => !s.done);
+              const isFullyComplete = currentStepIdx === -1;
+              const completedCount = journeySteps.filter(s => s.done).length;
 
-              if (!isPreActive && isFullyOnboarded) return null; // Hide for fully active clients
+              if (isFullyComplete) return null;
 
               return (
-                <Card className={cn("border border-gray-200 bg-white", isPreActive && "ring-1 ring-blue-600")}>
-                  <CardContent className="py-4 px-5">
-                    {isPreActive && (
-                      <div className="flex items-center gap-2 mb-3">
-                        <AlertCircle className="w-4 h-4 text-gray-600" />
-                        <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Onboarding In Progress</span>
-                        {currentStepIdx >= 0 && (
-                          <span className="text-xs text-amber-600 ml-auto">
-                            Next: {steps[currentStepIdx]?.action || steps[currentStepIdx]?.label}
-                          </span>
-                        )}
+                <Card className="border border-violet-200 bg-gradient-to-r from-violet-50 to-white shadow-sm">
+                  <CardContent className="py-3 px-4">
+                    <button
+                      onClick={() => setJourneyCollapsed(!journeyCollapsed)}
+                      className="flex items-center justify-between w-full text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">📋</span>
+                        <span className="text-sm font-bold text-violet-800">Client Journey</span>
+                        <Badge variant="outline" className="text-[10px] border-violet-300 text-violet-600">
+                          {completedCount}/{journeySteps.length}
+                        </Badge>
+                      </div>
+                      {journeyCollapsed ? <ChevronDown className="w-4 h-4 text-violet-400" /> : <ChevronUp className="w-4 h-4 text-violet-400" />}
+                    </button>
+                    {!journeyCollapsed && (
+                      <div className="mt-3 space-y-1">
+                        {journeySteps.map((step, idx) => {
+                          const isCurrent = idx === currentStepIdx;
+                          const isDone = step.done;
+                          const isPending = !isDone && !isCurrent;
+                          return (
+                            <div key={idx} className={cn(
+                              "flex items-center justify-between py-1.5 px-3 rounded-lg transition-all",
+                              isCurrent && "bg-amber-50 ring-1 ring-amber-200",
+                              isDone && "opacity-70",
+                            )}>
+                              <div className="flex items-center gap-2.5">
+                                <span className="text-sm">{isDone ? "✅" : isCurrent ? "⏳" : "○"}</span>
+                                <span className={cn(
+                                  "text-sm",
+                                  isDone && "text-green-700 line-through",
+                                  isCurrent && "text-amber-800 font-semibold",
+                                  isPending && "text-gray-400",
+                                )}>
+                                  {idx + 1}. {step.label}
+                                </span>
+                              </div>
+                              {isCurrent && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 text-xs border-violet-300 text-violet-700 hover:bg-violet-100"
+                                  onClick={(e) => { e.stopPropagation(); step.ctaAction(); }}
+                                >
+                                  {step.ctaLabel}
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
-                    <div className="flex items-center gap-1">
-                      {steps.map((step, idx) => {
-                        const StepIcon = step.icon;
-                        const isCurrent = idx === currentStepIdx;
-                        const isDone = step.done;
-                        return (
-                          <div key={step.key} className="flex items-center flex-1">
-                            <div className={cn(
-                              "flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium transition-all flex-1 min-w-0",
-                              isDone ? "bg-green-100 text-green-700" :
-                              isCurrent ? "bg-amber-100 text-amber-800 ring-1 ring-amber-300 shadow-sm" :
-                              "bg-gray-100 text-gray-400"
-                            )}
-                              onClick={() => {
-                                if (step.key === "remarks") setActiveTab("overview");
-                                else if (step.key === "plan") setActiveTab("workout");
-                                else if (step.key === "forms") setActiveTab("intake");
-                              }}
-                              style={{ cursor: "pointer" }}
-                            >
-                              {isDone ? (
-                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-green-600" />
-                              ) : isCurrent ? (
-                                <CircleDot className="w-3.5 h-3.5 shrink-0 text-blue-600" />
-                              ) : (
-                                <Circle className="w-3.5 h-3.5 shrink-0" />
-                              )}
-                              <span className="truncate">{step.label}</span>
-                            </div>
-                            {idx < steps.length - 1 && (
-                              <ArrowRight className={cn("w-3 h-3 shrink-0 mx-0.5", isDone ? "text-green-400" : "text-gray-300")} />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
                   </CardContent>
                 </Card>
               );
             })()}
 
+            {/* === PROGRESSIVE TABS === */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="bg-gray-100 p-1 rounded-xl mb-4">
-                <TabsTrigger value="overview" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <Eye className="w-4 h-4" /> Overview
-                </TabsTrigger>
-                <TabsTrigger value="workout" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <Dumbbell className="w-4 h-4" /> Workout Plan
-                </TabsTrigger>
-                <TabsTrigger value="nutrition" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <UtensilsCrossed className="w-4 h-4" /> Nutrition
-                </TabsTrigger>
-                <TabsTrigger value="messages" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <MessageSquare className="w-4 h-4" /> Messages
-                  {selectedClient.unreadMessages > 0 && (
-                    <Badge className="bg-pink-500 text-white text-[10px] ml-1">{selectedClient.unreadMessages}</Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="checkins" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <ClipboardList className="w-4 h-4" /> Check-ins
-                </TabsTrigger>
-                <TabsTrigger value="blueprint" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <BookOpen className="w-4 h-4" /> Blueprint
-                  {(selectedClient as any).blueprintApproved && (
-                    <Badge className="bg-emerald-500 text-white text-[9px] ml-1 px-1.5"><Check className="w-2.5 h-2.5" /></Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="intake" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <FileText className="w-4 h-4" /> Intake Forms
-                  {selectedClient.status === "intake_complete" && (
-                    <Badge className="bg-indigo-500 text-white text-[9px] ml-1 px-1.5">New</Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="programs" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                  <Layers className="w-4 h-4" /> Programs
-                </TabsTrigger>
-              </TabsList>
+              {(() => {
+                const status = selectedClient.status || "enrolled";
+                const hasCoachRemarks = (() => { const cr = (selectedClient as any).coachRemarks; if (!cr) return false; if (cr.notes) return !!cr.notes.trim(); return Object.values(cr).some((v: any) => v && String(v).trim()); })();
+                const aiSummaryApproved = !!(selectedClient as any).aiSummaryApproved;
+                const coachRemarksApproved = !!(selectedClient as any).coachRemarksApproved;
+                const notesAndAssessmentApproved = coachRemarksApproved && aiSummaryApproved;
+                const hasPlan = (clientWorkoutPlan as any[])?.length > 0;
+
+                return (
+                  <TabsList className="bg-gray-100 p-1 rounded-xl mb-4 flex-wrap">
+                    {/* Always visible */}
+                    <TabsTrigger value="overview" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                      <Eye className="w-4 h-4" /> Overview
+                    </TabsTrigger>
+                    <TabsTrigger value="messages" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                      <MessageSquare className="w-4 h-4" /> Messages
+                      {selectedClient.unreadMessages > 0 && (
+                        <Badge className="bg-pink-500 text-white text-[10px] ml-1">{selectedClient.unreadMessages}</Badge>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value="intake" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                      <FileText className="w-4 h-4" /> Intake Forms
+                      {selectedClient.status === "intake_complete" && (
+                        <Badge className="bg-indigo-500 text-white text-[9px] ml-1 px-1.5">New</Badge>
+                      )}
+                    </TabsTrigger>
+
+                    {/* Show after notes + assessment approved */}
+                    {notesAndAssessmentApproved && (
+                      <>
+                        <TabsTrigger value="blueprint" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          <BookOpen className="w-4 h-4" /> Blueprint
+                          {(selectedClient as any).blueprintApproved && (
+                            <Badge className="bg-emerald-500 text-white text-[9px] ml-1 px-1.5"><Check className="w-2.5 h-2.5" /></Badge>
+                          )}
+                        </TabsTrigger>
+                        <TabsTrigger value="workout" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          <Dumbbell className="w-4 h-4" /> Workout Plan
+                        </TabsTrigger>
+                        <TabsTrigger value="nutrition" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          <UtensilsCrossed className="w-4 h-4" /> Nutrition
+                        </TabsTrigger>
+                      </>
+                    )}
+
+                    {/* Show after workout generated */}
+                    {hasPlan && (
+                      <TabsTrigger value="checkins" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <ClipboardList className="w-4 h-4" /> Check-ins
+                      </TabsTrigger>
+                    )}
+
+                    {/* Always show Programs at the end */}
+                    <TabsTrigger value="programs" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                      <Layers className="w-4 h-4" /> Programs
+                    </TabsTrigger>
+                  </TabsList>
+                );
+              })()}
 
               {/* === CLIENT INFO CARD (collapsible, collapsed by default) === */}
               <CoachingClientInfoCard
@@ -2533,7 +2568,14 @@ export default function AdminCoaching() {
                       <div className="text-center py-12">
                         <UtensilsCrossed className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-gray-500 font-medium">No nutrition plan generated yet</p>
-                        <p className="text-gray-400 text-sm mt-1">Click Generate above to create a personalized nutrition plan</p>
+                        <p className="text-gray-400 text-sm mt-1 max-w-sm mx-auto">
+                          Complete Coach's Notes and AI Assessment first, then generate a personalized nutrition plan here.
+                        </p>
+                        {!(selectedClient as any).coachRemarksApproved || !(selectedClient as any).aiSummaryApproved ? (
+                          <Button variant="outline" size="sm" className="mt-4" onClick={() => setActiveTab("overview")}>
+                            <ArrowRight className="w-3 h-3 mr-1" /> Go to Overview
+                          </Button>
+                        ) : null}
                       </div>
                     ) : (
                       <div className="space-y-6">
@@ -2839,7 +2881,9 @@ export default function AdminCoaching() {
                       <div className="text-center py-12">
                         <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-gray-500 font-medium">No check-ins yet</p>
-                        <p className="text-gray-400 text-sm mt-1">Client check-ins will appear here once they start logging</p>
+                        <p className="text-gray-400 text-sm mt-1 max-w-sm mx-auto">
+                          Check-ins will appear here once the client starts their program and begins logging daily progress.
+                        </p>
                       </div>
                     ) : (
                       <div className="space-y-3">
