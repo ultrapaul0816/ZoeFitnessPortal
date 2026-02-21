@@ -8345,6 +8345,22 @@ ${ctx.pregnancyInfo ? `\nPREGNANCY SAFETY: AVOID heavy lifting, lying flat on ba
     }
   });
 
+  // Workout templates: delete
+  app.delete("/api/admin/coaching/workout-templates/:templateId", requireAdmin, async (req, res) => {
+    try {
+      const templates = loadWorkoutTemplates();
+      const filtered = templates.filter((t: any) => t.id !== req.params.templateId);
+      if (filtered.length === templates.length) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+      saveWorkoutTemplates(filtered);
+      res.json({ message: "Template deleted" });
+    } catch (error) {
+      console.error("Error deleting workout template:", error);
+      res.status(500).json({ message: "Failed to delete template" });
+    }
+  });
+
   // Generate AI nutrition plan for a coaching client
   app.post("/api/admin/coaching/clients/:clientId/generate-nutrition", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {

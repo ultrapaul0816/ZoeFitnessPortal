@@ -3108,13 +3108,31 @@ export default function AdminCoaching() {
                     </div>
                     <div className="pl-14 space-y-1">
                       {workoutTemplates.map((tpl: any) => (
-                        <button
-                          key={tpl.id}
-                          className="w-full text-left px-3 py-2 rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-sm transition-all"
-                          onClick={() => wizardFromTemplate(tpl)}
-                        >
-                          {tpl.name}
-                        </button>
+                        <div key={tpl.id} className="flex items-center gap-1">
+                          <button
+                            className="flex-1 text-left px-3 py-2 rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-sm transition-all"
+                            onClick={() => wizardFromTemplate(tpl)}
+                          >
+                            <span className="font-medium">{tpl.name}</span>
+                            <span className="text-xs text-gray-400 ml-2">
+                              ({(tpl.structure || []).filter((d: any) => d.dayType !== "rest").length} active days)
+                            </span>
+                          </button>
+                          <button
+                            className="p-1.5 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            title="Delete template"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                await apiRequest("DELETE", `/api/admin/coaching/workout-templates/${tpl.id}`);
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/workout-templates"] });
+                                toast({ title: "Template deleted" });
+                              } catch { toast({ title: "Error deleting template", variant: "destructive" }); }
+                            }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -3229,6 +3247,44 @@ export default function AdminCoaching() {
                             }}
                           />
                         )}
+                        {/* Swap day content up/down */}
+                        <div className="flex flex-col gap-0.5 shrink-0">
+                          <button
+                            className="text-gray-400 hover:text-gray-700 disabled:opacity-20 p-0.5"
+                            disabled={idx === 0}
+                            title="Move up"
+                            onClick={() => {
+                              setWorkoutWizard(prev => {
+                                const updated = [...prev.structure];
+                                // Swap content but keep dayNumber/dayLabel fixed
+                                const { dayNumber: dn1, dayLabel: dl1, ...content1 } = updated[idx - 1];
+                                const { dayNumber: dn2, dayLabel: dl2, ...content2 } = updated[idx];
+                                updated[idx - 1] = { dayNumber: dn1, dayLabel: dl1, ...content2 };
+                                updated[idx] = { dayNumber: dn2, dayLabel: dl2, ...content1 };
+                                return { ...prev, structure: updated };
+                              });
+                            }}
+                          >
+                            <ChevronRight className="w-3.5 h-3.5 -rotate-90" />
+                          </button>
+                          <button
+                            className="text-gray-400 hover:text-gray-700 disabled:opacity-20 p-0.5"
+                            disabled={idx === workoutWizard.structure.length - 1}
+                            title="Move down"
+                            onClick={() => {
+                              setWorkoutWizard(prev => {
+                                const updated = [...prev.structure];
+                                const { dayNumber: dn1, dayLabel: dl1, ...content1 } = updated[idx];
+                                const { dayNumber: dn2, dayLabel: dl2, ...content2 } = updated[idx + 1];
+                                updated[idx] = { dayNumber: dn1, dayLabel: dl1, ...content2 };
+                                updated[idx + 1] = { dayNumber: dn2, dayLabel: dl2, ...content1 };
+                                return { ...prev, structure: updated };
+                              });
+                            }}
+                          >
+                            <ChevronRight className="w-3.5 h-3.5 rotate-90" />
+                          </button>
+                        </div>
                       </div>
                       {day.dayType !== "rest" && (
                         <input
