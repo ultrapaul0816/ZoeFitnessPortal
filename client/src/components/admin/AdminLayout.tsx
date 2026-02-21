@@ -69,6 +69,8 @@ const navItems: NavItem[] = [
   { id: "communications", label: "Communications", icon: Send, section: "Insights", path: "/admin/communications" },
   { id: "program-progress", label: "Program Progress", icon: TrendingUp, section: "Insights", path: "/admin/program-progress" },
   { id: "automation", label: "Email Automation", icon: Zap, section: "Marketing", path: "/admin/automation" },
+  { id: "email-campaigns", label: "Email Campaigns", icon: Send, section: "Marketing", path: "/admin/email-campaigns" },
+  { id: "email-analytics", label: "Email Analytics", icon: BarChart3, section: "Marketing", path: "/admin/email-analytics" },
 ];
 
 const STORAGE_KEY = "admin-collapsed-sections";

@@ -46,6 +46,8 @@ const AdminCoaching = lazy(() => import("@/pages/admin-coaching"));
 const AdminOrders = lazy(() => import("@/pages/admin-orders"));
 const AdminCommunications = lazy(() => import("@/pages/admin-communications"));
 const AdminProgramProgress = lazy(() => import("@/pages/admin-program-progress"));
+const AdminEmailCampaigns = lazy(() => import("@/pages/admin-email-campaigns"));
+const AdminEmailAnalytics = lazy(() => import("@/pages/admin-email-analytics"));
 const MyCoaching = lazy(() => import("@/pages/my-coaching"));
 
 // Error boundary to catch rendering errors
@@ -134,6 +136,8 @@ function Router() {
       <Route path="/admin/coaching" component={() => <LazyRoute component={AdminCoaching} message="Loading coaching..." />} />
       <Route path="/admin/orders" component={() => <LazyRoute component={AdminOrders} message="Loading orders..." />} />
       <Route path="/admin/communications" component={() => <LazyRoute component={AdminCommunications} message="Loading communications..." />} />
+      <Route path="/admin/email-campaigns" component={() => <LazyRoute component={AdminEmailCampaigns} message="Loading email campaigns..." />} />
+      <Route path="/admin/email-analytics" component={() => <LazyRoute component={AdminEmailAnalytics} message="Loading email analytics..." />} />
       <Route path="/admin/program-progress" component={() => <LazyRoute component={AdminProgramProgress} message="Loading progress..." />} />
       <Route path="/heal-your-core" component={() => <LazyRoute component={HealYourCorePage} message="Loading your program..." />} />
       <Route path="/progress" component={() => <LazyRoute component={Progress} message="Loading progress tracker..." />} />
