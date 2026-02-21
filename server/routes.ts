@@ -7414,6 +7414,7 @@ Keep it to 2-4 sentences, warm and encouraging.`;
     }, {});
 
     const summaryContent = await createAICompletion({
+      premium: true,
       systemPrompt: `You are Zoe, a warm and experienced prenatal/postnatal fitness and nutrition coach. Analyze the client's intake form responses and provide a helpful summary. Include:
 1. CLIENT SNAPSHOT: Their pregnancy/postnatal stage, key details they shared
 2. FITNESS BACKGROUND: What they told you about their activity level and exercise history
@@ -7450,6 +7451,7 @@ IMPORTANT RULES:
 
     // Call AI for structured JSON coaching remarks
     const remarksContent = await createAICompletion({
+      premium: true,
       systemPrompt: `You are Zoe, a warm and supportive prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes in YOUR voice — encouraging, professional, and grounded. Return a JSON object with exactly these fields:
 - trainingFocus: What to prioritize in their training based on their goals, fitness level, and what they've shared about their body (2-4 sentences). Be specific and practical.
 - nutritionalGuidance: Their dietary preferences, restrictions, and nutrition goals based on what they told you (2-4 sentences). Reference their actual food habits and preferences.
@@ -9247,6 +9249,7 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
       const clientName = `${clientData.user.firstName} ${clientData.user.lastName}`.trim();
 
       const rawContent = await createAICompletion({
+        premium: true,
         systemPrompt: `You are Zoe Modgill, an elite boutique wellness architect. Generate a premium "Boutique Wellness Blueprint" report for a coaching client. This is a high-end, magazine-quality strategic document that feels like a luxury personal brand experience.
 
 TONE: Warm, empowering, aspirational. Use boutique/luxury language. Frame everything positively — as exciting transformations, not clinical assessments. Make the client feel like they're investing in a premium life upgrade.

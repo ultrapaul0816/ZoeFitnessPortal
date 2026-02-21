@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, ChevronLeft, Play } from "lucide-react";
+import { VideoModal } from "@/components/video-modal";
 
 interface EducationalTopic {
   id: string;
@@ -60,6 +61,7 @@ export default function UnderstandingYourCoreSection({
   getNavigationText
 }: UnderstandingYourCoreSectionProps) {
   const [expandedTopics, setExpandedTopics] = useState<{[key: string]: boolean}>({});
+  const [videoPopup, setVideoPopup] = useState<{url: string, title: string} | null>(null);
 
   const { data: dbTopics } = useQuery<EducationalTopic[]>({
     queryKey: ['/api/educational-content'],
@@ -195,11 +197,9 @@ export default function UnderstandingYourCoreSection({
                     {/* YouTube Link Button */}
                     {getVideoInfo('360-breathing').url && (
                     <div className="flex justify-start mb-4">
-                      <a 
-                        href={getVideoInfo('360-breathing').url}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                      <button 
+                        onClick={() => setVideoPopup({ url: getVideoInfo('360-breathing').url, title: getVideoInfo('360-breathing').label || '360 Degree Breathing' })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
                         style={{
                           background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
                           boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
@@ -209,7 +209,7 @@ export default function UnderstandingYourCoreSection({
                       >
                         <Play className="w-2.5 h-2.5" />
                         {getVideoInfo('360-breathing').label || '360 Degree Breathing'}
-                      </a>
+                      </button>
                     </div>
                     )}
                     
@@ -297,11 +297,9 @@ export default function UnderstandingYourCoreSection({
                     {/* YouTube Link Button */}
                     {getVideoInfo('tva-engagement').url && (
                     <div className="flex justify-start mb-4">
-                      <a 
-                        href={getVideoInfo('tva-engagement').url}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                      <button 
+                        onClick={() => setVideoPopup({ url: getVideoInfo('tva-engagement').url, title: getVideoInfo('tva-engagement').label || 'Core & TVA Engagement' })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
                         style={{
                           background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
                           boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
@@ -311,7 +309,7 @@ export default function UnderstandingYourCoreSection({
                       >
                         <Play className="w-2.5 h-2.5" />
                         {getVideoInfo('tva-engagement').label || 'Core & TVA Engagement'}
-                      </a>
+                      </button>
                     </div>
                     )}
 
@@ -531,11 +529,9 @@ export default function UnderstandingYourCoreSection({
                     {/* YouTube Link Button */}
                     {getVideoInfo('core-compressions').url && (
                     <div className="flex justify-start mb-4">
-                      <a 
-                        href={getVideoInfo('core-compressions').url}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                      <button 
+                        onClick={() => setVideoPopup({ url: getVideoInfo('core-compressions').url, title: getVideoInfo('core-compressions').label || 'Core Compressions Tutorial' })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
                         style={{
                           background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
                           boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
@@ -545,7 +541,7 @@ export default function UnderstandingYourCoreSection({
                       >
                         <Play className="w-2.5 h-2.5" />
                         {getVideoInfo('core-compressions').label || 'Core Compressions Tutorial'}
-                      </a>
+                      </button>
                     </div>
                     )}
 
@@ -620,11 +616,9 @@ export default function UnderstandingYourCoreSection({
                     {/* YouTube Link Button */}
                     {getVideoInfo('pelvic-floor').url && (
                     <div className="flex justify-start mb-4">
-                      <a 
-                        href={getVideoInfo('pelvic-floor').url}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                      <button 
+                        onClick={() => setVideoPopup({ url: getVideoInfo('pelvic-floor').url, title: getVideoInfo('pelvic-floor').label || 'Understanding Pelvic Floor' })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
                         style={{
                           background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
                           boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
@@ -634,7 +628,7 @@ export default function UnderstandingYourCoreSection({
                       >
                         <Play className="w-2.5 h-2.5" />
                         {getVideoInfo('pelvic-floor').label || 'Understanding Pelvic Floor'}
-                      </a>
+                      </button>
                     </div>
                     )}
 
@@ -726,11 +720,9 @@ export default function UnderstandingYourCoreSection({
                     {/* YouTube Link Button */}
                     {getVideoInfo('warning-signs').url && (
                     <div className="flex justify-start mb-4">
-                      <a 
-                        href={getVideoInfo('warning-signs').url}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                      <button 
+                        onClick={() => setVideoPopup({ url: getVideoInfo('warning-signs').url, title: getVideoInfo('warning-signs').label || 'Understanding Doming & Coning' })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
                         style={{
                           background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
                           boxShadow: '0 2px 6px rgba(236, 72, 153, 0.25)',
@@ -740,7 +732,7 @@ export default function UnderstandingYourCoreSection({
                       >
                         <Play className="w-2.5 h-2.5" />
                         {getVideoInfo('warning-signs').label || 'Understanding Doming & Coning'}
-                      </a>
+                      </button>
                     </div>
                     )}
 
@@ -822,6 +814,14 @@ export default function UnderstandingYourCoreSection({
           </div>
         </CardContent>
       </Card>
+      {videoPopup && (
+        <VideoModal
+          isOpen={true}
+          onClose={() => setVideoPopup(null)}
+          videoUrl={videoPopup.url}
+          title={videoPopup.title}
+        />
+      )}
     </div>
   );
 }

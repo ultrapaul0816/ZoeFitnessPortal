@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, ChevronLeft, Play } from "lucide-react";
+import { VideoModal } from "@/components/video-modal";
 import diastasisAnatomyImage from "@assets/Screenshot 2025-09-21 at 15.38.53_1758449353065.png";
 import diastasisVariationsImage from "@assets/Screenshot 2025-09-21 at 15.39.02_1758449353058.png";
 import diastasisCheckImage from "@assets/Screenshot 2025-09-21 at 15.56.11_1758450385583.png";
@@ -21,6 +22,7 @@ interface NavigationProps {
 
 export default function HealSection({ canGoNext, canGoPrevious, navigateToNextTab, navigateToPreviousTab, getNavigationText }: NavigationProps) {
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
+  const [videoPopup, setVideoPopup] = useState<{url: string, title: string} | null>(null);
 
   const toggleTopic = (topic: string) => {
     setExpandedTopics(prev => ({
@@ -151,11 +153,9 @@ export default function HealSection({ canGoNext, canGoPrevious, navigateToNextTa
                         </div>
                         
                         <div className="flex justify-start mb-4">
-                          <a 
-                            href="https://youtu.be/zgU0svFSNRE" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md"
+                          <button 
+                            onClick={() => setVideoPopup({ url: 'https://youtu.be/zgU0svFSNRE', title: 'How to Check for Diastasis Recti' })}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
                             style={{
                               background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
                               boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3)'
@@ -163,7 +163,7 @@ export default function HealSection({ canGoNext, canGoPrevious, navigateToNextTa
                           >
                             <Play className="w-3 h-3" />
                             HOW TO CHECK FOR DIASTASIS RECTI
-                          </a>
+                          </button>
                         </div>
                         
                         <div className="flex justify-center my-4">
@@ -616,6 +616,14 @@ export default function HealSection({ canGoNext, canGoPrevious, navigateToNextTa
           <p className="text-xs text-gray-500">Progress through your personalized recovery journey</p>
         </div>
       </div>
+      {videoPopup && (
+        <VideoModal
+          isOpen={true}
+          onClose={() => setVideoPopup(null)}
+          videoUrl={videoPopup.url}
+          title={videoPopup.title}
+        />
+      )}
     </div>
   );
 }

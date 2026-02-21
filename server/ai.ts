@@ -17,6 +17,8 @@ interface AICompletionOptions {
   jsonMode?: boolean;
   /** OpenAI model to use when falling back to OpenAI (default: gpt-4o) */
   openaiModel?: string;
+  /** Use premium model (kimi-k2.5) for higher quality outputs */
+  premium?: boolean;
 }
 
 async function callAnthropic(options: AICompletionOptions): Promise<string> {
@@ -44,13 +46,13 @@ async function callOpenAI(options: AICompletionOptions): Promise<string> {
   });
 
   const response = await openai.chat.completions.create({
-    model: options.openaiModel || "kimi-k2-0711-preview",
+    model: options.premium ? "kimi-k2.5" : (options.openaiModel || "kimi-k2-0711-preview"),
     messages: [
       { role: "system", content: options.systemPrompt },
       { role: "user", content: options.userPrompt },
     ],
     max_tokens: options.maxTokens,
-    ...(options.temperature !== undefined ? { temperature: options.temperature } : {}),
+    ...(options.premium ? { temperature: 1 } : (options.temperature !== undefined ? { temperature: options.temperature } : {})),
     ...(options.jsonMode ? { response_format: { type: "json_object" as const } } : {}),
   });
 
