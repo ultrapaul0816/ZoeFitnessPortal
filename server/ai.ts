@@ -44,7 +44,7 @@ async function callOpenAI(options: AICompletionOptions): Promise<string> {
   });
 
   const response = await openai.chat.completions.create({
-    model: options.openaiModel || "gpt-4o",
+    model: options.openaiModel || "kimi-k2-0711-preview",
     messages: [
       { role: "system", content: options.systemPrompt },
       { role: "user", content: options.userPrompt },
@@ -82,6 +82,7 @@ export function hasAIKey(): boolean {
 
 export function getAIProviderName(): string {
   if (process.env.ANTHROPIC_API_KEY) return "Anthropic Claude";
+  if (process.env.AI_INTEGRATIONS_OPENAI_BASE_URL?.includes("moonshot")) return "Kimi K2";
   if (process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY) return "OpenAI";
   return "None";
 }
