@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { randomUUID, createHmac, randomBytes } from "crypto";
 import { sql, eq } from "drizzle-orm";
 import { storage } from "./storage";
-import { coachingClients } from "@shared/schema";
+import { coachingClients, dailyCheckins, weeklyWorkoutSessions, workoutCompletions as workoutCompletionsTable } from "@shared/schema";
 import {
   loginSchema,
   insertWorkoutCompletionSchema,
@@ -1356,6 +1356,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error(`[WORKOUT-SESSIONS] Error fetching week sessions:`, error?.message || error);
       res.status(500).json({ message: "Failed to fetch week sessions" });
+    }
+  });
+
+  // Get lifetime stats for a user
+  app.get("/api/stats/:userId/lifetime", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Query dailyCheckins
+      const allCheckins = await storage.db.select().from(dailyCheckins).where(eq(dailyCheckins.userId, userId)).orderBy(dailyCheckins.date);
+      
+      const totalCheckins = allCheckins.length;
+      const workoutDays = allCheckins.filter(c => c.workoutCompleted).length;
+      const breathingDays = allCheckins.filter(c => c.breathingPractice).length;
+      const totalCardioMinutes = allCheckins.reduce((sum, c) => sum + (c.cardioMinutes || 0), 0);
+      const avgWaterIntake = totalCheckins > 0 
+        ? Math.round((allCheckins.reduce((sum, c) => sum + (c.waterGlasses || 0), 0) / totalCheckins) * 10) / 10 
+        : 0;
+
+      // Calculate longest streak
+      let longestStreak = 0;
+      let currentStreak = 0;
+      let prevDate: Date | null = null;
+      for (const checkin of allCheckins) {
+        const d = new Date(checkin.date);
+        if (prevDate) {
+          const diff = Math.round((d.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+          if (diff === 1) {
+            currentStreak++;
+          } else {
+            currentStreak = 1;
+          }
+        } else {
+          currentStreak = 1;
+        }
+        if (currentStreak > longestStreak) longestStreak = currentStreak;
+        prevDate = d;
+      }
+
+      // Query weeklyWorkoutSessions
+      const allSessions = await storage.db.select().from(weeklyWorkoutSessions).where(eq(weeklyWorkoutSessions.userId, userId));
+      const totalWorkoutSessions = allSessions.length;
+
+      // Query workoutCompletions
+      const allCompletions = await storage.db.select().from(workoutCompletionsTable).where(eq(workoutCompletionsTable.userId, userId));
+      const totalWorkoutsCompleted = allCompletions.length;
+      const ratingsWithValue = allCompletions.filter(c => c.challengeRating != null);
+      const avgChallengeRating = ratingsWithValue.length > 0
+        ? Math.round((ratingsWithValue.reduce((sum, c) => sum + (c.challengeRating || 0), 0) / ratingsWithValue.length) * 10) / 10
+        : 0;
+
+      // Program completion: weeks with at least 4 workout sessions completed
+      const weekCompletions = new Map<number, number>();
+      for (const s of allSessions) {
+        if (s.sessionType === 'workout') {
+          weekCompletions.set(s.week, (weekCompletions.get(s.week) || 0) + 1);
+        }
+      }
+      let weeksCompleted = 0;
+      for (const [, count] of weekCompletions) {
+        if (count >= 4) weeksCompleted++;
+      }
+
+      // Consistency score
+      let consistencyScore = 0;
+      if (allCheckins.length > 0) {
+        const firstCheckin = new Date(allCheckins[0].date);
+        const now = new Date();
+        const totalDays = Math.max(1, Math.ceil((now.getTime() - firstCheckin.getTime()) / (1000 * 60 * 60 * 24)));
+        consistencyScore = Math.round((totalCheckins / totalDays) * 100);
+      }
+
+      res.json({
+        totalCheckins,
+        workoutDays,
+        breathingDays,
+        totalCardioMinutes,
+        avgWaterIntake,
+        longestStreak,
+        totalWorkoutSessions,
+        totalWorkoutsCompleted,
+        avgChallengeRating,
+        weeksCompleted,
+        programCompletion: Math.round((weeksCompleted / 6) * 100),
+        consistencyScore: Math.min(consistencyScore, 100),
+      });
+    } catch (error: any) {
+      console.error(`[LIFETIME-STATS] Error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch lifetime stats" });
     }
   });
 

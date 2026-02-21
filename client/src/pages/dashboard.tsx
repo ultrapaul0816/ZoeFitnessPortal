@@ -20,6 +20,7 @@ import ProfileBanner from "@/components/profile-banner";
 import TodaysWorkout from "@/components/todays-workout";
 import ProgramsSection from "@/components/program-sections/ProgramsSection";
 import WeeklySummary from "@/components/weekly-summary";
+import LifetimeStatsCard from "@/components/lifetime-stats-card";
 import DailyCheckinModal from "@/components/daily-checkin-modal";
 import DailyMoodPopup from "@/components/daily-mood-popup";
 import MoodInsightsCard from "@/components/mood-insights-card";
@@ -1182,6 +1183,11 @@ export default function Dashboard() {
               {/* Weekly Progress Summary */}
               {hasWorkoutAccess && (
                 <WeeklySummary />
+              )}
+
+              {/* Lifetime Stats */}
+              {hasWorkoutAccess && (
+                <LifetimeStatsCard userId={user.id} />
               )}
             </div>
           </div>

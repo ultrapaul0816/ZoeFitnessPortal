@@ -428,6 +428,11 @@ export interface IStorage {
     avgWaterGlasses: number;
     avgCardioMinutes: number;
     currentStreak: number;
+    recoveryStreak: number;
+    graceDaysUsed: number;
+    longestStreak: number;
+    weeklyConsistency: number;
+    monthlyConsistency: number;
     moodDistribution: { mood: string; count: number; emoji: string }[];
     avgEnergyLevel: number;
     energyTrend: 'up' | 'down' | 'stable';
@@ -2230,6 +2235,11 @@ export class MemStorage implements IStorage {
       avgWaterGlasses: 0,
       avgCardioMinutes: 0,
       currentStreak: 0,
+      recoveryStreak: 0,
+      graceDaysUsed: 0,
+      longestStreak: 0,
+      weeklyConsistency: 0,
+      monthlyConsistency: 0,
       moodDistribution: [],
       avgEnergyLevel: 0,
       energyTrend: 'stable',
@@ -4466,6 +4476,98 @@ class DatabaseStorage implements IStorage {
       }
     }
 
+    // Helper: check if a date has activity in checkins array
+    const dateHasActivity = (checkinsList: typeof checkins, date: Date): boolean => {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      const dayCheckin = checkinsList.find(c => {
+        const cDate = new Date(c.date);
+        cDate.setHours(0, 0, 0, 0);
+        return cDate.getTime() === d.getTime();
+      });
+      return !!(dayCheckin && (
+        dayCheckin.mood ||
+        dayCheckin.energyLevel ||
+        dayCheckin.workoutCompleted ||
+        dayCheckin.breathingPractice ||
+        (dayCheckin.waterGlasses && dayCheckin.waterGlasses > 0) ||
+        (dayCheckin.cardioMinutes && dayCheckin.cardioMinutes > 0)
+      ));
+    };
+
+    // Recovery streak: allow 1 grace day (miss 1 day, streak pauses but doesn't die)
+    let recoveryStreak = 0;
+    let graceDaysUsed = 0;
+    let consecutiveMisses = 0;
+    for (let i = 0; i < 365; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(checkDate.getDate() - i);
+      const has = dateHasActivity(checkins.length > 0 ? checkins : [], checkDate);
+      if (has) {
+        recoveryStreak++;
+        consecutiveMisses = 0;
+      } else {
+        consecutiveMisses++;
+        if (consecutiveMisses >= 2) {
+          // 2+ consecutive misses = streak ends
+          break;
+        }
+        // 1 miss = grace day
+        graceDaysUsed++;
+      }
+    }
+
+    // Longest streak ever: fetch all checkins for this user
+    const allCheckins = await this.db
+      .select()
+      .from(dailyCheckins)
+      .where(eq(dailyCheckins.userId, userId))
+      .orderBy(asc(dailyCheckins.date));
+
+    let longestStreak = 0;
+    if (allCheckins.length > 0) {
+      let streak = 0;
+      let prevDate: Date | null = null;
+      for (const c of allCheckins) {
+        const hasAct = !!(c.mood || c.energyLevel || c.workoutCompleted || c.breathingPractice ||
+          (c.waterGlasses && c.waterGlasses > 0) || (c.cardioMinutes && c.cardioMinutes > 0));
+        if (!hasAct) continue;
+        const cDate = new Date(c.date);
+        cDate.setHours(0, 0, 0, 0);
+        if (prevDate) {
+          const diffDays = Math.round((cDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+          if (diffDays === 1) {
+            streak++;
+          } else if (diffDays > 1) {
+            streak = 1;
+          }
+          // diffDays === 0 means same day, skip
+        } else {
+          streak = 1;
+        }
+        if (streak > longestStreak) longestStreak = streak;
+        prevDate = cDate;
+      }
+    }
+
+    // Weekly consistency: checkin days in last 7 days / 7
+    let weeklyActiveDays = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      if (dateHasActivity(checkins, d)) weeklyActiveDays++;
+    }
+    const weeklyConsistency = Math.round((weeklyActiveDays / 7) * 100);
+
+    // Monthly consistency: checkin days in last 30 days / 30
+    let monthlyActiveDays = 0;
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      if (dateHasActivity(checkins, d)) monthlyActiveDays++;
+    }
+    const monthlyConsistency = Math.round((monthlyActiveDays / 30) * 100);
+
     return {
       totalCheckins,
       workoutDays,
@@ -4473,6 +4575,11 @@ class DatabaseStorage implements IStorage {
       avgWaterGlasses,
       avgCardioMinutes,
       currentStreak,
+      recoveryStreak,
+      graceDaysUsed,
+      longestStreak,
+      weeklyConsistency,
+      monthlyConsistency,
       moodDistribution,
       avgEnergyLevel,
       energyTrend,

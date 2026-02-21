@@ -421,6 +421,25 @@ export default function Progress() {
         </div>
       </Card>
 
+      {/* Body Measurements CTA */}
+      <Card
+        className="bg-gradient-to-r from-pink-500 to-rose-500 border-0 p-4 md:p-5 cursor-pointer hover:from-pink-600 hover:to-rose-600 transition-all shadow-lg"
+        onClick={() => setLocation("/body-measurements")}
+      >
+        <div className="flex items-center justify-between text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 md:w-6 md:h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm md:text-base">Track Body Measurements</h3>
+              <p className="text-white/80 text-xs md:text-sm">DR gap, core strength, energy & more</p>
+            </div>
+          </div>
+          <span className="text-white/80 text-xl">→</span>
+        </div>
+      </Card>
+
       {/* Photo Upload Section */}
       {isLoading ? (
         <div className="text-center py-12">

@@ -31,6 +31,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { DailyCheckin } from "@shared/schema";
+import WorkoutShareCard from "./WorkoutShareCard";
 
 interface DailyCheckinModalProps {
   isOpen: boolean;
@@ -84,6 +85,7 @@ export default function DailyCheckinModal({
   const [isSharing, setIsSharing] = useState(false);
   const [showSharePreview, setShowSharePreview] = useState(false);
   const [previewMessage, setPreviewMessage] = useState("");
+  const [showShareCard, setShowShareCard] = useState(false);
   const [savedData, setSavedData] = useState<{
     workoutCompleted: boolean;
     breathingPractice: boolean;
@@ -93,6 +95,16 @@ export default function DailyCheckinModal({
 
   const { data: todayCheckin, isLoading } = useQuery<DailyCheckin | null>({
     queryKey: ["/api/daily-checkins", userId, "today"],
+    enabled: isOpen && !!userId,
+  });
+
+  const { data: weeklySummary } = useQuery<{
+    streak?: number;
+    currentWeek?: number;
+    completedThisWeek?: number;
+    totalThisWeek?: number;
+  }>({
+    queryKey: ["/api/daily-checkins", userId, "weekly-summary"],
     enabled: isOpen && !!userId,
   });
 
@@ -164,6 +176,7 @@ export default function DailyCheckinModal({
       setShowSuccess(false);
       setSavedData(null);
       setShowSharePreview(false);
+      setShowShareCard(false);
       setPreviewMessage("");
       setIsClosing(false);
       onClose();
@@ -354,6 +367,22 @@ export default function DailyCheckinModal({
                 </div>
               )}
               
+              {/* Share Card Button */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+                <p className="text-sm text-gray-700 mb-3">
+                  <span className="font-semibold text-amber-700">Create a share card!</span>
+                  <br />Beautiful branded image for Instagram Stories or WhatsApp 📱
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => setShowShareCard(true)}
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg"
+                >
+                  <Share2 className="w-5 h-5 mr-2" />
+                  Share Your Win 📸
+                </Button>
+              </div>
+              
               <Button
                 variant="ghost"
                 onClick={handleClose}
@@ -363,6 +392,19 @@ export default function DailyCheckinModal({
                 Done
               </Button>
             </div>
+            
+            {showShareCard && savedData && (
+              <WorkoutShareCard
+                streak={weeklySummary?.streak || 1}
+                waterLiters={savedData.waterLiters}
+                breathingDone={savedData.breathingPractice}
+                cardioMinutes={savedData.cardioMinutes}
+                workoutDay={weeklySummary?.completedThisWeek || 1}
+                totalDaysThisWeek={weeklySummary?.totalThisWeek || 3}
+                programWeek={weeklySummary?.currentWeek || 1}
+                onClose={() => setShowShareCard(false)}
+              />
+            )}
           </>
         ) : (
           <>

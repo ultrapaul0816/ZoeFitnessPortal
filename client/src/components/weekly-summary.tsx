@@ -50,6 +50,11 @@ interface WeeklySummaryData {
     avgWaterGlasses: number;
     avgCardioMinutes: number;
     currentStreak: number;
+    recoveryStreak?: number;
+    graceDaysUsed?: number;
+    longestStreak?: number;
+    weeklyConsistency?: number;
+    monthlyConsistency?: number;
     moodDistribution?: { mood: string; count: number; emoji: string }[];
     avgEnergyLevel?: number;
     energyTrend?: 'up' | 'down' | 'stable';
@@ -130,7 +135,10 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
   
   // Milestone messages based on streak
   const getStreakMessage = (streak: number) => {
+    if (streak >= 60) return { emoji: "👑", message: "60 days! You're a legend, mama!", milestone: true };
+    if (streak >= 45) return { emoji: "💎", message: "45 days! Diamond-level dedication!", milestone: true };
     if (streak >= 30) return { emoji: "🏆", message: "30 days strong! You're unstoppable!", milestone: true };
+    if (streak >= 21) return { emoji: "🌟", message: "3 weeks! This is who you are now!", milestone: true };
     if (streak >= 14) return { emoji: "⭐", message: "2 weeks of consistency! Amazing!", milestone: true };
     if (streak >= 7) return { emoji: "🔥", message: "1 week streak! Keep it up!", milestone: true };
     if (streak >= 3) return { emoji: "💪", message: "Building momentum!", milestone: false };
@@ -138,7 +146,11 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
     return { emoji: "✨", message: "Start your streak today!", milestone: false };
   };
   
-  const streakInfo = getStreakMessage(stats.currentStreak);
+  const recoveryStreak = stats.recoveryStreak || stats.currentStreak;
+  const graceDaysUsed = stats.graceDaysUsed || 0;
+  const longestStreak = stats.longestStreak || stats.currentStreak;
+  const weeklyConsistency = stats.weeklyConsistency || 0;
+  const streakInfo = getStreakMessage(recoveryStreak);
   
   const getCheckinForDay = (dayIndex: number) => {
     if (!summary?.checkins) return null;
@@ -171,7 +183,7 @@ export default function WeeklySummary({ compact = false, userId: propUserId }: W
 🌬️ ${stats.breathingDays} days of breathing practice  
 💧 Averaging ${stats.avgWaterGlasses} glasses of water
 🏃 ${stats.avgCardioMinutes} min cardio on average
-🔥 ${stats.currentStreak} day streak!
+🔥 ${recoveryStreak} day streak!
 
 Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts! 💕`;
     
@@ -245,8 +257,8 @@ Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts!
                 <div>
                   <h3 className="font-semibold text-gray-900">Daily Check-in</h3>
                   <p className="text-sm text-gray-500">
-                    {stats.currentStreak > 0 
-                      ? `${stats.currentStreak} day streak! 🔥` 
+                    {recoveryStreak > 0 
+                      ? `${recoveryStreak} day streak! 🔥` 
                       : "Track your progress today"}
                   </p>
                 </div>
@@ -321,19 +333,67 @@ Week ${summary.programWeek || 1} of my Heal Your Core journey. Every day counts!
         {!isCollapsed && (
           <CardContent className="space-y-6">
             {/* Streak Display with Milestone Celebration */}
-            <div className={`p-4 rounded-xl text-center ${
+            <div className={`p-4 rounded-xl text-center relative overflow-hidden ${
               streakInfo.milestone 
-                ? 'bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 border-2 border-amber-300 animate-pulse' 
+                ? 'bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 border-2 border-amber-300' 
                 : 'bg-white/50'
             }`}>
-              <div className="flex items-center justify-center gap-2 mb-1">
+              {streakInfo.milestone && (
+                <style>{`
+                  @keyframes streak-celebrate {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                  }
+                  @keyframes confetti-fall {
+                    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+                    100% { transform: translateY(20px) rotate(360deg); opacity: 0; }
+                  }
+                  .streak-celebrate { animation: streak-celebrate 2s ease-in-out infinite; }
+                  .confetti-piece { animation: confetti-fall 3s ease-in-out infinite; position: absolute; font-size: 12px; }
+                `}</style>
+              )}
+              {streakInfo.milestone && (
+                <>
+                  <span className="confetti-piece" style={{ top: '5%', left: '10%', animationDelay: '0s' }}>🎉</span>
+                  <span className="confetti-piece" style={{ top: '10%', left: '80%', animationDelay: '0.5s' }}>✨</span>
+                  <span className="confetti-piece" style={{ top: '5%', left: '50%', animationDelay: '1s' }}>🌟</span>
+                </>
+              )}
+              <div className={`flex items-center justify-center gap-2 mb-1 ${streakInfo.milestone ? 'streak-celebrate' : ''}`}>
                 <span className="text-3xl">{streakInfo.emoji}</span>
-                <span className="text-3xl font-bold text-gray-900">{stats.currentStreak}</span>
+                <span className="text-3xl font-bold text-gray-900">{recoveryStreak}</span>
                 <span className="text-gray-600 text-lg">day streak</span>
               </div>
+              {graceDaysUsed > 0 && (
+                <p className="text-xs text-gray-400 mb-1">
+                  ({graceDaysUsed} rest {graceDaysUsed === 1 ? 'day' : 'days'} taken — you've got this! 💕)
+                </p>
+              )}
               <p className={`text-sm ${streakInfo.milestone ? 'text-amber-700 font-semibold' : 'text-gray-500'}`}>
                 {streakInfo.message}
               </p>
+              {longestStreak > recoveryStreak && (
+                <p className="text-xs text-gray-400 mt-1">Personal best: {longestStreak} days 🏅</p>
+              )}
+              {longestStreak > 0 && longestStreak <= recoveryStreak && recoveryStreak > 0 && (
+                <p className="text-xs text-amber-600 mt-1 font-medium">🏅 This is your longest streak!</p>
+              )}
+
+              {/* Weekly Consistency Bar */}
+              {weeklyConsistency > 0 && (
+                <div className="mt-3 pt-3 border-t border-gray-200/50">
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                    <span>This week</span>
+                    <span className="font-semibold text-gray-700">{weeklyConsistency}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-pink-400 to-rose-500"
+                      style={{ width: `${weeklyConsistency}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-7 gap-1">

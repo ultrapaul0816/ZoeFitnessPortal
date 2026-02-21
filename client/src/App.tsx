@@ -21,6 +21,7 @@ const CourseViewer = lazy(() => import("@/pages/course-viewer"));
 const PrenatalStrength = lazy(() => import("@/pages/prenatal-strength"));
 const HealYourCorePage = lazy(() => import("@/pages/heal-your-core"));
 const Progress = lazy(() => import("@/pages/progress"));
+const BodyMeasurements = lazy(() => import("@/pages/body-measurements"));
 
 // Lazy load admin pages (rarely accessed by regular users)
 const AdminLogin = lazy(() => import("@/pages/admin-login"));
@@ -173,6 +174,7 @@ function Router() {
       <Route path="/admin/program-progress" component={() => <AdminGuard component={AdminProgramProgress} message="Loading progress..." />} />
       <Route path="/heal-your-core" component={() => <LazyRoute component={HealYourCorePage} message="Loading your program..." />} />
       <Route path="/progress" component={() => <LazyRoute component={Progress} message="Loading progress tracker..." />} />
+      <Route path="/body-measurements" component={() => <LazyRoute component={BodyMeasurements} message="Loading measurements..." />} />
       <Route path="/my-library" component={() => <LazyRoute component={MyLibrary} message="Loading library..." />} />
       <Route path="/my-courses" component={MyCourses} />
       <Route path="/my-progress-photos" component={() => <LazyRoute component={ProgressPhotos} message="Loading photos..." />} />
