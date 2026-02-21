@@ -1418,9 +1418,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       let weeksCompleted = 0;
-      for (const [, count] of weekCompletions) {
+      weekCompletions.forEach((count) => {
         if (count >= 4) weeksCompleted++;
-      }
+      });
 
       // Consistency score
       let consistencyScore = 0;
