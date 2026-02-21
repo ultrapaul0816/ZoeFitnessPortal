@@ -58,6 +58,8 @@ import {
   Check,
   BookOpen,
   Download,
+  Target,
+  Layers,
 } from "lucide-react";
 import { CoachingFormResponsesSection } from "@/components/admin/coaching-form-responses";
 import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCard";
@@ -181,6 +183,19 @@ export default function AdminCoaching() {
   const [outlinePreviewWeek, setOutlinePreviewWeek] = useState<number | null>(null);
   const [editingOutlineText, setEditingOutlineText] = useState<string>("");
 
+  // Program management state
+  const [showProgramManager, setShowProgramManager] = useState(false);
+  const [showCreateProgram, setShowCreateProgram] = useState(false);
+  const [programCreateMode, setProgramCreateMode] = useState<"ai" | "manual" | null>(null);
+  const [newProgramName, setNewProgramName] = useState("");
+  const [newProgramDescription, setNewProgramDescription] = useState("");
+  const [newProgramType, setNewProgramType] = useState("postpartum");
+  const [newProgramDuration, setNewProgramDuration] = useState(4);
+  const [newProgramClientSegment, setNewProgramClientSegment] = useState("");
+  const [editingProgram, setEditingProgram] = useState<any>(null);
+  const [generatingProgram, setGeneratingProgram] = useState(false);
+  const [manualPhases, setManualPhases] = useState<any[]>([]);
+
   // Multi-step workout generation wizard state
   const [workoutWizard, setWorkoutWizard] = useState<{
     open: boolean;
@@ -249,6 +264,15 @@ export default function AdminCoaching() {
 
   const { data: workoutTemplates = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/coaching/workout-templates"],
+  });
+
+  const { data: coachingPrograms = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/coaching/programs"],
+  });
+
+  const { data: clientProgramStatus } = useQuery<any>({
+    queryKey: ["/api/admin/coaching/clients", selectedClientId, "program-status"],
+    enabled: !!selectedClientId,
   });
 
   const createClientMutation = useMutation({
@@ -467,6 +491,20 @@ export default function AdminCoaching() {
 
   // Wizard: open with choosing phase
   const startWorkoutWizard = async (clientId: string, weekNumber: number) => {
+    // Check if client has a program assigned — auto-load phase template
+    if (clientProgramStatus?.assigned) {
+      const program = clientProgramStatus;
+      const phase = program.phases?.find((p: any) => weekNumber >= p.weekStart && weekNumber <= p.weekEnd);
+      if (phase?.weekTemplate?.days) {
+        const days = phase.weekTemplate.days.map((d: any, i: number) => ({
+          ...d,
+          dayLabel: d.dayLabel || ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][i],
+        }));
+        setWorkoutWizard(prev => ({ ...prev, open: true, weekNumber, phase: "review", structure: days, dayProgress: {}, generatedDays: {}, currentDay: null, startTime: null, templateSaveName: "" }));
+        toast({ title: `Program template loaded`, description: `Phase: ${phase.name} — Week ${weekNumber} of ${program.durationWeeks}` });
+        return;
+      }
+    }
     setWorkoutWizard(prev => ({ ...prev, open: true, weekNumber, phase: "choosing", structure: [], dayProgress: {}, generatedDays: {}, currentDay: null, startTime: null, templateSaveName: "" }));
   };
 
@@ -1127,6 +1165,9 @@ export default function AdminCoaching() {
                     <Badge className="bg-indigo-500 text-white text-[9px] ml-1 px-1.5">New</Badge>
                   )}
                 </TabsTrigger>
+                <TabsTrigger value="programs" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <Layers className="w-4 h-4" /> Programs
+                </TabsTrigger>
               </TabsList>
 
               {/* === CLIENT INFO CARD (collapsible, collapsed by default) === */}
@@ -1193,8 +1234,33 @@ export default function AdminCoaching() {
                               <div className="flex items-center gap-2 mb-3">
                                 <Dumbbell className="w-4 h-4 text-violet-500" />
                                 <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">Progress</span>
-                                <span className="ml-auto text-xs font-semibold text-violet-600">Week {currentWeek} · {phaseNames[currentWeek] || "Active"}</span>
+                                <span className="ml-auto text-xs font-semibold text-violet-600">Week {currentWeek} · {clientProgramStatus?.assigned ? (clientProgramStatus.currentPhase?.name || "Active") : (phaseNames[currentWeek] || "Active")}</span>
                               </div>
+                              {clientProgramStatus?.assigned && (
+                                <div className="mb-3 bg-indigo-50 border border-indigo-200 rounded-lg p-2.5">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Layers className="w-3.5 h-3.5 text-indigo-500" />
+                                    <span className="text-xs font-semibold text-indigo-700">{clientProgramStatus.programName}</span>
+                                  </div>
+                                  <div className="flex gap-1 mb-1.5">
+                                    {clientProgramStatus.phases?.map((phase: any, idx: number) => {
+                                      const isCurrent = currentWeek >= phase.weekStart && currentWeek <= phase.weekEnd;
+                                      const isPast = currentWeek > phase.weekEnd;
+                                      return (
+                                        <div key={idx} className="flex-1" title={`${phase.name}: Weeks ${phase.weekStart}-${phase.weekEnd}`}>
+                                          <div className={cn("h-1.5 rounded-full", isCurrent ? "bg-indigo-500" : isPast ? "bg-indigo-300" : "bg-indigo-100")} />
+                                          <div className={cn("text-[9px] mt-0.5 truncate", isCurrent ? "text-indigo-700 font-semibold" : "text-indigo-400")}>{phase.name}</div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                  {clientProgramStatus.nextPhase && (
+                                    <div className="text-[10px] text-indigo-500">
+                                      Next: <strong>{clientProgramStatus.nextPhase.name}</strong> — Week {clientProgramStatus.nextPhase.weekStart}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                               <div className="space-y-3">
                                 <div>
                                   <div className="flex justify-between items-baseline mb-1">
@@ -1737,6 +1803,63 @@ export default function AdminCoaching() {
               </TabsContent>
 
               <TabsContent value="workout" className="mt-6">
+                {/* Program Assignment Banner */}
+                {clientProgramStatus?.assigned ? (
+                  <div className="mb-4 bg-indigo-50 border border-indigo-200 rounded-lg p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Layers className="w-5 h-5 text-indigo-500" />
+                      <div>
+                        <div className="text-sm font-semibold text-indigo-800">{clientProgramStatus.programName}</div>
+                        <div className="text-xs text-indigo-600">
+                          Week {clientProgramStatus.currentWeek} of {clientProgramStatus.durationWeeks} — Phase: {clientProgramStatus.currentPhase?.name || "Unknown"}
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50"
+                      onClick={async () => {
+                        try {
+                          await apiRequest("POST", `/api/admin/coaching/clients/${selectedClient.id}/unassign-program`);
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClient.id, "program-status"] });
+                          toast({ title: "Program unassigned" });
+                        } catch { toast({ title: "Error", variant: "destructive" }); }
+                      }}
+                    >
+                      <X className="w-3 h-3 mr-1" /> Unassign
+                    </Button>
+                  </div>
+                ) : coachingPrograms.length > 0 ? (
+                  <div className="mb-4 bg-gray-50 border border-dashed border-gray-300 rounded-lg p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Layers className="w-4 h-4" /> No program assigned
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Select
+                        onValueChange={async (programId) => {
+                          try {
+                            await apiRequest("POST", `/api/admin/coaching/clients/${selectedClient.id}/assign-program`, { programId });
+                            queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClient.id, "program-status"] });
+                            toast({ title: "Program assigned" });
+                          } catch { toast({ title: "Error assigning program", variant: "destructive" }); }
+                        }}
+                      >
+                        <SelectTrigger className="w-[200px] h-8 text-xs">
+                          <SelectValue placeholder="Assign a program..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {coachingPrograms.map((prog: any) => (
+                            <SelectItem key={prog.id} value={prog.id}>
+                              {prog.name} ({prog.durationWeeks}w)
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                ) : null}
+
                 {/* Week Generation Status Banner */}
                 <div className="grid grid-cols-4 gap-3 mb-6">
                   {Array.from({ length: (selectedClient as any)?.planDurationWeeks || 4 }, (_, i) => i + 1).map(week => {
@@ -2879,6 +3002,198 @@ export default function AdminCoaching() {
                   coachingType={(selectedClient as any).coachingType || "pregnancy_coaching"}
                 />
               </TabsContent>
+
+              {/* Programs Tab */}
+              <TabsContent value="programs" className="mt-6">
+                <div className="space-y-6">
+                  {/* Current Client Program Status */}
+                  {clientProgramStatus?.assigned && (
+                    <Card className="border border-indigo-200 shadow-sm bg-indigo-50/50">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <Target className="w-4 h-4 text-indigo-500" />
+                          Active Program: {clientProgramStatus.programName}
+                        </CardTitle>
+                        <p className="text-sm text-gray-500">{clientProgramStatus.description}</p>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {/* Phase Timeline */}
+                          <div className="flex gap-1">
+                            {clientProgramStatus.phases?.map((phase: any, idx: number) => {
+                              const currentWeek = clientProgramStatus.currentWeek;
+                              const isCurrent = currentWeek >= phase.weekStart && currentWeek <= phase.weekEnd;
+                              const isPast = currentWeek > phase.weekEnd;
+                              const widthPct = ((phase.weekEnd - phase.weekStart + 1) / clientProgramStatus.durationWeeks) * 100;
+                              return (
+                                <div key={idx} style={{ width: `${widthPct}%` }} className="space-y-1">
+                                  <div className={cn(
+                                    "h-3 rounded-full transition-all",
+                                    isCurrent ? "bg-indigo-500 shadow-sm" : isPast ? "bg-indigo-300" : "bg-indigo-100"
+                                  )} />
+                                  <div className={cn("text-[10px] text-center truncate", isCurrent ? "font-bold text-indigo-700" : "text-indigo-400")}>
+                                    {phase.name}
+                                  </div>
+                                  <div className="text-[9px] text-center text-gray-400">
+                                    W{phase.weekStart}{phase.weekEnd !== phase.weekStart ? `-${phase.weekEnd}` : ""}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="text-sm text-indigo-700 font-medium">
+                            Week {clientProgramStatus.currentWeek} of {clientProgramStatus.durationWeeks}
+                            {clientProgramStatus.currentPhase && ` — ${clientProgramStatus.currentPhase.name}`}
+                          </div>
+                          {clientProgramStatus.nextPhase && (
+                            <div className="text-xs text-gray-500">
+                              Coming next: <strong>{clientProgramStatus.nextPhase.name}</strong> (Week {clientProgramStatus.nextPhase.weekStart}) — {clientProgramStatus.nextPhase.description}
+                            </div>
+                          )}
+                          {/* Current Phase Week Template */}
+                          {clientProgramStatus.weekTemplate && (
+                            <div className="mt-3">
+                              <div className="text-xs font-medium text-gray-500 mb-2">Current Phase Template:</div>
+                              <div className="grid grid-cols-7 gap-1">
+                                {clientProgramStatus.weekTemplate.days?.map((day: any) => {
+                                  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                                  return (
+                                    <div key={day.dayNumber} className={cn(
+                                      "p-2 rounded text-center text-[10px] border",
+                                      day.dayType === "rest" ? "bg-gray-50 border-gray-200 text-gray-400" : "bg-white border-indigo-200 text-indigo-700"
+                                    )}>
+                                      <div className="font-bold">{dayNames[day.dayNumber - 1]}</div>
+                                      <div className="truncate mt-0.5">{day.dayType === "rest" ? "Rest" : day.focus || day.dayType}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Program Library */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="text-base">Program Library</CardTitle>
+                          <p className="text-sm text-gray-500 mt-1">Create and manage multi-week coaching programs with phases.</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setProgramCreateMode("manual");
+                              setNewProgramName("");
+                              setNewProgramDescription("");
+                              setNewProgramType("postpartum");
+                              setNewProgramDuration(4);
+                              setManualPhases([{
+                                name: "Foundation",
+                                weekStart: 1,
+                                weekEnd: 2,
+                                description: "",
+                                weekTemplate: { days: Array.from({ length: 7 }, (_, i) => ({ dayNumber: i + 1, dayType: "rest", focus: "", briefDescription: "" })) }
+                              }]);
+                              setShowCreateProgram(true);
+                            }}
+                          >
+                            <Plus className="w-3 h-3 mr-1" /> Manual
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                            onClick={() => {
+                              setProgramCreateMode("ai");
+                              setNewProgramName("");
+                              setNewProgramDescription("");
+                              setNewProgramType("postpartum");
+                              setNewProgramDuration(4);
+                              setNewProgramClientSegment("");
+                              setShowCreateProgram(true);
+                            }}
+                          >
+                            <Sparkles className="w-3 h-3 mr-1" /> AI Generate
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {coachingPrograms.length === 0 ? (
+                        <div className="text-center py-8 text-gray-400">
+                          <Layers className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                          <p>No programs yet. Create one to get started.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {coachingPrograms.map((prog: any) => (
+                            <div key={prog.id} className="border rounded-lg p-4 hover:border-indigo-200 transition-colors">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <div className="font-medium text-gray-900">{prog.name}</div>
+                                  <div className="text-xs text-gray-500 mt-0.5">
+                                    {prog.durationWeeks} weeks · {prog.phases?.length || 0} phases · {prog.coachingType}
+                                  </div>
+                                  {prog.description && <p className="text-xs text-gray-400 mt-1">{prog.description}</p>}
+                                </div>
+                                <div className="flex gap-1">
+                                  {!clientProgramStatus?.assigned && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-xs h-7"
+                                      onClick={async () => {
+                                        try {
+                                          await apiRequest("POST", `/api/admin/coaching/clients/${selectedClient.id}/assign-program`, { programId: prog.id });
+                                          queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClient.id, "program-status"] });
+                                          toast({ title: "Program assigned", description: prog.name });
+                                        } catch { toast({ title: "Error", variant: "destructive" }); }
+                                      }}
+                                    >
+                                      <Target className="w-3 h-3 mr-1" /> Assign
+                                    </Button>
+                                  )}
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="text-xs h-7 text-gray-400 hover:text-red-500"
+                                    onClick={async () => {
+                                      try {
+                                        await apiRequest("DELETE", `/api/admin/coaching/programs/${prog.id}`);
+                                        queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
+                                        toast({ title: "Program deleted" });
+                                      } catch { toast({ title: "Error", variant: "destructive" }); }
+                                    }}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                              {/* Phase preview */}
+                              <div className="flex gap-1 mt-3">
+                                {prog.phases?.map((phase: any, idx: number) => {
+                                  const widthPct = ((phase.weekEnd - phase.weekStart + 1) / prog.durationWeeks) * 100;
+                                  return (
+                                    <div key={idx} style={{ width: `${widthPct}%` }}>
+                                      <div className="h-2 bg-indigo-200 rounded-full" />
+                                      <div className="text-[9px] text-gray-400 mt-0.5 truncate">{phase.name}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
             </Tabs>
               </div>
             </div>
@@ -3508,6 +3823,226 @@ export default function AdminCoaching() {
           )}
         </DialogContent>
       </Dialog>
+      {/* Create Program Dialog */}
+      <Dialog open={showCreateProgram} onOpenChange={(open) => { if (!open && !generatingProgram) setShowCreateProgram(false); }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {programCreateMode === "ai" ? <Sparkles className="w-5 h-5 text-purple-500" /> : <Plus className="w-5 h-5 text-green-500" />}
+              {programCreateMode === "ai" ? "AI Generate Program" : "Create Program"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Program Name</Label>
+                <Input value={newProgramName} onChange={e => setNewProgramName(e.target.value)} placeholder="e.g. Postpartum Recovery" className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Type</Label>
+                <Select value={newProgramType} onValueChange={setNewProgramType}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="postpartum">Postpartum Recovery</SelectItem>
+                    <SelectItem value="prenatal">Prenatal</SelectItem>
+                    <SelectItem value="strength">Strength & Athlete</SelectItem>
+                    <SelectItem value="general">General Fitness</SelectItem>
+                    <SelectItem value="weight_loss">Weight Loss</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Description</Label>
+              <Textarea value={newProgramDescription} onChange={e => setNewProgramDescription(e.target.value)} placeholder="Brief description..." rows={2} className="mt-1" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Duration (weeks)</Label>
+                <Select value={String(newProgramDuration)} onValueChange={v => setNewProgramDuration(Number(v))}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[2, 4, 6, 8, 10, 12].map(w => (
+                      <SelectItem key={w} value={String(w)}>{w} weeks</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {programCreateMode === "ai" && (
+                <div>
+                  <Label className="text-xs">Client Segment (optional)</Label>
+                  <Input value={newProgramClientSegment} onChange={e => setNewProgramClientSegment(e.target.value)} placeholder="e.g. New moms 0-3 months" className="mt-1" />
+                </div>
+              )}
+            </div>
+
+            {/* Manual: Phase Builder */}
+            {programCreateMode === "manual" && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-semibold">Phases</Label>
+                  <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => {
+                    const lastEnd = manualPhases.length > 0 ? manualPhases[manualPhases.length - 1].weekEnd : 0;
+                    setManualPhases(prev => [...prev, {
+                      name: `Phase ${prev.length + 1}`,
+                      weekStart: lastEnd + 1,
+                      weekEnd: Math.min(lastEnd + 2, newProgramDuration),
+                      description: "",
+                      weekTemplate: { days: Array.from({ length: 7 }, (_, i) => ({ dayNumber: i + 1, dayType: "rest", focus: "", briefDescription: "" })) }
+                    }]);
+                  }}>
+                    <Plus className="w-3 h-3 mr-1" /> Add Phase
+                  </Button>
+                </div>
+                {manualPhases.map((phase, phaseIdx) => (
+                  <Card key={phaseIdx} className="border border-gray-200">
+                    <CardContent className="p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          className="text-sm font-medium flex-1"
+                          value={phase.name}
+                          onChange={e => {
+                            const updated = [...manualPhases];
+                            updated[phaseIdx] = { ...updated[phaseIdx], name: e.target.value };
+                            setManualPhases(updated);
+                          }}
+                          placeholder="Phase name"
+                        />
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          W<Input className="w-12 h-7 text-xs text-center" type="number" min={1} max={newProgramDuration}
+                            value={phase.weekStart}
+                            onChange={e => {
+                              const updated = [...manualPhases];
+                              updated[phaseIdx] = { ...updated[phaseIdx], weekStart: Number(e.target.value) };
+                              setManualPhases(updated);
+                            }}
+                          />-<Input className="w-12 h-7 text-xs text-center" type="number" min={1} max={newProgramDuration}
+                            value={phase.weekEnd}
+                            onChange={e => {
+                              const updated = [...manualPhases];
+                              updated[phaseIdx] = { ...updated[phaseIdx], weekEnd: Number(e.target.value) };
+                              setManualPhases(updated);
+                            }}
+                          />
+                        </div>
+                        <Button size="sm" variant="ghost" className="h-7 text-gray-400 hover:text-red-500" onClick={() => {
+                          setManualPhases(prev => prev.filter((_, i) => i !== phaseIdx));
+                        }}>
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-7 gap-1">
+                        {phase.weekTemplate.days.map((day: any, dayIdx: number) => {
+                          const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                          return (
+                            <div key={dayIdx} className="space-y-1">
+                              <div className="text-[9px] text-center font-bold text-gray-400">{dayNames[dayIdx]}</div>
+                              <Select
+                                value={day.dayType}
+                                onValueChange={val => {
+                                  const updated = [...manualPhases];
+                                  updated[phaseIdx].weekTemplate.days[dayIdx] = { ...day, dayType: val, focus: val === "rest" ? "" : day.focus };
+                                  setManualPhases(updated);
+                                }}
+                              >
+                                <SelectTrigger className="h-6 text-[9px] px-1"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="hiit">🔥 HIIT</SelectItem>
+                                  <SelectItem value="core">🎯 Core</SelectItem>
+                                  <SelectItem value="emom">⏱️ EMOM</SelectItem>
+                                  <SelectItem value="strength">💪 Strength</SelectItem>
+                                  <SelectItem value="pelvic_floor">🌸 PF</SelectItem>
+                                  <SelectItem value="active_recovery">🧘 Recovery</SelectItem>
+                                  <SelectItem value="yoga">🧘‍♀️ Yoga</SelectItem>
+                                  <SelectItem value="tabata">⚡ Tabata</SelectItem>
+                                  <SelectItem value="metabolic">🏋️ Metabolic</SelectItem>
+                                  <SelectItem value="rest">😴 Rest</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {day.dayType !== "rest" && (
+                                <Input
+                                  className="h-5 text-[8px] px-1"
+                                  placeholder="Focus"
+                                  value={day.focus || ""}
+                                  onChange={e => {
+                                    const updated = [...manualPhases];
+                                    updated[phaseIdx].weekTemplate.days[dayIdx] = { ...day, focus: e.target.value };
+                                    setManualPhases(updated);
+                                  }}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {generatingProgram && (
+              <div className="flex flex-col items-center py-6 gap-3">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                  <Brain className="w-6 h-6 text-purple-600 animate-pulse" />
+                </div>
+                <p className="text-sm text-gray-600">AI is designing your program... (~30 seconds)</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateProgram(false)} disabled={generatingProgram}>Cancel</Button>
+            <Button
+              disabled={!newProgramName.trim() || generatingProgram}
+              className={programCreateMode === "ai" ? "bg-purple-600 hover:bg-purple-700 text-white" : ""}
+              onClick={async () => {
+                if (programCreateMode === "ai") {
+                  setGeneratingProgram(true);
+                  try {
+                    await apiRequest("POST", "/api/admin/coaching/programs/generate", {
+                      programType: newProgramType,
+                      durationWeeks: newProgramDuration,
+                      clientSegment: newProgramClientSegment,
+                      name: newProgramName,
+                    });
+                    queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
+                    toast({ title: "Program generated!", description: newProgramName });
+                    setShowCreateProgram(false);
+                  } catch (err: any) {
+                    toast({ title: "Generation failed", description: err.message, variant: "destructive" });
+                  } finally {
+                    setGeneratingProgram(false);
+                  }
+                } else {
+                  try {
+                    await apiRequest("POST", "/api/admin/coaching/programs", {
+                      name: newProgramName,
+                      description: newProgramDescription,
+                      coachingType: newProgramType,
+                      durationWeeks: newProgramDuration,
+                      phases: manualPhases,
+                    });
+                    queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
+                    toast({ title: "Program created!", description: newProgramName });
+                    setShowCreateProgram(false);
+                  } catch (err: any) {
+                    toast({ title: "Error", description: err.message, variant: "destructive" });
+                  }
+                }
+              }}
+            >
+              {programCreateMode === "ai" ? (
+                <><Sparkles className="w-4 h-4 mr-1" /> Generate</>
+              ) : (
+                <><Save className="w-4 h-4 mr-1" /> Create Program</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </AdminLayout>
   );
 }

@@ -8361,6 +8361,268 @@ ${ctx.pregnancyInfo ? `\nPREGNANCY SAFETY: AVOID heavy lifting, lying flat on ba
     }
   });
 
+  // ========== COACHING PROGRAMS (Archetypes & Phases) ==========
+  const programsFilePath = path.join(process.cwd(), "data", "coaching-programs.json");
+
+  function loadCoachingPrograms(): any[] {
+    try {
+      if (fs.existsSync(programsFilePath)) {
+        return JSON.parse(fs.readFileSync(programsFilePath, "utf-8"));
+      }
+    } catch {}
+    return [];
+  }
+
+  function saveCoachingPrograms(programs: any[]) {
+    const dir = path.dirname(programsFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(programsFilePath, JSON.stringify(programs, null, 2));
+  }
+
+  // List all programs
+  app.get("/api/admin/coaching/programs", requireAdmin, async (req, res) => {
+    try {
+      res.json(loadCoachingPrograms());
+    } catch (error) {
+      console.error("Error fetching coaching programs:", error);
+      res.json([]);
+    }
+  });
+
+  // Create a program
+  app.post("/api/admin/coaching/programs", requireAdmin, async (req, res) => {
+    try {
+      const { name, description, coachingType, durationWeeks, phases } = req.body;
+      if (!name || !durationWeeks || !Array.isArray(phases)) {
+        return res.status(400).json({ message: "name, durationWeeks, and phases array are required" });
+      }
+      const programs = loadCoachingPrograms();
+      const program = {
+        id: `prog_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        name,
+        description: description || "",
+        coachingType: coachingType || "general",
+        durationWeeks,
+        phases,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      programs.push(program);
+      saveCoachingPrograms(programs);
+      res.json(program);
+    } catch (error) {
+      console.error("Error creating coaching program:", error);
+      res.status(500).json({ message: "Failed to create program" });
+    }
+  });
+
+  // Update a program
+  app.put("/api/admin/coaching/programs/:programId", requireAdmin, async (req, res) => {
+    try {
+      const programs = loadCoachingPrograms();
+      const idx = programs.findIndex((p: any) => p.id === req.params.programId);
+      if (idx === -1) return res.status(404).json({ message: "Program not found" });
+      const { name, description, coachingType, durationWeeks, phases } = req.body;
+      programs[idx] = {
+        ...programs[idx],
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
+        ...(coachingType !== undefined && { coachingType }),
+        ...(durationWeeks !== undefined && { durationWeeks }),
+        ...(phases !== undefined && { phases }),
+        updatedAt: new Date().toISOString(),
+      };
+      saveCoachingPrograms(programs);
+      res.json(programs[idx]);
+    } catch (error) {
+      console.error("Error updating coaching program:", error);
+      res.status(500).json({ message: "Failed to update program" });
+    }
+  });
+
+  // Delete a program
+  app.delete("/api/admin/coaching/programs/:programId", requireAdmin, async (req, res) => {
+    try {
+      const programs = loadCoachingPrograms();
+      const filtered = programs.filter((p: any) => p.id !== req.params.programId);
+      if (filtered.length === programs.length) return res.status(404).json({ message: "Program not found" });
+      saveCoachingPrograms(filtered);
+      res.json({ message: "Program deleted" });
+    } catch (error) {
+      console.error("Error deleting coaching program:", error);
+      res.status(500).json({ message: "Failed to delete program" });
+    }
+  });
+
+  // Assign program to client
+  app.post("/api/admin/coaching/clients/:clientId/assign-program", requireAdmin, async (req, res) => {
+    try {
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+      const { programId, startingWeek } = req.body;
+      if (!programId) return res.status(400).json({ message: "programId is required" });
+      // Verify program exists
+      const programs = loadCoachingPrograms();
+      const program = programs.find((p: any) => p.id === programId);
+      if (!program) return res.status(404).json({ message: "Program not found" });
+      // Store assignment in weeklyPlanOutlines under __programAssignment key
+      const outlines = (client as any).weeklyPlanOutlines || {};
+      outlines.__programAssignment = {
+        programId,
+        programName: program.name,
+        startingWeek: startingWeek || 1,
+        assignedAt: new Date().toISOString(),
+        durationWeeks: program.durationWeeks,
+      };
+      await storage.updateCoachingClient(req.params.clientId, { weeklyPlanOutlines: outlines } as any);
+      res.json({ message: "Program assigned", assignment: outlines.__programAssignment });
+    } catch (error) {
+      console.error("Error assigning program:", error);
+      res.status(500).json({ message: "Failed to assign program" });
+    }
+  });
+
+  // Unassign program from client
+  app.post("/api/admin/coaching/clients/:clientId/unassign-program", requireAdmin, async (req, res) => {
+    try {
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+      const outlines = (client as any).weeklyPlanOutlines || {};
+      delete outlines.__programAssignment;
+      await storage.updateCoachingClient(req.params.clientId, { weeklyPlanOutlines: outlines } as any);
+      res.json({ message: "Program unassigned" });
+    } catch (error) {
+      console.error("Error unassigning program:", error);
+      res.status(500).json({ message: "Failed to unassign program" });
+    }
+  });
+
+  // Get client program status
+  app.get("/api/admin/coaching/clients/:clientId/program-status", requireAdmin, async (req, res) => {
+    try {
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+      const outlines = (client as any).weeklyPlanOutlines || {};
+      const assignment = outlines.__programAssignment;
+      if (!assignment) return res.json({ assigned: false });
+      // Load program details
+      const programs = loadCoachingPrograms();
+      const program = programs.find((p: any) => p.id === assignment.programId);
+      if (!program) return res.json({ assigned: false, error: "Program no longer exists" });
+      // Calculate current week from start date
+      const startDate = client.startDate ? new Date(client.startDate) : null;
+      const daysSinceStart = startDate ? Math.max(0, Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
+      const currentWeek = Math.min(program.durationWeeks, Math.max(1, Math.ceil(daysSinceStart / 7) || 1));
+      // Find current phase
+      const currentPhase = program.phases.find((p: any) => currentWeek >= p.weekStart && currentWeek <= p.weekEnd) || program.phases[0];
+      // Find next phase
+      const nextPhase = program.phases.find((p: any) => p.weekStart > currentWeek) || null;
+      res.json({
+        assigned: true,
+        programId: program.id,
+        programName: program.name,
+        description: program.description,
+        coachingType: program.coachingType,
+        durationWeeks: program.durationWeeks,
+        currentWeek,
+        currentPhase: currentPhase ? { name: currentPhase.name, description: currentPhase.description, weekStart: currentPhase.weekStart, weekEnd: currentPhase.weekEnd } : null,
+        nextPhase: nextPhase ? { name: nextPhase.name, description: nextPhase.description, weekStart: nextPhase.weekStart } : null,
+        phases: program.phases,
+        weekTemplate: currentPhase?.weekTemplate || null,
+      });
+    } catch (error) {
+      console.error("Error getting program status:", error);
+      res.status(500).json({ message: "Failed to get program status" });
+    }
+  });
+
+  // AI generate a full coaching program
+  app.post("/api/admin/coaching/programs/generate", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      if (!hasAIKey()) return res.status(400).json({ message: "No AI key configured" });
+      const { programType, durationWeeks, clientSegment, name } = req.body;
+      if (!programType || !durationWeeks) return res.status(400).json({ message: "programType and durationWeeks are required" });
+
+      const dayTypes = "hiit, core, emom, strength, pelvic_floor, active_recovery, yoga, tabata, metabolic, rest, custom";
+
+      const systemPrompt = `You are Zoe, an expert fitness coach specializing in women's fitness, postpartum recovery, prenatal fitness, and strength training. You design multi-week coaching programs with distinct phases that progressively build on each other.
+
+Generate a complete coaching program with phases. Each phase covers a range of weeks and has a week template (7 days).
+
+Available day types: ${dayTypes}
+
+IMPORTANT: Respond with valid JSON only. No markdown, no code fences.`;
+
+      const userPrompt = `Create a ${durationWeeks}-week "${programType}" coaching program.
+${clientSegment ? `Target client segment: ${clientSegment}` : ""}
+${name ? `Program name: ${name}` : ""}
+
+Design ${Math.min(Math.ceil(durationWeeks / 2), 4)} distinct phases with progressive difficulty.
+
+Return JSON:
+{
+  "name": "Program Name",
+  "description": "Brief description",
+  "coachingType": "${programType}",
+  "durationWeeks": ${durationWeeks},
+  "phases": [
+    {
+      "name": "Phase Name",
+      "weekStart": 1,
+      "weekEnd": 2,
+      "description": "Phase description",
+      "weekTemplate": {
+        "days": [
+          {"dayNumber": 1, "dayType": "one of: ${dayTypes}", "focus": "Focus area", "briefDescription": "What the day covers"},
+          ... (all 7 days)
+        ]
+      }
+    }
+  ]
+}
+
+Ensure phases cover all ${durationWeeks} weeks with no gaps. Each phase's weekTemplate must have exactly 7 days (dayNumber 1-7).`;
+
+      const result = await createAICompletion({
+        systemPrompt,
+        userPrompt,
+        maxTokens: 4000,
+        temperature: 0.7,
+        jsonMode: true,
+        premium: true,
+      });
+
+      let parsed;
+      try {
+        parsed = JSON.parse(result);
+      } catch {
+        // Try extracting JSON from response
+        const match = result.match(/\{[\s\S]*\}/);
+        if (match) parsed = JSON.parse(match[0]);
+        else return res.status(500).json({ message: "AI returned invalid JSON" });
+      }
+
+      // Save the program
+      const programs = loadCoachingPrograms();
+      const program = {
+        id: `prog_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        name: parsed.name || name || `${programType} Program`,
+        description: parsed.description || "",
+        coachingType: parsed.coachingType || programType,
+        durationWeeks: parsed.durationWeeks || durationWeeks,
+        phases: parsed.phases || [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      programs.push(program);
+      saveCoachingPrograms(programs);
+      res.json(program);
+    } catch (error) {
+      console.error("Error generating coaching program:", error);
+      res.status(500).json({ message: "Failed to generate program" });
+    }
+  });
+
   // Generate AI nutrition plan for a coaching client
   app.post("/api/admin/coaching/clients/:clientId/generate-nutrition", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
