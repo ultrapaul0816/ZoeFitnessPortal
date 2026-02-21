@@ -131,7 +131,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
     <div className="flex flex-col h-full bg-gradient-to-b from-white to-gray-50/50 dark:from-gray-950 dark:to-gray-900">
       <div className={cn(
         "flex items-center border-b border-gray-200/60 dark:border-gray-800 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm",
-        isCollapsed ? "justify-center p-4" : "justify-between px-6 py-6"
+        isCollapsed ? "justify-center p-4" : "justify-between px-6 py-4"
       )}>
         {!isCollapsed && (
           <div className="flex items-center gap-3">
@@ -154,8 +154,8 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
         </Button>
       </div>
 
-      <ScrollArea className="flex-1 py-4">
-        <nav className="space-y-2 px-4">
+      <ScrollArea className="flex-1 min-h-0 py-2">
+        <nav className="space-y-1 px-3">
           {sectionOrder.map((section) => {
             const items = groupedItems[section];
             if (!items) return null;
@@ -286,14 +286,14 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
         </nav>
       </ScrollArea>
 
-      <div className="border-t border-gray-200/60 dark:border-gray-800 p-4 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm space-y-2">
+      <div className="border-t border-gray-200/60 dark:border-gray-800 px-3 py-2 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm space-y-1 shrink-0">
         {isCollapsed ? (
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="w-full flex items-center justify-center p-3.5 rounded-2xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-md hover:scale-105 group"
+                  className="w-full flex items-center justify-center p-2.5 rounded-xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-md group"
                   data-testid="nav-exit-admin"
                 >
                   <Home className="w-5 h-5 group-hover:text-pink-600 transition-colors" />
@@ -311,7 +311,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
                     localStorage.removeItem("user");
                     window.location.href = "/admin/login";
                   }}
-                  className="w-full flex items-center justify-center p-3.5 rounded-2xl text-gray-600 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/20 transition-all duration-300 hover:shadow-md hover:scale-105 group"
+                  className="w-full flex items-center justify-center p-2.5 rounded-xl text-gray-600 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/20 transition-all duration-300 hover:shadow-md group"
                   data-testid="nav-logout"
                 >
                   <LogOut className="w-5 h-5 group-hover:text-red-600 transition-colors" />
@@ -326,11 +326,10 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
           <>
             <button
               onClick={() => navigate("/dashboard")}
-              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 text-left group hover:shadow-md hover:scale-[1.01] relative overflow-hidden"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-gray-600 hover:bg-white dark:text-gray-400 dark:hover:bg-gray-800 transition-all duration-300 text-left group hover:shadow-md relative overflow-hidden"
               data-testid="nav-exit-admin"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-pink-500/5 to-pink-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-              <Home className="w-5 h-5 group-hover:scale-110 group-hover:text-pink-600 transition-all duration-300 relative z-10" />
+              <Home className="w-4.5 h-4.5 group-hover:text-pink-600 transition-all duration-300 relative z-10" />
               <span className="text-sm font-semibold relative z-10">Back to Member View</span>
             </button>
             <button
@@ -339,10 +338,10 @@ export default function AdminLayout({ children, activeTab, onTabChange, onNaviga
                 localStorage.removeItem("user");
                 window.location.href = "/admin/login";
               }}
-              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-gray-600 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/20 transition-all duration-300 text-left group hover:shadow-md hover:scale-[1.01]"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-gray-600 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/20 transition-all duration-300 text-left group"
               data-testid="nav-logout"
             >
-              <LogOut className="w-5 h-5 group-hover:scale-110 group-hover:text-red-600 transition-all duration-300" />
+              <LogOut className="w-4.5 h-4.5 group-hover:text-red-600 transition-all duration-300" />
               <span className="text-sm font-semibold group-hover:text-red-600 transition-colors">Logout</span>
             </button>
           </>
