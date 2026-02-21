@@ -716,9 +716,20 @@ export default function AdminCoaching() {
       const res = await apiRequest("PATCH", `/api/admin/coaching/clients/${clientId}`, updates);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
-      toast({ title: "Client updated" });
+      const updates = variables.updates;
+      if (updates.coachRemarksApproved === true) {
+        toast({ title: "✅ Coach's Notes approved & locked", description: "Notes will now guide all AI-generated content." });
+      } else if (updates.coachRemarksApproved === false) {
+        toast({ title: "🔓 Coach's Notes unlocked", description: "You can now edit and re-approve." });
+      } else if (updates.aiSummaryApproved === true) {
+        toast({ title: "✅ AI Assessment approved & locked", description: "Assessment will now guide AI-generated content." });
+      } else if (updates.aiSummaryApproved === false) {
+        toast({ title: "🔓 AI Assessment unlocked", description: "You can now edit and re-approve." });
+      } else {
+        toast({ title: "Client updated" });
+      }
     },
     onError: (err: Error) => {
       toast({ title: "Error updating client", description: err.message, variant: "destructive" });
@@ -1801,22 +1812,29 @@ export default function AdminCoaching() {
                                   {(selectedClient as any).aiSummary}
                                 </div>
                                 {summaryApproved ? (
-                                  <p className="text-xs text-gray-400 mt-3 flex items-center gap-1">
-                                    <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                    Assessment locked. Click "Edit & Re-approve" to make changes.
-                                  </p>
+                                  <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 mt-4 flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                                    <div>
+                                      <p className="text-sm text-green-800 font-medium">Assessment approved & locked</p>
+                                      <p className="text-xs text-green-600">This assessment is guiding AI-generated content. Click "Edit & Re-approve" above to make changes.</p>
+                                    </div>
+                                  </div>
                                 ) : (
-                                  <div className="border-t pt-4 mt-4">
+                                  <div className="border-t pt-4 mt-4 space-y-2">
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                                      <p className="text-xs text-blue-700">Once approved, this assessment will be <strong>locked</strong> and used alongside coaching notes to generate workouts and nutrition plans. To make changes later, click "Edit & Re-approve".</p>
+                                    </div>
                                     <Button
                                       size="default"
                                       className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
+                                      disabled={updateClientMutation.isPending}
                                       onClick={() => updateClientMutation.mutate({
                                         clientId: selectedClient.id,
                                         updates: { aiSummaryApproved: true }
                                       })}
                                     >
                                       <CheckCircle2 className="w-4 h-4 mr-2" />
-                                      Approve Assessment
+                                      {updateClientMutation.isPending ? "Approving..." : "Approve & Lock Assessment"}
                                     </Button>
                                   </div>
                                 )}
