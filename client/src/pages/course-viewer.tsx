@@ -25,9 +25,14 @@ import {
   ExternalLink
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { VideoModal } from "@/components/video-modal";
 import ProfileSettings from "@/components/profile-settings";
 import zoeImagePath from "@assets/zoe_1_1764958643553.png";
 import type { User } from "@shared/schema";
+
+const isYouTubeUrl = (url: string): boolean => {
+  return url.includes("youtube.com") || url.includes("youtu.be");
+};
 
 interface ContentItem {
   id: string;
@@ -100,6 +105,7 @@ export default function CourseViewer() {
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [videoPopup, setVideoPopup] = useState<{url: string, title: string} | null>(null);
   const { toast } = useToast();
 
   const toggleItem = (itemId: string) => {
@@ -223,7 +229,13 @@ export default function CourseViewer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 px-3 pb-3"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isYouTubeUrl(exercise.exercise_video_url)) {
+                        e.preventDefault();
+                        setVideoPopup({ url: exercise.exercise_video_url, title: exercise.exercise_name || 'Exercise Video' });
+                      }
+                    }}
                   >
                     <div className="w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
                       <img 
@@ -270,6 +282,12 @@ export default function CourseViewer() {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-3 pb-3"
+              onClick={(e) => {
+                if (isYouTubeUrl(item.exercise_video_url!)) {
+                  e.preventDefault();
+                  setVideoPopup({ url: item.exercise_video_url!, title: item.exercise_name || item.title });
+                }
+              }}
             >
               <div className="w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
                 <img 
@@ -299,6 +317,12 @@ export default function CourseViewer() {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+          onClick={(e) => {
+            if (item.video_url && isYouTubeUrl(item.video_url)) {
+              e.preventDefault();
+              setVideoPopup({ url: item.video_url, title: item.title });
+            }
+          }}
         >
           {item.video_url && (
             <div className="w-20 h-14 rounded overflow-hidden flex-shrink-0 relative">
@@ -384,7 +408,13 @@ export default function CourseViewer() {
                 href={item.video_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isYouTubeUrl(item.video_url!)) {
+                    e.preventDefault();
+                    setVideoPopup({ url: item.video_url!, title: item.title });
+                  }
+                }}
                 className="inline-flex items-center gap-2 mt-3 text-pink-600 hover:text-pink-700 text-sm font-medium"
               >
                 <Play className="w-4 h-4" />
@@ -566,6 +596,15 @@ export default function CourseViewer() {
             setUser(updatedUser);
             localStorage.setItem("user", JSON.stringify(updatedUser));
           }}
+        />
+      )}
+
+      {videoPopup && (
+        <VideoModal
+          isOpen={true}
+          onClose={() => setVideoPopup(null)}
+          videoUrl={videoPopup.url}
+          title={videoPopup.title}
         />
       )}
     </div>
