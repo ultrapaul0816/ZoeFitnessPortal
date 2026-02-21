@@ -8543,21 +8543,39 @@ ${ctx.pregnancyInfo ? `\nPREGNANCY SAFETY: AVOID heavy lifting, lying flat on ba
       const { programType, durationWeeks, clientSegment, name } = req.body;
       if (!programType || !durationWeeks) return res.status(400).json({ message: "programType and durationWeeks are required" });
 
-      const dayTypes = "hiit, core, emom, strength, pelvic_floor, active_recovery, yoga, tabata, metabolic, rest, custom";
+      const dayTypes = "hiit, core, emom, strength_circuit, pelvic_floor, active_recovery, yoga_flow, tabata, metabolic_conditioning, rest, custom";
 
-      const systemPrompt = `You are Zoe, an expert fitness coach specializing in women's fitness, postpartum recovery, prenatal fitness, and strength training. You design multi-week coaching programs with distinct phases that progressively build on each other.
+      const archetypeDescriptions: Record<string, string> = {
+        postpartum_recovery: "Postpartum Recovery — gentle rebuilding of core, pelvic floor, and full-body strength for new mothers (0-6 months postpartum). Emphasize breath work, pelvic floor reconnection, and gradual load progression.",
+        postpartum_strength: "Postpartum Strength — intermediate program for mothers ready to build real strength (3-12 months postpartum). Incorporate strength circuits, EMOM, and progressive overload while maintaining pelvic floor awareness.",
+        postpartum_athlete: "Postpartum Athlete — advanced program for mothers ready to return to high-intensity training. Include HIIT, Tabata, metabolic conditioning, and challenging strength circuits.",
+        prenatal: "Prenatal — safe, trimester-aware fitness maintaining strength and mobility during pregnancy. Focus on breath work, pelvic floor, yoga flow, active recovery, and modified strength work. Avoid supine exercises after first trimester.",
+        general_fitness: "General Fitness — well-rounded women's fitness program. Mix HIIT, strength circuits, yoga flow, core work, and metabolic conditioning for overall health and body composition.",
+      };
 
-Generate a complete coaching program with phases. Each phase covers a range of weeks and has a week template (7 days).
+      const archetypeContext = archetypeDescriptions[programType] || `${programType} fitness program`;
+
+      const systemPrompt = `You are Zoe, an expert women's fitness coach. You specialize in postpartum recovery, prenatal fitness, and strength training. Your methodology centers on these training modalities: HIIT, EMOM, Core, Strength Circuit, Pelvic Floor & Breath Work, Active Recovery, Yoga Flow, Tabata, and Metabolic Conditioning.
+
+You design multi-week coaching programs using a 3-phase progression model:
+- **Foundation** — build baseline, reconnect with body, establish movement patterns
+- **Build** — increase intensity, add complexity, progressive overload
+- **Peak** — challenge with advanced work, peak performance, consolidation
 
 Available day types: ${dayTypes}
 
+Program archetypes you design for: Postpartum Recovery, Postpartum Strength, Postpartum Athlete, Prenatal, General Fitness.
+
 IMPORTANT: Respond with valid JSON only. No markdown, no code fences.`;
 
-      const userPrompt = `Create a ${durationWeeks}-week "${programType}" coaching program.
+      const userPrompt = `Create a ${durationWeeks}-week coaching program.
+Archetype: ${archetypeContext}
 ${clientSegment ? `Target client segment: ${clientSegment}` : ""}
 ${name ? `Program name: ${name}` : ""}
 
-Design ${Math.min(Math.ceil(durationWeeks / 2), 4)} distinct phases with progressive difficulty.
+Design phases following Foundation → Build → Peak progression (adjust number of phases based on duration: ${durationWeeks <= 4 ? "2-3 phases" : durationWeeks <= 8 ? "3 phases" : "3-4 phases"}).
+
+Each phase must have a weekTemplate with exactly 7 days. Mix day types appropriately for the archetype — include at least 1 rest/active_recovery day per week.
 
 Return JSON:
 {
@@ -8567,10 +8585,10 @@ Return JSON:
   "durationWeeks": ${durationWeeks},
   "phases": [
     {
-      "name": "Phase Name",
+      "name": "Foundation",
       "weekStart": 1,
       "weekEnd": 2,
-      "description": "Phase description",
+      "description": "Phase description with training philosophy",
       "weekTemplate": {
         "days": [
           {"dayNumber": 1, "dayType": "one of: ${dayTypes}", "focus": "Focus area", "briefDescription": "What the day covers"},
@@ -8587,7 +8605,7 @@ Ensure phases cover all ${durationWeeks} weeks with no gaps. Each phase's weekTe
         systemPrompt,
         userPrompt,
         maxTokens: 4000,
-        temperature: 0.7,
+        temperature: 1,
         jsonMode: true,
         premium: true,
       });

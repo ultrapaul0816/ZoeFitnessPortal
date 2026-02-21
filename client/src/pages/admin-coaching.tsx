@@ -3091,13 +3091,13 @@ export default function AdminCoaching() {
                               setProgramCreateMode("manual");
                               setNewProgramName("");
                               setNewProgramDescription("");
-                              setNewProgramType("postpartum");
-                              setNewProgramDuration(4);
+                              setNewProgramType("postpartum_recovery");
+                              setNewProgramDuration(6);
                               setManualPhases([{
                                 name: "Foundation",
                                 weekStart: 1,
                                 weekEnd: 2,
-                                description: "",
+                                description: "Build baseline strength, core reconnection, and movement confidence",
                                 weekTemplate: { days: Array.from({ length: 7 }, (_, i) => ({ dayNumber: i + 1, dayType: "rest", focus: "", briefDescription: "" })) }
                               }]);
                               setShowCreateProgram(true);
@@ -3112,8 +3112,8 @@ export default function AdminCoaching() {
                               setProgramCreateMode("ai");
                               setNewProgramName("");
                               setNewProgramDescription("");
-                              setNewProgramType("postpartum");
-                              setNewProgramDuration(4);
+                              setNewProgramType("postpartum_recovery");
+                              setNewProgramDuration(6);
                               setNewProgramClientSegment("");
                               setShowCreateProgram(true);
                             }}
@@ -3844,11 +3844,11 @@ export default function AdminCoaching() {
                 <Select value={newProgramType} onValueChange={setNewProgramType}>
                   <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="postpartum">Postpartum Recovery</SelectItem>
+                    <SelectItem value="postpartum_recovery">Postpartum Recovery</SelectItem>
+                    <SelectItem value="postpartum_strength">Postpartum Strength</SelectItem>
+                    <SelectItem value="postpartum_athlete">Postpartum Athlete</SelectItem>
                     <SelectItem value="prenatal">Prenatal</SelectItem>
-                    <SelectItem value="strength">Strength & Athlete</SelectItem>
-                    <SelectItem value="general">General Fitness</SelectItem>
-                    <SelectItem value="weight_loss">Weight Loss</SelectItem>
+                    <SelectItem value="general_fitness">General Fitness</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
