@@ -178,7 +178,7 @@ export default function Dashboard() {
             // Small delay to let the dashboard render first
             setTimeout(() => {
               setShowDailyMoodPopup(true);
-            }, 500);
+            }, 2000);
           }
           
           // Prefetch common data in background for faster navigation
