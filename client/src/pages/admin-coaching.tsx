@@ -1098,7 +1098,7 @@ export default function AdminCoaching() {
             {(() => {
               const status = selectedClient.status || "enrolled";
               const hasFormData = !!(clientCheckins as any[])?.length || !!(selectedClient as any).notes;
-              const hasCoachRemarks = !!(selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim());
+              const hasCoachRemarks = (() => { const cr = (selectedClient as any).coachRemarks; if (!cr) return false; if (cr.notes) return !!cr.notes.trim(); return Object.values(cr).some((v: any) => v && String(v).trim()); })();
               const hasPlan = (clientWorkoutPlan as any[])?.length > 0;
               const isPreActive = ["enrolled", "intake_complete", "plan_generating", "plan_ready"].includes(status);
 
@@ -1400,7 +1400,7 @@ export default function AdminCoaching() {
                                   Use the Plan Builder wizard to create a complete 4-week program with your strategic input at every step
                                 </p>
                                 {(() => {
-                                  const hasCoachRemarks = (selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim());
+                                  const hasCoachRemarks = (() => { const cr = (selectedClient as any).coachRemarks; if (!cr) return false; if (cr.notes) return !!cr.notes.trim(); return Object.values(cr).some((v: any) => v && String(v).trim()); })();
                                   const hasAiSummary = !!(selectedClient as any).aiSummary;
                                   const coachRemarksApproved = !!(selectedClient as any).coachRemarksApproved;
                                   const aiSummaryApproved = !!(selectedClient as any).aiSummaryApproved;
@@ -1533,10 +1533,13 @@ export default function AdminCoaching() {
                           )}
                         </div>
 
-                        {/* === COACH'S NOTES & DIRECTION === */}
+                        {/* === COACH'S NOTES === */}
                         {(() => {
                           const remarksApproved = !!(selectedClient as any).coachRemarksApproved;
-                          const hasRemarks = (selectedClient as any).coachRemarks && Object.values((selectedClient as any).coachRemarks || {}).some((v: any) => v && String(v).trim());
+                          const coachRemarks = (selectedClient as any).coachRemarks || {};
+                          // Support both old format (4 fields) and new format (single notes field)
+                          const notesText = coachRemarks.notes || [coachRemarks.trainingFocus, coachRemarks.nutritionalGuidance, coachRemarks.thingsToWatch, coachRemarks.personalityNotes].filter(Boolean).join('\n\n') || '';
+                          const hasRemarks = !!notesText.trim();
                           return (
                             <Card className={cn("border-0 shadow-sm border-l-4", remarksApproved ? "border-l-green-400 bg-gray-50/50" : "border-l-violet-400")}>
                               <CardHeader className="pb-2">
@@ -1544,7 +1547,7 @@ export default function AdminCoaching() {
                                   <div>
                                     <CardTitle className="text-base flex items-center gap-2">
                                       <Sparkles className="w-4 h-4 text-gray-600" />
-                                      Coach's Notes & Direction
+                                      Coach's Notes
                                       {remarksApproved && (
                                         <Badge className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5">
                                           <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -1552,11 +1555,10 @@ export default function AdminCoaching() {
                                         </Badge>
                                       )}
                                     </CardTitle>
-                                    <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit mt-1">These notes are used by AI when generating workouts and nutrition plans</p>
+                                    <p className="text-[11px] text-violet-600 bg-violet-50 rounded-md px-2 py-1 w-fit mt-1">Used by AI when generating workouts and nutrition plans</p>
                                   </div>
                                   <div className="flex gap-2">
                                     {remarksApproved ? (
-                                      // When approved: show Edit (to unapprove/unlock) button only
                                       <Button
                                         variant="outline" size="sm"
                                         className="text-gray-600 border-gray-300 hover:bg-gray-100"
@@ -1569,7 +1571,6 @@ export default function AdminCoaching() {
                                         Edit & Re-approve
                                       </Button>
                                     ) : (
-                                      // When not approved: show Generate button only (Approve is below)
                                       <Button
                                         variant="outline" size="sm"
                                         className="text-violet-600 border-violet-300 hover:bg-violet-50"
@@ -1577,109 +1578,56 @@ export default function AdminCoaching() {
                                         disabled={generateCoachRemarksMutation.isPending}
                                       >
                                         <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
-                                        {generateCoachRemarksMutation.isPending ? "Generating…" : "Generate with AI"}
+                                        {generateCoachRemarksMutation.isPending ? "Generating…" : hasRemarks ? "Regenerate" : "Generate with AI"}
                                       </Button>
                                     )}
                                   </div>
                                 </div>
                               </CardHeader>
                               <CardContent>
-                                {/* AI-generated review banner */}
                                 {generateCoachRemarksMutation.isPending && (
                                   <GeneratingIndicator label="Generating Coach's Notes" />
                                 )}
                                 {hasRemarks && !remarksApproved && !generateCoachRemarksMutation.isPending && (
                                   <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-4">
-                                    <p className="text-sm text-amber-800 font-medium">⚡ AI-generated notes — review and edit before approving</p>
-                                    <p className="text-xs text-amber-600 mt-1">Review these notes carefully before approving. Once approved, they'll guide all AI-generated workouts and nutrition plans.</p>
+                                    <p className="text-sm text-amber-800 font-medium">⚡ AI-generated — review and edit before approving</p>
+                                    <p className="text-xs text-amber-600 mt-1">Once approved, these notes guide all AI-generated workouts and nutrition plans.</p>
                                   </div>
                                 )}
                                 {remarksApproved ? (
-                                  /* When approved: show as nicely formatted read-only blocks */
-                                  <div className="space-y-4">
+                                  <div className="space-y-3">
                                     <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-center gap-2">
                                       <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
                                       <div>
                                         <p className="text-sm text-green-800 font-medium">Notes approved & locked</p>
-                                        <p className="text-xs text-green-600">These notes are guiding all AI-generated content. Click "Edit & Re-approve" above to make changes.</p>
+                                        <p className="text-xs text-green-600">Click "Edit & Re-approve" above to make changes.</p>
                                       </div>
                                     </div>
-                                    {[
-                                      { key: "trainingFocus", label: "Training Focus", icon: "🎯" },
-                                      { key: "nutritionalGuidance", label: "Nutritional Guidance", icon: "🥗" },
-                                      { key: "thingsToWatch", label: "Things to Watch", icon: "👀" },
-                                      { key: "personalityNotes", label: "Client Personality", icon: "💬" },
-                                    ].map(field => {
-                                      const value = ((selectedClient as any).coachRemarks as any)?.[field.key];
-                                      return value ? (
-                                        <div key={field.key} className="bg-gray-50 rounded-lg p-4">
-                                          <Label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">{field.icon} {field.label}</Label>
-                                          <p className="mt-2 text-[13px] leading-relaxed text-gray-700 whitespace-pre-wrap">{value}</p>
-                                        </div>
-                                      ) : null;
-                                    })}
-                                    {((selectedClient as any).coachRemarks as any)?.customNotes && (
-                                      <div className="bg-gray-50 rounded-lg p-4">
-                                        <Label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">📝 Additional Notes</Label>
-                                        <p className="mt-2 text-[13px] leading-relaxed text-gray-700 whitespace-pre-wrap">{((selectedClient as any).coachRemarks as any)?.customNotes}</p>
-                                      </div>
-                                    )}
-                                    <p className="text-xs text-gray-400 flex items-center gap-1">
-                                      <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                      Notes locked. Click "Edit & Re-approve" to make changes.
-                                    </p>
+                                    <div className="bg-gray-50 rounded-lg p-4 text-[13px] leading-relaxed text-gray-700 whitespace-pre-wrap prose prose-sm max-w-none">
+                                      {notesText}
+                                    </div>
                                   </div>
                                 ) : (
-                                  /* When editing: single column textareas */
                                   <div className="space-y-4">
-                                    {[
-                                      { key: "trainingFocus", label: "Training Focus", placeholder: "e.g., Pelvic floor strengthening, glute activation, avoid overhead pressing..." },
-                                      { key: "nutritionalGuidance", label: "Nutritional Guidance", placeholder: "e.g., Vegetarian, needs more plant protein, avoids dairy..." },
-                                      { key: "thingsToWatch", label: "Things to Watch", placeholder: "e.g., Lower back pain after deadlifts — modify to sumo stance..." },
-                                      { key: "personalityNotes", label: "Client Personality", placeholder: "e.g., Prefers encouraging tone, motivated by progress data..." },
-                                    ].map(field => (
-                                      <div key={field.key}>
-                                        <Label className="text-xs text-gray-500 font-medium">{field.label}</Label>
-                                        <Textarea
-                                          className="mt-1 text-[13px] leading-relaxed min-h-[140px] resize-y focus:ring-violet-200 focus:border-violet-300"
-                                          rows={4}
-                                          placeholder={field.placeholder}
-                                          defaultValue={((selectedClient as any).coachRemarks as any)?.[field.key] || ''}
-                                          onBlur={(e) => {
-                                            const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
-                                            if (e.target.value !== (currentRemarks[field.key] || '')) {
-                                              updateClientMutation.mutate({
-                                                clientId: selectedClient.id,
-                                                updates: { coachRemarks: { ...currentRemarks, [field.key]: e.target.value || "" } }
-                                              });
-                                            }
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
-                                    <div>
-                                      <Label className="text-xs text-gray-500 font-medium">Additional Notes</Label>
-                                      <Textarea
-                                        className="mt-1 text-[13px] leading-relaxed min-h-[140px] resize-y focus:ring-violet-200 focus:border-violet-300"
-                                        rows={4}
-                                        placeholder="Any other coaching directions, goals, special requirements..."
-                                        defaultValue={((selectedClient as any).coachRemarks as any)?.customNotes || ''}
-                                        onBlur={(e) => {
-                                          const currentRemarks = ((selectedClient as any).coachRemarks as Record<string, string>) || {};
-                                          if (e.target.value !== (currentRemarks.customNotes || '')) {
-                                            updateClientMutation.mutate({
-                                              clientId: selectedClient.id,
-                                              updates: { coachRemarks: { ...currentRemarks, customNotes: e.target.value || "" } }
-                                            });
-                                          }
-                                        }}
-                                      />
-                                    </div>
-                                    {/* Prominent Approve button */}
-                                    {hasRemarks && !remarksApproved && (
-                                      <div className="border-t pt-4 mt-2 space-y-2">
+                                    <Textarea
+                                      className="text-[13px] leading-relaxed min-h-[200px] resize-y focus:ring-violet-200 focus:border-violet-300"
+                                      rows={8}
+                                      placeholder="AI will generate coaching notes based on intake forms, or write your own..."
+                                      defaultValue={notesText}
+                                      key={notesText}
+                                      onBlur={(e) => {
+                                        if (e.target.value !== notesText) {
+                                          updateClientMutation.mutate({
+                                            clientId: selectedClient.id,
+                                            updates: { coachRemarks: { notes: e.target.value } }
+                                          });
+                                        }
+                                      }}
+                                    />
+                                    {hasRemarks && (
+                                      <div className="border-t pt-4 space-y-2">
                                         <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-                                          <p className="text-xs text-blue-700">Once approved, these notes will be <strong>locked</strong> and used by AI to generate workouts and nutrition plans. To make changes later, you'll need to click "Edit & Re-approve".</p>
+                                          <p className="text-xs text-blue-700">Once approved, notes will be <strong>locked</strong> and used by AI. Click "Edit & Re-approve" later to change.</p>
                                         </div>
                                         <Button
                                           size="default"
@@ -2964,7 +2912,7 @@ export default function AdminCoaching() {
                   const isGenerating = generateBlueprintMutation.isPending;
                   const coachRemarks = (selectedClient as any).coachRemarks;
                   const hasCoachRemarks = !!(coachRemarks && typeof coachRemarks === "object" &&
-                    Object.values(coachRemarks).some((v: any) => v && String(v).trim().length > 0));
+                    (coachRemarks.notes ? String(coachRemarks.notes).trim().length > 0 : Object.values(coachRemarks).some((v: any) => v && String(v).trim().length > 0)));
                   const hasAiSummary = !!selectedClient.aiSummary;
                   const hasIntakeForms = selectedClient.status !== "enrolled" && selectedClient.status !== "pending";
                   const allReady = hasIntakeForms && hasCoachRemarks && hasAiSummary;

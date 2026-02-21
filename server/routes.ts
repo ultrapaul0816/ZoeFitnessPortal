@@ -7449,49 +7449,29 @@ IMPORTANT RULES:
       return acc;
     }, {});
 
-    // Call AI for structured JSON coaching remarks
-    const remarksContent = await createAICompletion({
+    // Call AI for a single cohesive coaching brief (plain text, not JSON)
+    const coachNotes = await createAICompletion({
       premium: true,
-      systemPrompt: `You are Zoe, a warm and supportive prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes in YOUR voice — encouraging, professional, and grounded. Return a JSON object with exactly these fields:
-- trainingFocus: What to prioritize in their training based on their goals, fitness level, and what they've shared about their body (2-4 sentences). Be specific and practical.
-- nutritionalGuidance: Their dietary preferences, restrictions, and nutrition goals based on what they told you (2-4 sentences). Reference their actual food habits and preferences.
-- thingsToWatch: Practical coaching cues based on what the client actually reported — discomforts, limitations, or concerns they mentioned (2-4 sentences). These should be helpful reminders for yourself during sessions, NOT medical alerts or emergency protocols.
-- personalityNotes: How to best coach and communicate with this client based on what you've learned about them (2-4 sentences).
+      systemPrompt: `You are Zoe, a warm and supportive prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, write a concise coaching brief in YOUR voice — encouraging, professional, and grounded.
+
+Write it as one flowing document with clear sections using markdown headers (###). Cover:
+- Their training priorities and what to focus on
+- Nutrition notes based on what they shared
+- Things to watch during sessions (practical coaching cues, NOT medical alerts)
+- How to best coach and communicate with this person
 
 IMPORTANT RULES:
-- Only reference conditions, symptoms, or concerns the client has actually reported in their intake forms. Do not invent or assume medical conditions.
-- Write like a caring coach making notes for herself, not like a medical chart.
-- "Things to Watch" means practical coaching adjustments (e.g., "she mentioned lower back tightness — cue neutral spine on deadlifts"), NOT clinical red flags or ER protocols.
-- Don't use medical thresholds, blood pressure numbers, or glucose targets unless the client specifically provided them.
-- Be specific to THIS client's actual data. Don't add generic pregnancy warnings.`,
+- Only reference what the client actually reported. Do not invent conditions.
+- Write like a coach making notes for herself, not a medical chart.
+- Be specific to THIS client. No generic warnings.
+- Keep it concise — aim for 300-500 words total.
+- Do NOT wrap in JSON. Return plain text with markdown formatting.`,
       userPrompt: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
-      maxTokens: 3000,
-      jsonMode: true,
+      maxTokens: 2000,
     });
 
-    let remarks: any;
-    try {
-      remarks = JSON.parse(remarksContent || "{}");
-    } catch (parseErr) {
-      // AI returned truncated/malformed JSON — try to salvage
-      console.warn(`[Coaching] Malformed JSON from AI, attempting repair: ${(parseErr as Error).message}`);
-      let fixed = (remarksContent || "{}").trim();
-      // Close any unterminated strings and objects
-      const openBraces = (fixed.match(/{/g) || []).length;
-      const closeBraces = (fixed.match(/}/g) || []).length;
-      if (!fixed.endsWith('"') && !fixed.endsWith('}')) fixed += '"';
-      for (let i = closeBraces; i < openBraces; i++) fixed += '}';
-      try {
-        remarks = JSON.parse(fixed);
-      } catch {
-        // Last resort: extract fields with regex
-        remarks = {};
-        for (const field of ['trainingFocus', 'nutritionalGuidance', 'thingsToWatch', 'personalityNotes']) {
-          const match = (remarksContent || "").match(new RegExp(`"${field}"\\s*:\\s*"([^"]*)`));
-          if (match) remarks[field] = match[1];
-        }
-      }
-    }
+    // Store as a simple object with one field for backward compatibility
+    const remarks = { notes: (coachNotes || "").trim() };
     console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
     return remarks;
   }
@@ -7815,13 +7795,13 @@ ${JSON.stringify(allFormData, null, 2)}`,
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const notesStr = client.notes || "";
       const coachRemarks = (client as any).coachRemarks as Record<string, string> | null;
-      const coachRemarksStr = coachRemarks ? [
+      const coachRemarksStr = coachRemarks ? (coachRemarks.notes || [
         coachRemarks.trainingFocus && `TRAINING FOCUS: ${coachRemarks.trainingFocus}`,
         coachRemarks.nutritionalGuidance && `NUTRITIONAL GUIDANCE: ${coachRemarks.nutritionalGuidance}`,
         coachRemarks.thingsToWatch && `THINGS TO WATCH: ${coachRemarks.thingsToWatch}`,
         coachRemarks.personalityNotes && `CLIENT PERSONALITY: ${coachRemarks.personalityNotes}`,
         coachRemarks.customNotes && `ADDITIONAL COACH NOTES: ${coachRemarks.customNotes}`,
-      ].filter(Boolean).join("\n") : "";
+      ].filter(Boolean).join("\n")) : "";
       const userInfo = `Name: ${user.firstName} ${user.lastName}${coachingType === "pregnancy_coaching" ? `, Postpartum weeks: ${user.postpartumWeeks || "unknown"}` : ""}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
       let calculatedTrimester: number | null = null;
       let weeksPregnant: number | null = null;
@@ -8041,13 +8021,13 @@ PREGNANCY SAFETY (if client is pregnant):
     const healthNotesStr = client.healthNotes || "No specific health notes";
     const notesStr = client.notes || "";
     const coachRemarks = (client as any).coachRemarks as Record<string, string> | null;
-    const coachRemarksStr = coachRemarks ? [
+    const coachRemarksStr = coachRemarks ? (coachRemarks.notes || [
       coachRemarks.trainingFocus && `TRAINING FOCUS: ${coachRemarks.trainingFocus}`,
       coachRemarks.nutritionalGuidance && `NUTRITIONAL GUIDANCE: ${coachRemarks.nutritionalGuidance}`,
       coachRemarks.thingsToWatch && `THINGS TO WATCH: ${coachRemarks.thingsToWatch}`,
       coachRemarks.personalityNotes && `CLIENT PERSONALITY: ${coachRemarks.personalityNotes}`,
       coachRemarks.customNotes && `ADDITIONAL COACH NOTES: ${coachRemarks.customNotes}`,
-    ].filter(Boolean).join("\n") : "";
+    ].filter(Boolean).join("\n")) : "";
     const userInfo = `Name: ${user.firstName} ${user.lastName}${coachingType === "pregnancy_coaching" ? `, Postpartum weeks: ${user.postpartumWeeks || "unknown"}` : ""}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
     let calculatedTrimester: number | null = null;
     let weeksPregnant: number | null = null;
