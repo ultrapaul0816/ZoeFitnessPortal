@@ -222,6 +222,10 @@ export default function AdminCoaching() {
   const [editingProgram, setEditingProgram] = useState<any>(null);
   const [generatingProgram, setGeneratingProgram] = useState(false);
   const [manualPhases, setManualPhases] = useState<any[]>([]);
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
+  const [editingProgramData, setEditingProgramData] = useState<any>(null);
+  const [showUnassignConfirm, setShowUnassignConfirm] = useState(false);
+  const [assignDialogProgramId, setAssignDialogProgramId] = useState<string | null>(null);
 
   // Multi-step workout generation wizard state
   const [workoutWizard, setWorkoutWizard] = useState<{
@@ -3052,16 +3056,48 @@ export default function AdminCoaching() {
                 <div className="space-y-6">
                   {/* Current Client Program Status */}
                   {clientProgramStatus?.assigned && (
-                    <Card className="border border-indigo-200 shadow-sm bg-indigo-50/50">
+                    <Card className="border-2 border-indigo-300 shadow-md bg-gradient-to-br from-indigo-50 to-white">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                          <Target className="w-4 h-4 text-indigo-500" />
-                          Active Program: {clientProgramStatus.programName}
-                        </CardTitle>
-                        <p className="text-sm text-gray-500">{clientProgramStatus.description}</p>
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Target className="w-5 h-5 text-indigo-500" />
+                              Active Program: {clientProgramStatus.programName}
+                            </CardTitle>
+                            <p className="text-sm text-gray-500 mt-1">{clientProgramStatus.description}</p>
+                            <Badge className="mt-2 bg-indigo-100 text-indigo-700 border-indigo-200">
+                              Week {clientProgramStatus.currentWeek} of {clientProgramStatus.durationWeeks}
+                              {clientProgramStatus.currentPhase && ` — ${clientProgramStatus.currentPhase.name}`}
+                            </Badge>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-xs"
+                              onClick={() => {
+                                const prog = coachingPrograms.find((p: any) => p.id === clientProgramStatus.programId);
+                                if (prog) {
+                                  setSelectedProgramId(prog.id);
+                                  setEditingProgramData(null);
+                                }
+                              }}
+                            >
+                              <Eye className="w-3 h-3 mr-1" /> View Full Program
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-xs text-red-500 hover:text-red-700 hover:border-red-300"
+                              onClick={() => setShowUnassignConfirm(true)}
+                            >
+                              <X className="w-3 h-3 mr-1" /> Unassign
+                            </Button>
+                          </div>
+                        </div>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           {/* Phase Timeline */}
                           <div className="flex gap-1">
                             {clientProgramStatus.phases?.map((phase: any, idx: number) => {
@@ -3072,8 +3108,8 @@ export default function AdminCoaching() {
                               return (
                                 <div key={idx} style={{ width: `${widthPct}%` }} className="space-y-1">
                                   <div className={cn(
-                                    "h-3 rounded-full transition-all",
-                                    isCurrent ? "bg-indigo-500 shadow-sm" : isPast ? "bg-indigo-300" : "bg-indigo-100"
+                                    "h-4 rounded-full transition-all",
+                                    isCurrent ? "bg-indigo-500 shadow-md ring-2 ring-indigo-200" : isPast ? "bg-indigo-300" : "bg-indigo-100"
                                   )} />
                                   <div className={cn("text-[10px] text-center truncate", isCurrent ? "font-bold text-indigo-700" : "text-indigo-400")}>
                                     {phase.name}
@@ -3085,39 +3121,69 @@ export default function AdminCoaching() {
                               );
                             })}
                           </div>
-                          <div className="text-sm text-indigo-700 font-medium">
-                            Week {clientProgramStatus.currentWeek} of {clientProgramStatus.durationWeeks}
-                            {clientProgramStatus.currentPhase && ` — ${clientProgramStatus.currentPhase.name}`}
-                          </div>
                           {clientProgramStatus.nextPhase && (
-                            <div className="text-xs text-gray-500">
-                              Coming next: <strong>{clientProgramStatus.nextPhase.name}</strong> (Week {clientProgramStatus.nextPhase.weekStart}) — {clientProgramStatus.nextPhase.description}
+                            <div className="text-xs text-gray-500 bg-white/70 rounded-lg p-2 border border-indigo-100">
+                              ➡️ Coming next: <strong>{clientProgramStatus.nextPhase.name}</strong> (Week {clientProgramStatus.nextPhase.weekStart}) — {clientProgramStatus.nextPhase.description}
                             </div>
                           )}
-                          {/* Current Phase Week Template */}
+                          {/* Current Phase Week Template - More Prominent */}
                           {clientProgramStatus.weekTemplate && (
-                            <div className="mt-3">
-                              <div className="text-xs font-medium text-gray-500 mb-2">Current Phase Template:</div>
-                              <div className="grid grid-cols-7 gap-1">
+                            <div className="bg-white rounded-lg p-4 border border-indigo-200 shadow-sm">
+                              <div className="text-sm font-semibold text-indigo-800 mb-3">📅 This Week's Template</div>
+                              <div className="grid grid-cols-7 gap-2">
                                 {clientProgramStatus.weekTemplate.days?.map((day: any) => {
                                   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
                                   return (
                                     <div key={day.dayNumber} className={cn(
-                                      "p-2 rounded text-center text-[10px] border",
-                                      day.dayType === "rest" ? "bg-gray-50 border-gray-200 text-gray-400" : "bg-white border-indigo-200 text-indigo-700"
+                                      "p-3 rounded-lg text-center text-xs border-2 transition-all",
+                                      day.dayType === "rest" ? "bg-gray-50 border-gray-200 text-gray-400" : "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm"
                                     )}>
-                                      <div className="font-bold">{dayNames[day.dayNumber - 1]}</div>
-                                      <div className="truncate mt-0.5">{day.dayType === "rest" ? "Rest" : day.focus || day.dayType}</div>
+                                      <div className="font-bold text-[11px]">{dayNames[day.dayNumber - 1]}</div>
+                                      <div className="truncate mt-1 font-medium">{day.dayType === "rest" ? "Rest" : day.focus || day.dayType}</div>
                                     </div>
                                   );
                                 })}
                               </div>
                             </div>
                           )}
+                          {/* Generate Workouts CTA */}
+                          <Button
+                            className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md"
+                            onClick={() => setActiveTab("workout-plan")}
+                          >
+                            <Zap className="w-4 h-4 mr-2" /> Generate This Week's Workouts <ArrowRight className="w-4 h-4 ml-2" />
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
                   )}
+                  {/* Unassign Confirmation Dialog */}
+                  <Dialog open={showUnassignConfirm} onOpenChange={setShowUnassignConfirm}>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader>
+                        <DialogTitle>Unassign Program?</DialogTitle>
+                        <p className="text-sm text-gray-500 mt-2">
+                          This will remove <strong>{clientProgramStatus?.programName}</strong> from {selectedClient?.user?.firstName || "this client"}. Progress tracking will be reset.
+                        </p>
+                      </DialogHeader>
+                      <DialogFooter className="gap-2">
+                        <Button variant="outline" onClick={() => setShowUnassignConfirm(false)}>Cancel</Button>
+                        <Button
+                          variant="destructive"
+                          onClick={async () => {
+                            try {
+                              await apiRequest("POST", `/api/admin/coaching/clients/${selectedClient!.id}/unassign-program`);
+                              queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "program-status"] });
+                              toast({ title: "Program unassigned" });
+                              setShowUnassignConfirm(false);
+                            } catch { toast({ title: "Error", variant: "destructive" }); }
+                          }}
+                        >
+                          Unassign
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
 
                   {/* Program Library */}
                   <Card className="border-0 shadow-sm">
@@ -3176,66 +3242,341 @@ export default function AdminCoaching() {
                       ) : (
                         <div className="space-y-3">
                           {coachingPrograms.map((prog: any) => (
-                            <div key={prog.id} className="border rounded-lg p-4 hover:border-indigo-200 transition-colors">
-                              <div className="flex items-start justify-between">
-                                <div>
-                                  <div className="font-medium text-gray-900">{prog.name}</div>
-                                  <div className="text-xs text-gray-500 mt-0.5">
-                                    {prog.durationWeeks} weeks · {prog.phases?.length || 0} phases · {prog.coachingType}
+                            <div key={prog.id}>
+                              <div
+                                className={cn(
+                                  "border rounded-lg p-4 cursor-pointer transition-all",
+                                  selectedProgramId === prog.id ? "border-indigo-400 bg-indigo-50/50 shadow-md" : "hover:border-indigo-200 hover:shadow-sm"
+                                )}
+                                onClick={() => {
+                                  if (selectedProgramId === prog.id) {
+                                    setSelectedProgramId(null);
+                                    setEditingProgramData(null);
+                                  } else {
+                                    setSelectedProgramId(prog.id);
+                                    setEditingProgramData(null);
+                                  }
+                                }}
+                              >
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900 flex items-center gap-2">
+                                      {prog.name}
+                                      <ChevronRight className={cn("w-4 h-4 text-gray-400 transition-transform", selectedProgramId === prog.id && "rotate-90")} />
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-0.5">
+                                      {prog.durationWeeks} weeks · {prog.phases?.length || 0} phases · {prog.coachingType}
+                                    </div>
+                                    {prog.description && <p className="text-xs text-gray-400 mt-1">{prog.description}</p>}
                                   </div>
-                                  {prog.description && <p className="text-xs text-gray-400 mt-1">{prog.description}</p>}
-                                </div>
-                                <div className="flex gap-1">
-                                  {!clientProgramStatus?.assigned && (
+                                  <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                                     <Button
                                       size="sm"
-                                      variant="outline"
-                                      className="text-xs h-7"
+                                      variant="ghost"
+                                      className="text-xs h-7 text-gray-400 hover:text-indigo-600"
+                                      onClick={() => {
+                                        setSelectedProgramId(prog.id);
+                                        setEditingProgramData(JSON.parse(JSON.stringify(prog)));
+                                      }}
+                                    >
+                                      <Edit3 className="w-3 h-3" />
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="text-xs h-7 text-gray-400 hover:text-red-500"
                                       onClick={async () => {
                                         try {
-                                          await apiRequest("POST", `/api/admin/coaching/clients/${selectedClient.id}/assign-program`, { programId: prog.id });
-                                          queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClient.id, "program-status"] });
-                                          toast({ title: "Program assigned", description: prog.name });
+                                          await apiRequest("DELETE", `/api/admin/coaching/programs/${prog.id}`);
+                                          queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
+                                          if (selectedProgramId === prog.id) setSelectedProgramId(null);
+                                          toast({ title: "Program deleted" });
                                         } catch { toast({ title: "Error", variant: "destructive" }); }
                                       }}
                                     >
-                                      <Target className="w-3 h-3 mr-1" /> Assign
+                                      <Trash2 className="w-3 h-3" />
                                     </Button>
-                                  )}
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="text-xs h-7 text-gray-400 hover:text-red-500"
-                                    onClick={async () => {
-                                      try {
-                                        await apiRequest("DELETE", `/api/admin/coaching/programs/${prog.id}`);
-                                        queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
-                                        toast({ title: "Program deleted" });
-                                      } catch { toast({ title: "Error", variant: "destructive" }); }
-                                    }}
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </Button>
+                                  </div>
+                                </div>
+                                {/* Phase preview bar */}
+                                <div className="flex gap-1 mt-3">
+                                  {prog.phases?.map((phase: any, idx: number) => {
+                                    const widthPct = ((phase.weekEnd - phase.weekStart + 1) / prog.durationWeeks) * 100;
+                                    return (
+                                      <div key={idx} style={{ width: `${widthPct}%` }}>
+                                        <div className={cn("h-2 rounded-full", selectedProgramId === prog.id ? "bg-indigo-400" : "bg-indigo-200")} />
+                                        <div className="text-[9px] text-gray-400 mt-0.5 truncate">{phase.name}</div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               </div>
-                              {/* Phase preview */}
-                              <div className="flex gap-1 mt-3">
-                                {prog.phases?.map((phase: any, idx: number) => {
-                                  const widthPct = ((phase.weekEnd - phase.weekStart + 1) / prog.durationWeeks) * 100;
-                                  return (
-                                    <div key={idx} style={{ width: `${widthPct}%` }}>
-                                      <div className="h-2 bg-indigo-200 rounded-full" />
-                                      <div className="text-[9px] text-gray-400 mt-0.5 truncate">{phase.name}</div>
+
+                              {/* Expanded Detail/Edit View */}
+                              {selectedProgramId === prog.id && (
+                                <div className="border border-t-0 border-indigo-200 rounded-b-lg bg-white p-5 space-y-5 -mt-1">
+                                  {/* Program Header Info */}
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label className="text-xs text-gray-500">Program Name</Label>
+                                      {editingProgramData ? (
+                                        <Input
+                                          value={editingProgramData.name}
+                                          onChange={e => setEditingProgramData({ ...editingProgramData, name: e.target.value })}
+                                          className="mt-1"
+                                        />
+                                      ) : (
+                                        <p className="text-sm font-medium mt-1">{prog.name}</p>
+                                      )}
                                     </div>
-                                  );
-                                })}
-                              </div>
+                                    <div>
+                                      <Label className="text-xs text-gray-500">Type</Label>
+                                      {editingProgramData ? (
+                                        <Select value={editingProgramData.coachingType} onValueChange={v => setEditingProgramData({ ...editingProgramData, coachingType: v })}>
+                                          <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="postpartum_recovery">Postpartum Recovery</SelectItem>
+                                            <SelectItem value="strength">Strength</SelectItem>
+                                            <SelectItem value="weight_loss">Weight Loss</SelectItem>
+                                            <SelectItem value="general_fitness">General Fitness</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      ) : (
+                                        <p className="text-sm mt-1">{prog.coachingType}</p>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <Label className="text-xs text-gray-500">Duration</Label>
+                                      {editingProgramData ? (
+                                        <Input
+                                          type="number"
+                                          value={editingProgramData.durationWeeks}
+                                          onChange={e => setEditingProgramData({ ...editingProgramData, durationWeeks: parseInt(e.target.value) || 1 })}
+                                          className="mt-1"
+                                        />
+                                      ) : (
+                                        <p className="text-sm mt-1">{prog.durationWeeks} weeks</p>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <Label className="text-xs text-gray-500">Description</Label>
+                                      {editingProgramData ? (
+                                        <Textarea
+                                          value={editingProgramData.description || ""}
+                                          onChange={e => setEditingProgramData({ ...editingProgramData, description: e.target.value })}
+                                          rows={2}
+                                          className="mt-1"
+                                        />
+                                      ) : (
+                                        <p className="text-sm text-gray-600 mt-1">{prog.description || "No description"}</p>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <Separator />
+
+                                  {/* Phases Detail */}
+                                  <div>
+                                    <div className="text-sm font-semibold text-gray-700 mb-3">Phases</div>
+                                    <div className="space-y-4">
+                                      {(editingProgramData || prog).phases?.map((phase: any, phaseIdx: number) => {
+                                        const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                                        const dayTypeOptions = ["rest", "HIIT", "EMOM", "Core", "Strength Circuit", "Pelvic Floor & Breath Work", "Active Recovery", "Yoga Flow", "Tabata", "Metabolic Conditioning", "custom"];
+                                        return (
+                                          <div key={phaseIdx} className="border rounded-lg p-4 bg-gray-50/50">
+                                            <div className="flex items-start justify-between mb-3">
+                                              <div className="flex-1 grid grid-cols-3 gap-3">
+                                                <div>
+                                                  <Label className="text-[10px] text-gray-400 uppercase">Phase Name</Label>
+                                                  {editingProgramData ? (
+                                                    <Input
+                                                      value={phase.name}
+                                                      onChange={e => {
+                                                        const updated = { ...editingProgramData };
+                                                        updated.phases[phaseIdx].name = e.target.value;
+                                                        setEditingProgramData(updated);
+                                                      }}
+                                                      className="mt-0.5 h-8 text-sm"
+                                                    />
+                                                  ) : (
+                                                    <p className="text-sm font-medium">{phase.name}</p>
+                                                  )}
+                                                </div>
+                                                <div>
+                                                  <Label className="text-[10px] text-gray-400 uppercase">Weeks</Label>
+                                                  <p className="text-sm mt-0.5">W{phase.weekStart}–{phase.weekEnd}</p>
+                                                </div>
+                                                <div>
+                                                  <Label className="text-[10px] text-gray-400 uppercase">Description</Label>
+                                                  {editingProgramData ? (
+                                                    <Input
+                                                      value={phase.description || ""}
+                                                      onChange={e => {
+                                                        const updated = { ...editingProgramData };
+                                                        updated.phases[phaseIdx].description = e.target.value;
+                                                        setEditingProgramData(updated);
+                                                      }}
+                                                      className="mt-0.5 h-8 text-sm"
+                                                    />
+                                                  ) : (
+                                                    <p className="text-xs text-gray-500">{phase.description || "—"}</p>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+                                            {/* 7-day template */}
+                                            <div className="grid grid-cols-7 gap-1.5">
+                                              {phase.weekTemplate?.days?.map((day: any, dayIdx: number) => (
+                                                <div key={dayIdx} className={cn(
+                                                  "rounded-lg text-center text-[10px] border p-2",
+                                                  day.dayType === "rest" ? "bg-gray-100 border-gray-200 text-gray-400" : "bg-white border-indigo-200 text-indigo-700"
+                                                )}>
+                                                  <div className="font-bold text-[11px]">{dayNames[dayIdx]}</div>
+                                                  {editingProgramData ? (
+                                                    <select
+                                                      value={day.dayType || "rest"}
+                                                      onChange={e => {
+                                                        const updated = JSON.parse(JSON.stringify(editingProgramData));
+                                                        updated.phases[phaseIdx].weekTemplate.days[dayIdx].dayType = e.target.value;
+                                                        updated.phases[phaseIdx].weekTemplate.days[dayIdx].focus = e.target.value === "rest" ? "" : e.target.value;
+                                                        setEditingProgramData(updated);
+                                                      }}
+                                                      className="w-full text-[9px] mt-1 border rounded p-0.5 bg-white"
+                                                    >
+                                                      {dayTypeOptions.map(dt => <option key={dt} value={dt}>{dt}</option>)}
+                                                    </select>
+                                                  ) : (
+                                                    <div className="truncate mt-1 font-medium">{day.dayType === "rest" ? "Rest" : day.focus || day.dayType}</div>
+                                                  )}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+
+                                  <Separator />
+
+                                  {/* Action Buttons */}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex gap-2">
+                                      {editingProgramData ? (
+                                        <>
+                                          <Button
+                                            size="sm"
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                                            onClick={async () => {
+                                              try {
+                                                await apiRequest("PUT", `/api/admin/coaching/programs/${prog.id}`, editingProgramData);
+                                                queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
+                                                setEditingProgramData(null);
+                                                toast({ title: "✅ Program saved" });
+                                              } catch { toast({ title: "Error saving", variant: "destructive" }); }
+                                            }}
+                                          >
+                                            <Save className="w-3 h-3 mr-1" /> Save Changes
+                                          </Button>
+                                          <Button size="sm" variant="outline" onClick={() => setEditingProgramData(null)}>
+                                            Cancel
+                                          </Button>
+                                        </>
+                                      ) : (
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => setEditingProgramData(JSON.parse(JSON.stringify(prog)))}
+                                        >
+                                          <Edit3 className="w-3 h-3 mr-1" /> Edit Program
+                                        </Button>
+                                      )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                      {selectedClient && !clientProgramStatus?.assigned && (
+                                        <Button
+                                          size="sm"
+                                          className="bg-green-600 hover:bg-green-700 text-white"
+                                          onClick={async () => {
+                                            try {
+                                              await apiRequest("POST", `/api/admin/coaching/clients/${selectedClient.id}/assign-program`, { programId: prog.id });
+                                              queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClient.id, "program-status"] });
+                                              toast({ title: "✅ Program assigned", description: `${prog.name} assigned to ${selectedClient.user.firstName}` });
+                                            } catch { toast({ title: "Error", variant: "destructive" }); }
+                                          }}
+                                        >
+                                          <UserPlus className="w-3 h-3 mr-1" /> Assign to {selectedClient.user.firstName || "Client"}
+                                        </Button>
+                                      )}
+                                      {!selectedClient && (
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="text-green-600 border-green-200"
+                                          onClick={() => setAssignDialogProgramId(prog.id)}
+                                        >
+                                          <UserPlus className="w-3 h-3 mr-1" /> Assign to Client
+                                        </Button>
+                                      )}
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="text-red-500 hover:text-red-700"
+                                        onClick={async () => {
+                                          try {
+                                            await apiRequest("DELETE", `/api/admin/coaching/programs/${prog.id}`);
+                                            queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
+                                            setSelectedProgramId(null);
+                                            toast({ title: "Program deleted" });
+                                          } catch { toast({ title: "Error", variant: "destructive" }); }
+                                        }}
+                                      >
+                                        <Trash2 className="w-3 h-3 mr-1" /> Delete
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
                       )}
                     </CardContent>
                   </Card>
+
+                  {/* Assign to Client Dialog */}
+                  <Dialog open={!!assignDialogProgramId} onOpenChange={(open) => { if (!open) setAssignDialogProgramId(null); }}>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader>
+                        <DialogTitle>Assign Program to Client</DialogTitle>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Select a client to assign <strong>{coachingPrograms.find((p: any) => p.id === assignDialogProgramId)?.name}</strong> to.
+                        </p>
+                      </DialogHeader>
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {clients.map((client: any) => (
+                          <Button
+                            key={client.id}
+                            variant="outline"
+                            className="w-full justify-start text-left h-auto py-3"
+                            onClick={async () => {
+                              try {
+                                await apiRequest("POST", `/api/admin/coaching/clients/${client.id}/assign-program`, { programId: assignDialogProgramId });
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", client.id, "program-status"] });
+                                toast({ title: "✅ Program assigned", description: `Assigned to ${client.user?.firstName || client.email}` });
+                                setAssignDialogProgramId(null);
+                              } catch { toast({ title: "Error", variant: "destructive" }); }
+                            }}
+                          >
+                            <div>
+                              <div className="font-medium">{client.user?.firstName} {client.user?.lastName}</div>
+                              <div className="text-xs text-gray-400">{client.email}</div>
+                            </div>
+                          </Button>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </TabsContent>
             </Tabs>
