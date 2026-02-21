@@ -1671,21 +1671,88 @@ export default function MyCoaching() {
 
   if (!planData?.client) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-        <div className="max-w-lg mx-auto px-4 pt-12 text-center">
-          <div className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Heart className="w-10 h-10 text-pink-500" />
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-pink-50/30">
+        <div className="max-w-lg mx-auto px-4 pt-10 pb-16">
+          {/* Hero */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg shadow-pink-500/30">
+              <Sparkles className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">1:1 Private Coaching</h1>
+            <p className="text-gray-500 text-base">Your personalised fitness & wellness journey with Zoe</p>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">Private Coaching</h1>
-          <p className="text-gray-600 mb-6">
-            You're not currently enrolled in a 1:1 coaching program. Contact Zoe to learn more about personalized coaching plans tailored just for you.
-          </p>
-          <Button
-            className="bg-pink-500 hover:bg-pink-600 text-white"
-            onClick={handleLogout}
-          >
-            Sign Out
-          </Button>
+
+          {/* What's Included */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-pink-100 mb-5">
+            <h2 className="font-bold text-gray-900 text-lg mb-4">What's Included</h2>
+            <div className="grid grid-cols-1 gap-3">
+              {[
+                { emoji: "🏋️‍♀️", text: "Custom workout plans updated weekly" },
+                { emoji: "🥗", text: "Personalised nutrition guidance" },
+                { emoji: "💬", text: "Direct messaging with Zoe" },
+                { emoji: "📊", text: "Progress tracking & check-ins" },
+                { emoji: "🎥", text: "Form check video reviews" },
+                { emoji: "🧘", text: "Mindset & recovery support" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 p-2">
+                  <span className="text-xl">{item.emoji}</span>
+                  <span className="text-gray-700 text-sm font-medium">{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* How It Works */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-pink-100 mb-5">
+            <h2 className="font-bold text-gray-900 text-lg mb-4">How It Works</h2>
+            <div className="space-y-4">
+              {[
+                { step: "1", title: "Apply", desc: "Send Zoe a message on Instagram" },
+                { step: "2", title: "Consultation", desc: "Chat about your goals & lifestyle" },
+                { step: "3", title: "Your Plan", desc: "Receive a fully tailored program" },
+                { step: "4", title: "Ongoing Support", desc: "Weekly adjustments & accountability" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-4">
+                  <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-pink-600 font-bold text-sm">{item.step}</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">{item.title}</p>
+                    <p className="text-gray-500 text-sm">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Testimonial */}
+          <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-100 mb-6">
+            <MessageCircle className="w-5 h-5 text-pink-400 mb-2" />
+            <p className="text-gray-700 italic text-sm leading-relaxed mb-3">
+              "Working with Zoe completely changed my relationship with fitness. The personalised approach made all the difference — I've never felt stronger or more confident!"
+            </p>
+            <p className="text-pink-600 font-semibold text-sm">— A Stronger With Zoe client</p>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center space-y-3">
+            <a
+              href="https://www.instagram.com/strongerwithzoe/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-semibold px-8 py-3.5 rounded-full shadow-lg shadow-pink-500/30 transition-all duration-200 hover:scale-105 w-full"
+            >
+              <Sparkles className="w-5 h-5" />
+              Message Zoe on Instagram
+            </a>
+            <Button
+              variant="ghost"
+              className="text-gray-400 hover:text-gray-600 text-sm"
+              onClick={handleLogout}
+            >
+              Sign Out
+            </Button>
+          </div>
         </div>
       </div>
     );
