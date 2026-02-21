@@ -902,14 +902,8 @@ export default function AdminCoaching() {
               );
             })()}
 
-            {/* === CLIENT INFO CARD (collapsible, above tabs) === */}
-            <CoachingClientInfoCard
-              client={selectedClient as any}
-              onUpdateClient={(data) => updateClientMutation.mutate(data)}
-            />
-
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="bg-gray-100 p-1 rounded-xl">
+              <TabsList className="bg-gray-100 p-1 rounded-xl mb-4">
                 <TabsTrigger value="overview" className="rounded-lg gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
                   <Eye className="w-4 h-4" /> Overview
                 </TabsTrigger>
@@ -941,6 +935,12 @@ export default function AdminCoaching() {
                   )}
                 </TabsTrigger>
               </TabsList>
+
+              {/* === CLIENT INFO CARD (collapsible, collapsed by default) === */}
+              <CoachingClientInfoCard
+                client={selectedClient as any}
+                onUpdateClient={(data) => updateClientMutation.mutate(data)}
+              />
 
               <TabsContent value="overview" className="mt-6">
                 <div className="space-y-6">

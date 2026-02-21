@@ -41,7 +41,7 @@ interface CoachingClientInfoCardProps {
 }
 
 export function CoachingClientInfoCard({ client, onUpdateClient }: CoachingClientInfoCardProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const coachingTypeLabel = client.coachingType === "private_coaching" ? "Private Coaching" : "Pregnancy Coaching";
   const coachingTypeBadge = client.coachingType === "private_coaching"
