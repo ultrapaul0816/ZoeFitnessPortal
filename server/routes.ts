@@ -26,7 +26,7 @@ import rateLimit from "express-rate-limit";
 import { emailService } from "./email/service";
 import { replaceTemplateVariables, generateUserVariables, generateSampleVariables } from "./email/template-variables";
 import { triggerAutomation } from "./email/automation-trigger";
-import OpenAI from "openai";
+import { createAICompletion, hasAIKey, getAIProviderName } from "./ai";
 import { getSpotifyClient, isSpotifyConnected, workoutPlaylists, getPlaylistDetails, getPlaybackState, controlPlayback } from "./spotify";
 
 // Rate limiting configurations
@@ -1830,11 +1830,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Message is required" });
       }
 
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
-
       // Fetch user profile if userId provided
       let userProfile = null;
       let workoutHistory: any[] = [];
@@ -2004,17 +1999,13 @@ RESPONSE GUIDELINES:
 8. Use their name (${userProfile?.firstName || 'mama'}) occasionally to personalize responses
 9. If asked about exercises not in the program, redirect to appropriate program exercises instead`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: message }
-        ],
-        max_tokens: 500,
+      const reply = await createAICompletion({
+        systemPrompt,
+        userPrompt: message,
+        maxTokens: 500,
         temperature: 0.7,
-      });
-
-      const reply = response.choices[0]?.message?.content || "I'm here to help! What would you like to know about your workout today?";
+        openaiModel: "gpt-4o-mini",
+      }) || "I'm here to help! What would you like to know about your workout today?";
       
       // Detect suggested actions based on conversation context
       const suggestedActions: Array<{ type: string; label: string; description: string }> = [];
@@ -5319,11 +5310,6 @@ RESPONSE GUIDELINES:
         return res.status(400).json({ message: "Title is required" });
       }
 
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
-
       const contentTypeDescriptions: Record<string, string> = {
         video: "an educational video",
         text: "a text article or informational content",
@@ -5356,17 +5342,13 @@ ${context ? `Additional context: ${context}` : ""}
 
 Keep it to 2-4 sentences, warm and encouraging.`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        max_tokens: 200,
+      const generatedDescription = (await createAICompletion({
+        systemPrompt,
+        userPrompt,
+        maxTokens: 200,
         temperature: 0.7,
-      });
-
-      const generatedDescription = response.choices[0]?.message?.content?.trim() || "";
+        openaiModel: "gpt-4o-mini",
+      })).trim();
       
       res.json({ description: generatedDescription });
     } catch (error) {
@@ -7431,14 +7413,8 @@ Keep it to 2-4 sentences, warm and encouraging.`;
       return acc;
     }, {});
 
-    const OpenAI = (await import("openai")).default;
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const summaryResponse = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are a prenatal/postnatal fitness expert assistant. Analyze the client's intake form responses and provide a concise clinical summary for the coach (Zoe). Include:
+    const summaryContent = await createAICompletion({
+      systemPrompt: `You are a prenatal/postnatal fitness expert assistant. Analyze the client's intake form responses and provide a concise clinical summary for the coach (Zoe). Include:
 1. KEY HEALTH FLAGS: Any medical conditions, restrictions, or concerns that need attention
 2. PREGNANCY STATUS: Trimester, due date, pregnancy history
 3. FITNESS ASSESSMENT: Current activity level, movement comfort, exercise history
@@ -7446,16 +7422,11 @@ Keep it to 2-4 sentences, warm and encouraging.`;
 5. RECOMMENDED APPROACH: Brief recommendation for exercise intensity, modifications needed
 6. SUPPLEMENT SUGGESTIONS: Based on their medications/supplements and pregnancy stage
 Keep it professional, concise, and actionable for the coach.`,
-        },
-        {
-          role: "user",
-          content: `Client: ${user.firstName} ${user.lastName}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
-        },
-      ],
-      max_tokens: 1500,
+      userPrompt: `Client: ${user.firstName} ${user.lastName}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
+      maxTokens: 1500,
     });
 
-    return summaryResponse.choices[0]?.message?.content || "";
+    return summaryContent;
   }
 
   // Helper function to generate AI coach remarks
@@ -7473,35 +7444,21 @@ Keep it professional, concise, and actionable for the coach.`,
       return acc;
     }, {});
 
-    // Call OpenAI GPT-4o with structured JSON output
-    const OpenAI = (await import("openai")).default;
-    const openai = new OpenAI({
-      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
-      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
-    });
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes. Return a JSON object with exactly these fields:
+    // Call AI for structured JSON coaching remarks
+    const remarksContent = await createAICompletion({
+      systemPrompt: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Based on the client's intake forms, generate structured coaching notes. Return a JSON object with exactly these fields:
 - trainingFocus: Specific training priorities, modifications, and focus areas (2-4 sentences)
 - nutritionalGuidance: Dietary needs, preferences, restrictions, macro goals (2-4 sentences)
 - thingsToWatch: Red flags, conditions to monitor, exercise modifications needed (2-4 sentences)
 - personalityNotes: Communication style, motivation drivers, coaching approach recommendations (2-4 sentences)
 
 Be specific to THIS client's data. Reference their actual medical history, goals, and constraints.`,
-        },
-        {
-          role: "user",
-          content: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
-        },
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 1500,
+      userPrompt: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
+      maxTokens: 1500,
+      jsonMode: true,
     });
 
-    const remarks = JSON.parse(response.choices[0]?.message?.content || "{}");
+    const remarks = JSON.parse(remarksContent || "{}");
     console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
     return remarks;
   }
@@ -7540,12 +7497,11 @@ Be specific to THIS client's data. Reference their actual medical history, goals
       console.error(`[Coaching] Detailed error: ${detailedError}`);
 
       // Check for specific error types
-      const hasApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
-      if (!hasApiKey) {
-        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY or configure Replit AI Integrations." });
+      if (!hasAIKey()) {
+        return res.status(500).json({ message: "No AI API key configured. Please add ANTHROPIC_API_KEY or OPENAI_API_KEY." });
       }
       if (errorMessage.includes("API key") || errorMessage.includes("authentication") || errorMessage.includes("401")) {
-        return res.status(500).json({ message: "Invalid OpenAI API key. Please check your configuration." });
+        return res.status(500).json({ message: `Invalid ${getAIProviderName()} API key. Please check your configuration.` });
       }
 
       res.status(500).json({ message: `Failed to generate coach remarks: ${detailedError}` });
@@ -7555,10 +7511,9 @@ Be specific to THIS client's data. Reference their actual medical history, goals
   // Generate weekly plan outline (Unit 4 - Plan Preview Step)
   app.post("/api/admin/coaching/clients/:clientId/generate-plan-outline", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
-      // Validate OpenAI API key is configured
-      const hasApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
-      if (!hasApiKey) {
-        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY or configure Replit AI Integrations." });
+      // Validate AI API key is configured
+      if (!hasAIKey()) {
+        return res.status(500).json({ message: "No AI API key configured. Please add ANTHROPIC_API_KEY or OPENAI_API_KEY." });
       }
 
       const clientId = req.params.clientId;
@@ -7589,18 +7544,9 @@ Be specific to THIS client's data. Reference their actual medical history, goals
 
       const coachRemarks = (client as any).coachRemarks || {};
 
-      // Call OpenAI for plan outline
-      const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
-      });
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Generate a weekly plan outline BEFORE creating the full detailed workout. Return a JSON object with:
+      // Call AI for plan outline
+      const outlineContent = await createAICompletion({
+        systemPrompt: `You are Zoe, an expert prenatal/postnatal fitness and nutrition coach. Generate a weekly plan outline BEFORE creating the full detailed workout. Return a JSON object with:
 - philosophy: Overall approach for this week (2-3 sentences) - Use an ENCOURAGING, POSITIVE, and MOTIVATING tone
 - focusAreas: Array of 2-4 key focus areas (strings) - Frame these as exciting opportunities for growth
 - dayOutlines: Array of 7 objects with { dayNumber, dayName, dayType, briefDescription } - Brief descriptions should be uplifting and energizing
@@ -7611,10 +7557,7 @@ Day types can be: Strength, Cardio, Recovery, Mobility, HIIT, Rest
 Be specific to THIS client's needs, trimester/stage, and goals.
 
 IMPORTANT: Write in a positive, encouraging, warm tone that makes the client feel excited and capable. Avoid clinical or overly cautious language. Focus on what they CAN do and how strong they're becoming.`,
-          },
-          {
-            role: "user",
-            content: `Client: ${user.firstName} ${user.lastName}
+        userPrompt: `Client: ${user.firstName} ${user.lastName}
 Week Number: ${weekNumber}
 Coaching Type: ${(client as any).coachingType || "pregnancy_coaching"}
 Previous Week: ${previousWeekSummary}
@@ -7624,13 +7567,11 @@ ${JSON.stringify(coachRemarks, null, 2)}
 
 Intake Forms:
 ${JSON.stringify(allFormData, null, 2)}`,
-          },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 2000,
+        maxTokens: 2000,
+        jsonMode: true,
       });
 
-      const outline = JSON.parse(response.choices[0]?.message?.content || "{}");
+      const outline = JSON.parse(outlineContent || "{}");
 
       // Store outline in client's weeklyPlanOutlines JSONB
       const currentOutlines = (client as any).weeklyPlanOutlines || {};
@@ -7787,10 +7728,9 @@ ${JSON.stringify(allFormData, null, 2)}`,
   // Generate AI workout plan for a specific week
   app.post("/api/admin/coaching/clients/:clientId/generate-workout", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
-      // Validate OpenAI API key is configured
-      const hasApiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
-      if (!hasApiKey) {
-        return res.status(500).json({ message: "OpenAI API key not configured. Please add OPENAI_API_KEY or configure Replit AI Integrations." });
+      // Validate AI API key is configured
+      if (!hasAIKey()) {
+        return res.status(500).json({ message: "No AI API key configured. Please add ANTHROPIC_API_KEY or OPENAI_API_KEY." });
       }
 
       const client = await storage.getCoachingClient(req.params.clientId);
@@ -7819,11 +7759,6 @@ ${JSON.stringify(allFormData, null, 2)}`,
       const exerciseLibraryStr = allExercises.map(ex =>
         `${ex.name} | ${ex.category} | ${ex.difficulty} | ${ex.id} | ${ex.videoUrl || "no-video"}`
       ).join("\n");
-
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
 
       const formResponses = await storage.getCoachingFormResponses(client.id);
       let formDataStr = client.formData ? JSON.stringify(client.formData) : "";
@@ -7866,12 +7801,7 @@ ${JSON.stringify(allFormData, null, 2)}`,
         ? `PREGNANT CLIENT - Trimester: ${calculatedTrimester || "unknown"} (Week ${weeksPregnant || "unknown"}), Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
         : "";
 
-      const workoutResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert ${coachingType === "private_coaching" ? "personal fitness transformation coach" : "postnatal fitness coach"} known for structured, professional workout plans. Create a personalized 1-week workout plan for Week ${weekNumber} of a 4-week program.
+      const workoutSystemPrompt = `You are Zoe, an expert ${coachingType === "private_coaching" ? "personal fitness transformation coach" : "postnatal fitness coach"} known for structured, professional workout plans. Create a personalized 1-week workout plan for Week ${weekNumber} of a 4-week program.
 
 You have access to an EXERCISE LIBRARY below. When selecting exercises, PREFER exercises from this library and include their exerciseId and videoUrl. If an exercise you want to prescribe is NOT in the library, set exerciseId and videoUrl to null.
 
@@ -7887,7 +7817,7 @@ IMPORTANT: Return a JSON object with exactly this structure:
       "title": "Upper Body Strength",
       "description": "Focus on shoulders, back, and arms with progressive overload",
       "coachNotes": "Focus on form over speed. Rest as needed between rounds.",
-      "personalizationNote": "Today focuses on upper body strength with modifications for your lower back. Exercises chosen based on your goal of improving posture and building lean muscle.",
+      "personalizationNote": "Today focuses on upper body strength with modifications for your lower back.",
       "personalizationTags": ["Back Pain Modified", "Posture Focus", "Progressive Overload"],
       "sections": [
         {
@@ -7907,106 +7837,6 @@ IMPORTANT: Return a JSON object with exactly this structure:
               "durationSeconds": 300,
               "restAfterSeconds": null,
               "notes": "Gentle full-body warm-up: arm circles, cat-cow, hip circles"
-            }
-          ]
-        },
-        {
-          "name": "Activation Sequence",
-          "type": "activation",
-          "description": "Activate key muscle groups with band work",
-          "durationSeconds": null,
-          "rounds": 3,
-          "restBetweenRoundsSeconds": 15,
-          "exercises": [
-            {
-              "name": "Band Lat Pulldowns",
-              "exerciseId": "use-id-from-library-if-available",
-              "videoUrl": "use-url-from-library-if-available",
-              "sets": 1,
-              "reps": "20",
-              "durationSeconds": null,
-              "restAfterSeconds": null,
-              "notes": "Use mini band, controlled movement"
-            }
-          ]
-        },
-        {
-          "name": "Workout Part 1",
-          "type": "main",
-          "description": "Heavy compound movements for strength building",
-          "durationSeconds": null,
-          "rounds": 3,
-          "restBetweenRoundsSeconds": 60,
-          "exercises": [
-            {
-              "name": "Assisted Band Pullups",
-              "exerciseId": null,
-              "videoUrl": null,
-              "sets": 1,
-              "reps": "6-8",
-              "durationSeconds": null,
-              "restAfterSeconds": 60,
-              "notes": "Focus on controlled negative",
-              "reason": "Builds upper body pulling strength to improve your posture goal"
-            }
-          ]
-        },
-        {
-          "name": "Workout Part 2 - Circuit",
-          "type": "circuit",
-          "description": "High-intensity circuit for muscular endurance",
-          "durationSeconds": null,
-          "rounds": 4,
-          "restBetweenRoundsSeconds": 90,
-          "exercises": []
-        },
-        {
-          "name": "Finisher - EMOM 8 min",
-          "type": "finisher",
-          "description": "Timed interval work to push conditioning",
-          "durationSeconds": 480,
-          "rounds": null,
-          "restBetweenRoundsSeconds": null,
-          "format": "45 secs work / 15 secs rest",
-          "exercises": []
-        },
-        {
-          "name": "Stretch",
-          "type": "stretch",
-          "description": "Targeted stretches for worked muscle groups",
-          "durationSeconds": 120,
-          "rounds": 1,
-          "restBetweenRoundsSeconds": null,
-          "exercises": [
-            {
-              "name": "Camel Pose",
-              "exerciseId": null,
-              "videoUrl": null,
-              "sets": 1,
-              "reps": null,
-              "durationSeconds": 60,
-              "restAfterSeconds": null,
-              "notes": "Hold and breathe"
-            }
-          ]
-        },
-        {
-          "name": "Cooldown",
-          "type": "cooldown",
-          "description": "Gentle movements to bring heart rate down",
-          "durationSeconds": 300,
-          "rounds": 1,
-          "restBetweenRoundsSeconds": null,
-          "exercises": [
-            {
-              "name": "Cooldown Flow",
-              "exerciseId": null,
-              "videoUrl": null,
-              "sets": 1,
-              "reps": null,
-              "durationSeconds": 300,
-              "restAfterSeconds": null,
-              "notes": "Gentle stretching and deep breathing"
             }
           ]
         }
@@ -8053,10 +7883,10 @@ EXERCISE SELECTION:
 - ONLY use exercises from the EXERCISE LIBRARY above. Every exercise MUST have a valid exerciseId and videoUrl from the library. Do NOT invent exercises outside the library.
 - For warmup/cooldown flows, exerciseId and videoUrl can be null
 - Each exercise object must have: name, exerciseId, videoUrl, sets, reps, durationSeconds, restAfterSeconds, notes, reason
-- REASON FIELD: Every exercise MUST include a "reason" field (1 short sentence explaining WHY this exercise was chosen for THIS client). Examples: "Strengthens pelvic floor which you flagged as a priority", "Modified from barbell to dumbbell for your home setup", "Targets glute activation to support lower back recovery". Make it personal using "you/your".
-- DURATION RULE: "durationSeconds" must be a number (seconds) or null. Example: 30 means 30 seconds, 300 means 5 minutes. Do NOT use text strings like "30 seconds".
-- REST RULE: "restAfterSeconds" and section "restBetweenRoundsSeconds" must be a number (seconds) or null. Example: 60 means 60 seconds rest.
-- SECTION DURATION: Section-level "durationSeconds" must also be a number (seconds) or null. Example: 300 for a 5-minute section.
+- REASON FIELD: Every exercise MUST include a "reason" field (1 short sentence explaining WHY this exercise was chosen for THIS client).
+- DURATION RULE: "durationSeconds" must be a number (seconds) or null.
+- REST RULE: "restAfterSeconds" and section "restBetweenRoundsSeconds" must be a number (seconds) or null.
+- SECTION DURATION: Section-level "durationSeconds" must also be a number (seconds) or null.
 - MINIMUM REQUIREMENT: Every exercise must have at least one of "reps" or "durationSeconds" — both cannot be null at the same time.
 - Default sets to 1 for most exercises unless the exercise specifically needs multiple sets
 - Each section object must also include a 'description' field with a brief description of that section's purpose
@@ -8073,18 +7903,17 @@ PREGNANCY SAFETY (if client is pregnant):
 - Trimester 1: generally safe with modifications, avoid overheating
 - Trimester 2: avoid supine exercises, reduce range of motion as needed
 - Trimester 3: focus on mobility, breathing, gentle strength maintenance, birth preparation movements
-- Always add safety notes for pregnant clients in exercise notes`
-          },
-          {
-            role: "user",
-            content: `Create Week ${weekNumber} workout plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}${coachRemarksStr ? `\n\nCOACH'S DIRECTION & REMARKS:\n${coachRemarksStr}` : ""}\nForm data: ${formDataStr}\n${previousWeekSummary}${pregnancyInfo ? `\n\n⚠️ ${pregnancyInfo}` : ""}`
-          }
-        ],
-        response_format: { type: "json_object" },
+- Always add safety notes for pregnant clients in exercise notes`;
+
+      const workoutContent = await createAICompletion({
+        systemPrompt: workoutSystemPrompt,
+        userPrompt: `Create Week ${weekNumber} workout plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}${coachRemarksStr ? `\n\nCOACH'S DIRECTION & REMARKS:\n${coachRemarksStr}` : ""}\nForm data: ${formDataStr}\n${previousWeekSummary}${pregnancyInfo ? `\n\n⚠️ ${pregnancyInfo}` : ""}`,
+        maxTokens: 8000,
         temperature: 0.7,
+        jsonMode: true,
       });
 
-      const workoutData = JSON.parse(workoutResponse.choices[0].message.content || "{}");
+      const workoutData = JSON.parse(workoutContent || "{}");
       console.log("[Coaching] Workout Week", weekNumber, "AI response keys:", Object.keys(workoutData));
 
       let workoutDays: any[] = [];
@@ -8162,11 +7991,6 @@ PREGNANCY SAFETY (if client is pregnant):
 
       await storage.deleteCoachingNutritionPlans(client.id);
 
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
-
       const formResponses = await storage.getCoachingFormResponses(client.id);
       let formDataStr = client.formData ? JSON.stringify(client.formData) : "";
       const coachingType = (client as any).coachingType || "pregnancy_coaching";
@@ -8207,12 +8031,8 @@ PREGNANCY SAFETY (if client is pregnant):
         ? `PREGNANT CLIENT - Trimester: ${calcTrimesterNutrition || "unknown"} (Week ${weeksPregnantNutrition || "unknown"}), Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
         : "";
 
-      const nutritionResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert ${coachingType === "private_coaching" ? "nutrition and wellness coach specializing in lifestyle transformation" : "postnatal nutrition coach"}. Create a personalized, practical nutrition plan that's easy for ${coachingType === "private_coaching" ? "busy clients" : "busy new mothers"} to follow.
+      const nutritionContent = await createAICompletion({
+        systemPrompt: `You are Zoe, an expert ${coachingType === "private_coaching" ? "nutrition and wellness coach specializing in lifestyle transformation" : "postnatal nutrition coach"}. Create a personalized, practical nutrition plan that's easy for ${coachingType === "private_coaching" ? "busy clients" : "busy new mothers"} to follow.
 
 IMPORTANT: Return a JSON object with exactly this structure:
 {
@@ -8244,27 +8064,17 @@ IMPORTANT: Return a JSON object with exactly this structure:
       "tips": "Include protein at every breakfast to stabilize energy"
     }
   ],
-  "weeklyPrepTips": [
-    "Batch cook grains (rice, quinoa) on Sunday for the week",
-    "Pre-chop veggies and store in containers",
-    "Make overnight oats x3 on Sunday evening"
-  ],
-  "snackIdeas": [
-    "Apple slices with almond butter",
-    "Greek yogurt with berries",
-    "Handful of trail mix",
-    "Hummus with veggie sticks",
-    "Energy balls (make a batch on weekends)"
-  ],
-  "coachNotes": "Focus on eating enough rather than restricting. Your body needs fuel to recover and care for your baby."
+  "weeklyPrepTips": ["Batch cook grains on Sunday for the week"],
+  "snackIdeas": ["Apple slices with almond butter"],
+  "coachNotes": "Focus on eating enough rather than restricting."
 }
 
 Rules:
 - "dailyStructure" must include overview, dailyCalorieTarget (number), macroSplit (object with protein/carbs/fat percentages), hydration (string), supplements (string array)
 - "meals" must be an array of exactly 4 objects with mealType: "breakfast", "lunch", "snack", "dinner"
 - Each mealType must have a "timing" field (string) and exactly 5 options in the "options" array
-- INDIAN DISH RULE: At least 2 out of the 5 options per meal MUST be Indian dishes (e.g., poha, upma, idli, dosa, paratha, dal, khichdi, roti sabzi, paneer dishes, raita, chaat, etc.). Tag Indian dishes with "cuisine": "indian" and others with "cuisine": "international".
-- Each option needs: name (string), description (string), cuisine (string: "indian" or "international"), prepTime (string), calories (number), protein (number in grams), carbs (number in grams), fat (number in grams), ingredients (string array), quickInstructions (string)
+- INDIAN DISH RULE: At least 2 out of the 5 options per meal MUST be Indian dishes. Tag Indian dishes with "cuisine": "indian" and others with "cuisine": "international".
+- Each option needs: name, description, cuisine, prepTime, calories, protein, carbs, fat, ingredients, quickInstructions
 - "weeklyPrepTips" must be an array of 4-6 practical meal prep tips
 - "snackIdeas" must be an array of 5-8 quick snack ideas
 - "coachNotes" must be a personalized encouragement string
@@ -8277,18 +8087,14 @@ PREGNANCY NUTRITION (if client is pregnant):
 - Emphasize: folate-rich foods, iron, calcium, DHA/omega-3, choline, vitamin D
 - AVOID: raw/undercooked meats, unpasteurized dairy, high-mercury fish, excess caffeine, alcohol
 - Include: prenatal vitamin in supplements, extra hydration recommendations
-- Trimester-specific: adjust portions and food choices based on common trimester needs and comfort`
-          },
-          {
-            role: "user",
-            content: `Create a nutrition plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}${nutritionCoachRemarksStr ? `\n\nCOACH'S DIRECTION & REMARKS:\n${nutritionCoachRemarksStr}` : ""}\nForm data: ${formDataStr}${pregnancyInfoNutrition ? `\n\n⚠️ ${pregnancyInfoNutrition}` : ""}`
-          }
-        ],
-        response_format: { type: "json_object" },
+- Trimester-specific: adjust portions and food choices based on common trimester needs and comfort`,
+        userPrompt: `Create a nutrition plan for:\n${userInfo}\nHealth notes: ${healthNotesStr}\nCoach notes: ${notesStr}${nutritionCoachRemarksStr ? `\n\nCOACH'S DIRECTION & REMARKS:\n${nutritionCoachRemarksStr}` : ""}\nForm data: ${formDataStr}${pregnancyInfoNutrition ? `\n\n⚠️ ${pregnancyInfoNutrition}` : ""}`,
+        maxTokens: 8000,
         temperature: 0.7,
+        jsonMode: true,
       });
 
-      const nutritionData = JSON.parse(nutritionResponse.choices[0].message.content || "{}");
+      const nutritionData = JSON.parse(nutritionContent || "{}");
       console.log("[Coaching] Nutrition AI response keys:", Object.keys(nutritionData));
 
       let meals: any[] = [];
@@ -8405,21 +8211,12 @@ PREGNANCY NUTRITION (if client is pregnant):
       const currentDish = options[idx];
       const otherDishes = options.filter((_: any, i: number) => i !== idx).map((o: any) => o.name);
 
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
-
       const userInfo = user ? `Name: ${user.firstName} ${user.lastName}, Goals: ${(user.goals || []).join(", ") || "general fitness"}` : "Unknown user";
       const healthNotesStr = client.healthNotes || "No specific health notes";
       const preferCuisine = req.body.preferCuisine || null;
 
-      const regenResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert postnatal nutrition coach. Generate exactly ONE replacement dish option for a ${existingPlan.mealType} meal.
+      const regenContent = await createAICompletion({
+        systemPrompt: `You are Zoe, an expert postnatal nutrition coach. Generate exactly ONE replacement dish option for a ${existingPlan.mealType} meal.
 
 The current dish "${currentDish.name}" needs to be replaced with a new alternative.
 
@@ -8447,18 +8244,14 @@ Rules:
 - Must be different from the existing dishes listed above
 - Must be practical, quick to prepare, and nutritious for postpartum recovery
 - Include accurate macro estimates
-- If Indian cuisine, use authentic Indian dishes (not fusion)`
-          },
-          {
-            role: "user",
-            content: `Replace the ${existingPlan.mealType} dish "${currentDish.name}" for:\n${userInfo}\nHealth notes: ${healthNotesStr}`
-          }
-        ],
-        response_format: { type: "json_object" },
+- If Indian cuisine, use authentic Indian dishes (not fusion)`,
+        userPrompt: `Replace the ${existingPlan.mealType} dish "${currentDish.name}" for:\n${userInfo}\nHealth notes: ${healthNotesStr}`,
+        maxTokens: 1500,
         temperature: 0.8,
+        jsonMode: true,
       });
 
-      const regenData = JSON.parse(regenResponse.choices[0].message.content || "{}");
+      const regenData = JSON.parse(regenContent || "{}");
       const newOption = regenData.option || regenData;
       
       if (!newOption.name) {
@@ -8897,19 +8690,10 @@ Rules:
       }
       if (!formDataStr) formDataStr = "No form data available";
 
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
-
       const userInfo = `Name: ${user.firstName} ${user.lastName}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
 
-      const workoutResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert fitness coach. The coach has provided a strategic overview for Week ${weekNumber}. Your task is to IMPLEMENT this strategy by generating a detailed 7-day workout plan.
+      const content = await createAICompletion({
+        systemPrompt: `You are Zoe, an expert fitness coach. The coach has provided a strategic overview for Week ${weekNumber}. Your task is to IMPLEMENT this strategy by generating a detailed 7-day workout plan.
 
 COACH'S STRATEGIC OVERVIEW FOR WEEK ${weekNumber}:
 
@@ -8966,13 +8750,10 @@ IMPORTANT: Return a JSON object with exactly this structure (this is a PREVIEW o
 }
 
 Ensure all 7 days are included. Make sure exercises align with the safety modifications and focus areas provided by the coach.`,
-          },
-        ],
+        userPrompt: `Generate the workout plan for Week ${weekNumber} implementing the strategic overview provided.`,
+        maxTokens: 8000,
         temperature: 0.8,
-        max_tokens: 8000,
       });
-
-      const content = workoutResponse.choices[0]?.message?.content;
       if (!content) throw new Error("No content in AI response");
 
       const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -9024,20 +8805,11 @@ Ensure all 7 days are included. Make sure exercises align with the safety modifi
       }
       if (!formDataStr) formDataStr = "No form data available";
 
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
-
       const intensity = workoutIntensity || "moderate";
       const userInfo = `Name: ${user.firstName} ${user.lastName}, Goals: ${(user.goals || []).join(", ") || "general fitness"}`;
 
-      const nutritionResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe, an expert nutrition coach. Generate a weekly nutrition plan for Week ${weekNumber} that SUPPORTS the training strategy.
+      const content = await createAICompletion({
+        systemPrompt: `You are Zoe, an expert nutrition coach. Generate a weekly nutrition plan for Week ${weekNumber} that SUPPORTS the training strategy.
 
 WEEK ${weekNumber} TRAINING CONTEXT:
 Training Overview: ${overview.philosophy}
@@ -9054,56 +8826,26 @@ IMPORTANT: Generate nutrition that ALIGNS with this week's training demands. For
 - Build weeks (Week 2-3): Increase protein/carbs slightly, support higher training volume
 - Peak weeks (Week 4): Optimize macros for performance
 
-Return a JSON object with this structure (PREVIEW only - will not be saved until coach approves):
+Return a JSON object with this structure:
 {
   "weekNumber": ${weekNumber},
-  "dailyMacros": {
-    "calories": 1800,
-    "protein": 140,
-    "carbs": 150,
-    "fat": 60
-  },
+  "dailyMacros": { "calories": 1800, "protein": 140, "carbs": 150, "fat": 60 },
   "meals": [
-    {
-      "mealType": "breakfast",
-      "options": [
-        {
-          "name": "Protein Oatmeal Bowl",
-          "description": "Oats with protein powder, berries, and almond butter",
-          "macros": { "calories": 450, "protein": 35, "carbs": 45, "fat": 15 },
-          "ingredients": ["1 cup oats", "1 scoop protein powder", "1/2 cup berries", "1 tbsp almond butter"],
-          "instructions": "Cook oats, stir in protein powder, top with berries and almond butter."
-        }
-      ]
-    },
-    {
-      "mealType": "lunch",
-      "options": [...]
-    },
-    {
-      "mealType": "snack",
-      "options": [...]
-    },
-    {
-      "mealType": "dinner",
-      "options": [...]
-    }
+    { "mealType": "breakfast", "options": [...] },
+    { "mealType": "lunch", "options": [...] },
+    { "mealType": "snack", "options": [...] },
+    { "mealType": "dinner", "options": [...] }
   ],
-  "weeklyPrepTips": [
-    "Batch cook proteins on Sunday",
-    "Pre-portion snacks for the week"
-  ],
-  "notes": "Focus on post-workout nutrition to support recovery from this week's training intensity."
+  "weeklyPrepTips": ["Batch cook proteins on Sunday"],
+  "notes": "Focus on post-workout nutrition."
 }
 
+Each option: name, description, macros (calories/protein/carbs/fat), ingredients, instructions.
 Provide 2-3 options for each meal type. Ensure variety and alignment with training intensity.`,
-          },
-        ],
+        userPrompt: `Generate the Week ${weekNumber} nutrition plan for this client.`,
+        maxTokens: 6000,
         temperature: 0.8,
-        max_tokens: 6000,
       });
-
-      const content = nutritionResponse.choices[0]?.message?.content;
       if (!content) throw new Error("No content in AI response");
 
       const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -9483,23 +9225,14 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
         return res.status(400).json({ message: "AI summary or coach remarks required before generating blueprint" });
       }
 
-      console.log(`[Blueprint] Calling OpenAI GPT-4o...`);
-      const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
-      });
-      console.log(`[Blueprint] OpenAI configured. API Key present: ${!!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY)}`);
+      console.log(`[Blueprint] Calling AI (${getAIProviderName()})...`);
+      console.log(`[Blueprint] AI configured. API Key present: ${hasAIKey()}`);
 
       const currentYear = new Date().getFullYear();
       const clientName = `${clientData.user.firstName} ${clientData.user.lastName}`.trim();
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are Zoe Modgill, an elite boutique wellness architect. Generate a premium "Boutique Wellness Blueprint" report for a coaching client. This is a high-end, magazine-quality strategic document that feels like a luxury personal brand experience.
+      const rawContent = await createAICompletion({
+        systemPrompt: `You are Zoe Modgill, an elite boutique wellness architect. Generate a premium "Boutique Wellness Blueprint" report for a coaching client. This is a high-end, magazine-quality strategic document that feels like a luxury personal brand experience.
 
 TONE: Warm, empowering, aspirational. Use boutique/luxury language. Frame everything positively — as exciting transformations, not clinical assessments. Make the client feel like they're investing in a premium life upgrade.
 
@@ -9508,59 +9241,55 @@ Return a JSON object with exactly these sections:
 {
   "coverPage": {
     "clientName": "Client's full name",
-    "subtitle": "A personalized 3-5 word identity shift tagline (e.g., 'From Cautious to Courageous', 'The Strength Renaissance')",
+    "subtitle": "A personalized 3-5 word identity shift tagline",
     "coachingType": "Private Coaching or Pregnancy Coaching",
     "tagline": "Strategic Performance Architecture ${currentYear}"
   },
   "executiveArchitecture": {
-    "mission": "2-3 powerful sentences about the client's transformation mission. Reference their specific goals and make it feel aspirational.",
-    "identityShift": "2-3 sentences describing who they're becoming. Frame it as an identity evolution, not just fitness goals.",
-    "keyInsight": "One powerful, personalized insight drawn from their intake data that will anchor their entire journey."
+    "mission": "2-3 powerful sentences about the client's transformation mission.",
+    "identityShift": "2-3 sentences describing who they're becoming.",
+    "keyInsight": "One powerful, personalized insight drawn from their intake data."
   },
   "mindsetRoadmap": {
-    "week1": { "theme": "A 2-3 word theme (e.g., 'Awareness & Foundation')", "focus": "2-3 sentences on the psychological focus", "actionItem": "One specific mindset practice for the week" },
-    "week2": { "theme": "Theme name", "focus": "Focus description", "actionItem": "Action item" },
-    "week3": { "theme": "Theme name", "focus": "Focus description", "actionItem": "Action item" },
-    "week4": { "theme": "Theme name", "focus": "Focus description", "actionItem": "Action item" }
+    "week1": { "theme": "2-3 word theme", "focus": "2-3 sentences", "actionItem": "One specific practice" },
+    "week2": { "theme": "Theme", "focus": "Focus", "actionItem": "Action" },
+    "week3": { "theme": "Theme", "focus": "Focus", "actionItem": "Action" },
+    "week4": { "theme": "Theme", "focus": "Focus", "actionItem": "Action" }
   },
   "medicalPillar": {
-    "overview": "2-3 sentences summarizing their health context in an empowering way (not clinical). Frame health considerations as data we're using to optimize their experience.",
-    "considerations": ["Array of 3-5 medical/health considerations — written positively"],
-    "adaptations": ["Array of 3-5 specific ways the plan adapts to their health — framed as smart personalization"],
-    "doctorClearance": "Summary of doctor clearance status (if available from health evaluation form)"
+    "overview": "2-3 sentences summarizing health context empoweringly.",
+    "considerations": ["Array of 3-5 health considerations"],
+    "adaptations": ["Array of 3-5 plan adaptations"],
+    "doctorClearance": "Doctor clearance status"
   },
   "structuralIntegrity": {
-    "title": "A personalized title based on their primary physical focus (e.g., 'Core Renaissance Protocol', 'Shoulder-Safe Strength Blueprint', 'Lower Back Liberation Strategy')",
-    "primaryConcerns": ["Array of 2-4 physical areas we're addressing"],
-    "protocols": ["Array of 3-5 specific exercise modifications or protocols"],
-    "whatToAvoid": ["Array of 2-4 movements or patterns to avoid — framed gently"],
-    "whatToEmbrace": ["Array of 3-5 movements or patterns to embrace — framed excitingly"]
+    "title": "Personalized title based on primary physical focus",
+    "primaryConcerns": ["Array of 2-4 areas"],
+    "protocols": ["Array of 3-5 protocols"],
+    "whatToAvoid": ["Array of 2-4 items"],
+    "whatToEmbrace": ["Array of 3-5 items"]
   },
   "equipmentAudit": {
-    "overview": "1-2 sentences about their ideal training environment based on their fitness level and goals.",
-    "essentialEquipment": [
-      { "name": "Equipment name", "purpose": "Why they need it", "category": "Core|Mobility|Strength|Recovery" }
-    ],
-    "recommendations": ["Array of 2-4 equipment or environment recommendations based on their goals and constraints"]
+    "overview": "1-2 sentences about ideal training environment.",
+    "essentialEquipment": [{ "name": "Name", "purpose": "Why", "category": "Core|Mobility|Strength|Recovery" }],
+    "recommendations": ["Array of 2-4 recommendations"]
   },
   "nutritionBlueprint": {
-    "philosophy": "2-3 sentences about their personalized nutrition philosophy. Reference their specific needs, lifestyle, and goals.",
-    "coreTenets": [
-      { "tenet": "Short tenet name (2-4 words)", "explanation": "1-2 sentences explaining why this matters for them specifically" }
-    ],
-    "dailyTargets": { "calories": "Calorie range (e.g., '1800-2100')", "protein": "Protein target (e.g., '120-140g')", "hydration": "Water target (e.g., '2.5-3L')" },
-    "restrictions": ["Array of any dietary restrictions or allergies from their intake"]
+    "philosophy": "2-3 sentences about personalized nutrition philosophy.",
+    "coreTenets": [{ "tenet": "Short name", "explanation": "1-2 sentences" }],
+    "dailyTargets": { "calories": "Range", "protein": "Target", "hydration": "Target" },
+    "restrictions": ["Array of dietary restrictions"]
   },
   "recipeCards": [
     {
-      "name": "Recipe name — creative and appetizing",
+      "name": "Creative recipe name",
       "mealType": "breakfast|lunch|dinner|snack",
-      "tagline": "A fun 3-5 word tagline (e.g., 'Post-Training Reward', 'Morning Power Ritual')",
-      "whyItWorks": "1-2 sentences on why this meal is perfect for them specifically",
-      "ingredients": ["Array of ingredients with quantities"],
-      "instructions": "Brief cooking instructions (3-5 steps)",
+      "tagline": "3-5 word tagline",
+      "whyItWorks": "1-2 sentences why perfect for them",
+      "ingredients": ["Array with quantities"],
+      "instructions": "3-5 steps",
       "macros": { "calories": 350, "protein": "28g", "carbs": "35g", "fat": "12g" },
-      "prepTime": "Prep time (e.g., '15 mins')"
+      "prepTime": "Time estimate"
     }
   ]
 }
@@ -9574,10 +9303,7 @@ IMPORTANT RULES:
 - Reference actual medical conditions, goals, and constraints from their intake
 - Make the client name possessive in the cover subtitle (e.g., "Sarah's Identity Shift")
 - Be creative with section titles — each client should feel uniquely served`,
-          },
-          {
-            role: "user",
-            content: `Generate the Boutique Wellness Blueprint for this client:
+        userPrompt: `Generate the Boutique Wellness Blueprint for this client:
 
 CLIENT PROFILE:
 Name: ${clientName}
@@ -9599,14 +9325,10 @@ ${JSON.stringify(clientData.intakeForms, null, 2)}
 
 ${clientData.workoutPlans.length > 0 ? `WORKOUT PLAN OUTLINE:\n${JSON.stringify(clientData.workoutPlans.slice(0, 14), null, 2)}` : ""}
 ${clientData.nutritionPlans.length > 0 ? `NUTRITION PLAN OUTLINE:\n${JSON.stringify(clientData.nutritionPlans.slice(0, 8), null, 2)}` : ""}`,
-          },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 6000,
-      });
-
-      const rawContent = response.choices[0]?.message?.content || "{}";
-      console.log(`[Blueprint] OpenAI response received. Length: ${rawContent.length} chars`);
+        maxTokens: 6000,
+        jsonMode: true,
+      }) || "{}";
+      console.log(`[Blueprint] AI response received. Length: ${rawContent.length} chars`);
 
       const blueprint = JSON.parse(rawContent);
       console.log(`[Blueprint] Parsed OK. Sections: ${Object.keys(blueprint).join(', ')}`);
