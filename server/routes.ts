@@ -7465,11 +7465,33 @@ IMPORTANT RULES:
 - Don't use medical thresholds, blood pressure numbers, or glucose targets unless the client specifically provided them.
 - Be specific to THIS client's actual data. Don't add generic pregnancy warnings.`,
       userPrompt: `Client: ${user.firstName} ${user.lastName}\nCoaching Type: ${client.coachingType || "pregnancy_coaching"}\n\nIntake Form Data:\n${JSON.stringify(allFormData, null, 2)}`,
-      maxTokens: 1500,
+      maxTokens: 3000,
       jsonMode: true,
     });
 
-    const remarks = JSON.parse(remarksContent || "{}");
+    let remarks: any;
+    try {
+      remarks = JSON.parse(remarksContent || "{}");
+    } catch (parseErr) {
+      // AI returned truncated/malformed JSON — try to salvage
+      console.warn(`[Coaching] Malformed JSON from AI, attempting repair: ${(parseErr as Error).message}`);
+      let fixed = (remarksContent || "{}").trim();
+      // Close any unterminated strings and objects
+      const openBraces = (fixed.match(/{/g) || []).length;
+      const closeBraces = (fixed.match(/}/g) || []).length;
+      if (!fixed.endsWith('"') && !fixed.endsWith('}')) fixed += '"';
+      for (let i = closeBraces; i < openBraces; i++) fixed += '}';
+      try {
+        remarks = JSON.parse(fixed);
+      } catch {
+        // Last resort: extract fields with regex
+        remarks = {};
+        for (const field of ['trainingFocus', 'nutritionalGuidance', 'thingsToWatch', 'personalityNotes']) {
+          const match = (remarksContent || "").match(new RegExp(`"${field}"\\s*:\\s*"([^"]*)`));
+          if (match) remarks[field] = match[1];
+        }
+      }
+    }
     console.log(`[Coaching] AI coach remarks generated for client ${clientId}`);
     return remarks;
   }
