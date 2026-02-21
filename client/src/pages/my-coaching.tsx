@@ -2229,11 +2229,113 @@ export default function MyCoaching() {
 
         <div className="mb-5">
           <h2 className="text-lg font-bold text-gray-900">
-            {getFormattedDate()}
+            Hi {firstName}! 👋
           </h2>
           <p className="text-pink-600 font-medium text-sm">
-            {getGreeting()}, {firstName} ✨
+            Week {Math.min(currentWeek, client.planDurationWeeks || 4)} · {getFormattedDate()}
           </p>
+        </div>
+
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-4 gap-2 mb-5">
+          {[
+            { icon: "📋", label: "Workout", action: () => { if (todaysWorkout) { setGuidedWorkout(todaysWorkout); setGuidedSectionIndex(0); setGuidedExerciseIndex(0); } setActiveView("workouts"); } },
+            { icon: "💬", label: "Message", action: () => setActiveView("messages") },
+            { icon: "✅", label: "Check-in", action: () => setActiveView("checkin") },
+            { icon: "📊", label: "Progress", action: () => setActiveView("blueprint") },
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={item.action}
+              className="flex flex-col items-center gap-1.5 bg-white border border-pink-100 rounded-2xl p-3 shadow-sm hover:shadow-md hover:border-pink-200 transition-all min-h-[72px] active:scale-95"
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span className="text-xs font-semibold text-gray-700">{item.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Today's Workout Highlight */}
+        {todaysWorkout && todaysWorkout.dayType !== "rest" && (
+          <Card className="border-pink-200 bg-gradient-to-r from-pink-50 to-white rounded-2xl shadow-sm mb-5 overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Dumbbell className="w-5 h-5 text-pink-500" />
+                  <h3 className="font-bold text-gray-900 text-sm">Today's Workout</h3>
+                </div>
+                <Badge className={`text-xs rounded-full ${DAY_TYPE_COLORS[todaysWorkout.dayType] || "bg-gray-100 text-gray-700"}`}>
+                  {todaysWorkout.dayType.replace(/_/g, " ")}
+                </Badge>
+              </div>
+              <p className="text-sm font-semibold text-gray-900 mb-1">{todaysWorkout.title}</p>
+              {todaysWorkout.description && (
+                <p className="text-xs text-gray-500 mb-3 line-clamp-2">{todaysWorkout.description}</p>
+              )}
+              <Button
+                size="sm"
+                className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm min-h-[44px]"
+                onClick={() => {
+                  setGuidedWorkout(todaysWorkout);
+                  setGuidedSectionIndex(0);
+                  setGuidedExerciseIndex(0);
+                  setActiveView("workouts");
+                }}
+              >
+                <Play className="w-4 h-4 mr-1.5" />
+                Start Workout
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Rest Day Card */}
+        {todaysWorkout && todaysWorkout.dayType === "rest" && (
+          <Card className="border-green-200 bg-gradient-to-r from-green-50 to-white rounded-2xl shadow-sm mb-5">
+            <CardContent className="p-4 text-center">
+              <div className="text-3xl mb-2">🧘‍♀️</div>
+              <h3 className="font-bold text-gray-900 text-sm mb-1">Rest Day</h3>
+              <p className="text-xs text-gray-500 mb-2">Recovery is part of the plan! Your body builds strength while resting.</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {["Stretch gently", "Stay hydrated", "Get good sleep"].map((tip) => (
+                  <Badge key={tip} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 rounded-full">
+                    {tip}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Week Overview */}
+        <div className="mb-5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+            {DAY_NAMES.map((dayName, i) => {
+              const dayNum = i + 1;
+              const isToday = dayNum === todayDayNum;
+              const dayWorkout = (planData.workoutPlan || []).find(
+                (w) => w.weekNumber === Math.min(currentWeek, client.planDurationWeeks || 4) && w.dayNumber === dayNum
+              );
+              const dayStats = dayWorkout ? getDayCompletionStats(dayWorkout) : { completed: 0, total: 0 };
+              const isDone = dayStats.total > 0 && dayStats.completed === dayStats.total;
+              const isRest = dayWorkout?.dayType === "rest";
+              return (
+                <div
+                  key={dayName}
+                  className={`flex flex-col items-center gap-1 min-w-[40px] py-2 px-1 rounded-xl ${
+                    isToday ? "bg-pink-100 ring-2 ring-pink-400" : ""
+                  }`}
+                >
+                  <span className="text-[10px] font-semibold text-gray-500">{dayName.slice(0, 3)}</span>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                    isDone ? "bg-green-500 text-white" : isRest ? "bg-green-100 text-green-600" : isToday ? "bg-pink-500 text-white" : "bg-gray-100 text-gray-400"
+                  }`}>
+                    {isDone ? "✓" : isRest ? "R" : dayNum}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="ml-1">
@@ -3171,44 +3273,60 @@ export default function MyCoaching() {
                 <p className="text-gray-400 text-xs mt-1">Send a message to your coach Zoe!</p>
               </div>
             ) : (
-              messages.map((msg) => {
-                const isFromCoach = msg.senderId !== user?.id;
-                const msgDate = new Date(msg.createdAt);
-                const now = new Date();
-                const isToday = msgDate.toDateString() === now.toDateString();
-                const yesterday = new Date(now);
-                yesterday.setDate(yesterday.getDate() - 1);
-                const isYesterday = msgDate.toDateString() === yesterday.toDateString();
-                const timeStr = msgDate.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-                const dateLabel = isToday ? `Today ${timeStr}` : isYesterday ? `Yesterday ${timeStr}` : msgDate.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex ${isFromCoach ? "justify-start" : "justify-end"}`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                        isFromCoach
-                          ? "bg-white text-gray-900 border border-pink-100 rounded-bl-sm"
-                          : "bg-pink-500 text-white rounded-br-sm"
-                      }`}
-                    >
-                      <p className="text-sm">{msg.content}</p>
-                      <div className={`flex items-center gap-1 mt-1 ${isFromCoach ? "text-gray-400" : "text-pink-100"}`}>
-                        <span className="text-xs">{dateLabel}</span>
-                        {!isFromCoach && msg.isRead && (
-                          <span className="text-xs font-medium text-blue-500 ml-1">Seen ✓</span>
+              (() => {
+                let lastDateStr = "";
+                return messages.map((msg) => {
+                  const isFromCoach = msg.senderId !== user?.id;
+                  const msgDate = new Date(msg.createdAt);
+                  const now = new Date();
+                  const isToday = msgDate.toDateString() === now.toDateString();
+                  const yesterday = new Date(now);
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  const isYesterday = msgDate.toDateString() === yesterday.toDateString();
+                  const timeStr = msgDate.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+                  const dayLabel = isToday ? "Today" : isYesterday ? "Yesterday" : msgDate.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+                  const showDateSeparator = dayLabel !== lastDateStr;
+                  lastDateStr = dayLabel;
+                  return (
+                    <div key={msg.id}>
+                      {showDateSeparator && (
+                        <div className="flex items-center gap-3 my-3">
+                          <div className="flex-1 h-px bg-gray-200" />
+                          <span className="text-xs font-medium text-gray-400 px-2">{dayLabel}</span>
+                          <div className="flex-1 h-px bg-gray-200" />
+                        </div>
+                      )}
+                      <div className={`flex ${isFromCoach ? "justify-start" : "justify-end"}`}>
+                        {isFromCoach && (
+                          <div className="w-7 h-7 bg-pink-500 rounded-full flex items-center justify-center mr-2 mt-1 shrink-0">
+                            <span className="text-white text-xs font-bold">Z</span>
+                          </div>
                         )}
+                        <div
+                          className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                            isFromCoach
+                              ? "bg-white text-gray-900 border border-pink-100 rounded-bl-sm"
+                              : "bg-pink-500 text-white rounded-br-sm"
+                          }`}
+                        >
+                          <p className="text-sm leading-relaxed">{msg.content}</p>
+                          <div className={`flex items-center gap-1 mt-1 ${isFromCoach ? "text-gray-400" : "text-pink-200"}`}>
+                            <span className="text-[10px]">{timeStr}</span>
+                            {!isFromCoach && msg.isRead && (
+                              <CheckCircle className="w-3 h-3 text-blue-400 ml-1" />
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                });
+              })()
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-3 border-t border-pink-100 bg-white flex gap-2">
+          <div className="p-3 border-t border-pink-100 bg-white flex gap-2 items-end">
             <Input
               placeholder="Type a message..."
               value={messageInput}
@@ -3219,11 +3337,11 @@ export default function MyCoaching() {
                   handleSendMessage();
                 }
               }}
-              className="flex-1 border-pink-200 focus-visible:ring-pink-300"
+              className="flex-1 border-pink-200 focus-visible:ring-pink-300 min-h-[44px] text-sm"
             />
             <Button
               size="icon"
-              className="bg-pink-500 hover:bg-pink-600 text-white shrink-0"
+              className="bg-pink-500 hover:bg-pink-600 text-white shrink-0 w-11 h-11 rounded-xl"
               onClick={handleSendMessage}
               disabled={sendMessageMutation.isPending || !messageInput.trim()}
             >
@@ -3381,50 +3499,57 @@ export default function MyCoaching() {
           </CardContent>
         </Card>
 
-        {/* Mood & Energy — compact row */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="border-0 shadow-sm rounded-2xl">
-            <CardContent className="p-4">
-              <label className="text-sm font-semibold text-gray-900 mb-2 block">Mood</label>
-              <div className="flex gap-1">
-                {MOOD_OPTIONS.map((mood) => (
-                  <button
-                    key={mood.value}
-                    onClick={() => setCheckinForm(f => ({ ...f, mood: mood.value }))}
-                    className={`flex-1 flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition-all ${
-                      checkinForm.mood === mood.value
-                        ? "bg-pink-100 ring-2 ring-pink-400 scale-110"
-                        : "hover:bg-gray-50"
-                    }`}
-                    title={mood.label}
-                  >
-                    <span className="text-xl">{mood.emoji}</span>
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        {/* Mood — large tappable emojis */}
+        <Card className="border-0 shadow-sm rounded-2xl">
+          <CardContent className="p-4">
+            <label className="text-sm font-semibold text-gray-900 mb-3 block">How are you feeling?</label>
+            <div className="flex gap-2 justify-between">
+              {MOOD_OPTIONS.map((mood) => (
+                <button
+                  key={mood.value}
+                  onClick={() => setCheckinForm(f => ({ ...f, mood: mood.value }))}
+                  className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all min-w-[56px] min-h-[72px] ${
+                    checkinForm.mood === mood.value
+                      ? "bg-pink-100 ring-2 ring-pink-400 scale-105 shadow-sm"
+                      : "bg-gray-50 hover:bg-pink-50 active:scale-95"
+                  }`}
+                >
+                  <span className="text-3xl">{mood.emoji}</span>
+                  <span className={`text-[10px] font-medium ${checkinForm.mood === mood.value ? "text-pink-700" : "text-gray-500"}`}>{mood.label}</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card className="border-0 shadow-sm rounded-2xl">
-            <CardContent className="p-4">
-              <label className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1">
-                <Zap className="w-3.5 h-3.5 text-yellow-500" />
-                Energy
-              </label>
-              <div className="flex items-center gap-2">
-                <Slider
-                  value={[checkinForm.energyLevel]}
-                  onValueChange={([val]) => setCheckinForm(f => ({ ...f, energyLevel: val }))}
-                  max={10}
-                  min={1}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-sm font-bold text-gray-700 w-6 text-center">{checkinForm.energyLevel}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Energy — 1-5 simple selector */}
+        <Card className="border-0 shadow-sm rounded-2xl">
+          <CardContent className="p-4">
+            <label className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
+              <Zap className="w-4 h-4 text-yellow-500" />
+              Energy Level
+            </label>
+            <div className="flex gap-2 justify-between">
+              {[1, 2, 3, 4, 5].map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setCheckinForm(f => ({ ...f, energyLevel: level * 2 }))}
+                  className={`flex-1 min-h-[48px] rounded-xl font-bold text-sm transition-all active:scale-95 ${
+                    Math.ceil(checkinForm.energyLevel / 2) === level
+                      ? "bg-yellow-400 text-yellow-900 shadow-sm ring-2 ring-yellow-500"
+                      : "bg-gray-100 text-gray-400 hover:bg-yellow-50"
+                  }`}
+                >
+                  {"⚡".repeat(level)}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-between mt-1 px-1">
+              <span className="text-[10px] text-gray-400">Low</span>
+              <span className="text-[10px] text-gray-400">High</span>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Sleep & Weight — compact row */}
         <div className="grid grid-cols-2 gap-3">
@@ -3494,13 +3619,13 @@ export default function MyCoaching() {
         >
           {submitCheckinMutation.isPending ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
               Submitting...
             </>
           ) : hasCheckedInToday ? (
-            "Update Check-in"
+            "Update Check-in ✨"
           ) : (
-            "Submit Check-in"
+            "Submit Check-in 💕"
           )}
         </Button>
 
@@ -3509,8 +3634,8 @@ export default function MyCoaching() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white rounded-3xl p-8 mx-6 shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-500">
               <div className="text-6xl animate-bounce">🎉</div>
-              <h3 className="text-2xl font-bold text-gray-900">Great job!</h3>
-              <p className="text-gray-600">Your check-in is in. Zoe will review it and keep you on track!</p>
+              <h3 className="text-2xl font-bold text-gray-900">Thanks! 💕</h3>
+              <p className="text-gray-600">Zoe will review this and keep you on track!</p>
               <div className="flex items-center justify-center gap-2 text-pink-600 font-semibold">
                 <Sparkles className="w-5 h-5" />
                 Keep the momentum going!
@@ -3618,10 +3743,10 @@ export default function MyCoaching() {
                     if (item.view !== "workouts") setGuidedWorkout(null);
                     setActiveView(item.view);
                   }}
-                  className={`relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-xl transition-all ${
+                  className={`relative flex flex-col items-center gap-0.5 py-2.5 px-2.5 rounded-xl transition-all min-h-[44px] ${
                     isActive
                       ? "bg-pink-500 text-white shadow-sm"
-                      : "text-gray-500 hover:text-pink-500"
+                      : "text-gray-500 hover:text-pink-500 active:bg-pink-50"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
