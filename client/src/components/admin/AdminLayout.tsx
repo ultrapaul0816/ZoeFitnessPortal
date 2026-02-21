@@ -80,7 +80,8 @@ function getInitialCollapsedSections(): Record<string, boolean> {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) return JSON.parse(stored);
   } catch {}
-  return {};
+  // Default: collapse Content and Insights so Marketing is visible
+  return { Content: true, Insights: true };
 }
 
 export default function AdminLayout({ children, activeTab, onTabChange, onNavigate, noPadding = false }: AdminLayoutProps) {
