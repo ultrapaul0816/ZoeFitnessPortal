@@ -7267,10 +7267,24 @@ Keep it to 2-4 sentences, warm and encouraging.`;
   app.patch("/api/admin/coaching/clients/:clientId", requireAdmin, async (req, res) => {
     try {
       const { clientId } = req.params;
-      const updates = req.body;
+      const rawUpdates = req.body;
+      // Whitelist allowed fields to prevent Drizzle issues with unknown properties
+      const allowedFields = [
+        'status', 'coachingType', 'healthNotes', 'notes', 'coachRemarks', 'coachRemarksApproved',
+        'aiSummary', 'aiSummaryApproved', 'weeklyPlanOutlines', 'wellnessBlueprint',
+        'blueprintApproved', 'blueprintGeneratedAt', 'isPregnant', 'trimester', 'dueDate',
+        'pregnancyNotes', 'startDate', 'endDate', 'planDurationWeeks', 'paymentAmount',
+        'paymentStatus', 'paymentId', 'formData'
+      ];
+      const updates: Record<string, any> = {};
+      for (const key of allowedFields) {
+        if (key in rawUpdates) updates[key] = rawUpdates[key];
+      }
+      console.log(`[Coaching PATCH] clientId=${clientId}, updates=`, JSON.stringify(updates));
       const previousClient = await storage.getCoachingClient(clientId);
       const updated = await storage.updateCoachingClient(clientId, updates);
       if (!updated) return res.status(404).json({ message: "Client not found" });
+      console.log(`[Coaching PATCH] Success. coachRemarksApproved=${(updated as any).coachRemarksApproved}, aiSummaryApproved=${(updated as any).aiSummaryApproved}`);
 
       // Trigger program_completion automation when status changes to completed
       if (updates.status === "completed" && previousClient?.status !== "completed" && updated.userId) {
