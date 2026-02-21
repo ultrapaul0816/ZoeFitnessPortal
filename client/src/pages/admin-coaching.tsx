@@ -312,7 +312,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       setShowNewClientDialog(false);
       setNewClientEmail("");
       setNewClientFirstName("");
@@ -352,7 +352,7 @@ export default function AdminCoaching() {
     onSuccess: (data) => {
       setGeneratingWeek(null);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "workout-plan"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: `Week ${data.weekNumber || ""} workout generated`, description: `${data.savedDays} days created. Review the plan below.` });
     },
     onError: (err: Error) => {
@@ -383,7 +383,7 @@ export default function AdminCoaching() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "nutrition-plan"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Nutrition plan generated", description: "Review the meal options below." });
     },
     onError: (err: Error) => {
@@ -429,7 +429,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "AI summary regenerated" });
     },
     onError: (err: Error) => {
@@ -473,7 +473,7 @@ export default function AdminCoaching() {
       return { ...(await res.json()), weekNumber };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Plan outline generated", description: "Review the weekly approach before generating the full workout." });
       // Open the dialog after successful generation
       setOutlinePreviewWeek(data.weekNumber);
@@ -492,7 +492,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Outline approved", description: "Ready to generate full workout with this approach." });
     },
     onError: (err: Error) => {
@@ -649,7 +649,7 @@ export default function AdminCoaching() {
     }
 
     queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "workout-plan"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+    queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
 
     setWorkoutWizard(prev => ({ ...prev, phase: "complete", currentDay: null }));
   };
@@ -660,7 +660,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "workout-plan"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "nutrition-plan"] });
       toast({ title: "Plan approved", description: "The client's plan is now active and visible to them." });
@@ -689,7 +689,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Intake approved", description: "Status changed to 'Generating Plan'. Use the Generate Workout button to create Week 1." });
     },
     onError: (err: Error) => {
@@ -703,7 +703,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Client activated!", description: "The client can now see their plan and start working out." });
     },
     onError: (err: Error) => {
@@ -717,7 +717,8 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      // Force refetch (not just invalidate) to bypass staleTime cache
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       const updates = variables.updates;
       if (updates.coachRemarksApproved === true) {
         toast({ title: "✅ Coach's Notes approved & locked", description: "Notes will now guide all AI-generated content." });
@@ -742,7 +743,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Status updated" });
     },
   });
@@ -785,7 +786,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({ title: "Wellness Blueprint generated!", description: "Review the blueprint and approve before sharing with the client." });
     },
     onError: (err: Error) => {
@@ -799,7 +800,7 @@ export default function AdminCoaching() {
       return res.json();
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/coaching/clients"] });
       toast({
         title: variables.approved ? "Blueprint approved & shared!" : "Blueprint unapproved",
         description: variables.approved ? "The client can now view their Wellness Blueprint." : "Blueprint is back in draft mode.",
