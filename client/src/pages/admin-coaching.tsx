@@ -1582,6 +1582,13 @@ export default function AdminCoaching() {
                                 {remarksApproved ? (
                                   /* When approved: show as nicely formatted read-only blocks */
                                   <div className="space-y-4">
+                                    <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-center gap-2">
+                                      <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                                      <div>
+                                        <p className="text-sm text-green-800 font-medium">Notes approved & locked</p>
+                                        <p className="text-xs text-green-600">These notes are guiding all AI-generated content. Click "Edit & Re-approve" above to make changes.</p>
+                                      </div>
+                                    </div>
                                     {[
                                       { key: "trainingFocus", label: "Training Focus", icon: "🎯" },
                                       { key: "nutritionalGuidance", label: "Nutritional Guidance", icon: "🥗" },
@@ -1654,18 +1661,22 @@ export default function AdminCoaching() {
                                       />
                                     </div>
                                     {/* Prominent Approve button */}
-                                    {hasRemarks && (
-                                      <div className="border-t pt-4 mt-2">
+                                    {hasRemarks && !remarksApproved && (
+                                      <div className="border-t pt-4 mt-2 space-y-2">
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                                          <p className="text-xs text-blue-700">Once approved, these notes will be <strong>locked</strong> and used by AI to generate workouts and nutrition plans. To make changes later, you'll need to click "Edit & Re-approve".</p>
+                                        </div>
                                         <Button
                                           size="default"
                                           className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
+                                          disabled={updateClientMutation.isPending}
                                           onClick={() => updateClientMutation.mutate({
                                             clientId: selectedClient.id,
                                             updates: { coachRemarksApproved: true }
                                           })}
                                         >
                                           <CheckCircle2 className="w-4 h-4 mr-2" />
-                                          Approve Notes
+                                          {updateClientMutation.isPending ? "Approving..." : "Approve & Lock Notes"}
                                         </Button>
                                       </div>
                                     )}
