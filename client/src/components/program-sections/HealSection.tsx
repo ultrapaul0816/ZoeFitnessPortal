@@ -58,13 +58,13 @@ export default function HealSection({ canGoNext, canGoPrevious, navigateToNextTa
                 {index > 0 && (
                   <div className="w-full h-px bg-gradient-to-r from-transparent via-rose-400 to-transparent rounded shadow-sm opacity-30 my-2"></div>
                 )}
-                <div className="flex items-center justify-between py-5">
+                <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic(topic.id)}>
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">{topic.n}</span>
                     <h3 className="text-[15px] font-semibold text-left">{topic.title}</h3>
                   </div>
                   <div
-                    onClick={() => toggleTopic(topic.id)}
+                    onClick={(e) => { e.stopPropagation(); toggleTopic(topic.id); }}
                     className="w-8 h-8 min-w-[32px] min-h-[32px] bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:from-pink-500 hover:to-pink-700 cursor-pointer transition-all duration-200 flex-shrink-0"
                     style={{ border: 'none', outline: 'none', boxShadow: '0 4px 8px rgba(236, 72, 153, 0.3)' }}
                     data-testid={`toggle-${topic.id}`}

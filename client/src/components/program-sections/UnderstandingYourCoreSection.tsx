@@ -101,7 +101,7 @@ export default function UnderstandingYourCoreSection({
             
             {/* Topic 1: Breathing & Core Activation */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic('breathing-activation')}>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">1</span>
                   <h3 className="text-[15px] font-semibold text-left">Breathing & Core Activation</h3>
@@ -168,7 +168,7 @@ export default function UnderstandingYourCoreSection({
 
             {/* Topic 2: How To Breathe Properly: 360° Breathing */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic('360-breathing')}>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">2</span>
                   <h3 className="text-[15px] font-semibold text-left">How To Breathe Properly: 360° Breathing</h3>
@@ -268,7 +268,7 @@ export default function UnderstandingYourCoreSection({
 
             {/* Topic 3: Understanding Your Core & TVA Engagement */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic('tva-engagement')}>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">3</span>
                   <h3 className="text-[15px] font-semibold text-left">Understanding Your Core & TVA Engagement</h3>
@@ -411,7 +411,7 @@ export default function UnderstandingYourCoreSection({
 
             {/* Topic 4: How To Engage Your Core With Breathing */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic('core-breathing')}>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">4</span>
                   <h3 className="text-[15px] font-semibold text-left">How To Engage Your Core With Breathing</h3>
@@ -500,7 +500,7 @@ export default function UnderstandingYourCoreSection({
 
             {/* Topic 5: Core Compressions & How They Help You Heal */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic('core-compressions')}>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">5</span>
                   <h3 className="text-[15px] font-semibold text-left">Core Compressions & How They Help You Heal</h3>
@@ -587,7 +587,7 @@ export default function UnderstandingYourCoreSection({
 
             {/* Topic 6: Understanding the Pelvic Floor */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic('pelvic-floor')}>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">6</span>
                   <h3 className="text-[15px] font-semibold text-left">Understanding the Pelvic Floor</h3>
@@ -691,7 +691,7 @@ export default function UnderstandingYourCoreSection({
 
             {/* Topic 7: Warning Signs: Doming, Coning & When to Modify */}
             <div>
-              <div className="flex items-center justify-between py-5">
+              <div className="flex items-center justify-between py-5 cursor-pointer" onClick={() => toggleTopic('warning-signs')}>
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center font-semibold text-xs shrink-0">7</span>
                   <h3 className="text-[15px] font-semibold text-left">Warning Signs: Doming, Coning & When to Modify</h3>
