@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
-import { Home, Heart, Users, BookOpen, TrendingUp } from "lucide-react";
+import { Home, Users, BookOpen, TrendingUp } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -19,7 +19,6 @@ export default function BottomNav({ className = "" }: BottomNavProps) {
 
   const navItems = [
     { path: "/dashboard", label: "Home", icon: Home },
-    { path: "/my-coaching", label: "Coaching", icon: Heart },
     { path: "/community", label: "Community", icon: Users },
     { path: "/my-courses", label: "Courses", icon: BookOpen },
   ];

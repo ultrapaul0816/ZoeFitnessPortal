@@ -1098,6 +1098,26 @@ export default function Dashboard() {
               </section>
             )}
 
+            {/* Private Coaching Promo Banner */}
+            <section className="mb-8">
+              <Link href="/my-coaching">
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] cursor-pointer">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-6 -translate-x-6" />
+                  <div className="relative flex items-center gap-4">
+                    <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
+                      <Heart className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-bold text-lg leading-tight">Upgrade to 1:1 Private Coaching</h3>
+                      <p className="text-pink-100 text-sm mt-1">Get a personalised plan, direct support from Zoe & weekly check-ins</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-white/70 flex-shrink-0" />
+                  </div>
+                </div>
+              </Link>
+            </section>
+
             {/* No Programs Message */}
             {memberPrograms.length === 0 && courseEnrollments.length === 0 && (
               <section className="mb-8">
