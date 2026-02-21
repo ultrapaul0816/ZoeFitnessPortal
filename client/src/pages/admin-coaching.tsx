@@ -3907,8 +3907,8 @@ export default function AdminCoaching() {
                 <Select value={String(newProgramDuration)} onValueChange={v => setNewProgramDuration(Number(v))}>
                   <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {[2, 4, 6, 8, 10, 12].map(w => (
-                      <SelectItem key={w} value={String(w)}>{w} weeks</SelectItem>
+                    {[1, 2, 3, 4, 6, 8, 10, 12].map(w => (
+                      <SelectItem key={w} value={String(w)}>{w} week{w > 1 ? 's' : ''}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
