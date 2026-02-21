@@ -8276,6 +8276,75 @@ ${ctx.pregnancyInfo ? `\nPREGNANCY SAFETY: AVOID heavy lifting, lying flat on ba
     }
   });
 
+  // Step 3: Approve workout structure (save to client record)
+  app.post("/api/admin/coaching/clients/:clientId/approve-workout-structure", requireAdmin, async (req, res) => {
+    try {
+      const { weekNumber, structure } = req.body;
+      if (!weekNumber || !Array.isArray(structure)) {
+        return res.status(400).json({ message: "weekNumber and structure array are required" });
+      }
+      const client = await storage.getCoachingClient(req.params.clientId);
+      if (!client) return res.status(404).json({ message: "Client not found" });
+
+      const weeklyPlanOutlines = (client as any).weeklyPlanOutlines || {};
+      weeklyPlanOutlines[weekNumber] = {
+        weekNumber,
+        structure,
+        approvedAt: new Date().toISOString(),
+      };
+      await storage.updateCoachingClient(client.id, { weeklyPlanOutlines } as any);
+      res.json({ message: "Structure approved", weekNumber });
+    } catch (error) {
+      console.error("Error approving workout structure:", error);
+      res.status(500).json({ message: "Failed to approve workout structure" });
+    }
+  });
+
+  // Workout templates: save (stored in a JSON file — no DB schema change needed)
+  const templatesFilePath = path.join(process.cwd(), "data", "workout-templates.json");
+
+  function loadWorkoutTemplates(): any[] {
+    try {
+      if (fs.existsSync(templatesFilePath)) {
+        return JSON.parse(fs.readFileSync(templatesFilePath, "utf-8"));
+      }
+    } catch {}
+    return [];
+  }
+
+  function saveWorkoutTemplates(templates: any[]) {
+    const dir = path.dirname(templatesFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(templatesFilePath, JSON.stringify(templates, null, 2));
+  }
+
+  app.post("/api/admin/coaching/workout-templates", requireAdmin, async (req, res) => {
+    try {
+      const { name, structure } = req.body;
+      if (!name || !Array.isArray(structure)) {
+        return res.status(400).json({ message: "name and structure array are required" });
+      }
+      const templates = loadWorkoutTemplates();
+      const templateId = `tpl_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      templates.push({ id: templateId, name, structure, createdAt: new Date().toISOString() });
+      saveWorkoutTemplates(templates);
+      res.json({ templateId, name });
+    } catch (error) {
+      console.error("Error saving workout template:", error);
+      res.status(500).json({ message: "Failed to save workout template" });
+    }
+  });
+
+  // Workout templates: list
+  app.get("/api/admin/coaching/workout-templates", requireAdmin, async (req, res) => {
+    try {
+      res.json(loadWorkoutTemplates());
+    } catch (error) {
+      console.error("Error fetching workout templates:", error);
+      res.json([]);
+    }
+  });
+
   // Generate AI nutrition plan for a coaching client
   app.post("/api/admin/coaching/clients/:clientId/generate-nutrition", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
