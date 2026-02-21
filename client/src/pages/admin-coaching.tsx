@@ -72,6 +72,33 @@ import { generateBlueprintPDF } from "@/components/admin/WellnessBlueprintPDF";
 import type { BlueprintData } from "@/components/admin/WellnessBlueprintTypes";
 import type { CoachingClient, DirectMessage } from "@shared/schema";
 
+// Generating indicator with elapsed timer and reassurance message
+function GeneratingIndicator({ label = "Generating", startedAt }: { label?: string; startedAt?: number }) {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    const start = startedAt || Date.now();
+    const timer = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
+    return () => clearInterval(timer);
+  }, [startedAt]);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+  return (
+    <div className="flex flex-col items-center gap-2 py-4">
+      <div className="flex items-center gap-2 text-sm text-violet-700 font-medium">
+        <RefreshCw className="w-4 h-4 animate-spin" />
+        {label}... <span className="text-violet-500 font-normal">({timeStr})</span>
+      </div>
+      <div className="w-48 h-1.5 bg-violet-100 rounded-full overflow-hidden">
+        <div className="h-full bg-gradient-to-r from-violet-400 to-pink-400 rounded-full animate-pulse" style={{ width: `${Math.min(90, 20 + elapsed * 3)}%`, transition: 'width 1s ease' }} />
+      </div>
+      <p className="text-[11px] text-gray-500 mt-1">
+        {elapsed < 10 ? "AI is crafting personalized content..." : elapsed < 20 ? "Almost there — reviewing intake data..." : "This can take up to 30s. Feel free to switch tabs — we'll save it automatically."}
+      </p>
+    </div>
+  );
+}
+
 type CoachingClientWithUser = CoachingClient & {
   user: { id: string; firstName: string; lastName: string; email: string; phone: string | null; profilePictureUrl: string | null };
   unreadMessages: number;
@@ -1535,7 +1562,7 @@ export default function AdminCoaching() {
                                         disabled={generateCoachRemarksMutation.isPending}
                                       >
                                         <Wand2 className={cn("w-3.5 h-3.5 mr-1.5", generateCoachRemarksMutation.isPending && "animate-spin")} />
-                                        {generateCoachRemarksMutation.isPending ? "Generating..." : "Generate with AI"}
+                                        {generateCoachRemarksMutation.isPending ? "Generating…" : "Generate with AI"}
                                       </Button>
                                     )}
                                   </div>
@@ -1543,7 +1570,10 @@ export default function AdminCoaching() {
                               </CardHeader>
                               <CardContent>
                                 {/* AI-generated review banner */}
-                                {hasRemarks && !remarksApproved && (
+                                {generateCoachRemarksMutation.isPending && (
+                                  <GeneratingIndicator label="Generating Coach's Notes" />
+                                )}
+                                {hasRemarks && !remarksApproved && !generateCoachRemarksMutation.isPending && (
                                   <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-4">
                                     <p className="text-sm text-amber-800 font-medium">⚡ AI-generated notes — review and edit before approving</p>
                                     <p className="text-xs text-amber-600 mt-1">Review these notes carefully before approving. Once approved, they'll guide all AI-generated workouts and nutrition plans.</p>
@@ -1782,13 +1812,16 @@ export default function AdminCoaching() {
                               <CardContent className="py-6 text-center">
                                 <Brain className="w-8 h-8 text-violet-300 mx-auto mb-2" />
                                 <p className="text-sm text-gray-500 mb-3">AI summary will be generated when intake forms are submitted</p>
-                                <Button
-                                  variant="outline" size="sm" className="text-violet-600 border-violet-300"
-                                  onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
-                                  disabled={regenerateAiSummaryMutation.isPending}
-                                >
-                                  {regenerateAiSummaryMutation.isPending ? "Generating..." : "Generate Now"}
-                                </Button>
+                                {regenerateAiSummaryMutation.isPending ? (
+                                  <GeneratingIndicator label="Generating AI Assessment" />
+                                ) : (
+                                  <Button
+                                    variant="outline" size="sm" className="text-violet-600 border-violet-300"
+                                    onClick={() => regenerateAiSummaryMutation.mutate(selectedClient.id)}
+                                  >
+                                    Generate Now
+                                  </Button>
+                                )}
                               </CardContent>
                             </Card>
                           ) : null;
