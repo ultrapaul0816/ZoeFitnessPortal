@@ -392,15 +392,12 @@ const HELP_AREAS = [
 ];
 
 const LIFESTYLE_STEP_META = [
-  { icon: "Heart", subtitle: "Let's start with the basics", desc: "Your details help Zoe personalise every part of your experience. Everything you share is kept confidential." },
-  { icon: "Shield", subtitle: "Your safety net", desc: "Just in case we ever need to reach someone on your behalf — this is purely a precaution so you can feel safe." },
+  { icon: "Heart", subtitle: "Let's start with the basics", desc: "Your details and emergency contact help Zoe personalise your experience and keep you safe. Everything is kept confidential." },
   { icon: "Calendar", subtitle: "Your pregnancy journey", desc: "Every stage of pregnancy is different. This helps Zoe design a plan that's perfect for exactly where you are right now." },
   { icon: "Activity", subtitle: "Your health background", desc: "No judgement here — this is about keeping you safe. Select anything you've experienced so Zoe can adapt your plan accordingly." },
-  { icon: "Activity", subtitle: "Doctor's notes", desc: "If your healthcare provider has mentioned anything to be mindful of, share it here. This helps Zoe make smarter choices for your workouts." },
   { icon: "Dumbbell", subtitle: "Body & movement", desc: "There's no wrong answer here. Understanding where you're at helps Zoe meet you exactly where you are — and build from there." },
   { icon: "Target", subtitle: "Core health & goals", desc: "These are really common experiences. Being honest here helps Zoe give you the right support from day one." },
-  { icon: "ClipboardCheck", subtitle: "Medications & history", desc: "This ensures your plan accounts for everything that matters. Your info stays between you and Zoe." },
-  { icon: "Sparkles", subtitle: "Your dreams & lifestyle", desc: "This is the exciting part! Tell Zoe what you'd love to achieve — there's no goal too big or too small." },
+  { icon: "Sparkles", subtitle: "Your journey so far & ahead", desc: "This ensures your plan accounts for everything — medications, history, concerns, and goals. Your info stays between you and Zoe." },
   { icon: "Star", subtitle: "Almost done!", desc: "Just a few final touches. You're doing great — Zoe can't wait to start working with you!" },
 ];
 
@@ -488,48 +485,42 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
   const validateCurrentStep = (): string | null => {
     if (currentForm === "lifestyle") {
       switch (currentStep) {
-        case 0:
+        case 0: // About You (Personal + Emergency)
           if (!lifestyle.fullName.trim()) return "Please enter your full name";
           if (!lifestyle.age.trim()) return "Please enter your age";
           if (!lifestyle.whatsappNumber.trim()) return "Please enter your WhatsApp number";
           if (!lifestyle.email.trim()) return "Please enter your email";
-          return null;
-        case 1:
           if (!lifestyle.emergencyContactName.trim()) return "Please enter emergency contact name";
           if (!lifestyle.emergencyRelationship.trim()) return "Please enter their relationship to you";
           if (!lifestyle.emergencyContactNumber.trim()) return "Please enter emergency contact number";
           return null;
-        case 2:
+        case 1: // Pregnancy Info
           if (!lifestyle.pregnancyNumber) return "Please select your pregnancy number";
           if (!lifestyle.dueDate) return "Please enter your due date";
           if (!lifestyle.trimester) return "Please select your trimester";
           return null;
-        case 3:
+        case 2: // Medical History (Conditions + Flags)
           if (lifestyle.medicalConditions.length === 0) return "Please select at least one option or 'None of the above'";
-          return null;
-        case 4:
           if (lifestyle.medicalFlags.length === 0) return "Please select at least one option or 'None'";
           return null;
-        case 5:
+        case 3: // Discomfort & Movement
           if (lifestyle.discomfortAreas.length === 0) return "Please select at least one discomfort area";
           if (!lifestyle.discomfortTiming) return "Please select when discomfort is worse";
           if (!lifestyle.exerciseHistory) return "Please select your exercise history";
           if (!lifestyle.movementFeels) return "Please select how movement feels";
           return null;
-        case 6:
+        case 4: // Core & Goals
           if (lifestyle.coreSymptoms.length === 0) return "Please select at least one option";
           if (lifestyle.helpAreas.length === 0) return "Please select at least one area";
           return null;
-        case 7:
+        case 5: // Your Journey (Medications + History + Goals + Lifestyle)
           if (!lifestyle.takingMedications) return "Please indicate if you take medications";
           if (!lifestyle.previousPregnancies.trim()) return "Please share your pregnancy history (or write 'None')";
-          return null;
-        case 8:
           if (!lifestyle.mainConcerns.trim()) return "Please share your main concerns";
           if (!lifestyle.mainGoals.trim()) return "Please share your goals";
           if (!lifestyle.currentLifestyle.trim()) return "Please describe your current lifestyle";
           return null;
-        case 9:
+        case 6: // Final Details
           if (!lifestyle.consent) return "Please accept the consent to continue";
           return null;
       }
@@ -591,15 +582,12 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
   };
 
   const lifestyleSteps = [
-    { title: "Personal Info", fields: ["fullName", "age", "whatsappNumber", "email"] },
-    { title: "Emergency Contact", fields: ["emergencyContactName", "emergencyRelationship", "emergencyContactNumber"] },
+    { title: "About You", fields: ["fullName", "age", "whatsappNumber", "email", "emergencyContactName", "emergencyRelationship", "emergencyContactNumber"] },
     { title: "Pregnancy Info", fields: ["pregnancyNumber", "dueDate", "trimester"] },
-    { title: "Medical Conditions", fields: ["medicalConditions"] },
-    { title: "Medical Flags", fields: ["medicalFlags"] },
+    { title: "Medical History", fields: ["medicalConditions", "medicalFlags"] },
     { title: "Discomfort & Movement", fields: ["discomfortAreas", "discomfortTiming", "exerciseHistory", "movementFeels"] },
     { title: "Core & Goals", fields: ["coreSymptoms", "helpAreas"] },
-    { title: "Medications & History", fields: ["takingMedications", "previousPregnancies"] },
-    { title: "Goals & Lifestyle", fields: ["mainConcerns", "mainGoals", "currentLifestyle"] },
+    { title: "Your Journey", fields: ["takingMedications", "previousPregnancies", "mainConcerns", "mainGoals", "currentLifestyle"] },
     { title: "Final Details", fields: ["hearAbout", "usingPrograms", "consent"] },
   ];
 
@@ -621,17 +609,17 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           <div><label className="text-sm font-medium text-gray-700">Age *</label><Input value={lifestyle.age} onChange={e => updateLifestyle("age", e.target.value)} placeholder="Your age" /></div>
           <div><label className="text-sm font-medium text-gray-700">WhatsApp Number *</label><Input value={lifestyle.whatsappNumber} onChange={e => updateLifestyle("whatsappNumber", e.target.value)} placeholder="+91 ..." /></div>
           <div><label className="text-sm font-medium text-gray-700">Email Address *</label><Input value={lifestyle.email} onChange={e => updateLifestyle("email", e.target.value)} placeholder="your@email.com" type="email" /></div>
+          <div className="pt-2 mt-2 border-t border-gray-100">
+            <p className="text-xs text-gray-500 bg-pink-50/50 rounded-lg p-3 mb-3">Emergency contact — this person will only be contacted in case of a medical emergency during a session.</p>
+            <div className="space-y-4">
+              <div><label className="text-sm font-medium text-gray-700">Emergency Contact Name *</label><Input value={lifestyle.emergencyContactName} onChange={e => updateLifestyle("emergencyContactName", e.target.value)} placeholder="Their full name" /></div>
+              <div><label className="text-sm font-medium text-gray-700">Relationship to You *</label><Input value={lifestyle.emergencyRelationship} onChange={e => updateLifestyle("emergencyRelationship", e.target.value)} placeholder="e.g., Husband, Mother, Sister" /></div>
+              <div><label className="text-sm font-medium text-gray-700">Emergency Contact Number *</label><Input value={lifestyle.emergencyContactNumber} onChange={e => updateLifestyle("emergencyContactNumber", e.target.value)} placeholder="+91 ..." /></div>
+            </div>
+          </div>
         </div>
       );
       case 1: return (
-        <div className="space-y-4">
-          <p className="text-xs text-gray-500 bg-pink-50/50 rounded-lg p-3">This person will only be contacted in case of a medical emergency during a session. We hope we never need it!</p>
-          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Name *</label><Input value={lifestyle.emergencyContactName} onChange={e => updateLifestyle("emergencyContactName", e.target.value)} placeholder="Their full name" /></div>
-          <div><label className="text-sm font-medium text-gray-700">Relationship to You *</label><Input value={lifestyle.emergencyRelationship} onChange={e => updateLifestyle("emergencyRelationship", e.target.value)} placeholder="e.g., Husband, Mother, Sister" /></div>
-          <div><label className="text-sm font-medium text-gray-700">Emergency Contact Number *</label><Input value={lifestyle.emergencyContactNumber} onChange={e => updateLifestyle("emergencyContactNumber", e.target.value)} placeholder="+91 ..." /></div>
-        </div>
-      );
-      case 2: return (
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">Is this your: *</label>
@@ -658,45 +646,45 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
         </div>
       );
+      case 2: return (
+        <div className="space-y-5">
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-gray-700">Have you experienced any of the following? *</label>
+            <p className="text-xs text-gray-500">Select all that apply — even if it happened once or was mild. This helps Zoe know what to watch for and how to keep your workouts safe.</p>
+            <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto pr-2">
+              {MEDICAL_CONDITIONS.map(cond => (
+                <label key={cond} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalConditions.includes(cond) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.medicalConditions.includes(cond)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", cond)} />
+                  {cond}
+                </label>
+              ))}
+              <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalConditions.includes("None of the above") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                <Checkbox checked={lifestyle.medicalConditions.includes("None of the above")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", "None of the above")} />
+                None of the above
+              </label>
+            </div>
+            <Input value={lifestyle.medicalConditionsOther} onChange={e => updateLifestyle("medicalConditionsOther", e.target.value)} placeholder="Other (please specify)" />
+          </div>
+          <div className="pt-3 border-t border-gray-100 space-y-3">
+            <label className="text-sm font-medium text-gray-700">Any medical flags your doctor has mentioned? *</label>
+            <p className="text-xs text-gray-500">These are conditions your OB-GYN or midwife may have noted during check-ups. If you're unsure, "None" is perfectly fine.</p>
+            <div className="grid grid-cols-1 gap-2 mt-2">
+              {MEDICAL_FLAGS.map(flag => (
+                <label key={flag} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalFlags.includes(flag) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                  <Checkbox checked={lifestyle.medicalFlags.includes(flag)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", flag)} />
+                  {flag}
+                </label>
+              ))}
+              <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalFlags.includes("None") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
+                <Checkbox checked={lifestyle.medicalFlags.includes("None")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", "None")} />
+                None
+              </label>
+            </div>
+            <Input className="mt-2" value={lifestyle.medicalFlagsOther} onChange={e => updateLifestyle("medicalFlagsOther", e.target.value)} placeholder="Other (please specify)" />
+          </div>
+        </div>
+      );
       case 3: return (
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700">Have you experienced any of the following? *</label>
-          <p className="text-xs text-gray-500">Select all that apply — even if it happened once or was mild. This helps Zoe know what to watch for and how to keep your workouts safe.</p>
-          <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-2">
-            {MEDICAL_CONDITIONS.map(cond => (
-              <label key={cond} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalConditions.includes(cond) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-                <Checkbox checked={lifestyle.medicalConditions.includes(cond)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", cond)} />
-                {cond}
-              </label>
-            ))}
-            <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalConditions.includes("None of the above") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-              <Checkbox checked={lifestyle.medicalConditions.includes("None of the above")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalConditions", "None of the above")} />
-              None of the above
-            </label>
-          </div>
-          <Input value={lifestyle.medicalConditionsOther} onChange={e => updateLifestyle("medicalConditionsOther", e.target.value)} placeholder="Other (please specify)" />
-        </div>
-      );
-      case 4: return (
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700">Any medical flags your doctor has mentioned? *</label>
-          <p className="text-xs text-gray-500">These are conditions your OB-GYN or midwife may have noted during check-ups. If you're unsure, "None" is perfectly fine — you can always update this later.</p>
-          <div className="grid grid-cols-1 gap-2 mt-2">
-            {MEDICAL_FLAGS.map(flag => (
-              <label key={flag} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${lifestyle.medicalFlags.includes(flag) ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-                <Checkbox checked={lifestyle.medicalFlags.includes(flag)} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", flag)} />
-                {flag}
-              </label>
-            ))}
-            <label className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer text-sm ${lifestyle.medicalFlags.includes("None") ? "border-pink-400 bg-pink-50" : "border-gray-200"}`}>
-              <Checkbox checked={lifestyle.medicalFlags.includes("None")} onCheckedChange={() => toggleArrayField(setLifestyle, "medicalFlags", "None")} />
-              None
-            </label>
-          </div>
-          <Input className="mt-2" value={lifestyle.medicalFlagsOther} onChange={e => updateLifestyle("medicalFlagsOther", e.target.value)} placeholder="Other (please specify)" />
-        </div>
-      );
-      case 5: return (
         <div className="space-y-5">
           <div>
             <label className="text-sm font-medium text-gray-700">Where do you feel discomfort most days? *</label>
@@ -747,7 +735,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
         </div>
       );
-      case 6: return (
+      case 4: return (
         <div className="space-y-5">
           <div>
             <label className="text-sm font-medium text-gray-700">Pressure & core awareness check *</label>
@@ -775,7 +763,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
         </div>
       );
-      case 7: return (
+      case 5: return (
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">Are you currently taking any medications or supplements? *</label>
@@ -797,11 +785,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
             <p className="text-xs text-gray-500 mt-1 mb-1">Share what feels relevant — C-sections, complications, or even smooth experiences. If this is your first, just write "First pregnancy."</p>
             <Textarea value={lifestyle.previousPregnancies} onChange={e => updateLifestyle("previousPregnancies", e.target.value)} placeholder="Share any relevant history..." rows={3} />
           </div>
-        </div>
-      );
-      case 8: return (
-        <div className="space-y-4">
-          <div>
+          <div className="pt-3 border-t border-gray-100">
             <label className="text-sm font-medium text-gray-700">What concerns you most? *</label>
             <p className="text-xs text-gray-500 mt-1 mb-1">Whether it's about your body, delivery, recovery, or anything else — share what's on your mind. No concern is too small.</p>
             <Textarea value={lifestyle.mainConcerns} onChange={e => updateLifestyle("mainConcerns", e.target.value)} placeholder="e.g., I'm worried about back pain getting worse, staying fit for delivery..." rows={3} />
@@ -818,7 +802,7 @@ function IntakeFormWizard({ clientId, onComplete, onLogout, userName }: {
           </div>
         </div>
       );
-      case 9: return (
+      case 6: return (
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700">How did you hear about Zoe?</label>
