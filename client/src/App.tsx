@@ -3,8 +3,9 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { lazy, Suspense, Component, type ReactNode } from "react";
+import { lazy, Suspense, Component, type ReactNode, useEffect, useState } from "react";
 import { useActivityTracking } from "@/hooks/use-activity-tracking";
+import { useLocation } from "wouter";
 import UpdatePrompt from "@/components/update-prompt";
 import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
@@ -99,6 +100,36 @@ function ActivityTracker() {
   return null;
 }
 
+// Admin route guard - redirects to /login if not authenticated as admin
+function AdminGuard({ component: Component, message }: { component: React.LazyExoticComponent<React.ComponentType<any>>; message: string }) {
+  const [, setLocation] = useLocation();
+  const [checking, setChecking] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/session", { credentials: "include" })
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(data => {
+        if (data?.user?.isAdmin) {
+          setAuthorized(true);
+        } else {
+          setLocation("/login");
+        }
+      })
+      .catch(() => setLocation("/login"))
+      .finally(() => setChecking(false));
+  }, [setLocation]);
+
+  if (checking) return <PageLoader message="Checking access..." />;
+  if (!authorized) return null;
+
+  return (
+    <Suspense fallback={<PageLoader message={message} />}>
+      <Component />
+    </Suspense>
+  );
+}
+
 function LazyRoute({ component: Component, message }: { component: React.LazyExoticComponent<React.ComponentType<any>>; message: string }) {
   return (
     <Suspense fallback={<PageLoader message={message} />}>
@@ -114,32 +145,32 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin/login" component={() => <LazyRoute component={AdminLogin} message="Loading admin login..." />} />
-      <Route path="/admin" component={() => <LazyRoute component={Admin} message="Loading admin..." />} />
-      <Route path="/admin/analytics" component={() => <LazyRoute component={AdminAnalytics} message="Loading analytics..." />} />
-      <Route path="/admin/automation" component={() => <LazyRoute component={AdminAutomationSettings} message="Loading..." />} />
-      <Route path="/admin/courses" component={() => <LazyRoute component={AdminCourses} message="Loading courses..." />} />
-      <Route path="/admin/modules" component={() => <LazyRoute component={AdminCourses} message="Loading modules..." />} />
-      <Route path="/admin/modules/:moduleId" component={() => <LazyRoute component={AdminModuleEditor} message="Loading..." />} />
-      <Route path="/admin/courses/:courseId" component={() => <LazyRoute component={AdminCourseEditor} message="Loading..." />} />
-      <Route path="/admin/courses/:courseId/preview" component={() => <LazyRoute component={AdminCoursePreview} message="Loading..." />} />
-      <Route path="/admin/exercises" component={() => <LazyRoute component={AdminExercises} message="Loading..." />} />
-      <Route path="/admin/workouts" component={() => <LazyRoute component={AdminWorkouts} message="Loading..." />} />
-      <Route path="/admin/workout-videos" component={() => <LazyRoute component={AdminWorkoutVideos} message="Loading..." />} />
-      <Route path="/admin/preview" component={() => <LazyRoute component={AdminPreview} message="Loading..." />} />
-      <Route path="/admin/expired" component={() => <LazyRoute component={AdminExpired} message="Loading..." />} />
-      <Route path="/admin/expiring" component={() => <LazyRoute component={AdminExpiring} message="Loading..." />} />
-      <Route path="/admin/extensions" component={() => <LazyRoute component={AdminExtensions} message="Loading..." />} />
-      <Route path="/admin/archived" component={() => <LazyRoute component={AdminArchived} message="Loading..." />} />
-      <Route path="/admin/members" component={() => <LazyRoute component={AdminMembers} message="Loading..." />} />
-      <Route path="/admin/active" component={() => <LazyRoute component={AdminActive} message="Loading..." />} />
-      <Route path="/admin/whatsapp" component={() => <LazyRoute component={AdminWhatsApp} message="Loading..." />} />
-      <Route path="/admin/reports" component={() => <LazyRoute component={AdminReports} message="Loading reports..." />} />
-      <Route path="/admin/coaching" component={() => <LazyRoute component={AdminCoaching} message="Loading coaching..." />} />
-      <Route path="/admin/orders" component={() => <LazyRoute component={AdminOrders} message="Loading orders..." />} />
-      <Route path="/admin/communications" component={() => <LazyRoute component={AdminCommunications} message="Loading communications..." />} />
-      <Route path="/admin/email-campaigns" component={() => <LazyRoute component={AdminEmailCampaigns} message="Loading email campaigns..." />} />
-      <Route path="/admin/email-analytics" component={() => <LazyRoute component={AdminEmailAnalytics} message="Loading email analytics..." />} />
-      <Route path="/admin/program-progress" component={() => <LazyRoute component={AdminProgramProgress} message="Loading progress..." />} />
+      <Route path="/admin" component={() => <AdminGuard component={Admin} message="Loading admin..." />} />
+      <Route path="/admin/analytics" component={() => <AdminGuard component={AdminAnalytics} message="Loading analytics..." />} />
+      <Route path="/admin/automation" component={() => <AdminGuard component={AdminAutomationSettings} message="Loading..." />} />
+      <Route path="/admin/courses" component={() => <AdminGuard component={AdminCourses} message="Loading courses..." />} />
+      <Route path="/admin/modules" component={() => <AdminGuard component={AdminCourses} message="Loading modules..." />} />
+      <Route path="/admin/modules/:moduleId" component={() => <AdminGuard component={AdminModuleEditor} message="Loading..." />} />
+      <Route path="/admin/courses/:courseId" component={() => <AdminGuard component={AdminCourseEditor} message="Loading..." />} />
+      <Route path="/admin/courses/:courseId/preview" component={() => <AdminGuard component={AdminCoursePreview} message="Loading..." />} />
+      <Route path="/admin/exercises" component={() => <AdminGuard component={AdminExercises} message="Loading..." />} />
+      <Route path="/admin/workouts" component={() => <AdminGuard component={AdminWorkouts} message="Loading..." />} />
+      <Route path="/admin/workout-videos" component={() => <AdminGuard component={AdminWorkoutVideos} message="Loading..." />} />
+      <Route path="/admin/preview" component={() => <AdminGuard component={AdminPreview} message="Loading..." />} />
+      <Route path="/admin/expired" component={() => <AdminGuard component={AdminExpired} message="Loading..." />} />
+      <Route path="/admin/expiring" component={() => <AdminGuard component={AdminExpiring} message="Loading..." />} />
+      <Route path="/admin/extensions" component={() => <AdminGuard component={AdminExtensions} message="Loading..." />} />
+      <Route path="/admin/archived" component={() => <AdminGuard component={AdminArchived} message="Loading..." />} />
+      <Route path="/admin/members" component={() => <AdminGuard component={AdminMembers} message="Loading..." />} />
+      <Route path="/admin/active" component={() => <AdminGuard component={AdminActive} message="Loading..." />} />
+      <Route path="/admin/whatsapp" component={() => <AdminGuard component={AdminWhatsApp} message="Loading..." />} />
+      <Route path="/admin/reports" component={() => <AdminGuard component={AdminReports} message="Loading reports..." />} />
+      <Route path="/admin/coaching" component={() => <AdminGuard component={AdminCoaching} message="Loading coaching..." />} />
+      <Route path="/admin/orders" component={() => <AdminGuard component={AdminOrders} message="Loading orders..." />} />
+      <Route path="/admin/communications" component={() => <AdminGuard component={AdminCommunications} message="Loading communications..." />} />
+      <Route path="/admin/email-campaigns" component={() => <AdminGuard component={AdminEmailCampaigns} message="Loading email campaigns..." />} />
+      <Route path="/admin/email-analytics" component={() => <AdminGuard component={AdminEmailAnalytics} message="Loading email analytics..." />} />
+      <Route path="/admin/program-progress" component={() => <AdminGuard component={AdminProgramProgress} message="Loading progress..." />} />
       <Route path="/heal-your-core" component={() => <LazyRoute component={HealYourCorePage} message="Loading your program..." />} />
       <Route path="/progress" component={() => <LazyRoute component={Progress} message="Loading progress tracker..." />} />
       <Route path="/my-library" component={() => <LazyRoute component={MyLibrary} message="Loading library..." />} />

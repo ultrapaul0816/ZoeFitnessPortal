@@ -66,12 +66,30 @@ const generalApiLimiter = rateLimit({
   validate: { trustProxy: false },
 });
 
-function generateSimplePassword(firstName?: string): string {
-  const name = (firstName || 'Member').trim();
-  const simpleName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  const year = new Date().getFullYear();
-  return `${simpleName}${year}`;
+function generateSimplePassword(_firstName?: string): string {
+  return randomBytes(12).toString('base64url');
 }
+
+// Per-user AI rate limiter: max 20 requests per user per hour
+const aiRateLimitMap = new Map<string, { count: number; resetAt: number }>();
+function checkAIRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const entry = aiRateLimitMap.get(userId);
+  if (!entry || now > entry.resetAt) {
+    aiRateLimitMap.set(userId, { count: 1, resetAt: now + 60 * 60 * 1000 });
+    return true;
+  }
+  if (entry.count >= 20) return false;
+  entry.count++;
+  return true;
+}
+// Cleanup stale entries every 30 minutes
+setInterval(() => {
+  const now = Date.now();
+  aiRateLimitMap.forEach((val, key) => {
+    if (now > val.resetAt) aiRateLimitMap.delete(key);
+  });
+}, 30 * 60 * 1000);
 
 // Configure Cloudinary
 cloudinary.config({
@@ -1039,9 +1057,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Daily Performance Check-ins (habits & wellness tracking)
   // Using userId in URL to avoid third-party cookie issues in iframes
-  app.post("/api/daily-checkins/:userId", async (req, res) => {
+  app.post("/api/daily-checkins/:userId", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1083,9 +1101,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/daily-checkins/:userId/today", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/today", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1098,9 +1116,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/daily-checkins/:userId/week", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/week", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1121,9 +1139,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/daily-checkins/:userId/stats", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/stats", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1137,9 +1155,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/daily-checkins/:userId/:id", async (req, res) => {
+  app.patch("/api/daily-checkins/:userId/:id", requireAuth, async (req, res) => {
     try {
-      const { userId, id } = req.params;
+      const userId = req.session?.userId;
+      const { id } = req.params;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1158,9 +1177,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Weekly summary with WhatsApp share data
-  app.get("/api/daily-checkins/:userId/weekly-summary", async (req, res) => {
+  app.get("/api/daily-checkins/:userId/weekly-summary", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1262,9 +1281,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get workout progress (current week, completions, all weeks progress)
   // Using userId in URL to avoid third-party cookie issues in iframes
-  app.get("/api/workout-sessions/:userId/progress", async (req, res) => {
+  app.get("/api/workout-sessions/:userId/progress", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1278,9 +1297,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Log a workout session
-  app.post("/api/workout-sessions/:userId", async (req, res) => {
+  app.post("/api/workout-sessions/:userId", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session?.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -1453,7 +1472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload profile photo
-  app.post("/api/users/:id/profile-photo", upload.single('photo'), async (req, res) => {
+  app.post("/api/users/:id/profile-photo", requireAuth, upload.single('photo'), async (req, res) => {
     try {
       const { id } = req.params;
       const file = req.file;
@@ -1542,7 +1561,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Member programs
   app.get("/api/member-programs/:userId", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session!.userId!;
       const memberPrograms = await storage.getMemberPrograms(userId);
       console.log(`[GET] Member programs for ${userId}: ${memberPrograms.length} programs`);
       res.json(memberPrograms);
@@ -1643,9 +1662,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Complete workout
-  app.post("/api/workouts/complete", async (req, res) => {
+  app.post("/api/workouts/complete", requireAuth, async (req, res) => {
     try {
-      const completionData = insertWorkoutCompletionSchema.parse(req.body);
+      const completionData = insertWorkoutCompletionSchema.parse({
+        ...req.body,
+        userId: req.session!.userId,
+      });
 
       const completion = await storage.createWorkoutCompletion(completionData);
 
@@ -1708,9 +1730,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Save workout
-  app.post("/api/workouts/save", async (req, res) => {
+  app.post("/api/workouts/save", requireAuth, async (req, res) => {
     try {
-      const { userId, workoutId } = req.body;
+      const userId = req.session!.userId!;
+      const { workoutId } = req.body;
 
       const savedWorkout = await storage.createSavedWorkout({
         userId,
@@ -1724,9 +1747,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get saved workouts
-  app.get("/api/saved-workouts/:userId", async (req, res) => {
+  app.get("/api/saved-workouts/:userId", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session!.userId!;
       const savedWorkouts = await storage.getSavedWorkouts(userId);
       res.json(savedWorkouts);
     } catch (error) {
@@ -1735,9 +1758,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get workout completions
-  app.get("/api/workout-completions/:userId", async (req, res) => {
+  app.get("/api/workout-completions/:userId", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session!.userId!;
       const completions = await storage.getWorkoutCompletions(userId);
       res.json(completions);
     } catch (error) {
@@ -1746,14 +1769,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user's workout progress for Today's Workout feature
-  app.get("/api/workout-progress/:userId", async (req, res) => {
+  app.get("/api/workout-progress/:userId", requireAuth, async (req, res) => {
     // Prevent HTTP caching to ensure fresh data after workout completion
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
     
     try {
-      const { userId } = req.params;
+      const userId = req.session!.userId!;
       
       // Get user's workout completions
       const completions = await storage.getWorkoutCompletions(userId);
@@ -1822,12 +1845,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Ask Zoe AI Chat endpoint with comprehensive context
-  app.post("/api/ask-zoe", async (req, res) => {
+  app.post("/api/ask-zoe", requireAuth, async (req, res) => {
     try {
-      const { message, context, userId } = req.body;
+      const { message, context } = req.body;
+      const userId = req.session?.userId;
       
       if (!message || typeof message !== 'string') {
         return res.status(400).json({ message: "Message is required" });
+      }
+
+      if (userId && !checkAIRateLimit(userId)) {
+        return res.status(429).json({ message: "AI request limit reached (20/hour). Please try again later." });
       }
 
       // Fetch user profile if userId provided
@@ -2115,7 +2143,7 @@ RESPONSE GUIDELINES:
   });
 
   // Admin endpoints for workout content management
-  app.patch("/api/admin/workout-content/:id", adminOperationLimiter, async (req, res) => {
+  app.patch("/api/admin/workout-content/:id", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -2141,7 +2169,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.patch("/api/admin/workout-exercises/:id", adminOperationLimiter, async (req, res) => {
+  app.patch("/api/admin/workout-exercises/:id", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -2167,7 +2195,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.post("/api/admin/workout-exercises", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/workout-exercises", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -2186,7 +2214,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.delete("/api/admin/workout-exercises/:id", adminOperationLimiter, async (req, res) => {
+  app.delete("/api/admin/workout-exercises/:id", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -2211,7 +2239,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.post("/api/admin/workout-exercises/reorder", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/workout-exercises/reorder", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -2237,9 +2265,10 @@ RESPONSE GUIDELINES:
   });
 
   // Program access control
-  app.get("/api/program-access/:userId/:programId", async (req, res) => {
+  app.get("/api/program-access/:userId/:programId", requireAuth, async (req, res) => {
     try {
-      const { userId, programId } = req.params;
+      const userId = req.session!.userId!;
+      const { programId } = req.params;
       const hasAccess = await storage.hasProgramAccess(userId, programId);
       res.json({ hasAccess });
     } catch (error) {
@@ -2248,9 +2277,10 @@ RESPONSE GUIDELINES:
   });
 
   // Create program purchase
-  app.post("/api/program-purchases", async (req, res) => {
+  app.post("/api/program-purchases", requireAuth, async (req, res) => {
     try {
-      const { userId, programId, amount } = req.body;
+      const userId = req.session!.userId!;
+      const { programId, amount } = req.body;
       const purchase = await storage.createProgramPurchase({
         userId,
         programId,
@@ -2275,9 +2305,10 @@ RESPONSE GUIDELINES:
   });
 
   // Reflection Notes routes
-  app.get("/api/reflection-notes/:userId/:programId", async (req, res) => {
+  app.get("/api/reflection-notes/:userId/:programId", requireAuth, async (req, res) => {
     try {
-      const { userId, programId } = req.params;
+      const userId = req.session!.userId!;
+      const { programId } = req.params;
       const note = await storage.getReflectionNote(userId, programId);
       res.json(note || { noteText: "" });
     } catch (error) {
@@ -2285,14 +2316,15 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.post("/api/reflection-notes", async (req, res) => {
+  app.post("/api/reflection-notes", requireAuth, async (req, res) => {
     try {
-      const { userId, programId, noteText } = req.body;
+      const userId = req.session?.userId;
+      const { programId, noteText } = req.body;
 
       if (!userId || !programId || !noteText) {
         return res
           .status(400)
-          .json({ message: "userId, programId, and noteText are required" });
+          .json({ message: "programId and noteText are required" });
       }
 
       const note = await storage.updateReflectionNote(
@@ -2328,9 +2360,9 @@ RESPONSE GUIDELINES:
   });
 
   // Progress tracking
-  app.post("/api/progress-tracking", async (req, res) => {
+  app.post("/api/progress-tracking", requireAuth, async (req, res) => {
     try {
-      const progressData = req.body;
+      const progressData = { ...req.body, userId: req.session!.userId };
       const entry = await storage.createProgressEntry(progressData);
       res.json(entry);
     } catch (error) {
@@ -2338,9 +2370,10 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.get("/api/progress-tracking/:userId/:programId", async (req, res) => {
+  app.get("/api/progress-tracking/:userId/:programId", requireAuth, async (req, res) => {
     try {
-      const { userId, programId } = req.params;
+      const userId = req.session!.userId!;
+      const { programId } = req.params;
       const entries = await storage.getProgressEntries(userId, programId);
       res.json(entries);
     } catch (error) {
@@ -2348,7 +2381,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.put("/api/progress-tracking/:id", async (req, res) => {
+  app.put("/api/progress-tracking/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -2432,13 +2465,14 @@ RESPONSE GUIDELINES:
   });
 
   // Create new text-only community post (JSON)
-  app.post("/api/community/posts/text", async (req, res) => {
+  app.post("/api/community/posts/text", requireAuth, async (req, res) => {
     try {
-      const { userId, content, category, weekNumber, isSensitiveContent } = req.body;
+      const userId = req.session!.userId!;
+      const { content, category, weekNumber, isSensitiveContent } = req.body;
       
       // Validate required fields
       if (!userId || !content) {
-        return res.status(400).json({ message: "User ID and content are required" });
+        return res.status(400).json({ message: "Content is required" });
       }
 
       // Validate with schema
@@ -2467,15 +2501,17 @@ RESPONSE GUIDELINES:
   // Create new community post with multiple image uploads (max 4)
   app.post(
     "/api/community/posts",
+    requireAuth,
     upload.array("images", 4),
     handleMulterError,
     async (req, res) => {
       try {
-        const { userId, content, category, weekNumber, isSensitiveContent } = req.body;
+        const userId = req.session!.userId!;
+        const { content, category, weekNumber, isSensitiveContent } = req.body;
         
         // Validate required fields
         if (!userId || !content) {
-          return res.status(400).json({ message: "User ID and content are required" });
+          return res.status(400).json({ message: "Content is required" });
         }
 
         let imageUrls: string[] | undefined;
@@ -2536,13 +2572,13 @@ RESPONSE GUIDELINES:
   );
 
   // Delete post (user can delete their own posts)
-  app.delete("/api/community/posts/:id", async (req, res) => {
+  app.delete("/api/community/posts/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const { userId } = req.body;
+      const userId = req.session!.userId!;
       
       if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       const success = await storage.deletePost(id, userId);
@@ -2559,7 +2595,7 @@ RESPONSE GUIDELINES:
   });
 
   // Report post
-  app.post("/api/community/posts/:id/report", async (req, res) => {
+  app.post("/api/community/posts/:id/report", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       
@@ -2577,7 +2613,7 @@ RESPONSE GUIDELINES:
   });
 
   // Mark post as featured (admin only)
-  app.patch("/api/community/posts/:id/featured", async (req, res) => {
+  app.patch("/api/community/posts/:id/featured", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const { featured } = req.body;
@@ -2596,13 +2632,13 @@ RESPONSE GUIDELINES:
   });
 
   // Like a post
-  app.post("/api/community/posts/:id/like", async (req, res) => {
+  app.post("/api/community/posts/:id/like", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const { userId } = req.body;
+      const userId = req.session!.userId!;
       
       if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       const like = await storage.likePost(userId, id);
@@ -2614,13 +2650,13 @@ RESPONSE GUIDELINES:
   });
 
   // Unlike a post
-  app.delete("/api/community/posts/:id/like", async (req, res) => {
+  app.delete("/api/community/posts/:id/like", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const { userId } = req.body;
+      const userId = req.session!.userId!;
       
       if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       const success = await storage.unlikePost(userId, id);
@@ -2650,13 +2686,14 @@ RESPONSE GUIDELINES:
   });
 
   // Create comment on post
-  app.post("/api/community/posts/:id/comments", async (req, res) => {
+  app.post("/api/community/posts/:id/comments", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const { userId, content } = req.body;
+      const userId = req.session!.userId!;
+      const { content } = req.body;
       
       if (!userId || !content) {
-        return res.status(400).json({ message: "User ID and content are required" });
+        return res.status(400).json({ message: "Content is required" });
       }
 
       const commentData = insertPostCommentSchema.parse({
@@ -2693,13 +2730,13 @@ RESPONSE GUIDELINES:
   });
 
   // Delete comment (user can delete their own comments)
-  app.delete("/api/community/comments/:id", async (req, res) => {
+  app.delete("/api/community/comments/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const { userId } = req.body;
+      const userId = req.session?.userId;
       
       if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       const success = await storage.deleteComment(id, userId);
@@ -2716,9 +2753,9 @@ RESPONSE GUIDELINES:
   });
 
   // Notifications
-  app.get("/api/notifications/:userId", async (req, res) => {
+  app.get("/api/notifications/:userId", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session!.userId!;
       const notifications = await storage.getUserNotifications(userId);
       res.json(notifications);
     } catch (error) {
@@ -2726,7 +2763,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.post("/api/notifications/:id/read", async (req, res) => {
+  app.post("/api/notifications/:id/read", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const success = await storage.markNotificationRead(id);
@@ -2742,7 +2779,7 @@ RESPONSE GUIDELINES:
   });
 
   // Get current user data
-  app.get("/api/users/:id", async (req, res) => {
+  app.get("/api/users/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const user = await storage.getUser(id);
@@ -2880,7 +2917,7 @@ RESPONSE GUIDELINES:
   });
 
   // Activity analytics for admin dashboard
-  app.get("/api/admin/activity-analytics", async (req, res) => {
+  app.get("/api/admin/activity-analytics", requireAdmin, async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
       const analytics = await storage.getActivityAnalytics(days);
@@ -2892,7 +2929,7 @@ RESPONSE GUIDELINES:
   });
 
   // User activity summary for admin user profile view
-  app.get("/api/admin/users/:userId/activity-summary", async (req, res) => {
+  app.get("/api/admin/users/:userId/activity-summary", requireAdmin, async (req, res) => {
     try {
       const { userId } = req.params;
       const summary = await storage.getUserActivitySummary(userId);
@@ -2904,7 +2941,7 @@ RESPONSE GUIDELINES:
   });
 
   // Checkin analytics for admin dashboard - aggregated mood & energy insights
-  app.get("/api/admin/checkin-analytics", async (req, res) => {
+  app.get("/api/admin/checkin-analytics", requireAdmin, async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
       const startDate = new Date();
@@ -3021,7 +3058,7 @@ RESPONSE GUIDELINES:
   });
 
   // Actionable dashboard data endpoints
-  app.get("/api/admin/actionable/dormant-members", async (req, res) => {
+  app.get("/api/admin/actionable/dormant-members", requireAdmin, async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 7;
       const dormantMembers = await storage.getDormantMembers(days);
@@ -3032,7 +3069,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.get("/api/admin/actionable/no-photos", async (req, res) => {
+  app.get("/api/admin/actionable/no-photos", requireAdmin, async (req, res) => {
     try {
       const membersWithoutPhotos = await storage.getMembersWithoutProgressPhotos();
       res.json(membersWithoutPhotos);
@@ -3042,7 +3079,7 @@ RESPONSE GUIDELINES:
     }
   });
 
-  app.get("/api/admin/actionable/recent-completers", async (req, res) => {
+  app.get("/api/admin/actionable/recent-completers", requireAdmin, async (req, res) => {
     try {
       const hours = parseInt(req.query.hours as string) || 48;
       const recentCompleters = await storage.getRecentWorkoutCompleters(hours);
@@ -3054,7 +3091,7 @@ RESPONSE GUIDELINES:
   });
 
   // Recent check-ins endpoint for admin dashboard
-  app.get("/api/admin/actionable/recent-checkins", async (req, res) => {
+  app.get("/api/admin/actionable/recent-checkins", requireAdmin, async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 10;
       const recentCheckins = await storage.getRecentCheckins(limit);
@@ -3066,7 +3103,7 @@ RESPONSE GUIDELINES:
   });
 
   // Enhanced check-in analytics with day/week breakdown
-  app.get("/api/admin/actionable/checkin-analytics", async (req, res) => {
+  app.get("/api/admin/actionable/checkin-analytics", requireAdmin, async (req, res) => {
     try {
       const now = new Date();
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -3157,7 +3194,7 @@ RESPONSE GUIDELINES:
   });
 
   // Email preview endpoint for dashboard actions - uses database templates
-  app.post("/api/admin/actionable/preview-email", async (req, res) => {
+  app.post("/api/admin/actionable/preview-email", requireAdmin, async (req, res) => {
     try {
       const { userId, emailType } = req.body;
       
@@ -3218,7 +3255,7 @@ RESPONSE GUIDELINES:
   });
 
   // Quick-send email endpoint for dashboard actions - uses database templates
-  app.post("/api/admin/actionable/send-email", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/actionable/send-email", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       const { userId, emailType } = req.body;
       
@@ -3292,7 +3329,7 @@ RESPONSE GUIDELINES:
   });
 
   // Email test endpoint
-  app.post("/api/admin/email/send-test", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/email/send-test", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.isAuthenticated() || req.user?.role !== "admin") {
         return res.status(401).json({ message: "Unauthorized" });
@@ -3330,7 +3367,7 @@ RESPONSE GUIDELINES:
   });
 
   // Daily workout reminder test email
-  app.post("/api/admin/email/send-daily-reminder-test", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/email/send-daily-reminder-test", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.isAuthenticated() || req.user?.role !== "admin") {
         return res.status(401).json({ message: "Unauthorized" });
@@ -3373,7 +3410,7 @@ RESPONSE GUIDELINES:
   });
 
   // Template test email endpoint
-  app.post("/api/admin/email-campaigns/send-test", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/email-campaigns/send-test", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       if (!req.isAuthenticated() || req.user?.role !== "admin") {
         return res.status(401).json({ message: "Unauthorized" });
@@ -3802,7 +3839,7 @@ RESPONSE GUIDELINES:
   });
 
   // Get all assets
-  app.get("/api/admin/assets", async (req, res) => {
+  app.get("/api/admin/assets", requireAdmin, async (req, res) => {
     try {
       const assetsDir = path.join(process.cwd(), "attached_assets");
       const files = fs.readdirSync(assetsDir);
@@ -3836,7 +3873,7 @@ RESPONSE GUIDELINES:
   });
 
   // Update program
-  app.put("/api/admin/programs/:id", async (req, res) => {
+  app.put("/api/admin/programs/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -3853,7 +3890,7 @@ RESPONSE GUIDELINES:
   });
 
   // Update asset display name
-  app.put("/api/admin/assets/:filename", async (req, res) => {
+  app.put("/api/admin/assets/:filename", requireAdmin, async (req, res) => {
     try {
       const { filename } = req.params;
       const { displayName } = req.body;
@@ -3871,7 +3908,7 @@ RESPONSE GUIDELINES:
   });
 
   // Create new user (admin only)
-  app.post("/api/admin/users", adminOperationLimiter, async (req, res) => {
+  app.post("/api/admin/users", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       // Convert date strings to Date objects before validation
       const requestData = { ...req.body };
@@ -3975,7 +4012,7 @@ RESPONSE GUIDELINES:
   });
 
   // Extend user validity (both program and WhatsApp)
-  app.post("/api/admin/users/:id/extend-validity", async (req, res) => {
+  app.post("/api/admin/users/:id/extend-validity", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const { months, notes, performedBy } = req.body;
@@ -4036,7 +4073,7 @@ RESPONSE GUIDELINES:
   });
 
   // Get expired members (WhatsApp support OR program access expired)
-  app.get("/api/admin/whatsapp/expired-members", async (req, res) => {
+  app.get("/api/admin/whatsapp/expired-members", requireAdmin, async (req, res) => {
     try {
       const now = new Date();
       // Get members with expired WhatsApp support OR expired program access
@@ -4064,7 +4101,7 @@ RESPONSE GUIDELINES:
   });
 
   // Get recent WhatsApp membership extension logs
-  app.get("/api/admin/whatsapp/extension-logs", async (req, res) => {
+  app.get("/api/admin/whatsapp/extension-logs", requireAdmin, async (req, res) => {
     try {
       const result = await storage.db.execute(sql`
         SELECT l.*, u.phone as user_phone
@@ -4082,7 +4119,7 @@ RESPONSE GUIDELINES:
   });
 
   // Delete extension log (archive it first)
-  app.delete("/api/admin/whatsapp/extension-logs/:id", async (req, res) => {
+  app.delete("/api/admin/whatsapp/extension-logs/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const adminId = req.session?.userId;
@@ -4113,7 +4150,7 @@ RESPONSE GUIDELINES:
   });
 
   // Remove member from expired list (archive and clear expired status)
-  app.delete("/api/admin/whatsapp/expired-members/:id", async (req, res) => {
+  app.delete("/api/admin/whatsapp/expired-members/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       const adminId = req.session?.userId;
@@ -4151,7 +4188,7 @@ RESPONSE GUIDELINES:
   });
 
   // Get archived admin items
-  app.get("/api/admin/archived-items", async (req, res) => {
+  app.get("/api/admin/archived-items", requireAdmin, async (req, res) => {
     try {
       const { type } = req.query;
       let query = sql`SELECT * FROM archived_admin_items`;
@@ -4174,7 +4211,7 @@ RESPONSE GUIDELINES:
   });
 
   // Restore archived extension log
-  app.post("/api/admin/archived-items/:id/restore", async (req, res) => {
+  app.post("/api/admin/archived-items/:id/restore", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       
@@ -4227,7 +4264,7 @@ RESPONSE GUIDELINES:
   });
 
   // Permanently delete archived item
-  app.delete("/api/admin/archived-items/:id", async (req, res) => {
+  app.delete("/api/admin/archived-items/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.db.execute(sql`
@@ -4241,7 +4278,7 @@ RESPONSE GUIDELINES:
   });
 
   // Log renewal email sent
-  app.post("/api/admin/renewal-email-logs", async (req, res) => {
+  app.post("/api/admin/renewal-email-logs", requireAdmin, async (req, res) => {
     try {
       const { userId, emailType, notes, sentAt } = req.body;
       const adminId = req.session?.userId;
@@ -4266,7 +4303,7 @@ RESPONSE GUIDELINES:
   });
 
   // Get renewal email logs for all users (for admin dashboard)
-  app.get("/api/admin/renewal-email-logs", async (req, res) => {
+  app.get("/api/admin/renewal-email-logs", requireAdmin, async (req, res) => {
     try {
       const result = await storage.db.execute(sql`
         SELECT rel.*, u.first_name, u.last_name, u.email as user_email
@@ -4283,7 +4320,7 @@ RESPONSE GUIDELINES:
   });
 
   // Get renewal email logs for a specific user
-  app.get("/api/admin/renewal-email-logs/:userId", async (req, res) => {
+  app.get("/api/admin/renewal-email-logs/:userId", requireAdmin, async (req, res) => {
     try {
       const { userId } = req.params;
       const result = await storage.db.execute(sql`
@@ -4299,7 +4336,7 @@ RESPONSE GUIDELINES:
   });
 
   // Send reminder email to expiring or expired member
-  app.post("/api/admin/whatsapp/send-reminder", async (req, res) => {
+  app.post("/api/admin/whatsapp/send-reminder", requireAdmin, async (req, res) => {
     try {
       const { userId, type, programExpiryDate, whatsAppExpiryDate } = req.body;
 
@@ -4432,7 +4469,7 @@ RESPONSE GUIDELINES:
   });
 
   // Update user (admin)
-  app.put("/api/admin/users/:id", adminOperationLimiter, async (req, res) => {
+  app.put("/api/admin/users/:id", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = { ...req.body };
@@ -4501,7 +4538,7 @@ RESPONSE GUIDELINES:
   });
 
   // Deactivate user
-  app.post("/api/admin/users/:id/deactivate", async (req, res) => {
+  app.post("/api/admin/users/:id/deactivate", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
 
@@ -4559,9 +4596,9 @@ RESPONSE GUIDELINES:
 
   // Progress Photos
   // Upload progress photo
-  app.post("/api/progress-photos/:userId", upload.single('photo'), handleMulterError, async (req, res) => {
+  app.post("/api/progress-photos/:userId", requireAuth, upload.single('photo'), handleMulterError, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session!.userId!;
 
       if (!req.file) {
         return res.status(400).json({ message: "No photo file provided" });
@@ -4617,9 +4654,9 @@ RESPONSE GUIDELINES:
   });
 
   // Get user's progress photos
-  app.get("/api/progress-photos/:userId", async (req, res) => {
+  app.get("/api/progress-photos/:userId", requireAuth, async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.session!.userId!;
 
       const photos = await storage.getProgressPhotos(userId);
       res.json(photos);
@@ -4630,9 +4667,10 @@ RESPONSE GUIDELINES:
   });
 
   // Delete progress photo
-  app.delete("/api/progress-photos/:userId/:id", async (req, res) => {
+  app.delete("/api/progress-photos/:userId/:id", requireAuth, async (req, res) => {
     try {
-      const { userId, id } = req.params;
+      const userId = req.session!.userId!;
+      const { id } = req.params;
 
       // Get the photo to delete from Cloudinary
       const photos = await storage.getProgressPhotos(userId);

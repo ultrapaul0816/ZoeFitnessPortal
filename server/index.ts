@@ -9,7 +9,7 @@ import { startInactivityScheduler } from "./schedulers/email-inactivity";
 import { startCampaignScheduler } from "./schedulers/email-campaign";
 
 const app = express();
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 app.use(compression()); // gzip compress all responses
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
