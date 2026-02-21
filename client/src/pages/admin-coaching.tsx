@@ -68,6 +68,7 @@ import { CoachingClientInfoCard } from "@/components/admin/CoachingClientInfoCar
 import { CoachingClientsTable } from "@/components/admin/CoachingClientsTable";
 import { CoachingWorkoutTable } from "@/components/admin/CoachingWorkoutTable";
 import { CoachingSidebar } from "@/components/admin/CoachingSidebar";
+import { CoachingHelpGuide } from "@/components/admin/CoachingHelpGuide";
 import { PlanBuilderWizard } from "@/components/admin/PlanBuilderWizard";
 import { WellnessBlueprintViewer } from "@/components/admin/WellnessBlueprintViewer";
 import { generateBlueprintPDF } from "@/components/admin/WellnessBlueprintPDF";
@@ -984,7 +985,10 @@ export default function AdminCoaching() {
         />
 
         {/* Main Panel */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
+        <main className="flex-1 overflow-y-auto bg-gray-50 relative">
+          <div className="absolute top-4 right-4 z-10">
+            <CoachingHelpGuide />
+          </div>
           {!selectedClient ? (
             /* Empty State - No Client Selected */
             <div className="flex items-center justify-center h-full">

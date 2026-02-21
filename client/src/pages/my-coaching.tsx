@@ -1914,23 +1914,24 @@ export default function MyCoaching() {
 
   // Show waiting screens for non-active statuses
   if (client.status !== "active") {
-    const statusMessages: Record<string, { title: string; description: string; icon: React.ReactNode; detail?: string }> = {
+    const statusMessages: Record<string, { title: string; description: string; icon: React.ReactNode; detail?: string; timeline?: boolean }> = {
       intake_complete: {
-        title: "Zoe is Reviewing Your Information",
-        description: "Thanks for completing your intake forms! Zoe is carefully reviewing everything you shared to create a plan that's truly personalised to you.",
-        detail: "This usually takes 1-2 business days. You'll get a notification when your plan is ready.",
+        title: "Thanks for sharing everything with us! 💕",
+        description: "Zoe is reviewing your forms and building your personalised plan. This usually takes 24-48 hours.",
+        detail: "",
         icon: <Eye className="w-10 h-10 text-indigo-500" />,
+        timeline: true,
       },
       plan_generating: {
-        title: "Your Plan is Being Created",
-        description: "Zoe has reviewed your information and is now building your personalised workout and nutrition plan. Every detail is tailored to your goals and needs.",
-        detail: "Almost there — your plan is being crafted with care.",
+        title: "Your plan is being crafted! ✨",
+        description: "Zoe is putting together workouts tailored just for you. Almost there...",
+        detail: "Every detail is being personalised to your goals and needs.",
         icon: <Brain className="w-10 h-10 text-violet-500" />,
       },
       plan_ready: {
-        title: "Your Plan is Almost Ready!",
-        description: "Your personalised plan has been created and Zoe is doing a final quality check to make sure everything is perfect for you.",
-        detail: "You'll be notified very soon!",
+        title: "Your plan is ready! 🎉",
+        description: "Zoe is doing final checks before activating it. You'll get a notification when it's live.",
+        detail: "So close — get excited!",
         icon: <Sparkles className="w-10 h-10 text-pink-500" />,
       },
       pending_plan: {
@@ -1969,8 +1970,32 @@ export default function MyCoaching() {
           {msg.detail && (
             <p className="text-sm text-pink-600 font-medium mb-6">{msg.detail}</p>
           )}
+          {(msg as any).timeline && (
+            <div className="text-left max-w-xs mx-auto mb-8 mt-6">
+              <h3 className="text-sm font-bold text-gray-700 mb-4">What happens next:</h3>
+              <div className="space-y-3">
+                {[
+                  { step: "1", text: "Zoe reviews your intake", done: true },
+                  { step: "2", text: "Your wellness blueprint is created", done: false },
+                  { step: "3", text: "Your workout plan goes live", done: false },
+                  { step: "4", text: "You start your journey!", done: false },
+                ].map((item) => (
+                  <div key={item.step} className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+                      item.done ? "bg-green-100 text-green-600" : "bg-pink-50 text-pink-400"
+                    }`}>
+                      {item.done ? "✅" : item.step}
+                    </div>
+                    <span className={`text-sm ${item.done ? "text-green-700 font-medium" : "text-gray-600"}`}>
+                      {item.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <Button
-            className="bg-pink-500 hover:bg-pink-600 text-white rounded-xl px-8"
+            className="bg-pink-500 hover:bg-pink-600 text-white rounded-xl px-8 min-h-[44px]"
             onClick={handleLogout}
           >
             Sign Out
