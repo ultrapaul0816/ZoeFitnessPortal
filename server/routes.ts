@@ -9229,9 +9229,15 @@ Provide 2-3 options for each meal type. Ensure variety and alignment with traini
       const clientData = await assembleClientDataForBlueprint(clientId);
       console.log(`[Blueprint] Data assembled. Has AI summary: ${!!clientData.aiSummary}, Has remarks: ${!!Object.keys(clientData.coachRemarks).length}, Forms: ${Object.keys(clientData.intakeForms).join(', ')}`);
 
-      // Validate minimum data
-      if (!clientData.aiSummary && !Object.keys(clientData.coachRemarks).length) {
-        return res.status(400).json({ message: "AI summary or coach remarks required before generating blueprint" });
+      // Validate minimum data — require intake forms, coach remarks, and AI summary
+      const missing: string[] = [];
+      if (Object.keys(clientData.intakeForms).length === 0) missing.push("Intake forms");
+      const hasCoachRemarks = clientData.coachRemarks && typeof clientData.coachRemarks === "object" &&
+        Object.values(clientData.coachRemarks).some((v: any) => v && String(v).trim().length > 0);
+      if (!hasCoachRemarks) missing.push("Coach's Notes");
+      if (!clientData.aiSummary) missing.push("AI Assessment");
+      if (missing.length > 0) {
+        return res.status(400).json({ message: `Complete the following before creating the blueprint: ${missing.join(", ")}` });
       }
 
       console.log(`[Blueprint] Calling AI (${getAIProviderName()})...`);
@@ -9340,6 +9346,7 @@ ${clientData.nutritionPlans.length > 0 ? `NUTRITION PLAN OUTLINE:\n${JSON.string
       console.log(`[Blueprint] AI response received. Length: ${rawContent.length} chars`);
 
       const blueprint = JSON.parse(rawContent);
+      blueprint.generatedAt = new Date().toISOString();
       console.log(`[Blueprint] Parsed OK. Sections: ${Object.keys(blueprint).join(', ')}`);
 
       // Store the blueprint

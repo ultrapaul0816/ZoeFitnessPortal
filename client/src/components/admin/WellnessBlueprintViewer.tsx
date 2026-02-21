@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import {
   Wand2,
   RefreshCw,
@@ -528,6 +529,61 @@ function SectionHeader({
 
 // ===== Main Component =====
 
+function BlueprintSummaryCard({ blueprint }: { blueprint: BlueprintData }) {
+  const [expanded, setExpanded] = useState(true);
+  const mindsetWeeks = blueprint.mindsetRoadmap ? Object.keys(blueprint.mindsetRoadmap).length : 0;
+  const recipeCount = blueprint.recipeCards?.length || 0;
+  const generatedAt = (blueprint as any).generatedAt;
+
+  return (
+    <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 overflow-hidden mb-6">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-amber-100/30 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <Sparkles className="w-5 h-5 text-amber-600" />
+          <span className="font-serif font-bold text-stone-800">Blueprint Summary</span>
+          {generatedAt && (
+            <span className="flex items-center gap-1 text-xs text-stone-400">
+              <Calendar className="w-3 h-3" />
+              Generated {new Date(generatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            </span>
+          )}
+        </div>
+        {expanded ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline" className="bg-white/60 text-stone-600 border-stone-300 text-xs">
+              {blueprint.coverPage?.coachingType}
+            </Badge>
+            <Badge variant="outline" className="bg-white/60 text-violet-600 border-violet-200 text-xs">
+              {mindsetWeeks} mindset weeks
+            </Badge>
+            <Badge variant="outline" className="bg-white/60 text-orange-600 border-orange-200 text-xs">
+              {recipeCount} recipes
+            </Badge>
+          </div>
+          <p className="text-sm italic text-stone-600">{blueprint.coverPage?.subtitle}</p>
+          <ul className="text-sm text-stone-700 space-y-1 list-disc list-inside">
+            {blueprint.executiveArchitecture?.mission && (
+              <li><span className="font-medium">Mission:</span> {blueprint.executiveArchitecture.mission}</li>
+            )}
+            {blueprint.executiveArchitecture?.keyInsight && (
+              <li><span className="font-medium">Key Insight:</span> {blueprint.executiveArchitecture.keyInsight}</li>
+            )}
+            {blueprint.executiveArchitecture?.identityShift && (
+              <li><span className="font-medium">Identity Shift:</span> {blueprint.executiveArchitecture.identityShift}</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function WellnessBlueprintViewer({
   blueprint,
   isAdmin = false,
@@ -606,6 +662,9 @@ export function WellnessBlueprintViewer({
           </div>
         </div>
       )}
+
+      {/* Summary Card */}
+      <BlueprintSummaryCard blueprint={blueprint} />
 
       {/* Blueprint Content */}
       <div className="space-y-10">

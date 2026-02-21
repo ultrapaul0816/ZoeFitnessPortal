@@ -123,6 +123,32 @@ const statusLabels: Record<string, string> = {
   pending_plan: "Plan In Progress",
 };
 
+function BlueprintProgressSteps() {
+  const [step, setStep] = useState(0);
+  const steps = [
+    "Analyzing intake data...",
+    "Crafting mindset roadmap...",
+    "Building nutrition plan...",
+    "Designing recipe cards...",
+    "Finalizing blueprint...",
+  ];
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((s) => (s < steps.length - 1 ? s + 1 : s));
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
+  return (
+    <div className="space-y-1">
+      {steps.map((label, i) => (
+        <p key={i} className={`text-xs transition-all duration-300 ${i <= step ? "text-violet-700 font-medium" : "text-violet-400"}`}>
+          {i < step ? "✓" : i === step ? "›" : "·"} {label}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 export default function AdminCoaching() {
   const [, setLocation] = useLocation();
   const [activeView, setActiveView] = useState<CoachingView>("clients");
@@ -2586,8 +2612,12 @@ export default function AdminCoaching() {
                   const blueprint = (selectedClient as any).wellnessBlueprint as BlueprintData | null;
                   const isApproved = (selectedClient as any).blueprintApproved || false;
                   const isGenerating = generateBlueprintMutation.isPending;
-                  const hasCoachRemarks = !!(selectedClient as any).coachRemarks;
+                  const coachRemarks = (selectedClient as any).coachRemarks;
+                  const hasCoachRemarks = !!(coachRemarks && typeof coachRemarks === "object" &&
+                    Object.values(coachRemarks).some((v: any) => v && String(v).trim().length > 0));
                   const hasAiSummary = !!selectedClient.aiSummary;
+                  const hasIntakeForms = selectedClient.status !== "enrolled" && selectedClient.status !== "pending";
+                  const allReady = hasIntakeForms && hasCoachRemarks && hasAiSummary;
 
                   if (!blueprint) {
                     return (
@@ -2606,35 +2636,44 @@ export default function AdminCoaching() {
                               structural protocols, nutrition philosophy, and signature recipe cards.
                             </p>
 
-                            {(!hasCoachRemarks || !hasAiSummary) && (
-                              <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-700">
-                                <AlertCircle className="w-4 h-4 inline mr-1.5" />
-                                {!hasCoachRemarks && !hasAiSummary
-                                  ? "Generate Coach's Notes and AI Assessment first to create the blueprint."
-                                  : !hasCoachRemarks
-                                    ? "Generate Coach's Notes first to create the blueprint."
-                                    : "Generate AI Assessment first to create the blueprint."}
+                            {!allReady && (
+                              <div className="mb-4 p-4 rounded-lg bg-amber-50 border border-amber-200 text-sm text-left">
+                                <p className="font-medium text-amber-800 mb-2">Prerequisites for blueprint generation:</p>
+                                <div className="space-y-1.5">
+                                  <div className="flex items-center gap-2">
+                                    <span>{hasIntakeForms ? "✅" : "❌"}</span>
+                                    <span className={hasIntakeForms ? "text-emerald-700" : "text-amber-700"}>Intake forms completed</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span>{hasCoachRemarks ? "✅" : "❌"}</span>
+                                    <span className={hasCoachRemarks ? "text-emerald-700" : "text-amber-700"}>Coach's Notes generated</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span>{hasAiSummary ? "✅" : "❌"}</span>
+                                    <span className={hasAiSummary ? "text-emerald-700" : "text-amber-700"}>AI Assessment generated</span>
+                                  </div>
+                                </div>
                               </div>
                             )}
 
-                            <Button
-                              onClick={() => generateBlueprintMutation.mutate(selectedClient.id)}
-                              disabled={isGenerating || (!hasCoachRemarks && !hasAiSummary)}
-                              className="bg-amber-600 hover:bg-amber-700 text-white"
-                              size="lg"
-                            >
-                              {isGenerating ? (
-                                <>
-                                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                                  Generating Blueprint...
-                                </>
-                              ) : (
-                                <>
-                                  <Wand2 className="w-4 h-4 mr-2" />
-                                  Generate Wellness Blueprint
-                                </>
-                              )}
-                            </Button>
+                            {isGenerating ? (
+                              <div className="mb-4 p-4 rounded-lg bg-violet-50 border border-violet-200">
+                                <RefreshCw className="w-5 h-5 text-violet-600 animate-spin mx-auto mb-3" />
+                                <p className="text-sm font-medium text-violet-800 mb-2">Generating your Boutique Wellness Blueprint...</p>
+                                <p className="text-xs text-violet-600 mb-3">This may take up to 60 seconds.</p>
+                                <BlueprintProgressSteps />
+                              </div>
+                            ) : (
+                              <Button
+                                onClick={() => generateBlueprintMutation.mutate(selectedClient.id)}
+                                disabled={!allReady}
+                                className="bg-amber-600 hover:bg-amber-700 text-white"
+                                size="lg"
+                              >
+                                <Wand2 className="w-4 h-4 mr-2" />
+                                Generate Wellness Blueprint
+                              </Button>
+                            )}
                           </div>
                         </CardContent>
                       </Card>
