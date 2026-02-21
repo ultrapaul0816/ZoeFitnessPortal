@@ -3868,7 +3868,7 @@ export default function AdminCoaching() {
         </DialogContent>
       </Dialog>
       {/* Create Program Dialog */}
-      <Dialog open={showCreateProgram} onOpenChange={(open) => { if (!open && !generatingProgram) setShowCreateProgram(false); }}>
+      <Dialog open={showCreateProgram} onOpenChange={(open) => { if (!open) setShowCreateProgram(false); }}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -4026,34 +4026,33 @@ export default function AdminCoaching() {
               </div>
             )}
 
-            {generatingProgram && (
-              <div className="flex flex-col items-center py-6 gap-3">
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                  <Brain className="w-6 h-6 text-purple-600 animate-pulse" />
-                </div>
-                <p className="text-sm text-gray-600">AI is designing your program... (~30 seconds)</p>
-              </div>
-            )}
+            {/* Generation now happens in background after dialog closes */}
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateProgram(false)} disabled={generatingProgram}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowCreateProgram(false)}>Cancel</Button>
             <Button
-              disabled={!newProgramName.trim() || generatingProgram}
+              disabled={!newProgramName.trim()}
               className={programCreateMode === "ai" ? "bg-purple-600 hover:bg-purple-700 text-white" : ""}
               onClick={async () => {
                 if (programCreateMode === "ai") {
+                  // Close dialog immediately, generate in background
+                  const programName = newProgramName;
+                  const programType = newProgramType;
+                  const duration = newProgramDuration;
+                  const segment = newProgramClientSegment;
+                  setShowCreateProgram(false);
                   setGeneratingProgram(true);
+                  toast({ title: "🧠 Generating program in background...", description: `"${programName}" — we'll notify you when it's ready.` });
                   try {
                     await apiRequest("POST", "/api/admin/coaching/programs/generate", {
-                      programType: newProgramType,
-                      durationWeeks: newProgramDuration,
-                      clientSegment: newProgramClientSegment,
-                      name: newProgramName,
+                      programType: programType,
+                      durationWeeks: duration,
+                      clientSegment: segment,
+                      name: programName,
                     });
                     queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/programs"] });
-                    toast({ title: "Program generated!", description: newProgramName });
-                    setShowCreateProgram(false);
+                    toast({ title: "✅ Program ready!", description: `"${programName}" has been generated. Check the Programs tab.` });
                   } catch (err: any) {
                     toast({ title: "Generation failed", description: err.message, variant: "destructive" });
                   } finally {
