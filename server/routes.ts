@@ -7991,6 +7991,291 @@ PREGNANCY SAFETY (if client is pregnant):
     }
   });
 
+  // Helper: build client context for workout generation
+  async function buildWorkoutClientContext(clientId: string) {
+    const client = await storage.getCoachingClient(clientId);
+    if (!client) throw new Error("Client not found");
+    const user = await storage.getUser(client.userId);
+    if (!user) throw new Error("User not found");
+
+    const existingPlans = await storage.getCoachingWorkoutPlans(client.id);
+    const formResponses = await storage.getCoachingFormResponses(client.id);
+    let formDataStr = client.formData ? JSON.stringify(client.formData) : "";
+    const coachingType = (client as any).coachingType || "pregnancy_coaching";
+
+    if (coachingType === "private_coaching") {
+      const pcForm = formResponses.find((r: any) => r.formType === "private_coaching_questionnaire");
+      if (pcForm) formDataStr = `PRIVATE COACHING QUESTIONNAIRE:\n${JSON.stringify(pcForm.responses)}`;
+    } else {
+      const lifestyleForm = formResponses.find((r: any) => r.formType === "lifestyle_questionnaire");
+      const healthForm = formResponses.find((r: any) => r.formType === "health_evaluation");
+      const parts = [];
+      if (lifestyleForm) parts.push(`LIFESTYLE QUESTIONNAIRE:\n${JSON.stringify(lifestyleForm.responses)}`);
+      if (healthForm) parts.push(`HEALTH EVALUATION:\n${JSON.stringify(healthForm.responses)}`);
+      if (parts.length > 0) formDataStr = parts.join("\n\n");
+    }
+    if (!formDataStr) formDataStr = "No form data available";
+
+    const healthNotesStr = client.healthNotes || "No specific health notes";
+    const notesStr = client.notes || "";
+    const coachRemarks = (client as any).coachRemarks as Record<string, string> | null;
+    const coachRemarksStr = coachRemarks ? [
+      coachRemarks.trainingFocus && `TRAINING FOCUS: ${coachRemarks.trainingFocus}`,
+      coachRemarks.nutritionalGuidance && `NUTRITIONAL GUIDANCE: ${coachRemarks.nutritionalGuidance}`,
+      coachRemarks.thingsToWatch && `THINGS TO WATCH: ${coachRemarks.thingsToWatch}`,
+      coachRemarks.personalityNotes && `CLIENT PERSONALITY: ${coachRemarks.personalityNotes}`,
+      coachRemarks.customNotes && `ADDITIONAL COACH NOTES: ${coachRemarks.customNotes}`,
+    ].filter(Boolean).join("\n") : "";
+    const userInfo = `Name: ${user.firstName} ${user.lastName}${coachingType === "pregnancy_coaching" ? `, Postpartum weeks: ${user.postpartumWeeks || "unknown"}` : ""}, Goals: ${(user.goals || []).join(", ") || "general fitness"}, Coaching type: ${coachingType === "private_coaching" ? "Private Coaching (general fitness transformation)" : "Pregnancy with Zoe (prenatal/postnatal)"}`;
+    let calculatedTrimester: number | null = null;
+    let weeksPregnant: number | null = null;
+    if (client.isPregnant && client.dueDate) {
+      const daysLeft = Math.max(0, Math.ceil((new Date(client.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+      weeksPregnant = Math.max(0, Math.floor((280 - daysLeft) / 7));
+      calculatedTrimester = weeksPregnant <= 12 ? 1 : weeksPregnant <= 26 ? 2 : 3;
+    }
+    const pregnancyInfo = client.isPregnant
+      ? `PREGNANT CLIENT - Trimester: ${calculatedTrimester || "unknown"} (Week ${weeksPregnant || "unknown"}), Due date: ${client.dueDate ? new Date(client.dueDate).toLocaleDateString() : "unknown"}${client.pregnancyNotes ? `, Notes: ${client.pregnancyNotes}` : ""}`
+      : "";
+
+    return { client, user, existingPlans, coachingType, formDataStr, healthNotesStr, notesStr, coachRemarksStr, userInfo, pregnancyInfo, calculatedTrimester, weeksPregnant };
+  }
+
+  // Step 1: Generate week structure (lightweight, fast)
+  app.post("/api/admin/coaching/clients/:clientId/generate-workout-structure", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      if (!hasAIKey()) return res.status(500).json({ message: "No AI API key configured." });
+
+      const weekNumber = parseInt(req.body.weekNumber) || 1;
+      if (weekNumber < 1 || weekNumber > 4) return res.status(400).json({ message: "Week number must be between 1 and 4" });
+
+      const ctx = await buildWorkoutClientContext(req.params.clientId);
+      const previousWeekPlans = ctx.existingPlans.filter(p => p.weekNumber === weekNumber - 1);
+      const previousWeekSummary = previousWeekPlans.length > 0
+        ? `Previous week plan: ${previousWeekPlans.map(p => `Day ${p.dayNumber}: ${p.dayType} - ${(p as any).title}`).join(", ")}`
+        : "";
+
+      const structurePrompt = `You are Zoe, an expert ${ctx.coachingType === "private_coaching" ? "personal fitness transformation coach" : "postnatal fitness coach"}. Plan the STRUCTURE for Week ${weekNumber} of a 4-week program. Do NOT generate exercises — just decide which days are workout/rest and the focus for each day.
+
+IMPORTANT: You follow Zoe's coaching methodology — NOT generic bodybuilding splits (no "chest day", "leg day", etc). Your workout types are:
+- HIIT (High Intensity Interval Training)
+- Core (focused core & stability work)
+- EMOM (Every Minute on the Minute format)
+- Strength Circuit (full body or targeted strength in circuit format)
+- Pelvic Floor & Breath Work (especially for prenatal/postnatal clients)
+- Active Recovery (gentle movement, mobility, foam rolling)
+- Yoga Flow (flexibility, balance, mindfulness)
+- Tabata (20 sec on / 10 sec off intervals)
+- Metabolic Conditioning (metabolic circuits for endurance & fat burn)
+- Rest (complete rest day)
+
+Return JSON:
+{
+  "days": [
+    { "dayNumber": 1, "dayLabel": "Monday", "dayType": "hiit", "focus": "Full body blast with intervals", "briefDescription": "High-intensity intervals targeting total body conditioning" },
+    { "dayNumber": 2, "dayLabel": "Tuesday", "dayType": "core", "focus": "Deep core & stability", "briefDescription": "Core-focused session with stability and anti-rotation work" },
+    ...
+  ]
+}
+
+RULES:
+- "days" must be array of exactly 7 objects (dayNumber 1=Monday through 7=Sunday)
+- "dayType" must be one of: "hiit", "core", "emom", "strength", "pelvic_floor", "active_recovery", "yoga", "tabata", "metabolic", "rest", "custom"
+- If "custom", include a "customType" field with the name
+- Include "dayLabel" (e.g. "Monday", "Tuesday", etc.)
+- Typical week: 3-4 training days, 1-2 active recovery/yoga, 1-2 rest days. Mix workout types for variety.
+- ${ctx.coachingType === "pregnancy_coaching" ? "For prenatal/postnatal clients, include at least 1 pelvic floor & breath work day. Prioritize safety." : "Focus on client's selected goals from questionnaire."}
+- Week ${weekNumber} progression: ${weekNumber === 1 ? "introductory, foundational — lighter intensity, focus on form" : weekNumber === 2 ? "moderate progression — building on week 1" : weekNumber === 3 ? "challenging, increased intensity" : "peak week — highest intensity"}
+- Each day needs: dayNumber, dayLabel, dayType, focus (short phrase), briefDescription (1 sentence)`;
+
+      const result = await createAICompletion({
+        systemPrompt: structurePrompt,
+        userPrompt: `Plan Week ${weekNumber} structure for:\n${ctx.userInfo}\nHealth notes: ${ctx.healthNotesStr}\nCoach notes: ${ctx.notesStr}${ctx.coachRemarksStr ? `\n\nCOACH'S DIRECTION:\n${ctx.coachRemarksStr}` : ""}\nForm data: ${ctx.formDataStr}\n${previousWeekSummary}${ctx.pregnancyInfo ? `\n\n⚠️ ${ctx.pregnancyInfo}` : ""}`,
+        maxTokens: 1500,
+        temperature: 0.7,
+        jsonMode: true,
+        premium: false,
+      });
+
+      const data = JSON.parse(result || "{}");
+      let days = Array.isArray(data) ? data : (data.days || []);
+      if (days.length === 0) return res.status(500).json({ message: "AI returned invalid structure. Try again." });
+
+      res.json({ days });
+    } catch (error) {
+      console.error("Error generating workout structure:", error);
+      res.status(500).json({ message: "Failed to generate workout structure." });
+    }
+  });
+
+  // Step 2: Generate individual day workout
+  app.post("/api/admin/coaching/clients/:clientId/generate-workout-day", requireAdmin, adminOperationLimiter, async (req, res) => {
+    try {
+      if (!hasAIKey()) return res.status(500).json({ message: "No AI API key configured." });
+
+      const weekNumber = parseInt(req.body.weekNumber) || 1;
+      const dayNumber = parseInt(req.body.dayNumber);
+      const dayType = req.body.dayType;
+      const focus = req.body.focus || "";
+      const briefDescription = req.body.briefDescription || "";
+
+      if (weekNumber < 1 || weekNumber > 4) return res.status(400).json({ message: "Week number must be between 1 and 4" });
+      if (!dayNumber || dayNumber < 1 || dayNumber > 7) return res.status(400).json({ message: "Day number must be between 1 and 7" });
+      if (!dayType) return res.status(400).json({ message: "dayType is required" });
+
+      const ctx = await buildWorkoutClientContext(req.params.clientId);
+
+      // Delete existing plan for this specific day if it exists
+      const existingForDay = ctx.existingPlans.filter(p => p.weekNumber === weekNumber && p.dayNumber === dayNumber);
+      for (const plan of existingForDay) {
+        await storage.deleteCoachingWorkoutPlan(plan.id);
+      }
+
+      const allExercises = await storage.getExercises();
+      const exerciseLibraryStr = allExercises.map(ex =>
+        `${ex.name} | ${ex.category} | ${ex.difficulty} | ${ex.id} | ${ex.videoUrl || "no-video"}`
+      ).join("\n");
+
+      const previousWeekPlans = ctx.existingPlans.filter(p => p.weekNumber === weekNumber - 1);
+      const previousWeekSummary = previousWeekPlans.length > 0
+        ? `Previous week plan: ${previousWeekPlans.map(p => `Day ${p.dayNumber}: ${p.dayType} - ${(p as any).title}`).join(", ")}`
+        : "";
+
+      // Use the same detailed system prompt from the original endpoint but for a single day
+      const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      const dayName = dayNames[dayNumber - 1] || `Day ${dayNumber}`;
+
+      const sectionRulesMap: Record<string, string> = {
+        rest: `SECTION RULES FOR REST DAY: Minimal content. Include a gentle mobility suggestion and breathing exercise. 1-2 sections max.`,
+        active_recovery: `SECTION RULES FOR ACTIVE RECOVERY: Include warmup (gentle movement), main (foam rolling, mobility drills, light walking), stretch, cooldown. Keep low intensity, focus on recovery.`,
+        yoga: `SECTION RULES FOR YOGA FLOW: Include warmup (sun salutations or gentle flow), main (standing poses, balance, floor sequence), cooldown (savasana, meditation). 3-4 sections. Focus on breath-movement connection.`,
+        pelvic_floor: `SECTION RULES FOR PELVIC FLOOR & BREATH WORK: Include warmup (diaphragmatic breathing), activation (pelvic floor engagement drills), main (connection exercises — bird dogs, clamshells, bridges with breath cues), cooldown (relaxation). Essential for prenatal/postnatal clients.`,
+        hiit: `SECTION RULES FOR HIIT: Include warmup (5 min dynamic), main (4-6 high-intensity intervals with work:rest ratios like 40:20 or 30:15, 3-4 rounds), cooldown (5 min). Include a "format" field in main section like "40 secs work / 20 secs rest". Total 25-35 minutes.`,
+        core: `SECTION RULES FOR CORE: Include warmup (activation/mobilization), main (6-8 core exercises targeting all planes — anti-extension, anti-rotation, anti-lateral flexion), cooldown (stretch). 3-4 sets per exercise. Focus on form and breathing.`,
+        emom: `SECTION RULES FOR EMOM: Include warmup (5 min), main (EMOM format — 1-2 exercises per minute for 12-20 minutes, specify what to do each minute), cooldown. Include a "format" field like "EMOM x 16 minutes". Keep reps achievable within the minute with rest.`,
+        strength: `SECTION RULES FOR STRENGTH CIRCUIT: Include warmup (5 min dynamic), activation (2-3 band/bodyweight exercises), main (circuit of 4-6 strength exercises, 3-4 rounds with rest between rounds), finisher (optional burnout or AMRAP), stretch, cooldown. Use compound movements.`,
+        tabata: `SECTION RULES FOR TABATA: Include warmup (5 min), main (Tabata protocol — 20 sec work / 10 sec rest x 8 rounds per exercise, 3-4 exercises total), cooldown. Include a "format" field: "Tabata: 20 sec on / 10 sec off x 8 rounds". High intensity, short duration.`,
+        metabolic: `SECTION RULES FOR METABOLIC CONDITIONING: Include warmup (5 min), activation, main (metabolic circuit — 5-6 exercises performed for time or reps with minimal rest, 3-4 rounds), cooldown. Focus on elevating heart rate while maintaining form. Mix strength and cardio movements.`,
+      };
+      const sectionRules = sectionRulesMap[dayType] || sectionRulesMap["strength"];
+
+      const dayTypeLabels: Record<string, string> = {
+        hiit: "HIIT (High Intensity Interval Training)",
+        core: "Core & Stability",
+        emom: "EMOM (Every Minute on the Minute)",
+        strength: "Strength Circuit",
+        pelvic_floor: "Pelvic Floor & Breath Work",
+        active_recovery: "Active Recovery",
+        yoga: "Yoga Flow",
+        tabata: "Tabata",
+        metabolic: "Metabolic Conditioning",
+        rest: "Rest Day",
+      };
+      const singleDayPrompt = `You are Zoe, an expert ${ctx.coachingType === "private_coaching" ? "personal fitness transformation coach" : "postnatal fitness coach"} known for creative, engaging workouts. You do NOT use generic bodybuilding splits. Generate a SINGLE day's workout plan.
+
+This is ${dayName} (Day ${dayNumber}) of Week ${weekNumber}, a 4-week program.
+Day type: ${dayTypeLabels[dayType] || dayType}
+Focus: ${focus}
+Description: ${briefDescription}
+
+EXERCISE LIBRARY:
+${exerciseLibraryStr}
+
+Return a JSON object with exactly this structure (a single day, NOT wrapped in a "days" array):
+{
+  "dayNumber": ${dayNumber},
+  "dayType": "${dayType}",
+  "title": "...",
+  "description": "...",
+  "coachNotes": "...",
+  "personalizationNote": "...",
+  "personalizationTags": ["..."],
+  "sections": [...],
+  "equipmentNeeded": [...],
+  "estimatedDuration": "...",
+  "difficultyLevel": "..."
+}
+
+${sectionRules}
+
+EXERCISE SELECTION:
+- PREFER exercises from the EXERCISE LIBRARY. Use exact exerciseId and videoUrl from library.
+- For warmup/cooldown flows, exerciseId and videoUrl can be null
+- Each exercise: name, exerciseId, videoUrl, sets, reps, durationSeconds, restAfterSeconds, notes, reason
+- "reason": 1 short sentence explaining WHY this exercise was chosen for THIS client
+- "durationSeconds" must be number or null. "restAfterSeconds" must be number or null.
+- Every exercise must have at least one of "reps" or "durationSeconds"
+
+PERSONALIZATION:
+- "personalizationNote": 1-2 sentences explaining WHY these exercises for this client
+- "personalizationTags": 2-4 short tags
+
+PROGRESSION: Week ${weekNumber} = ${weekNumber === 1 ? "introductory, lighter weights, focus on form" : weekNumber === 2 ? "moderate progression" : weekNumber === 3 ? "challenging, increased intensity" : "peak week, most advanced"}
+
+${ctx.coachingType === "private_coaching" ? "Focus on client's goals from questionnaire." : "Focus on postpartum-safe exercises, pelvic floor awareness, core rehabilitation."}
+${ctx.pregnancyInfo ? `\nPREGNANCY SAFETY: AVOID heavy lifting, lying flat on back (after T1), high-impact jumping, deep twists. MODIFY intensity. INCLUDE pelvic floor exercises, modified planks, side-lying exercises.` : ""}`;
+
+      const dayContent = await createAICompletion({
+        systemPrompt: singleDayPrompt,
+        userPrompt: `Generate Day ${dayNumber} (${dayType} - ${focus}) for:\n${ctx.userInfo}\nHealth notes: ${ctx.healthNotesStr}\nCoach notes: ${ctx.notesStr}${ctx.coachRemarksStr ? `\n\nCOACH'S DIRECTION:\n${ctx.coachRemarksStr}` : ""}\nForm data: ${ctx.formDataStr}\n${previousWeekSummary}${ctx.pregnancyInfo ? `\n\n⚠️ ${ctx.pregnancyInfo}` : ""}`,
+        maxTokens: 4000,
+        temperature: 0.7,
+        jsonMode: true,
+        premium: true,
+      });
+
+      const day = JSON.parse(dayContent || "{}");
+      if (!day.dayType || !day.title) {
+        return res.status(500).json({ message: "AI generated invalid day workout. Try again." });
+      }
+
+      // Normalize and save
+      const structuredExercises = {
+        sections: Array.isArray(day.sections) ? day.sections : [],
+        equipmentNeeded: Array.isArray(day.equipmentNeeded) ? day.equipmentNeeded : [],
+        estimatedDuration: day.estimatedDuration || "45 minutes",
+        difficultyLevel: day.difficultyLevel || "intermediate",
+        personalizationNote: day.personalizationNote || null,
+        personalizationTags: Array.isArray(day.personalizationTags) ? day.personalizationTags : [],
+      };
+
+      const saved = await storage.createCoachingWorkoutPlan({
+        clientId: ctx.client.id,
+        weekNumber,
+        dayNumber: day.dayNumber || dayNumber,
+        dayType: day.dayType,
+        title: day.title,
+        description: day.description || "",
+        exercises: structuredExercises,
+        coachNotes: day.coachNotes || "",
+        isApproved: false,
+        isAiGenerated: true,
+        orderIndex: (weekNumber - 1) * 7 + dayNumber,
+      } as any);
+
+      // Update client status if needed
+      if (ctx.client.status === "plan_generating" || ctx.client.status === "intake_complete") {
+        await storage.updateCoachingClient(ctx.client.id, { status: "plan_ready" });
+      }
+
+      res.json({
+        message: `Day ${dayNumber} generated`,
+        day: {
+          id: saved.id,
+          dayNumber,
+          dayType: day.dayType,
+          title: day.title,
+          description: day.description || "",
+          coachNotes: day.coachNotes || "",
+          exercises: structuredExercises,
+        },
+      });
+    } catch (error) {
+      console.error("Error generating workout day:", error);
+      res.status(500).json({ message: "Failed to generate workout day." });
+    }
+  });
+
   // Generate AI nutrition plan for a coaching client
   app.post("/api/admin/coaching/clients/:clientId/generate-nutrition", requireAdmin, adminOperationLimiter, async (req, res) => {
     try {

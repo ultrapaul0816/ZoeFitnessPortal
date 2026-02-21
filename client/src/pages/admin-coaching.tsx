@@ -180,6 +180,27 @@ export default function AdminCoaching() {
   const [regeneratingDish, setRegeneratingDish] = useState<string | null>(null);
   const [outlinePreviewWeek, setOutlinePreviewWeek] = useState<number | null>(null);
   const [editingOutlineText, setEditingOutlineText] = useState<string>("");
+
+  // Multi-step workout generation wizard state
+  const [workoutWizard, setWorkoutWizard] = useState<{
+    open: boolean;
+    weekNumber: number;
+    phase: "idle" | "planning" | "review" | "generating" | "complete";
+    structure: Array<{ dayNumber: number; dayType: string; focus: string; briefDescription: string }>;
+    dayProgress: Record<number, "waiting" | "generating" | "complete" | "error">;
+    generatedDays: Record<number, any>;
+    currentDay: number | null;
+    startTime: number | null;
+  }>({
+    open: false,
+    weekNumber: 1,
+    phase: "idle",
+    structure: [],
+    dayProgress: {},
+    generatedDays: {},
+    currentDay: null,
+    startTime: null,
+  });
   const { toast } = useToast();
 
   const { data: clients = [], isLoading: isLoadingClients } = useQuery<CoachingClientWithUser[]>({
@@ -417,6 +438,102 @@ export default function AdminCoaching() {
       toast({ title: "Error approving outline", description: err.message, variant: "destructive" });
     },
   });
+
+  // Multi-step wizard: generate structure
+  const generateStructureMutation = useMutation({
+    mutationFn: async ({ clientId, weekNumber }: { clientId: string; weekNumber: number }) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-workout-structure`, { weekNumber });
+      return res.json();
+    },
+  });
+
+  // Multi-step wizard: generate single day
+  const generateDayMutation = useMutation({
+    mutationFn: async ({ clientId, weekNumber, dayNumber, dayType, focus, briefDescription }: {
+      clientId: string; weekNumber: number; dayNumber: number; dayType: string; focus: string; briefDescription: string;
+    }) => {
+      const res = await apiRequest("POST", `/api/admin/coaching/clients/${clientId}/generate-workout-day`, {
+        weekNumber, dayNumber, dayType, focus, briefDescription,
+      });
+      return res.json();
+    },
+  });
+
+  // Wizard: start structure generation
+  const startWorkoutWizard = async (clientId: string, weekNumber: number) => {
+    setWorkoutWizard(prev => ({ ...prev, open: true, weekNumber, phase: "planning", structure: [], dayProgress: {}, generatedDays: {}, currentDay: null, startTime: null }));
+    try {
+      const result = await generateStructureMutation.mutateAsync({ clientId, weekNumber });
+      setWorkoutWizard(prev => ({ ...prev, phase: "review", structure: result.days || [] }));
+    } catch (err: any) {
+      toast({ title: "Failed to plan week structure", description: err.message, variant: "destructive" });
+      setWorkoutWizard(prev => ({ ...prev, phase: "idle", open: false }));
+    }
+  };
+
+  // Wizard: generate days sequentially
+  const startDayGeneration = async (clientId: string) => {
+    const { structure, weekNumber } = workoutWizard;
+    const activeDays = structure.filter(d => d.dayType !== "rest");
+    const progress: Record<number, "waiting" | "generating" | "complete" | "error"> = {};
+    structure.forEach(d => { progress[d.dayNumber] = d.dayType === "rest" ? "complete" : "waiting"; });
+
+    setWorkoutWizard(prev => ({ ...prev, phase: "generating", dayProgress: progress, startTime: Date.now() }));
+
+    // Delete existing plans for this week first
+    for (const day of activeDays) {
+      try {
+        setWorkoutWizard(prev => ({
+          ...prev,
+          currentDay: day.dayNumber,
+          dayProgress: { ...prev.dayProgress, [day.dayNumber]: "generating" },
+        }));
+
+        const result = await generateDayMutation.mutateAsync({
+          clientId,
+          weekNumber,
+          dayNumber: day.dayNumber,
+          dayType: day.dayType,
+          focus: day.focus,
+          briefDescription: day.briefDescription,
+        });
+
+        setWorkoutWizard(prev => ({
+          ...prev,
+          dayProgress: { ...prev.dayProgress, [day.dayNumber]: "complete" },
+          generatedDays: { ...prev.generatedDays, [day.dayNumber]: result.day },
+        }));
+      } catch (err) {
+        setWorkoutWizard(prev => ({
+          ...prev,
+          dayProgress: { ...prev.dayProgress, [day.dayNumber]: "error" },
+        }));
+      }
+    }
+
+    // Also save rest days
+    for (const day of structure.filter(d => d.dayType === "rest")) {
+      try {
+        await generateDayMutation.mutateAsync({
+          clientId,
+          weekNumber,
+          dayNumber: day.dayNumber,
+          dayType: "rest",
+          focus: "Rest & Recovery",
+          briefDescription: "Complete rest day for recovery",
+        });
+        setWorkoutWizard(prev => ({
+          ...prev,
+          dayProgress: { ...prev.dayProgress, [day.dayNumber]: "complete" },
+        }));
+      } catch { /* rest days are non-critical */ }
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients", selectedClientId, "workout-plan"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/coaching/clients"] });
+
+    setWorkoutWizard(prev => ({ ...prev, phase: "complete", currentDay: null }));
+  };
 
   const approvePlanMutation = useMutation({
     mutationFn: async (clientId: string) => {
@@ -768,12 +885,12 @@ export default function AdminCoaching() {
               <div className="flex gap-2">
                 {(selectedClient.status === "plan_generating" || selectedClient.status === "plan_ready" || selectedClient.status === "active") && (
                   <Select
-                    onValueChange={(week) => generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: parseInt(week) })}
-                    disabled={generateWorkoutMutation.isPending}
+                    onValueChange={(week) => startWorkoutWizard(selectedClient.id, parseInt(week))}
+                    disabled={workoutWizard.open || generateWorkoutMutation.isPending}
                   >
                     <SelectTrigger className="w-[240px] bg-blue-600 hover:bg-blue-700 text-white border-0 [&>span]:text-white font-medium">
                       <Brain className="w-4 h-4 mr-2" />
-                      {generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : (() => {
+                      {workoutWizard.open ? `Generating Week ${workoutWizard.weekNumber}...` : generateWorkoutMutation.isPending ? `Generating Week ${generatingWeek}...` : (() => {
                         const weeksGen = new Set((clientWorkoutPlan as any[]).map((p: any) => p.weekNumber)).size;
                         return `Generate Workout (${weeksGen}/${(selectedClient as any)?.planDurationWeeks || 4})`;
                       })()}
@@ -1228,10 +1345,10 @@ export default function AdminCoaching() {
                               className="h-auto py-3 px-4 justify-start gap-3 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:from-violet-600 hover:to-purple-600 transition-all"
                               onClick={() => {
                                 if (selectedClient) {
-                                  generatePlanOutlineMutation.mutate({ clientId: selectedClient.id, weekNumber: nextUngenWeek });
+                                  startWorkoutWizard(selectedClient.id, nextUngenWeek);
                                 }
                               }}
-                              disabled={generatePlanOutlineMutation.isPending || generateWorkoutMutation.isPending}
+                              disabled={workoutWizard.open || generatePlanOutlineMutation.isPending || generateWorkoutMutation.isPending}
                             >
                               <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
                                 <Brain className="w-5 h-5 text-white" />
@@ -1605,9 +1722,9 @@ export default function AdminCoaching() {
                                 className="h-7 text-xs text-violet-600 hover:text-gray-900 hover:bg-violet-100 px-2"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
+                                  startWorkoutWizard(selectedClient.id, week);
                                 }}
-                                disabled={generateWorkoutMutation.isPending}
+                                disabled={workoutWizard.open || generateWorkoutMutation.isPending}
                               >
                                 <Sparkles className="w-3 h-3 mr-1" /> Generate
                               </Button>
@@ -1711,15 +1828,9 @@ export default function AdminCoaching() {
                                 size="sm"
                                 variant={hasWeek ? "outline" : "default"}
                                 onClick={() => {
-                                  if (hasWeek) {
-                                    // Regenerate: skip outline and go straight to workout
-                                    generateWorkoutMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
-                                  } else {
-                                    // First time: generate outline first
-                                    generatePlanOutlineMutation.mutate({ clientId: selectedClient.id, weekNumber: week });
-                                  }
+                                  startWorkoutWizard(selectedClient.id, week);
                                 }}
-                                disabled={generateWorkoutMutation.isPending || generatePlanOutlineMutation.isPending || !previousWeekExists}
+                                disabled={workoutWizard.open || generateWorkoutMutation.isPending || generatePlanOutlineMutation.isPending || !previousWeekExists}
                                 className={cn(
                                   hasWeek ? "" : "bg-blue-600 hover:bg-blue-700 text-white"
                                 )}
@@ -2901,6 +3012,249 @@ export default function AdminCoaching() {
           onClose={() => setPlanBuilderOpen(false)}
         />
       )}
+
+      {/* Multi-Step Workout Generation Wizard */}
+      <Dialog open={workoutWizard.open} onOpenChange={(open) => {
+        if (!open && workoutWizard.phase !== "generating") {
+          setWorkoutWizard(prev => ({ ...prev, open: false, phase: "idle" }));
+        }
+      }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-500" />
+              Generate Week {workoutWizard.weekNumber} Workouts
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Phase 1: Planning */}
+          {workoutWizard.phase === "planning" && (
+            <div className="flex flex-col items-center py-8 gap-4">
+              <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <Brain className="w-6 h-6 text-purple-600 animate-pulse" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-900">Planning your week...</p>
+                <p className="text-sm text-gray-500 mt-1">AI is deciding the best day-by-day structure (~10 seconds)</p>
+              </div>
+            </div>
+          )}
+
+          {/* Phase 2: Review Structure */}
+          {workoutWizard.phase === "review" && (
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">Review and adjust the weekly structure before generating detailed workouts.</p>
+              <div className="space-y-2">
+                {workoutWizard.structure.map((day, idx) => {
+                  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                  const typeLabels: Record<string, string> = {
+                    upper_body_strength: "💪 Upper Body",
+                    lower_body_core: "🦵 Lower Body & Core",
+                    full_body_strength: "🏋️ Full Body",
+                    cardio: "🏃 Cardio",
+                    conditioning: "⚡ Conditioning",
+                    active_recovery: "🧘 Active Recovery",
+                    rest: "😴 Rest",
+                    sport_active_play: "🎾 Sport & Play",
+                  };
+                  const typeColors: Record<string, string> = {
+                    upper_body_strength: "bg-blue-50 border-blue-200",
+                    lower_body_core: "bg-green-50 border-green-200",
+                    full_body_strength: "bg-orange-50 border-orange-200",
+                    cardio: "bg-red-50 border-red-200",
+                    conditioning: "bg-yellow-50 border-yellow-200",
+                    active_recovery: "bg-teal-50 border-teal-200",
+                    rest: "bg-gray-50 border-gray-200",
+                    sport_active_play: "bg-purple-50 border-purple-200",
+                  };
+                  return (
+                    <div key={day.dayNumber} className={cn("flex items-center gap-3 p-3 rounded-lg border", typeColors[day.dayType] || "bg-gray-50 border-gray-200")}>
+                      <div className="w-10 text-center">
+                        <div className="text-xs font-bold text-gray-500">{dayNames[idx]}</div>
+                        <div className="text-lg font-bold text-gray-800">{day.dayNumber}</div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{typeLabels[day.dayType] || day.dayType}</span>
+                          {day.dayType !== "rest" && (
+                            <span className="text-xs text-gray-500">• {day.focus}</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 truncate">{day.briefDescription}</p>
+                      </div>
+                      <Select
+                        value={day.dayType}
+                        onValueChange={(val) => {
+                          setWorkoutWizard(prev => {
+                            const updated = [...prev.structure];
+                            updated[idx] = { ...updated[idx], dayType: val };
+                            return { ...prev, structure: updated };
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="w-[160px] h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="upper_body_strength">💪 Upper Body</SelectItem>
+                          <SelectItem value="lower_body_core">🦵 Lower Body</SelectItem>
+                          <SelectItem value="full_body_strength">🏋️ Full Body</SelectItem>
+                          <SelectItem value="cardio">🏃 Cardio</SelectItem>
+                          <SelectItem value="conditioning">⚡ Conditioning</SelectItem>
+                          <SelectItem value="active_recovery">🧘 Active Recovery</SelectItem>
+                          <SelectItem value="rest">😴 Rest</SelectItem>
+                          <SelectItem value="sport_active_play">🎾 Sport & Play</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  );
+                })}
+              </div>
+              {(() => {
+                const activeDays = workoutWizard.structure.filter(d => d.dayType !== "rest" && d.dayType !== "active_recovery");
+                const recoveryDays = workoutWizard.structure.filter(d => d.dayType === "active_recovery");
+                const cardioDays = workoutWizard.structure.filter(d => d.dayType === "cardio");
+                const estMinutes = activeDays.length * 20 + recoveryDays.length * 12 + cardioDays.length * 18;
+                const estTotal = Math.ceil(estMinutes / 60 * 1.2);
+                return (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                    <strong>Estimated generation time:</strong> ~{estTotal > 1 ? `${estTotal} minutes` : `${estMinutes} seconds`} for {activeDays.length + recoveryDays.length + cardioDays.length} active days
+                  </div>
+                );
+              })()}
+              <div className="flex justify-between pt-2">
+                <Button variant="outline" onClick={() => setWorkoutWizard(prev => ({ ...prev, open: false, phase: "idle" }))}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => selectedClient && startDayGeneration(selectedClient.id)}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Looks Good — Generate Workouts
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Phase 3: Generating Days */}
+          {workoutWizard.phase === "generating" && (
+            <div className="space-y-3">
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-sm text-purple-800">
+                Generating workouts day by day. This takes ~20 seconds per workout day. Please don't close this dialog.
+              </div>
+              <div className="space-y-2">
+                {workoutWizard.structure.map((day) => {
+                  const status = workoutWizard.dayProgress[day.dayNumber] || "waiting";
+                  const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                  const typeLabels: Record<string, string> = {
+                    upper_body_strength: "Upper Body",
+                    lower_body_core: "Lower Body & Core",
+                    full_body_strength: "Full Body",
+                    cardio: "Cardio",
+                    conditioning: "Conditioning",
+                    active_recovery: "Active Recovery",
+                    rest: "Rest",
+                    sport_active_play: "Sport & Play",
+                  };
+                  const timeEst: Record<string, string> = {
+                    upper_body_strength: "~20 sec",
+                    lower_body_core: "~20 sec",
+                    full_body_strength: "~20 sec",
+                    cardio: "~18 sec",
+                    conditioning: "~20 sec",
+                    active_recovery: "~12 sec",
+                    rest: "~5 sec",
+                    sport_active_play: "~15 sec",
+                  };
+                  return (
+                    <div key={day.dayNumber} className={cn(
+                      "flex items-center gap-3 p-3 rounded-lg border transition-all",
+                      status === "generating" ? "border-purple-300 bg-purple-50" :
+                      status === "complete" ? "border-green-300 bg-green-50" :
+                      status === "error" ? "border-red-300 bg-red-50" :
+                      "border-gray-200 bg-gray-50"
+                    )}>
+                      <div className="w-6 h-6 flex items-center justify-center">
+                        {status === "waiting" && <span className="text-gray-400">⏳</span>}
+                        {status === "generating" && <RefreshCw className="w-4 h-4 text-purple-500 animate-spin" />}
+                        {status === "complete" && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+                        {status === "error" && <AlertCircle className="w-5 h-5 text-red-500" />}
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">
+                          Day {day.dayNumber} ({dayNames[day.dayNumber - 1]}): {typeLabels[day.dayType] || day.dayType}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {status === "waiting" && "Waiting..."}
+                          {status === "generating" && `Generating ${day.focus} (${timeEst[day.dayType] || "~20 sec"})...`}
+                          {status === "complete" && (workoutWizard.generatedDays[day.dayNumber]?.title || "Complete")}
+                          {status === "error" && "Failed — will retry on next attempt"}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {(() => {
+                const completed = Object.values(workoutWizard.dayProgress).filter(s => s === "complete").length;
+                const total = workoutWizard.structure.length;
+                const remaining = workoutWizard.structure.filter(d => workoutWizard.dayProgress[d.dayNumber] === "waiting").length;
+                return (
+                  <div className="text-center text-sm text-gray-500">
+                    {completed}/{total} days complete{remaining > 0 ? ` • ~${remaining * 20} seconds remaining` : ""}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Phase 4: Complete */}
+          {workoutWizard.phase === "complete" && (
+            <div className="space-y-4">
+              <div className="flex flex-col items-center py-4 gap-3">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+                </div>
+                <div className="text-center">
+                  <p className="font-medium text-gray-900">Week {workoutWizard.weekNumber} workouts generated!</p>
+                  <p className="text-sm text-gray-500 mt-1">Review and approve the workout plan below.</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {workoutWizard.structure.map((day) => {
+                  const gen = workoutWizard.generatedDays[day.dayNumber];
+                  const status = workoutWizard.dayProgress[day.dayNumber];
+                  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                  return (
+                    <div key={day.dayNumber} className={cn(
+                      "flex items-center gap-3 p-2 rounded border text-sm",
+                      status === "error" ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"
+                    )}>
+                      <span className="font-bold text-gray-600 w-8">{dayNames[day.dayNumber - 1]}</span>
+                      <span className="flex-1">{gen?.title || day.focus || day.dayType}</span>
+                      {status === "complete" && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                      {status === "error" && <AlertCircle className="w-4 h-4 text-red-500" />}
+                    </div>
+                  );
+                })}
+              </div>
+              {Object.values(workoutWizard.dayProgress).some(s => s === "error") && (
+                <p className="text-xs text-red-600">Some days failed. You can regenerate individual days from the workout tab.</p>
+              )}
+              <div className="flex justify-end pt-2">
+                <Button
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => setWorkoutWizard(prev => ({ ...prev, open: false, phase: "idle" }))}
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  Done — Review Workouts
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
