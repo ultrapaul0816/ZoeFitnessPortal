@@ -1662,9 +1662,16 @@ export default function MyCoaching() {
 
   if (planLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-50 to-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4" />
-        <p className="text-gray-600 font-medium">Loading your coaching plan...</p>
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+        <div className="max-w-lg mx-auto px-4 pt-6 pb-24 space-y-6">
+          {/* Header skeleton */}
+          <div className="h-32 w-full rounded-2xl bg-gradient-to-r from-pink-200 to-rose-200 animate-pulse" />
+          {/* Card skeletons */}
+          <div className="h-48 w-full rounded-2xl bg-gray-100 animate-pulse" />
+          <div className="h-48 w-full rounded-2xl bg-gray-100 animate-pulse" />
+          {/* Button skeleton */}
+          <div className="h-12 w-48 rounded-full bg-gray-100 animate-pulse mx-auto" />
+        </div>
       </div>
     );
   }
