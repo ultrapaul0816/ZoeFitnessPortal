@@ -480,6 +480,25 @@ export default function Progress() {
         </div>
       </Card>
 
+      {/* Monthly Progress Report CTA */}
+      <Card
+        className="bg-gradient-to-r from-rose-400 to-pink-500 border-0 p-4 md:p-5 cursor-pointer hover:from-rose-500 hover:to-pink-600 transition-all shadow-lg"
+        onClick={() => setLocation("/my-progress/monthly")}
+      >
+        <div className="flex items-center justify-between text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 md:w-6 md:h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm md:text-base">Monthly Progress Report</h3>
+              <p className="text-white/80 text-xs md:text-sm">See how far you've come & share it!</p>
+            </div>
+          </div>
+          <span className="text-white/80 text-xl">→</span>
+        </div>
+      </Card>
+
       {/* Photo Upload Section */}
       {isLoading ? (
         <div className="text-center py-12">
