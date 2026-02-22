@@ -22,6 +22,7 @@ const PrenatalStrength = lazy(() => import("@/pages/prenatal-strength"));
 const HealYourCorePage = lazy(() => import("@/pages/heal-your-core"));
 const Progress = lazy(() => import("@/pages/progress"));
 const BodyMeasurements = lazy(() => import("@/pages/body-measurements"));
+const MonthlyReport = lazy(() => import("@/pages/monthly-report"));
 
 // Lazy load admin pages (rarely accessed by regular users)
 const AdminLogin = lazy(() => import("@/pages/admin-login"));
@@ -51,6 +52,7 @@ const AdminProgramProgress = lazy(() => import("@/pages/admin-program-progress")
 const AdminEmailCampaigns = lazy(() => import("@/pages/admin-email-campaigns"));
 const AdminEmailAnalytics = lazy(() => import("@/pages/admin-email-analytics"));
 const MyCoaching = lazy(() => import("@/pages/my-coaching"));
+const MyJourney = lazy(() => import("@/pages/my-journey"));
 
 // Error boundary to catch rendering errors
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -172,9 +174,11 @@ function Router() {
       <Route path="/admin/email-campaigns" component={() => <AdminGuard component={AdminEmailCampaigns} message="Loading email campaigns..." />} />
       <Route path="/admin/email-analytics" component={() => <AdminGuard component={AdminEmailAnalytics} message="Loading email analytics..." />} />
       <Route path="/admin/program-progress" component={() => <AdminGuard component={AdminProgramProgress} message="Loading progress..." />} />
+      <Route path="/my-journey" component={() => <LazyRoute component={MyJourney} message="Loading your journey..." />} />
       <Route path="/heal-your-core" component={() => <LazyRoute component={HealYourCorePage} message="Loading your program..." />} />
       <Route path="/progress" component={() => <LazyRoute component={Progress} message="Loading progress tracker..." />} />
       <Route path="/body-measurements" component={() => <LazyRoute component={BodyMeasurements} message="Loading measurements..." />} />
+      <Route path="/my-progress/monthly" component={() => <LazyRoute component={MonthlyReport} message="Loading your report..." />} />
       <Route path="/my-library" component={() => <LazyRoute component={MyLibrary} message="Loading library..." />} />
       <Route path="/my-courses" component={MyCourses} />
       <Route path="/my-progress-photos" component={() => <LazyRoute component={ProgressPhotos} message="Loading photos..." />} />

@@ -1279,6 +1279,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Program Journey - combined view of all weekly progress
+  app.get("/api/program-journey", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+      const roundParam = req.query.round ? parseInt(req.query.round as string) : null;
+
+      // Get member programs to determine rounds
+      const memberProgs = await storage.getMemberPrograms(userId);
+      const healPrograms = memberProgs
+        .filter(mp => mp.program?.name?.toLowerCase().includes("heal"))
+        .sort((a, b) => new Date(a.purchaseDate!).getTime() - new Date(b.purchaseDate!).getTime());
+
+      const rounds = healPrograms.map((mp, i) => {
+        const start = new Date(mp.purchaseDate!);
+        const end = mp.expiryDate ? new Date(mp.expiryDate) : null;
+        const startMonth = start.toLocaleString("en", { month: "short" });
+        const endMonth = end ? end.toLocaleString("en", { month: "short" }) : "now";
+        return {
+          roundNumber: i + 1,
+          startDate: start.toISOString(),
+          endDate: end?.toISOString() ?? null,
+          label: `Round ${i + 1} (${startMonth}–${endMonth})`,
+        };
+      });
+
+      if (rounds.length === 0) {
+        rounds.push({ roundNumber: 1, startDate: new Date().toISOString(), endDate: null, label: "Round 1" });
+      }
+
+      const currentRound = roundParam ?? rounds.length;
+
+      // Get all workout session progress
+      const progress = await storage.getWorkoutSessionProgress(userId);
+      const skippedWeeks = await storage.getSkippedWeeks(userId);
+      const skippedSet = new Set(skippedWeeks.map(s => s.week));
+
+      // Get progress tracking entries (measurements)
+      let progressEntries: any[] = [];
+      try {
+        const programId = healPrograms.length > 0 ? healPrograms[0].programId : "";
+        if (programId) {
+          progressEntries = await storage.getProgressEntries(userId, programId);
+        }
+      } catch { /* no entries */ }
+
+      // Get daily checkins for checkin day counts per week
+      const allSessions = await storage.getAllUserWorkoutSessions(userId);
+
+      // Build week schedule totals from workoutPrograms data
+      const weekSchedules: Record<number, { workouts: number; cardio: number }> = {
+        1: { workouts: 4, cardio: 2 },
+        2: { workouts: 3, cardio: 2 },
+        3: { workouts: 3, cardio: 2 },
+        4: { workouts: 3, cardio: 2 },
+        5: { workouts: 3, cardio: 2 },
+        6: { workouts: 4, cardio: 2 },
+      };
+
+      const programTitles: Record<number, { title: string; subtitle: string }> = {
+        1: { title: "RECONNECT & RESET", subtitle: "Foundation Building" },
+        2: { title: "STABILITY & BREATHWORK", subtitle: "Building Rhythm" },
+        3: { title: "CONTROL & AWARENESS", subtitle: "Strengthening Base" },
+        4: { title: "ALIGN & ACTIVATE", subtitle: "Building Challenge" },
+        5: { title: "FUNCTIONAL CORE FLOW", subtitle: "Real-Life Movement" },
+        6: { title: "FOUNDATIONAL STRENGTH", subtitle: "Graduation Program" },
+      };
+
+      const weeks = [];
+      for (let w = 1; w <= 6; w++) {
+        const weekProgress = progress.weeklyProgress.find(wp => wp.week === w);
+        const measurement = progressEntries.find(pe => pe.week === w);
+        const sched = weekSchedules[w];
+        const titles = programTitles[w];
+
+        const workoutsCompleted = weekProgress?.workoutsCompleted ?? 0;
+        const cardioCompleted = weekProgress?.cardioCompleted ?? 0;
+        const isSkipped = skippedSet.has(w) || (weekProgress?.isSkipped ?? false);
+        const isComplete = weekProgress?.isComplete ?? false;
+        const isCurrentWeek = progress.currentWeek === w;
+
+        let status: string;
+        if (isSkipped) status = "skipped";
+        else if (isComplete) status = "complete";
+        else if (isCurrentWeek || workoutsCompleted > 0) status = "in-progress";
+        else if (w < progress.currentWeek) status = "complete"; // past weeks with no data treated as upcoming
+        else status = "upcoming";
+
+        // If past the current week but no data, mark upcoming rather than complete
+        if (w > progress.currentWeek && status !== "skipped") status = "upcoming";
+
+        // Count checkin days for this week from sessions
+        const weekSessions = allSessions.filter(s => s.week === w);
+        const checkinDays = new Set(weekSessions.map(s => s.completedAt ? new Date(s.completedAt).toDateString() : null).filter(Boolean)).size;
+
+        weeks.push({
+          week: w,
+          title: titles.title,
+          subtitle: titles.subtitle,
+          workoutsCompleted,
+          workoutsTotal: sched.workouts,
+          cardioCompleted,
+          cardioTotal: sched.cardio,
+          measurements: {
+            drGap: measurement?.drGapMeasurement ?? null,
+            coreScore: measurement?.coreConnectionScore ?? null,
+            backDiscomfort: measurement?.postureBackDiscomfort ?? null,
+            energy: measurement?.energyLevel ?? null,
+          },
+          checkinDays,
+          status,
+          isCurrentWeek,
+        });
+      }
+
+      res.json({
+        weeks,
+        currentRound,
+        rounds,
+        overallProgress: Math.round((weeks.filter(w => w.status === "complete").length / 6) * 100),
+        currentWeek: progress.currentWeek,
+      });
+    } catch (error: any) {
+      console.error(`[PROGRAM-JOURNEY] Error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to load program journey" });
+    }
+  });
+
   // Get workout progress (current week, completions, all weeks progress)
   // Using userId in URL to avoid third-party cookie issues in iframes
   app.get("/api/workout-sessions/:userId/progress", requireAuth, async (req, res) => {
