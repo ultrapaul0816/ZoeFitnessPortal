@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { randomUUID, createHmac, randomBytes } from "crypto";
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, and, gte, lt } from "drizzle-orm";
 import { storage } from "./storage";
-import { coachingClients, dailyCheckins, weeklyWorkoutSessions, workoutCompletions as workoutCompletionsTable } from "@shared/schema";
+import { coachingClients, dailyCheckins, weeklyWorkoutSessions, workoutCompletions as workoutCompletionsTable, progressTracking } from "@shared/schema";
 import {
   loginSchema,
   insertWorkoutCompletionSchema,
@@ -1448,6 +1448,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error(`[LIFETIME-STATS] Error:`, error?.message || error);
       res.status(500).json({ message: "Failed to fetch lifetime stats" });
+    }
+  });
+
+  // Historical progress - weekly aggregates for charts
+  app.get("/api/daily-checkins/:userId/history", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session?.userId || (req as any)._tokenUserId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const allCheckins = await storage.db.select().from(dailyCheckins).where(eq(dailyCheckins.userId, userId)).orderBy(dailyCheckins.date);
+      const allSessions = await storage.db.select().from(weeklyWorkoutSessions).where(eq(weeklyWorkoutSessions.userId, userId));
+
+      if (allCheckins.length === 0) {
+        return res.json({ weeks: [], totalWeeks: 0 });
+      }
+
+      // Group checkins by ISO week
+      const weekMap = new Map<string, typeof allCheckins>();
+      for (const c of allCheckins) {
+        const d = new Date(c.date);
+        // Get Monday of that week
+        const day = d.getDay();
+        const diff = day === 0 ? 6 : day - 1;
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - diff);
+        const key = monday.toISOString().split('T')[0];
+        if (!weekMap.has(key)) weekMap.set(key, []);
+        weekMap.get(key)!.push(c);
+      }
+
+      const weeks = Array.from(weekMap.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([weekStart, checkins], idx) => {
+          const workoutDays = checkins.filter(c => c.workoutCompleted).length;
+          const breathingDays = checkins.filter(c => c.breathingPractice).length;
+          const avgWater = checkins.length > 0
+            ? Math.round((checkins.reduce((s, c) => s + (c.waterGlasses || 0), 0) / checkins.length) * 10) / 10
+            : 0;
+          const avgCardio = checkins.length > 0
+            ? Math.round((checkins.reduce((s, c) => s + (c.cardioMinutes || 0), 0) / checkins.length) * 10) / 10
+            : 0;
+          const energyCheckins = checkins.filter(c => c.energyLevel != null);
+          const avgEnergy = energyCheckins.length > 0
+            ? Math.round((energyCheckins.reduce((s, c) => s + (c.energyLevel || 0), 0) / energyCheckins.length) * 10) / 10
+            : 0;
+          
+          const moodCounts = { great: 0, good: 0, okay: 0, tired: 0, struggling: 0 };
+          for (const c of checkins) {
+            if (c.mood && c.mood in moodCounts) {
+              moodCounts[c.mood as keyof typeof moodCounts]++;
+            }
+          }
+
+          return {
+            weekStart,
+            weekNumber: idx + 1,
+            workoutDays,
+            breathingDays,
+            avgWater,
+            avgCardio,
+            avgEnergy,
+            moodCounts,
+            totalCheckins: checkins.length,
+          };
+        });
+
+      // Also aggregate workout sessions by program week
+      const sessionsByWeek = new Map<number, { workouts: number; cardio: number }>();
+      for (const s of allSessions) {
+        if (!sessionsByWeek.has(s.week)) sessionsByWeek.set(s.week, { workouts: 0, cardio: 0 });
+        const entry = sessionsByWeek.get(s.week)!;
+        if (s.sessionType === 'workout') entry.workouts++;
+        else entry.cardio++;
+      }
+
+      res.json({
+        weeks,
+        totalWeeks: weeks.length,
+        programSessions: Object.fromEntries(sessionsByWeek),
+      });
+    } catch (error: any) {
+      console.error(`[CHECKIN-HISTORY] Error:`, error?.message || error);
+      res.status(500).json({ message: "Failed to fetch check-in history" });
     }
   });
 
@@ -10402,6 +10487,133 @@ ${clientData.nutritionPlans.length > 0 ? `NUTRITION PLAN OUTLINE:\n${JSON.string
     } catch (error) {
       console.error("Error exporting program progress CSV:", error);
       res.status(500).json({ message: "Failed to export CSV" });
+    }
+  });
+
+  // Monthly progress report
+  app.get("/api/reports/:userId/monthly", requireAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const sessionUserId = (req as any).session?.userId || (req as any)._tokenUserId;
+      if (userId !== sessionUserId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const monthParam = req.query.month as string; // e.g. "2026-02"
+      if (!monthParam || !/^\d{4}-\d{2}$/.test(monthParam)) {
+        return res.status(400).json({ message: "Invalid month format. Use YYYY-MM" });
+      }
+
+      const [year, month] = monthParam.split("-").map(Number);
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 1);
+      const daysInMonth = new Date(year, month, 0).getDate();
+
+      // Fetch all data in parallel
+      const [checkins, sessions, completions, progressEntries] = await Promise.all([
+        storage.db.select().from(dailyCheckins).where(
+          and(eq(dailyCheckins.userId, userId), gte(dailyCheckins.date, startDate), lt(dailyCheckins.date, endDate))
+        ),
+        storage.db.select().from(weeklyWorkoutSessions).where(
+          and(eq(weeklyWorkoutSessions.userId, userId), gte(weeklyWorkoutSessions.completedAt, startDate), lt(weeklyWorkoutSessions.completedAt, endDate))
+        ),
+        storage.db.select().from(workoutCompletionsTable).where(
+          and(eq(workoutCompletionsTable.userId, userId), gte(workoutCompletionsTable.completedAt, startDate), lt(workoutCompletionsTable.completedAt, endDate))
+        ),
+        storage.db.select().from(progressTracking).where(
+          and(eq(progressTracking.userId, userId), gte(progressTracking.recordedAt, startDate), lt(progressTracking.recordedAt, endDate))
+        ).orderBy(progressTracking.recordedAt),
+      ]);
+
+      // Total workouts (from completions + checkin workout flags)
+      const totalWorkouts = completions.length;
+      const totalBreathingSessions = checkins.filter(c => c.breathingPractice).length;
+      const totalCardioMinutes = checkins.reduce((sum, c) => sum + (c.cardioMinutes || 0), 0);
+
+      // Water & energy averages
+      const waterValues = checkins.filter(c => c.waterGlasses != null).map(c => c.waterGlasses!);
+      const avgWater = waterValues.length ? Math.round((waterValues.reduce((a, b) => a + b, 0) / waterValues.length) * 10) / 10 : 0;
+      const energyValues = checkins.filter(c => c.energyLevel != null).map(c => c.energyLevel!);
+      const avgEnergy = energyValues.length ? Math.round((energyValues.reduce((a, b) => a + b, 0) / energyValues.length) * 10) / 10 : 0;
+
+      // Mood breakdown
+      const moodBreakdown: Record<string, number> = {};
+      for (const c of checkins) {
+        if (c.mood) {
+          moodBreakdown[c.mood] = (moodBreakdown[c.mood] || 0) + 1;
+        }
+      }
+
+      // Active days & streak
+      const activeDates = new Set<string>();
+      for (const c of checkins) {
+        if (c.workoutCompleted || c.breathingPractice || (c.cardioMinutes && c.cardioMinutes > 0)) {
+          activeDates.add(new Date(c.date).toISOString().split("T")[0]);
+        }
+      }
+      for (const comp of completions) {
+        if (comp.completedAt) {
+          activeDates.add(new Date(comp.completedAt).toISOString().split("T")[0]);
+        }
+      }
+      const activeDays = activeDates.size;
+
+      // Best streak calculation
+      const sortedDates = Array.from(activeDates).sort();
+      let bestStreak = 0;
+      let currentStreak = 0;
+      for (let i = 0; i < sortedDates.length; i++) {
+        if (i === 0) {
+          currentStreak = 1;
+        } else {
+          const prev = new Date(sortedDates[i - 1]);
+          const curr = new Date(sortedDates[i]);
+          const diffDays = (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
+          currentStreak = diffDays === 1 ? currentStreak + 1 : 1;
+        }
+        bestStreak = Math.max(bestStreak, currentStreak);
+      }
+
+      const consistencyScore = Math.round((activeDays / daysInMonth) * 100);
+
+      // Measurement changes (progressTracking entries for the month)
+      let measurementChanges: any = null;
+      if (progressEntries.length >= 2) {
+        const first = progressEntries[0];
+        const last = progressEntries[progressEntries.length - 1];
+        measurementChanges = {
+          drGap: first.drGapMeasurement && last.drGapMeasurement ? { start: first.drGapMeasurement, end: last.drGapMeasurement } : null,
+          coreConnection: first.coreConnectionScore != null && last.coreConnectionScore != null ? { start: first.coreConnectionScore, end: last.coreConnectionScore, change: last.coreConnectionScore - first.coreConnectionScore } : null,
+          backDiscomfort: first.postureBackDiscomfort != null && last.postureBackDiscomfort != null ? { start: first.postureBackDiscomfort, end: last.postureBackDiscomfort, change: last.postureBackDiscomfort - first.postureBackDiscomfort } : null,
+          energyLevel: first.energyLevel != null && last.energyLevel != null ? { start: first.energyLevel, end: last.energyLevel, change: last.energyLevel - first.energyLevel } : null,
+        };
+      } else if (progressEntries.length === 1) {
+        const entry = progressEntries[0];
+        measurementChanges = {
+          drGap: entry.drGapMeasurement ? { start: entry.drGapMeasurement, end: entry.drGapMeasurement } : null,
+          coreConnection: entry.coreConnectionScore != null ? { start: entry.coreConnectionScore, end: entry.coreConnectionScore, change: 0 } : null,
+          backDiscomfort: entry.postureBackDiscomfort != null ? { start: entry.postureBackDiscomfort, end: entry.postureBackDiscomfort, change: 0 } : null,
+          energyLevel: entry.energyLevel != null ? { start: entry.energyLevel, end: entry.energyLevel, change: 0 } : null,
+        };
+      }
+
+      res.json({
+        month: monthParam,
+        daysInMonth,
+        totalWorkouts,
+        totalBreathingSessions,
+        totalCardioMinutes,
+        avgWater,
+        avgEnergy,
+        moodBreakdown,
+        streakStats: { bestStreak, currentStreak },
+        activeDays,
+        consistencyScore,
+        measurementChanges,
+      });
+    } catch (error) {
+      console.error("Error generating monthly report:", error);
+      res.status(500).json({ message: "Failed to generate monthly report" });
     }
   });
 

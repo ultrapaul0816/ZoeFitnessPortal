@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress as ProgressBar } from "@/components/ui/progress";
-import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp, X, ZoomIn, Loader2 } from "lucide-react";
+import { Upload, Trash2, Camera, Image as ImageIcon, Download, Info, Sparkles, TrendingUp, X, ZoomIn, Loader2, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import examplePhotoImage from "@assets/WhatsApp Image 2025-10-06 at 21.30.02_1759768347069.jpeg";
 import { compressImage } from "@/lib/imageCompression";
 import { BeforeAfterSlider } from "@/components/ui/before-after-slider";
 import { PhotoEditor } from "@/components/ui/photo-editor";
+
+const ProgressCharts = lazy(() => import("@/components/progress-charts"));
 
 function getInitialUser(): User | null {
   if (typeof window !== 'undefined') {
@@ -41,6 +43,7 @@ export default function Progress() {
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   const [rawImageForEditing, setRawImageForEditing] = useState<string | null>(null);
   const [editingPhotoType, setEditingPhotoType] = useState<"start" | "finish" | null>(null);
+  const [activeTab, setActiveTab] = useState<"photos" | "charts">("photos");
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -391,10 +394,47 @@ export default function Progress() {
           Progress Tracker
         </h1>
         <p className="text-xs md:text-sm font-medium text-gray-600 border-l-4 border-pink-400 pl-3 md:pl-4 bg-gradient-to-r from-pink-50 to-transparent py-2">
-          Document your transformation journey with photos and weekly progress tracking
+          Document your transformation journey with photos, measurements, and weekly trends
         </p>
       </div>
 
+      {/* Tab Selector */}
+      <div className="flex gap-2 bg-gray-100 rounded-xl p-1">
+        <button
+          onClick={() => setActiveTab("photos")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeTab === "photos"
+              ? "bg-white text-pink-600 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <Camera className="w-4 h-4" />
+          Photos & Tracker
+        </button>
+        <button
+          onClick={() => setActiveTab("charts")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeTab === "charts"
+              ? "bg-white text-pink-600 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <BarChart3 className="w-4 h-4" />
+          My Trends
+        </button>
+      </div>
+
+      {activeTab === "charts" ? (
+        <Suspense fallback={
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-pink-500 mb-3" />
+            <p className="text-gray-500 text-sm">Loading charts...</p>
+          </div>
+        }>
+          <ProgressCharts userId={user.id} />
+        </Suspense>
+      ) : (
+      <>
       {/* Guidance Section */}
       <Card className="bg-gradient-to-r from-pink-50 via-rose-50 to-pink-50 border-2 border-pink-200 p-4 md:p-6">
         <div className="flex items-start gap-2 md:gap-3">
@@ -1054,6 +1094,8 @@ export default function Progress() {
           </div>
         </div>
       </Card>
+      </>
+      )}
     </div>
   );
 }
