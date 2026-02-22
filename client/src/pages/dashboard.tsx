@@ -1131,7 +1131,7 @@ export default function Dashboard() {
           </div>
 
           {/* Sidebar Column - Desktop only */}
-          <div className="hidden lg:block lg:col-span-4">
+          <div className="lg:col-span-4">
             <div className="sticky top-24 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto pb-6 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
               {/* Coach Zoe's Daily Tip */}
               <ZoeEncouragement 
